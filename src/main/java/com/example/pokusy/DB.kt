@@ -15,7 +15,7 @@ private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
 
 private val entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
 
-private class ConnectionDS(): DataSource {
+private object ConnectionDS: DataSource {
     override fun setLogWriter(out: PrintWriter?) {
         throw UnsupportedOperationException()
     }
@@ -50,7 +50,7 @@ private class ConnectionDS(): DataSource {
 /**
  * The data source.
  */
-val dataSource: DataSource = ConnectionDS()
+val dataSource: DataSource = ConnectionDS
 
 /**
  * Provides the entity manager, the JDBC connection and several utility methods.
