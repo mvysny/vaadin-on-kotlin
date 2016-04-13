@@ -18,9 +18,15 @@ import javax.servlet.annotation.WebServlet
 @Title("Pokusy")
 class MyUI : UI() {
     override fun init(request: VaadinRequest?) {
-        val clickMe = Button("Click me", Button.ClickListener { Notification.show("Clicked") })
+        val clickMe = Button("Click me", Button.ClickListener { stuff() })
         val content = VerticalLayout(clickMe)
         setContent(content)
+    }
+
+    private fun stuff() {
+        transaction {
+            Notification.show("Look Ma, I haz a transaction: " + em.isOpen)
+        }
     }
 }
 
