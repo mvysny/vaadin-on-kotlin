@@ -4,6 +4,7 @@ import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
+import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinServlet
 import com.vaadin.ui.*
@@ -17,18 +18,25 @@ import javax.servlet.annotation.WebServlet
 class MyUI : UI() {
 
     private val personGrid = Grid()
+    private val personName = TextField()
+    private val createButton = Button("Create", Button.ClickListener { stuff() })
 
     override fun init(request: VaadinRequest?) {
-        val clickMe = Button("Click me", Button.ClickListener { stuff() })
+        personName.nullRepresentation = ""
+        val fg = BeanFieldGroup(Person::class.java)
+        fg.setItemDataSource(Person()) // this sets up the validation
+        fg.bind(personName, "name")
+
         personGrid.containerDataSource = createContainer(Person::class.java)
         personGrid.setColumns("id", "name")
-        val content = VerticalLayout(clickMe, personGrid)
+        val content = VerticalLayout(personName, createButton, personGrid)
         setContent(content)
     }
 
     private fun stuff() {
+        personName.validate()
         transaction {
-            val person = Person(name = "Jozko")
+            val person = Person(name = personName.value.trim())
             em.persist(person)
             Notification.show("Persisted " + person)
         }
