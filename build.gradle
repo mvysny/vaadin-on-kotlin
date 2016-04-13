@@ -1,3 +1,5 @@
+defaultTasks 'clean', 'build'
+
 group 'com.example.kotlinee'
 version '1.0-SNAPSHOT'
 
@@ -35,6 +37,7 @@ dependencies {
     // Vaadin
     compile "com.vaadin:vaadin-client-compiled:$vaadin_version"
     compile "com.vaadin:vaadin-server:$vaadin_version"
+    compile "com.vaadin:vaadin-push:$vaadin_version"
     compile "com.vaadin:vaadin-themes:$vaadin_version"
     compile 'javax.validation:validation-api:1.0.0.GA'  // Validacie
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
