@@ -42,7 +42,7 @@ private class ConnectionDS(): DataSource {
         throw UnsupportedOperationException()
     }
 
-    override fun getConnection(): Connection? = TransactionContext.create().connection
+    override fun getConnection(): Connection? = PersistenceContext.create().connection
 
     override fun getConnection(username: String?, password: String?): Connection? = connection
 }
@@ -56,9 +56,9 @@ val dataSource: DataSource = ConnectionDS()
  * Provides the entity manager, the JDBC connection and several utility methods.
  * @property em the entity manager reference
  */
-class TransactionContext(val em: EntityManager) : Closeable {
+class PersistenceContext(val em: EntityManager) : Closeable {
     companion object {
-        fun create() = TransactionContext(entityManagerFactory.createEntityManager())
+        fun create() = PersistenceContext(entityManagerFactory.createEntityManager())
     }
     /**
      * The underlying JDBC connection.
@@ -69,18 +69,18 @@ class TransactionContext(val em: EntityManager) : Closeable {
     }
 }
 
-private val contexts: ThreadLocal<TransactionContext> = ThreadLocal()
+private val contexts: ThreadLocal<PersistenceContext> = ThreadLocal()
 
 /**
  * Makes sure given block is executed in a DB transaction.
- * @param block the block to run in the transaction. Builder-style provides helpful methods and values, e.g. [TransactionContext.em]
+ * @param block the block to run in the transaction. Builder-style provides helpful methods and values, e.g. [PersistenceContext.em]
  */
-fun <R> transaction(block: TransactionContext.()->R): R {
+fun <R> transaction(block: PersistenceContext.()->R): R {
     var context = contexts.get()
     if (context != null) {
         return context.block()
     } else {
-        context = TransactionContext.create()
+        context = PersistenceContext.create()
         try {
             contexts.set(context)
             return context.use {
