@@ -25,7 +25,9 @@ class MyUI : UI() {
 
     private fun stuff() {
         transaction {
-            Notification.show("Look Ma, I haz a transaction: " + em.isOpen)
+            val person = Person(name = "Jozko")
+            em.persist(person)
+            Notification.show("Persisted " + person)
         }
     }
 }
