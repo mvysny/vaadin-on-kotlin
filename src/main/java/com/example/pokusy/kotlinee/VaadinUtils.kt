@@ -3,6 +3,7 @@ package com.example.pokusy.kotlinee
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Container
+import com.vaadin.server.Sizeable
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
 
@@ -29,12 +30,12 @@ fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
 }
 
 private fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
-    component.block()
     when (this) {
         is ComponentContainer -> addComponent(component)
         is SingleComponentContainer -> content = component
         else -> throw RuntimeException("Unsupported component container $this")
     }
+    component.block()
     return component
 }
 
@@ -59,3 +60,9 @@ fun Label.html(html: String?) {
     setContentMode(ContentMode.HTML)
     setValue(html)
 }
+
+var Component.expandRatio: Float
+get() = (parent as AbstractOrderedLayout).getExpandRatio(this)
+set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
+
+fun Component.setWidthFull() = setWidth(100f, Sizeable.Unit.PERCENTAGE)

@@ -37,15 +37,21 @@ class MyUI : UI() {
 
         // the Vaadin DSL demo - build your UI, builder-style!
         verticalLayout {
-            personName = textField("New Person Name")
-            createButton = button("Create") {
-                addClickListener { createPerson() }
-            }
-            // the JPA list demo - shows all instances of a particular JPA entity, allow sorting. @todo filtering
-            personGrid = grid(dataSource = createContainer(Person::class.java)) {
-                setColumns("id", "name")
+            setSizeFull()
+            horizontalLayout {
+                personName = textField("New Person Name")
+                createButton = button("Create") {
+                    addClickListener { createPerson() }
+                }
             }
             timerLabel = label()
+
+            // the JPA list demo - shows all instances of a particular JPA entity, allow sorting. @todo filtering
+            personGrid = grid(dataSource = createContainer(Person::class.java)) {
+                expandRatio = 1f
+                setColumns("id", "name")
+                setSizeFull()
+            }
         }
 
         // the validation demo. infer validations from JSR303 annotations attached to the Person class
