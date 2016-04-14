@@ -2,6 +2,9 @@ package com.example.pokusy.kotlinee
 
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
+import com.vaadin.data.Container
+import com.vaadin.shared.ui.label.ContentMode
+import com.vaadin.ui.*
 
 /**
  * Kedysi som extendoval LocalEntityProvider, ale ten debil loadoval este aj IDcka po jednom: SELECT ID AS a1 FROM notepad_category_item ORDER BY ID ASC LIMIT 1 OFFSET 1 atd atd.
@@ -23,4 +26,36 @@ fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
     val container = JPAContainer(entity)
     container.entityProvider = provider
     return container
+}
+
+private fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
+    component.block()
+    when (this) {
+        is ComponentContainer -> addComponent(component)
+        is SingleComponentContainer -> content = component
+        else -> throw RuntimeException("Unsupported component container $this")
+    }
+    return component
+}
+
+fun HasComponents.verticalLayout(block: VerticalLayout.()->Unit = {}) = init(VerticalLayout(), block)
+
+fun HasComponents.horizontalLayout(block: HorizontalLayout.()->Unit = {}) = init(HorizontalLayout(), block)
+
+fun HasComponents.button(caption: String? = null, block: Button.() -> Unit = {}) = init(Button(caption), block)
+
+fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
+
+fun HasComponents.textField(caption: String? = null, value: String? = null, block: TextField.()->Unit = {}): TextField {
+    val textField = TextField(caption, value)
+    init(textField, block)
+    textField.nullRepresentation = ""
+    return textField
+}
+
+fun HasComponents.label(content: String? = null, block: Label.()->Unit = {}) = init(Label(content), block)
+
+fun Label.html(html: String?) {
+    setContentMode(ContentMode.HTML)
+    setValue(html)
 }
