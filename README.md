@@ -15,7 +15,8 @@ org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOu
 @StatefulTimeout(-1) everywhere and use @PreserveOnRefresh on your UI - stupid.
 * Moronic async API: when async method is called directly from another method in that very SLSB, the method is actually silently
 called synchronously. To call async, you need to inject self and call the method as `self.method()`
-* You cannot inject stuff into Vaadin components, you can make Vaadin component a managed bean but that's just plain weird. Death to injections :-D
+* You cannot inject stuff into Vaadin components, you can make Vaadin component a managed bean but that's just plain weird. How about
+having a global val with a getter which produces the correct bean instance on demand?
 
 ## Status
 
@@ -23,10 +24,10 @@ Done:
 * JPA (via Hibernate) and transactions (via transaction {})
 * Migrations (Flyway) - the migrations are run automatically when the WAR is started.
 * Vaadin with JPAContainer
+* Async tasks & Vaadin Push
+* Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
 
 Todo:
-* Async tasks & Vaadin Push
-* Drop-in replacements for SFSBs
 * Configure JDBC connection pooling
 
 Ignored:

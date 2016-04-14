@@ -36,7 +36,8 @@ class MyUI : UI() {
         log.error("INIT()")
         personName.nullRepresentation = ""
         val fg = BeanFieldGroup(Person::class.java)
-        fg.setItemDataSource(Person()) // this sets up the validation
+        // use a dummy person for now. we only want to set up the validation on the personName field.
+        fg.setItemDataSource(Person())
         fg.bind(personName, "name")
 
         personGrid.containerDataSource = createContainer(Person::class.java)
@@ -48,7 +49,7 @@ class MyUI : UI() {
         timerHandle = scheduleAtFixedRate(0, 1 * SECONDS) {
             timer.incrementAndGet()
             access {
-                timerLabel.value = "Timer: $timer"
+                timerLabel.value = "Timer: $timer; last added = ${lastAddedPersonCache.lastAdded}"
             }
         }
     }
@@ -59,6 +60,7 @@ class MyUI : UI() {
             val person = Person(name = personName.value.trim())
             em.persist(person)
             Notification.show("Persisted " + person)
+            lastAddedPersonCache.lastAdded = person
         }
         personGrid.refresh()
         createButton.componentError = null

@@ -22,7 +22,7 @@ class Bootstrap: ServletContextListener {
         flyway.dataSource = dataSource
         flyway.migrate()
         log.info("Creating executor")
-        executor = Executors.newScheduledThreadPool(5, AsyncThreadFactory)
+        executor = Executors.newScheduledThreadPool(5, AsyncThreadFactory)  // TomEE also has by default 5 :-D
         log.info("Initialization complete")
     }
 
