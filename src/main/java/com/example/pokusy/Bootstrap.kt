@@ -10,6 +10,7 @@ import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 
 /**
+ *
  * @author mvy
  */
 @WebListener
@@ -22,7 +23,8 @@ class Bootstrap: ServletContextListener {
         flyway.dataSource = dataSource
         flyway.migrate()
         log.info("Creating executor")
-        executor = Executors.newScheduledThreadPool(5, AsyncThreadFactory)  // TomEE also has by default 5 :-D
+        // TomEE also has by default 5 threads, so I guess this is okay :-D
+        executor = Executors.newScheduledThreadPool(5, AsyncThreadFactory)
         log.info("Initialization complete")
     }
 
@@ -81,7 +83,7 @@ fun <R> async(block: ()->R): Future<R> = executor!!.submit(block)
  * may start late, but will not concurrently execute.
  *
  * @param command the task to execute
- * @param initialDelay the time to delay first execution, in millis. You can use `
+ * @param initialDelay the time to delay first execution, in millis. You can use expressions like `5 * TimeUnit.DAYS + 2 * TimeUnit.SECONDS` to compute this value.
  * @param period the period between successive executions, in millis
  * @return a ScheduledFuture representing pending completion of
  *         the task, and whose `get()` method will throw an

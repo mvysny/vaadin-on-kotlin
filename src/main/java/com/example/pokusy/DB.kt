@@ -1,3 +1,9 @@
+/**
+ * Database-related utility methods:
+ *
+ * * To run a code in a transaction, just call `transaction { em.persist() }`
+ * * To obtain the data source, just read the [dataSource] global property.
+ */
 package com.example.pokusy
 
 import org.hibernate.internal.SessionImpl
