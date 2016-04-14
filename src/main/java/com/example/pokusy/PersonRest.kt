@@ -8,7 +8,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 /**
- * Provides access to person list. To test, just run `wget http://localhost:8080/rest/person`
+ * Provides access to person list. To test, just run `curl http://localhost:8080/rest/person`
  */
 @Path("/person")
 class PersonRest {
