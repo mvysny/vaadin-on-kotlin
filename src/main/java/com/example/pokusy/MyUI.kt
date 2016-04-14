@@ -1,5 +1,8 @@
 package com.example.pokusy
 
+import com.example.pokusy.kotlinee.createContainer
+import com.example.pokusy.kotlinee.scheduleAtFixedRate
+import com.example.pokusy.kotlinee.transaction
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
@@ -13,6 +16,7 @@ import com.vaadin.ui.*
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit.SECONDS
+import com.example.pokusy.kotlinee.times
 import java.util.concurrent.atomic.AtomicInteger
 import javax.servlet.annotation.WebServlet
 

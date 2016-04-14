@@ -4,7 +4,7 @@
  * * To run a code in a transaction, just call `transaction { em.persist() }`
  * * To obtain the data source, just read the [dataSource] global property.
  */
-package com.example.pokusy
+package com.example.pokusy.kotlinee
 
 import org.hibernate.internal.SessionImpl
 import org.slf4j.LoggerFactory

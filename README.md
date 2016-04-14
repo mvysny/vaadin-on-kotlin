@@ -14,9 +14,8 @@ and database support - a very simple but powerful quickstart project.
 
 ## Motivation
 
-I implemented a Vaadin-based JavaEE project and was constantly plagued with:
+In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following issues:
 
-* Crashes in TomEE when deploying Kotlin-based SLSBs: https://issues.apache.org/jira/browse/TOMEE-1774
 * Crashes when accessing @SessionScoped beans from websocket xhr code - https://vaadin.com/forum#!/thread/11474306 ; @NormalUIScoped produces
 org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOut and javax.ejb.NoSuchEJBException - you need to add
 @StatefulTimeout(-1) everywhere and use @PreserveOnRefresh on your UI - stupid.
@@ -24,6 +23,10 @@ org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOu
 called synchronously. To call async, you need to inject self and call the method as `self.method()`
 * You cannot inject stuff into Vaadin components, you can make Vaadin component a managed bean but that's just plain weird. How about
 having a global val with a getter which produces the correct bean instance on demand?
+* Imagine that you wish to store a class, which is able to access a database, to a session. Some sort of cache, perhaps. In order to do this
+JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject some SLSB to it (cause managed beans do not yet have support for
+transactions), manually store it into the session and then run into abovementioned issues with websocket xhr. What the fuck? I want to focus on coding,
+not @configuring the world until JavaEE is satisfied.
 
 ## Status
 

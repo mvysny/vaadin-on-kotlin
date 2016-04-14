@@ -1,4 +1,4 @@
-package com.example.pokusy
+package com.example.pokusy.kotlinee
 
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
@@ -19,7 +19,7 @@ import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvide
 fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
     // @todo this leaks database connection! create entity manager which automatically closes when the request finishes
     // and re-attaches on demand.
-    val provider = CachingBatchableLocalEntityProvider(entity, PersistenceContext.create().em)
+    val provider = CachingBatchableLocalEntityProvider(entity, PersistenceContext.Companion.create().em)
     val container = JPAContainer(entity)
     container.entityProvider = provider
     return container
