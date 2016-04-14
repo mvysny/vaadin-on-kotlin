@@ -3,11 +3,16 @@ package com.example.pokusy
 import com.example.pokusy.kotlinee.dataSource
 import com.example.pokusy.kotlinee.kotlineeDestroy
 import com.example.pokusy.kotlinee.kotlineeInit
+import com.vaadin.annotations.VaadinServletConfiguration
+import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
+import org.glassfish.jersey.servlet.ServletContainer
 import org.slf4j.LoggerFactory
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
+import javax.servlet.annotation.WebInitParam
 import javax.servlet.annotation.WebListener
+import javax.servlet.annotation.WebServlet
 
 /**
  * Boots the app:
@@ -39,3 +44,11 @@ class Bootstrap: ServletContextListener {
         log.info("Shutdown complete")
     }
 }
+
+@WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
+@VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
+class MyUIServlet : VaadinServlet() { }
+
+@WebServlet(urlPatterns = arrayOf("/rest/*"), name = "JerseyServlet", asyncSupported = true,
+        initParams = arrayOf(WebInitParam(name = "jersey.config.server.provider.packages", value = "com.example.pokusy")))
+class JerseyServlet : ServletContainer() { }

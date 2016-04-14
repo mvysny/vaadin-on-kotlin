@@ -2,23 +2,20 @@ package com.example.pokusy
 
 import com.example.pokusy.kotlinee.createContainer
 import com.example.pokusy.kotlinee.scheduleAtFixedRate
+import com.example.pokusy.kotlinee.times
 import com.example.pokusy.kotlinee.transaction
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
-import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.server.VaadinRequest
-import com.vaadin.server.VaadinServlet
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit.SECONDS
-import com.example.pokusy.kotlinee.times
 import java.util.concurrent.atomic.AtomicInteger
-import javax.servlet.annotation.WebServlet
 
 /**
  * The Vaadin UI which demoes all the features. If not familiar with Vaadin, please check out the Vaadin tutorial.
@@ -82,10 +79,6 @@ class MyUI : UI() {
         super.detach()
     }
 }
-
-@WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
-@VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
-class MyUIServlet : VaadinServlet() { }
 
 /**
  * Refreshes the entire grid from the database.

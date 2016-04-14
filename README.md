@@ -31,30 +31,35 @@ not @configuring the world until JavaEE is satisfied.
 ## Status
 
 Done:
+
 * JPA (via Hibernate) and transactions (via transaction {})
 * Migrations (Flyway) - the migrations are run automatically when the WAR is started.
 * Vaadin with JPAContainer
 * Async tasks & Vaadin Push
 * Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
+* REST (via Jersey); see `MyResourceRest.kt` for details.
 
 Todo:
+
 * Configure JDBC connection pooling
-* REST
 * Vaadin ui builder
 
 Ignored:
+
 * Cluster-wide singleton
 * Messaging
 * Security
 * Injections
 
 ## To run the WAR outside of any IDE:
+
 * Download Jetty Runner here: http://www.eclipse.org/jetty/documentation/current/runner.html
 * Run `./gradlew`
 * Locate the WAR in `build/libs/`
 * Run the WAR via the Runner: `java -jar jetty-runner*.jar *.war`
 
 ## To develop in IDEA:
+
 * Open the project
 * Download the Jetty Distribution zip file from here: http://download.eclipse.org/jetty/stable-9/dist/
 * Unpack the Jetty Distribution
