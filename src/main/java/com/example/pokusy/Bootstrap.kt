@@ -20,7 +20,7 @@ import javax.ws.rs.core.Application
  * * Makes sure that the database is up-to-date, by running migration scripts with Flyway. This will work even in cluster as Flyway
  *   automatically obtains a cluster-wide database lock.
  * * Initializes the KotlinEE framework.
- *
+ * * Maps Vaadin to `/`, maps REST server to `/rest`
  * @author mvy
  */
 @WebListener

@@ -37,12 +37,13 @@ Done:
 * Vaadin with JPAContainer
 * Async tasks & Vaadin Push
 * Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
-* REST (via Jersey); see `MyResourceRest.kt` for details.
+* REST (via RESTEasy); see `PersonRest.kt` for details.
 
 Todo:
 
 * Configure JDBC connection pooling
 * Vaadin ui builder
+* Not *that* verbose logging ;)
 
 Ignored:
 

@@ -5,7 +5,9 @@ import javax.persistence.*
 import javax.validation.constraints.*
 
 /**
- * A very simple JPA entity.
+ * A very simple JPA entity. Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
+ * @property id person ID
+ * @property name person name
  */
 @Entity
 data class Person(@field:Id @field:GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,

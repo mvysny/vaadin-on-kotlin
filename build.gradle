@@ -53,4 +53,5 @@ dependencies {
 
     // REST
     compile 'org.jboss.resteasy:resteasy-servlet-initializer:3.0.16.Final'
+    compile 'org.jboss.resteasy:resteasy-jackson2-provider:3.0.16.Final'
 }

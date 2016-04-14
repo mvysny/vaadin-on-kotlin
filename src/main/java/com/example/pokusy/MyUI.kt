@@ -55,6 +55,9 @@ class MyUI : UI() {
         // 3. async and Push demo - show a label and periodically update its value from the server.
         timerHandle = scheduleAtFixedRate(0, 1 * SECONDS) {
             timer.incrementAndGet()
+            transaction {
+                // do something with the DB
+            }
             access {
                 timerLabel.value = "Timer: $timer; last added = ${lastAddedPersonCache.lastAdded}"
             }

@@ -15,6 +15,7 @@ import java.util.logging.Logger
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
+import javax.persistence.TypedQuery
 import javax.sql.DataSource
 
 private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
@@ -109,5 +110,61 @@ fun <R> transaction(block: PersistenceContext.()->R): R {
         } finally {
             contexts.set(null)
         }
+    }
+}
+
+/**
+ * Returns all JPA entities of given type.
+ * @param clazz the JPA entity class, not null.
+ * @param  entity type
+ * @return all classes, may be empty.
+ */
+fun <T> EntityManager.findAll(clazz: Class<T>): List<T> {
+    return createQuery("select b from ${clazz.simpleName} b", clazz).getResultList()
+}
+
+/**
+ * Finds given JPA entity. Fails if there is no such entity.
+ * @param clazz entity class, not null.
+ * @param id the entity id
+ * @return the JPA instance, not null.
+ */
+fun <T> EntityManager.findById(clazz: Class<T>, id: Any): T {
+    return find(clazz, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${clazz.simpleName}")
+}
+
+/**
+ * Deletes given entity.
+ * @param clazz entity class
+ * @param id entity id
+ * @return true if the entity was deleted, false if there is no such entity.
+ */
+fun EntityManager.deleteById(clazz: Class<*>, id: Any): Boolean {
+    return createQuery("delete from ${clazz.simpleName} b where b.id=:id", clazz).setParameter("id", id).executeUpdate() != 0
+}
+
+/**
+ * Deletes all instances of given JPA entity.
+ * @param clazz the JPA class to delete.
+ */
+fun EntityManager.deleteAll(clazz: Class<*>) {
+    createQuery("delete from ${clazz.simpleName}", clazz).executeUpdate()
+}
+
+/**
+ * [TypedQuery.getSingleResult] funguje iba na primitivnych typoch ako Long atd, nefunguje na JPA entitach.
+ * @param query the query
+ * @param  the entity type
+ * @return the entity or null if no entity was found
+ */
+fun <T> TypedQuery<T>.single(): T? {
+    val list = resultList
+    val size = list.size
+    if (size > 1) {
+        throw RuntimeException("query $this: expected 0 or 1 results but got $size")
+    } else if (size == 1) {
+        return list[0]
+    } else {
+        return null
     }
 }
