@@ -31,6 +31,8 @@ not @configuring the world until JavaEE is satisfied.
 
 ## Status
 
+This is just a prototype project. A real-world app needs to be built on top of this, to see how well this quasi-framework will fare.
+
 Done:
 
 * JPA (via Hibernate) and transactions (via transaction {})
