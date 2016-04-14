@@ -1,6 +1,7 @@
 # pokusy_kotlinee
 
-An attempt to simplify javaee-based projects which only use a subset of javaee, to a pure jetty environment.
+Lot of projects do not use all capabilities of JavaEE, but only a subset: the Async, the database, and that's it.
+This project is an attempt to simplify such projects to a pure servlet environment, with no JavaEE stuff, no injections, etc.
 Uses Kotlin. Currently starts its own embedded H2 database. I am trying to simplify this as much as possible, so I will not
 add any injection support etc. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
 and database support - a very simple but powerful quickstart project.
