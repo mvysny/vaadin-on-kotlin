@@ -5,7 +5,7 @@ the Async, and that's it.
 
 This project is an attempt to simplify such projects:
 
-* Allow them to run in a pure servlet environment (Jetty)
+* Allow them to run in a pure servlet environment (such as Jetty, Tomcat)
 * Remove complex stuff such as injections, SLSBs, SFSBs
 * Allow any object to be bound to a session (e.g. caches) in a simple manner
 
@@ -21,7 +21,8 @@ org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOu
 @StatefulTimeout(-1) everywhere and use @PreserveOnRefresh on your UI - stupid.
 * Moronic async API: when async method is called directly from another method in that very SLSB, the method is actually silently
 called synchronously. To call async, you need to inject self and call the method as `self.method()`
-* You cannot inject stuff into Vaadin components, you can make Vaadin component a managed bean but that's just plain weird. How about
+* You can only inject stuff into UI and View - you cannot inject stuff into arbitrary Vaadin components. Well, you can if 
+you make every Vaadin component a managed bean, but that's just plain weird. How about
 having a global val with a getter which produces the correct bean instance on demand?
 * Imagine that you wish to store a class, which is able to access a database, to a session. Some sort of cache, perhaps. In order to do this
 JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject some SLSB to it (cause managed beans do not yet have support for
@@ -37,13 +38,13 @@ Done:
 * Vaadin with JPAContainer
 * Async tasks & Vaadin Push
 * Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
-* REST (via RESTEasy); see `PersonRest.kt` for details.
+* REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
+* Vaadin UI builder - see `MyUI.kt` for details.
 
 Todo:
 
 * Configure JDBC connection pooling
-* Vaadin ui builder
-* Not *that* verbose logging ;)
+* Decrease logging verbosity ;)
 
 Ignored:
 
@@ -61,9 +62,15 @@ Ignored:
 
 ## To develop in IDEA:
 
-* Open the project
+### Jetty
+
+* Open the project in IDEA
 * Download the Jetty Distribution zip file from here: http://download.eclipse.org/jetty/stable-9/dist/
 * Unpack the Jetty Distribution
 * In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the WAR-exploded artefact to the runner
 * Run or Debug the runner
 
+### Tomcat
+
+* Open the project in IDEA
+* https://kotlinlang.org/docs/tutorials/httpservlets.html
