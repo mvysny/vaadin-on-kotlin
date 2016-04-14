@@ -6,13 +6,13 @@ import com.example.pokusy.kotlinee.kotlineeInit
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
-import org.glassfish.jersey.servlet.ServletContainer
 import org.slf4j.LoggerFactory
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
-import javax.servlet.annotation.WebInitParam
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
+import javax.ws.rs.ApplicationPath
+import javax.ws.rs.core.Application
 
 /**
  * Boots the app:
@@ -49,6 +49,8 @@ class Bootstrap: ServletContextListener {
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet() { }
 
-@WebServlet(urlPatterns = arrayOf("/rest/*"), name = "JerseyServlet", asyncSupported = true,
-        initParams = arrayOf(WebInitParam(name = "jersey.config.server.provider.packages", value = "com.example.pokusy")))
-class JerseyServlet : ServletContainer() { }
+/**
+ * RESTEasy configuration. Do not use Jersey, it has a tons of dependencies
+ */
+@ApplicationPath("/rest")
+class ApplicationConfig : Application()
