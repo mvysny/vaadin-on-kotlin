@@ -63,7 +63,7 @@ class PersistenceContext(val em: EntityManager) : Closeable {
     /**
      * The underlying JDBC connection.
      */
-    val connection: Connection by lazy { em.unwrap(SessionImpl::class.java).connection() }
+    val connection: Connection by lazy(LazyThreadSafetyMode.NONE) { em.unwrap(SessionImpl::class.java).connection() }
     override fun close() {
         em.close()
     }
@@ -72,7 +72,8 @@ class PersistenceContext(val em: EntityManager) : Closeable {
 private val contexts: ThreadLocal<PersistenceContext> = ThreadLocal()
 
 /**
- * Makes sure given block is executed in a DB transaction.
+ * Makes sure given block is executed in a DB transaction. When the block finishes normally, the transaction commits;
+ * if the block throws any exception, the transaction is rolled back.
  * @param block the block to run in the transaction. Builder-style provides helpful methods and values, e.g. [PersistenceContext.em]
  */
 fun <R> transaction(block: PersistenceContext.()->R): R {

@@ -1,13 +1,19 @@
 package com.example.pokusy
 
 import com.vaadin.addon.jpacontainer.JPAContainer
+import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.server.VaadinRequest
 import com.vaadin.server.VaadinServlet
+import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
+import org.slf4j.LoggerFactory
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit.SECONDS
+import java.util.concurrent.atomic.AtomicInteger
 import javax.servlet.annotation.WebServlet
 
 /**
@@ -15,13 +21,19 @@ import javax.servlet.annotation.WebServlet
  */
 @Theme("valo")
 @Title("Pokusy")
+@Push(transport = Transport.WEBSOCKET_XHR)
 class MyUI : UI() {
 
+    private val log = LoggerFactory.getLogger(javaClass)
     private val personGrid = Grid()
     private val personName = TextField()
     private val createButton = Button("Create", Button.ClickListener { stuff() })
+    private val timerLabel = Label()
+    private val timer = AtomicInteger()
+    private var timerHandle: ScheduledFuture<*>? = null
 
     override fun init(request: VaadinRequest?) {
+        log.error("INIT()")
         personName.nullRepresentation = ""
         val fg = BeanFieldGroup(Person::class.java)
         fg.setItemDataSource(Person()) // this sets up the validation
@@ -29,8 +41,16 @@ class MyUI : UI() {
 
         personGrid.containerDataSource = createContainer(Person::class.java)
         personGrid.setColumns("id", "name")
-        val content = VerticalLayout(personName, createButton, personGrid)
+
+        val content = VerticalLayout(personName, createButton, personGrid, timerLabel)
         setContent(content)
+
+        timerHandle = scheduleAtFixedRate(0, 1 * SECONDS) {
+            timer.incrementAndGet()
+            access {
+                timerLabel.value = "Timer: $timer"
+            }
+        }
     }
 
     private fun stuff() {
@@ -41,6 +61,13 @@ class MyUI : UI() {
             Notification.show("Persisted " + person)
         }
         personGrid.refresh()
+        createButton.componentError = null
+    }
+
+    override fun detach() {
+        log.error("DETACHED")
+        timerHandle?.cancel(false)
+        super.detach()
     }
 }
 

@@ -17,6 +17,8 @@ import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvide
  * @author mvy
  */
 fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
+    // @todo this leaks database connection! create entity manager which automatically closes when the request finishes
+    // and re-attaches on demand.
     val provider = CachingBatchableLocalEntityProvider(entity, PersistenceContext.create().em)
     val container = JPAContainer(entity)
     container.entityProvider = provider
