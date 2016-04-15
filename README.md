@@ -44,10 +44,7 @@ Done:
 * Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
 * REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
 * Vaadin UI builder - see `MyUI.kt` for details.
-
-Todo:
-
-* Configure JDBC connection pooling
+* JDBC connection pooling (HikariCP)
 
 Ignored:
 

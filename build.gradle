@@ -48,6 +48,7 @@ dependencies {
     // db
     compile 'org.flywaydb:flyway-core:3.2.1'
     compile 'org.hibernate:hibernate-entitymanager:5.1.0.Final'
+    compile 'org.hibernate:hibernate-hikaricp:5.1.0.Final'
     compile 'com.vaadin.addon:jpacontainer:3.2.0'
     compile 'com.h2database:h2:1.3.176'
 
