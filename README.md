@@ -1,7 +1,7 @@
 # pokusy_kotlinee
 
 Lots of projects actually do not use all capabilities of JavaEE, just a subset of JavaEE features: mostly the database access of course,
-the Async, and that's it.
+the Async, the REST webservices, and that's it.
 
 This project is an attempt to simplify such projects:
 
@@ -13,6 +13,8 @@ Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm 
 and database support - a very simple but powerful quickstart project.
 
 ## Motivation
+
+Please read this first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
 
 In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following issues:
 
