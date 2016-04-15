@@ -48,7 +48,6 @@ Done:
 Todo:
 
 * Configure JDBC connection pooling
-* Decrease logging verbosity ;)
 
 Ignored:
 
