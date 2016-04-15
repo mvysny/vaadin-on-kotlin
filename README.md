@@ -46,6 +46,11 @@ Done:
 * Vaadin UI builder - see `MyUI.kt` for details.
 * JDBC connection pooling (HikariCP)
 
+Todo:
+
+* Implement EntityManager which auto-closes underlying connection when the request finishes, then reacquires JDBC connection.
+This needs to be done, to circumvent the horribly broken Vaadin JPAContainer API
+
 Ignored:
 
 * Cluster-wide singleton
