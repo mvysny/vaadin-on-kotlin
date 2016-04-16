@@ -46,10 +46,7 @@ class MyUI : UI() {
             personGrid = grid(dataSource = personGridDS) {
                 expandRatio = 1f
                 addButtonColumn("edit", "Edit", ClickableRenderer.RendererClickListener {
-                    db {
-                        val person: Person = em.findById(it.itemId)
-                        createOrEditPerson(person)
-                    }
+                    db { createOrEditPerson(em.findById(it.itemId)) }
                 })
                 addButtonColumn("delete", "Delete", ClickableRenderer.RendererClickListener {
                     db { em.deleteById(Person::class.java, it.itemId) }
