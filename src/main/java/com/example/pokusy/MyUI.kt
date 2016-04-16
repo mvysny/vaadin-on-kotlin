@@ -5,7 +5,6 @@ import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
-import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
@@ -25,7 +24,6 @@ class MyUI : UI() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    private var personName: TextField? = null
     private var personGrid: Grid? = null
     private var createButton: Button? = null
     private var timerLabel: Label? = null
@@ -38,33 +36,24 @@ class MyUI : UI() {
         // the Vaadin DSL demo - build your UI, builder-style!
         verticalLayout {
             setSizeFull()
-            horizontalLayout {
-                personName = textField("New Person Name")
-                createButton = button("Create") {
-                    addClickListener { createPerson() }
-                }
+            createButton = button("Create New") {
+                addClickListener { createOrEditPerson(Person()) }
             }
             timerLabel = label()
 
             // the JPA list demo - shows all instances of a particular JPA entity, allow sorting. @todo filtering
             personGrid = grid(dataSource = createContainer(Person::class.java)) {
                 expandRatio = 1f
-                setColumns("id", "name")
+                setColumns("id", "name", "age")
                 setSizeFull()
             }
         }
-
-        // the validation demo. infer validations from JSR303 annotations attached to the Person class
-        val fg = BeanFieldGroup(Person::class.java)
-        // use a dummy person for now. we only want to set up the validation on the personName field.
-        fg.setItemDataSource(Person())
-        fg.bind(personName, "name")
 
         // async and Push demo - show a label and periodically update its value from the server.
         timerHandle = scheduleAtFixedRate(0, 1 * SECONDS) {
             timer.incrementAndGet()
             transaction {
-                // do something with the DB
+                // you can use DB even in background threads :)
             }
             access {
                 timerLabel!!.value = "Timer: $timer; last added = ${lastAddedPersonCache.lastAdded}"
@@ -72,16 +61,13 @@ class MyUI : UI() {
         }
     }
 
-    private fun createPerson() {
-        personName!!.validate()
-        transaction {
-            val person = Person(name = personName!!.value.trim())
-            em.persist(person)
-            Notification.show("Persisted " + person)
-            lastAddedPersonCache.lastAdded = person
+    private fun createOrEditPerson(person: Person) {
+        CreateEditPerson(person).apply {
+            addCloseListener(Window.CloseListener {
+                personGrid!!.refresh()
+            })
+            addWindow(this)
         }
-        personGrid!!.refresh()
-        createButton!!.componentError = null
     }
 
     override fun detach() {

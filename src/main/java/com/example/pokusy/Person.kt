@@ -10,5 +10,17 @@ import javax.validation.constraints.*
  * @property name person name
  */
 @Entity
-data class Person(@field:Id @field:GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
-                  @field:NotNull @field:Size(min = 1, max = 200) var name: String? = null) : Serializable
+data class Person(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Size(min = 1, max = 200)
+        var name: String? = null,
+
+        @field:NotNull
+        @field:Min(15)
+        @field:Max(100)
+        var age: Int? = null
+) : Serializable

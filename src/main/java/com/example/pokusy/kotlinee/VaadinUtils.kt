@@ -3,6 +3,9 @@ package com.example.pokusy.kotlinee
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Container
+import com.vaadin.data.util.converter.Converter
+import com.vaadin.data.util.converter.StringToIntegerConverter
+import com.vaadin.data.util.converter.StringToLongConverter
 import com.vaadin.event.*
 import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Sizeable
@@ -10,6 +13,7 @@ import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
 import java.io.Serializable
+import java.util.*
 
 /**
  * Creates a container which lists all instances of given entity. To restrict the list to a particular entity only,
@@ -48,6 +52,8 @@ fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T 
 fun HasComponents.verticalLayout(block: VerticalLayout.()->Unit = {}) = init(VerticalLayout(), block)
 
 fun HasComponents.horizontalLayout(block: HorizontalLayout.()->Unit = {}) = init(HorizontalLayout(), block)
+
+fun HasComponents.formLayout(block: FormLayout.()->Unit = {}) = init(FormLayout(), block)
 
 fun HasComponents.button(caption: String? = null, block: Button.() -> Unit = {}) = init(Button(caption), block)
 
@@ -105,14 +111,14 @@ interface EnterPressedListener : Serializable {
      * Invoked when the text field is focused and the user presses Enter.
      * @param source the [TextField] which triggered the event.
      */
-    fun onEnterPressed(source: TextField): Unit
+    fun onEnterPressed(source: AbstractTextField): Unit
 }
 
 /**
  * Triggers given listener when the text field is focused and user presses the Enter key.
  * @param enterListener the listener to invoke.
  */
-fun TextField.onEnterPressed(enterListener: EnterPressedListener) {
+fun AbstractTextField.onEnterPressed(enterListener: EnterPressedListener) {
     val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ShortcutAction.KeyCode.ENTER) {
         override fun handleAction(sender: Any, target: Any) {
             enterListener.onEnterPressed(this@onEnterPressed)
@@ -120,6 +126,23 @@ fun TextField.onEnterPressed(enterListener: EnterPressedListener) {
     }
     addFocusListener { addShortcutListener(enterShortCut) }
     addBlurListener { removeShortcutListener(enterShortCut) }
+}
+
+/**
+ * Trims the user input string before storing it into the underlying property data source. Vital for mobile-oriented apps:
+ * Android keyboard often adds whitespace to the end of the text when auto-completion occurs. Imagine storing a username ending with a space upon registration:
+ * such person can no longer log in from his PC unless he explicitely types in the space.
+ */
+fun AbstractField<String>.trimmingConverter() {
+    setConverter(object : Converter<String?, String?> {
+        override fun convertToModel(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value?.trim()
+
+        override fun convertToPresentation(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value
+
+        override fun getPresentationType(): Class<String?>? = String::class.java as Class<String?>
+
+        override fun getModelType(): Class<String?>? = String::class.java as Class<String?>
+    })
 }
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
