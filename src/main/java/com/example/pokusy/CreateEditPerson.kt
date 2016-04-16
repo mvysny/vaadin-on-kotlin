@@ -15,10 +15,13 @@ class CreateEditPerson(val person: Person): Window() {
     // the validation demo. infer validations from JSR303 annotations attached to the Person class, when
     // the fieldGroup.bind() is called.
     private val fieldGroup = BeanFieldGroup<Person>(Person::class.java)
+    /**
+     * True if we are creating a new person, false if we are editing an existing one.
+     */
     private val creating: Boolean
         get() = person.id == null
 
-    private var ok: Button? = null
+    private var persist: Button? = null
 
     init {
         fieldGroup.setItemDataSource(person)
@@ -37,7 +40,7 @@ class CreateEditPerson(val person: Person): Window() {
             }
             horizontalLayout {
                 isSpacing = true
-                ok = button(if(creating) "Create" else "Save") {
+                persist = button(if(creating) "Create" else "Save") {
                     setLeftClickListener(Button.ClickListener { okPressed() })
                 }
                 button("Cancel") {
@@ -51,10 +54,10 @@ class CreateEditPerson(val person: Person): Window() {
         try {
             fieldGroup.commit()
         } catch(e: FieldGroup.CommitException) {
-            ok!!.componentError = UserError("Please fix the errors on the form")
+            persist!!.componentError = UserError("Please fix the errors on the form")
             return
         }
-        transaction {
+        db {
             if (creating) em.persist(person) else em.merge(person)
             lastAddedPersonCache.lastAdded = person
         }

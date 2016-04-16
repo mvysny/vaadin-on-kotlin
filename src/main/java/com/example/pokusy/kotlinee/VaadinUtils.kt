@@ -3,15 +3,21 @@ package com.example.pokusy.kotlinee
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Container
+import com.vaadin.data.Item
+import com.vaadin.data.util.GeneratedPropertyContainer
+import com.vaadin.data.util.PropertyValueGenerator
 import com.vaadin.data.util.converter.Converter
-import com.vaadin.data.util.converter.StringToIntegerConverter
-import com.vaadin.data.util.converter.StringToLongConverter
-import com.vaadin.event.*
+import com.vaadin.event.LayoutEvents
+import com.vaadin.event.MouseEvents
+import com.vaadin.event.ShortcutAction
+import com.vaadin.event.ShortcutListener
 import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
+import com.vaadin.ui.renderers.ButtonRenderer
+import com.vaadin.ui.renderers.ClickableRenderer
 import java.io.Serializable
 import java.util.*
 
@@ -222,8 +228,27 @@ var Component.alignment: Alignment
     set(value) = (parent as AbstractOrderedLayout).setComponentAlignment(this, value)
 
 /**
- * Adds an item and sets item's caption.
+ * An utility method which adds an item and sets item's caption.
  * @param the Identification of the item to be created.
  * @param caption the new caption
  */
 fun AbstractSelect.addItem(itemId: Any?, caption: String) = addItem(itemId).apply { setItemCaption(itemId, caption) }!!
+
+/**
+ * Adds a button column to a grid.
+ * @param propertyId the generated column propertyId, for example "edit"
+ * @param caption human-readable button caption, e.g. "Edit"
+ * @param listener invoked when the button is clicked. The [RendererClickEvent.itemId] is the ID of the JPA bean.
+ * @return the grid column which you can tweak further.
+ */
+fun Grid.addButtonColumn(propertyId: String, caption: String, listener: ClickableRenderer.RendererClickListener): Grid.Column {
+    if (containerDataSource !is GeneratedPropertyContainer) containerDataSource = GeneratedPropertyContainer(containerDataSource)
+    (containerDataSource as GeneratedPropertyContainer).addGeneratedProperty(propertyId, object: PropertyValueGenerator<String>() {
+        override fun getValue(item: Item?, itemId: Any?, propertyId: Any?): String? = caption
+        override fun getType(): Class<String>? = String::class.java
+    })
+    return getColumn(propertyId).apply {
+        renderer = ButtonRenderer(listener)
+        headerCaption = ""
+    }
+}

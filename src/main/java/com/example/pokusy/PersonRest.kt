@@ -1,7 +1,7 @@
 package com.example.pokusy
 
+import com.example.pokusy.kotlinee.db
 import com.example.pokusy.kotlinee.findAll
-import com.example.pokusy.kotlinee.transaction
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -29,9 +29,5 @@ class PersonRest {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    fun findAll(): List<Person> {
-        return transaction {
-            em.findAll(Person::class.java)
-        }
-    }
+    fun findAll(): List<Person> = db { em.findAll(Person::class.java) }
 }

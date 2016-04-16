@@ -83,7 +83,7 @@ private val contexts: ThreadLocal<PersistenceContext> = ThreadLocal()
  * if the block throws any exception, the transaction is rolled back.
  * @param block the block to run in the transaction. Builder-style provides helpful methods and values, e.g. [PersistenceContext.em]
  */
-fun <R> transaction(block: PersistenceContext.()->R): R {
+fun <R> db(block: PersistenceContext.()->R): R {
     var context = contexts.get()
     if (context != null) {
         return context.block()
@@ -129,9 +129,15 @@ fun <T> EntityManager.findAll(clazz: Class<T>): List<T> {
  * @param id the entity id
  * @return the JPA instance, not null.
  */
-fun <T> EntityManager.findById(clazz: Class<T>, id: Any): T {
-    return find(clazz, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${clazz.simpleName}")
-}
+fun <T> EntityManager.findById(clazz: Class<T>, id: Any): T =
+        find(clazz, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${clazz.simpleName}")
+
+/**
+ * Finds given JPA entity. Fails if there is no such entity.
+ * @param id the entity id
+ * @return the JPA instance, not null.
+ */
+inline fun <reified T: Any> EntityManager.findById(id: Any): T = findById(T::class.java, id)
 
 /**
  * Deletes given entity.
@@ -140,7 +146,7 @@ fun <T> EntityManager.findById(clazz: Class<T>, id: Any): T {
  * @return true if the entity was deleted, false if there is no such entity.
  */
 fun EntityManager.deleteById(clazz: Class<*>, id: Any): Boolean {
-    return createQuery("delete from ${clazz.simpleName} b where b.id=:id", clazz).setParameter("id", id).executeUpdate() != 0
+    return createQuery("delete from ${clazz.simpleName} b where b.id=:id").setParameter("id", id).executeUpdate() != 0
 }
 
 /**
