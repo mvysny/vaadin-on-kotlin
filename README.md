@@ -33,7 +33,8 @@ not @configuring the world until JavaEE is satisfied.
 
 ## Status
 
-This is just a prototype project. A real-world app needs to be built on top of this, to see how well this quasi-framework will fare.
+This is just a prototype project. A real-world app needs to be built on top of this, to see how well this quasi-framework will fare. There is a sample
+CRUD application implemented, please see `MyUI.kt` for details.
 
 Done:
 
