@@ -1,8 +1,9 @@
 /**
  * Database-related utility methods:
  *
- * * To run a code in a transaction, just call `db { em.persist() }`
+ * * To run a code in a transaction, just call [db]
  * * To obtain the data source, just read the [dataSource] global property.
+ * * To obtain an Extended EntityManager, just read the [extendedEntityManager] property.
  */
 package com.example.pokusy.kotlinee
 
@@ -73,6 +74,8 @@ private val contexts: ThreadLocal<PersistenceContext> = ThreadLocal()
 /**
  * Makes sure given block is executed in a DB transaction. When the block finishes normally, the transaction commits;
  * if the block throws any exception, the transaction is rolled back.
+ *
+ * Example of use: `db { em.persist() }`
  * @param block the block to run in the transaction. Builder-style provides helpful methods and values, e.g. [PersistenceContext.em]
  */
 fun <R> db(block: PersistenceContext.()->R): R {
@@ -91,10 +94,14 @@ fun <R> db(block: PersistenceContext.()->R): R {
                     result = it.block()
                     success = true
                 } finally {
-                    try {
-                        if (success) context.em.transaction.commit() else context.em.transaction.rollback()
-                    } catch (t: Throwable) {
-                        log.warn("Failed to commit/rollback the transaction", t)
+                    if (success) {
+                        context.em.transaction.commit()
+                    } else {
+                        try {
+                            context.em.transaction.rollback()
+                        } catch (t: Throwable) {
+                            log.warn("Failed to rollback the transaction", t)
+                        }
                     }
                 }
                 result
@@ -111,42 +118,31 @@ fun <R> db(block: PersistenceContext.()->R): R {
  * @param  entity type
  * @return all classes, may be empty.
  */
-fun <T> EntityManager.findAll(clazz: Class<T>): List<T> {
-    return createQuery("select b from ${clazz.simpleName} b", clazz).getResultList()
-}
-
-/**
- * Finds given JPA entity. Fails if there is no such entity.
- * @param clazz entity class, not null.
- * @param id the entity id
- * @return the JPA instance, not null.
- */
-fun <T> EntityManager.findById(clazz: Class<T>, id: Any): T =
-        find(clazz, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${clazz.simpleName}")
+inline fun <reified T: Any> EntityManager.findAll(): List<T> =
+    createQuery("select b from ${T::class.java.simpleName} b", T::class.java).resultList
 
 /**
  * Finds given JPA entity. Fails if there is no such entity.
  * @param id the entity id
  * @return the JPA instance, not null.
  */
-inline fun <reified T: Any> EntityManager.findById(id: Any): T = findById(T::class.java, id)
+inline fun <reified T: Any> EntityManager.findById(id: Any): T =
+        find(T::class.java, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${T::class.java.simpleName}")
 
 /**
  * Deletes given entity.
- * @param clazz entity class
  * @param id entity id
  * @return true if the entity was deleted, false if there is no such entity.
  */
-fun EntityManager.deleteById(clazz: Class<*>, id: Any): Boolean {
-    return createQuery("delete from ${clazz.simpleName} b where b.id=:id").setParameter("id", id).executeUpdate() != 0
+inline fun <reified T: Any> EntityManager.deleteById(id: Any): Boolean {
+    return createQuery("delete from ${T::class.java.simpleName} b where b.id=:id").setParameter("id", id).executeUpdate() != 0
 }
 
 /**
  * Deletes all instances of given JPA entity.
- * @param clazz the JPA class to delete.
  */
-fun EntityManager.deleteAll(clazz: Class<*>) {
-    createQuery("delete from ${clazz.simpleName}", clazz).executeUpdate()
+inline fun <reified T: Any> EntityManager.deleteAll() {
+    createQuery("delete from ${T::class.java.simpleName}", T::class.java).executeUpdate()
 }
 
 /**
@@ -155,14 +151,8 @@ fun EntityManager.deleteAll(clazz: Class<*>) {
  */
 fun <T> TypedQuery<T>.single(): T? {
     val list = resultList
-    val size = list.size
-    if (size > 1) {
-        throw RuntimeException("query $this: expected 0 or 1 results but got $size")
-    } else if (size == 1) {
-        return list[0]
-    } else {
-        return null
-    }
+    if (list.size > 1) throw RuntimeException("query $this: expected 0 or 1 results but got ${list.size}")
+    return list.firstOrNull()
 }
 
 /**

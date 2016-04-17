@@ -32,7 +32,7 @@ class MyUI : UI() {
     private var timerHandle: ScheduledFuture<*>? = null
 
     override fun init(request: VaadinRequest?) {
-        log.error("INIT()")
+        log.info("UI.init()")
 
         // the Vaadin DSL demo - build your UI, builder-style!
         verticalLayout {
@@ -49,7 +49,7 @@ class MyUI : UI() {
                     db { createOrEditPerson(em.findById(it.itemId)) }
                 })
                 addButtonColumn("delete", "Delete", ClickableRenderer.RendererClickListener {
-                    db { em.deleteById(Person::class.java, it.itemId) }
+                    db { em.deleteById<Person>(it.itemId) }
                     refreshGrid()
                 })
                 setColumns("id", "name", "age", "edit", "delete")
@@ -81,7 +81,7 @@ class MyUI : UI() {
     }
 
     override fun detach() {
-        log.error("DETACHED")
+        log.info("UI.detach()")
         timerHandle?.cancel(false)
         super.detach()
     }

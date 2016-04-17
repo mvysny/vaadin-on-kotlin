@@ -29,5 +29,5 @@ class PersonRest {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    fun findAll(): List<Person> = db { em.findAll(Person::class.java) }
+    fun findAll(): List<Person> = db { em.findAll<Person>() }
 }
