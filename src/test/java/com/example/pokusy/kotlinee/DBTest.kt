@@ -1,6 +1,5 @@
 package com.example.pokusy.kotlinee
 
-import com.example.pokusy.Person
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
