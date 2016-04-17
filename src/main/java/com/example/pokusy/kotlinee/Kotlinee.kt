@@ -2,10 +2,13 @@ package com.example.pokusy.kotlinee
 
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
+import org.slf4j.LoggerFactory
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+private val log = LoggerFactory.getLogger("kotlinee")
 
 /**
  * Initializes the KotlinEE framework. Just call this from your context listener.
@@ -51,7 +54,14 @@ private var executor: ScheduledExecutorService? = null
  * @throws RejectedExecutionException if the task cannot be
  *         scheduled for execution
  */
-fun <R> async(block: ()->R): Future<R> = executor!!.submit(block)
+fun <R> async(block: ()->R): Future<R> = executor!!.submit(Callable<R> {
+    try {
+        block.invoke()
+    } catch (t: Throwable) {
+        log.error("Async failed: $t", t)
+        throw t
+    }
+})
 
 /**
  * Creates and executes a periodic action that becomes enabled first
@@ -78,7 +88,14 @@ fun <R> async(block: ()->R): Future<R> = executor!!.submit(block)
  * @throws IllegalArgumentException if period less than or equal to zero
  */
 fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = executor!!.scheduleAtFixedRate(
-        command, initialDelay, period, TimeUnit.MILLISECONDS)
+        {
+            try {
+                command.invoke()
+            } catch (t: Throwable) {
+                log.error("Async failed: $t", t)
+                throw t
+            }
+        }, initialDelay, period, TimeUnit.MILLISECONDS)
 
 infix operator fun Long.times(timeUnit: TimeUnit): Long = timeUnit.toMillis(this)
 infix operator fun Int.times(timeUnit: TimeUnit): Long = toLong() * timeUnit

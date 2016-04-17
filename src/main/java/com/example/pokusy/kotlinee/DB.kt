@@ -14,10 +14,7 @@ import java.io.PrintWriter
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
 import java.sql.Connection
-import javax.persistence.EntityManager
-import javax.persistence.EntityManagerFactory
-import javax.persistence.Persistence
-import javax.persistence.TypedQuery
+import javax.persistence.*
 import javax.servlet.ServletRequestEvent
 import javax.servlet.ServletRequestListener
 import javax.servlet.annotation.WebListener
@@ -52,13 +49,23 @@ private object ConnectionDS: DataSource {
  */
 val dataSource: DataSource = ConnectionDS
 
+private class DisableTransactionControlEMDelegate(val em: EntityManager): EntityManager by em {
+    override fun getTransaction(): EntityTransaction? = throw IllegalStateException("Transactions are managed by the db() function")
+}
+
 /**
  * Provides the entity manager, the JDBC connection and several utility methods.
  * @property em the entity manager reference
  */
 class PersistenceContext(val em: EntityManager) : Closeable {
     companion object {
-        fun create() = PersistenceContext(entityManagerFactory.createEntityManager())
+        fun create(disableTransactionControl: Boolean = false): PersistenceContext {
+            var em = entityManagerFactory.createEntityManager()
+            if (disableTransactionControl) {
+                em = DisableTransactionControlEMDelegate(em)
+            }
+            return PersistenceContext(em)
+        }
     }
     /**
      * The underlying JDBC connection.
@@ -83,11 +90,12 @@ fun <R> db(block: PersistenceContext.()->R): R {
     if (context != null) {
         return context.block()
     } else {
-        context = PersistenceContext.create()
+        context = PersistenceContext.create(disableTransactionControl = true)
         try {
             contexts.set(context)
             return context.use {
-                context.em.transaction.begin()
+                val transaction = (context.em as DisableTransactionControlEMDelegate).em.transaction
+                transaction.begin()
                 var success = false
                 val result: R
                 try {
@@ -95,10 +103,10 @@ fun <R> db(block: PersistenceContext.()->R): R {
                     success = true
                 } finally {
                     if (success) {
-                        context.em.transaction.commit()
+                        transaction.commit()
                     } else {
                         try {
-                            context.em.transaction.rollback()
+                            transaction.rollback()
                         } catch (t: Throwable) {
                             log.warn("Failed to rollback the transaction", t)
                         }
@@ -140,18 +148,19 @@ inline fun <reified T: Any> EntityManager.deleteById(id: Any): Boolean {
 
 /**
  * Deletes all instances of given JPA entity.
+ * @return the number of entities deleted.
  */
-inline fun <reified T: Any> EntityManager.deleteAll() {
-    createQuery("delete from ${T::class.java.simpleName}", T::class.java).executeUpdate()
-}
+inline fun <reified T: Any> EntityManager.deleteAll() = createQuery("delete from ${T::class.java.simpleName}").executeUpdate()
 
 /**
- * [TypedQuery.getSingleResult] works only for simple types such as Long - it does not work when retrieving a single JPA entity.
+ * [TypedQuery.getSingleResult] works only for simple types such as Long - it does not work when retrieving a single JPA entity
+ * and will fail with `NoResultException: No entity found for query` when no entities are found. Often, null is a better alternative.
  * @return the entity or null if no entity was found
  */
-fun <T> TypedQuery<T>.single(): T? {
+val <T> TypedQuery<T>.singleOrNull: T?
+get() {
     val list = resultList
-    if (list.size > 1) throw RuntimeException("query $this: expected 0 or 1 results but got ${list.size}")
+    if (list.size > 1) throw IllegalStateException("query $this: expected 0 or 1 results but got ${list.size}")
     return list.firstOrNull()
 }
 
@@ -162,6 +171,10 @@ fun <T> TypedQuery<T>.single(): T? {
 class ExtendedEMManager: ServletRequestListener {
     override fun requestDestroyed(sre: ServletRequestEvent?) {
         isOngoingServletRequest.set(null)
+        purgeDelegate()
+    }
+
+    private fun purgeDelegate() {
         extendedEMDelegate.get()?.apply {
             extendedEMDelegate.set(null)
             close()
@@ -170,6 +183,7 @@ class ExtendedEMManager: ServletRequestListener {
 
     override fun requestInitialized(sre: ServletRequestEvent?) {
         isOngoingServletRequest.set(true)
+        purgeDelegate()
     }
 
     companion object {
@@ -203,7 +217,7 @@ val extendedEntityManager: EntityManager =
     Proxy.newProxyInstance(EntityManager::class.java.classLoader, arrayOf(EntityManager::class.java),
             InvocationHandler { proxy, method, args ->
                 if (method!!.name == "close") {
-                    // do nothing, the underlying EM is closed automatically by the ExtendedEMManager web listener
+                    // do nothing, the underlying EM is managed by the ExtendedEMManager web listener
                     return@InvocationHandler null
                 }
                 method.invoke(ExtendedEMManager.getExtendedEMDelegate(), *(args ?: arrayOf()))
