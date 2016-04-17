@@ -1,7 +1,7 @@
 /**
  * Database-related utility methods:
  *
- * * To run a code in a transaction, just call `transaction { em.persist() }`
+ * * To run a code in a transaction, just call `db { em.persist() }`
  * * To obtain the data source, just read the [dataSource] global property.
  */
 package com.example.pokusy.kotlinee
@@ -10,12 +10,19 @@ import org.hibernate.internal.SessionImpl
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.PrintWriter
+import java.lang.reflect.InvocationHandler
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 import java.sql.Connection
+import java.util.*
 import java.util.logging.Logger
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
 import javax.persistence.TypedQuery
+import javax.servlet.ServletRequestEvent
+import javax.servlet.ServletRequestListener
+import javax.servlet.annotation.WebListener
 import javax.sql.DataSource
 
 private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
@@ -172,5 +179,58 @@ fun <T> TypedQuery<T>.single(): T? {
         return list[0]
     } else {
         return null
+    }
+}
+
+@WebListener
+class ExtendedEMManager: ServletRequestListener {
+    override fun requestDestroyed(sre: ServletRequestEvent?) {
+        isOngoingServletRequest.set(null)
+        extendedEMDelegate.get()?.apply {
+            extendedEMDelegate.set(null)
+            close()
+        }
+    }
+
+    override fun requestInitialized(sre: ServletRequestEvent?) {
+        isOngoingServletRequest.set(true)
+    }
+
+    companion object {
+        private fun getExtendedEMDelegate(): EntityManager {
+            val ongoingServletRequest = isOngoingServletRequest.get() ?: false
+            if (!ongoingServletRequest) throw IllegalStateException("Not called from servlet thread")
+            var delegate = extendedEMDelegate.get()
+            if (delegate == null) {
+                delegate = PersistenceContext.create().em
+                extendedEMDelegate.set(delegate)
+                log.error("EM CREATED: $delegate")
+            }
+            return delegate
+        }
+
+        private val isOngoingServletRequest = ThreadLocal<Boolean>()
+        private val extendedEMDelegate = ThreadLocal<EntityManager>()
+
+        /**
+         * The extended entity manager, which stays valid even after the transaction is committed.
+         * Automatically allocates and releases a delegate EntityManager.
+         *
+         * Can only be used from Vaadin/web servlet thread - cannot be used from async threads.
+         * @return entity manager which survives over transaction commits and even servlet request end.
+         */
+        fun get(): EntityManager {
+            // cannot use Kotlin delegation here: kotlin will not poll for the delegate;
+            // instead it will poll once and remember the EM. The EM will get eventually closed after the http request
+            // finishes, which would render the delegator unusable.
+            return Proxy.newProxyInstance(EntityManager::class.java.classLoader, arrayOf(EntityManager::class.java),
+                    InvocationHandler { proxy, method, args ->
+                        if (method!!.name == "close") {
+                            // do nothing, the underlying EM is closed automatically by the ExtendedEMManager web listener
+                            return@InvocationHandler null
+                        }
+                        method.invoke(getExtendedEMDelegate(), *(args ?: arrayOf()))
+                    }) as EntityManager
+        }
     }
 }

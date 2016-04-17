@@ -30,7 +30,7 @@ import java.util.*
 fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
     // @todo this leaks database connection! create entity manager which automatically closes when the request finishes
     // and re-attaches on demand.
-    val provider = CachingBatchableLocalEntityProvider(entity, PersistenceContext.Companion.create().em)
+    val provider = CachingBatchableLocalEntityProvider(entity, ExtendedEMManager.get())
     val container = JPAContainer(entity)
     container.entityProvider = provider
     return container
