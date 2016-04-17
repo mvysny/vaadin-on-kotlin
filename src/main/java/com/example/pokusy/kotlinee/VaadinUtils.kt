@@ -28,7 +28,7 @@ import java.util.*
  * @return the new container which can be assigned to a [Grid]
  */
 fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
-    val provider = CachingBatchableLocalEntityProvider(entity, ExtendedEMManager.get())
+    val provider = CachingBatchableLocalEntityProvider(entity, extendedEntityManager)
     val container = JPAContainer(entity)
     container.entityProvider = provider
     return container

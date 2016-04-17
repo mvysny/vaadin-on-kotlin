@@ -13,7 +13,6 @@ import java.io.PrintWriter
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
 import java.sql.Connection
-import java.util.logging.Logger
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
@@ -28,31 +27,19 @@ private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
 private val entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
 
 private object ConnectionDS: DataSource {
-    override fun setLogWriter(out: PrintWriter?) {
-        throw UnsupportedOperationException()
-    }
+    override fun setLogWriter(out: PrintWriter?) = throw UnsupportedOperationException()
 
-    override fun setLoginTimeout(seconds: Int) {
-        throw UnsupportedOperationException()
-    }
+    override fun setLoginTimeout(seconds: Int) = throw UnsupportedOperationException()
 
-    override fun getParentLogger(): Logger? {
-        throw UnsupportedOperationException()
-    }
+    override fun getParentLogger() = throw UnsupportedOperationException()
 
-    override fun getLogWriter(): PrintWriter? {
-        throw UnsupportedOperationException()
-    }
+    override fun getLogWriter() = throw UnsupportedOperationException()
 
-    override fun getLoginTimeout(): Int {
-        throw UnsupportedOperationException()
-    }
+    override fun getLoginTimeout() = throw UnsupportedOperationException()
 
-    override fun isWrapperFor(iface: Class<*>?): Boolean = iface == DataSource::class.java
+    override fun isWrapperFor(iface: Class<*>?) = iface == DataSource::class.java
 
-    override fun <T : Any?> unwrap(iface: Class<T>?): T {
-        throw UnsupportedOperationException()
-    }
+    override fun <T : Any?> unwrap(iface: Class<T>?) = throw UnsupportedOperationException()
 
     override fun getConnection(): Connection? = PersistenceContext.create().connection
 
@@ -179,7 +166,7 @@ fun <T> TypedQuery<T>.single(): T? {
 }
 
 /**
- * Call [get] to obtain the Extended Entity Manager which survives over transaction commits and even servlet request end.
+ * Internal, do not use. Manages and closes delegate [EntityManager]s for [extendedEntityManager]
  */
 @WebListener
 class ExtendedEMManager: ServletRequestListener {
@@ -196,7 +183,7 @@ class ExtendedEMManager: ServletRequestListener {
     }
 
     companion object {
-        private fun getExtendedEMDelegate(): EntityManager {
+        internal fun getExtendedEMDelegate(): EntityManager {
             val ongoingServletRequest = isOngoingServletRequest.get() ?: false
             if (!ongoingServletRequest) throw IllegalStateException("Not called from servlet thread")
             var delegate = extendedEMDelegate.get()
@@ -209,26 +196,25 @@ class ExtendedEMManager: ServletRequestListener {
 
         private val isOngoingServletRequest = ThreadLocal<Boolean>()
         private val extendedEMDelegate = ThreadLocal<EntityManager>()
-
-        /**
-         * Returns the extended entity manager, which stays valid even after the transaction is committed.
-         * Automatically allocates and releases a delegate EntityManager.
-         *
-         * Can only be used from Vaadin/web servlet thread - cannot be used from async threads.
-         * @return entity manager which survives over transaction commits and even servlet request end.
-         */
-        fun get(): EntityManager {
-            // cannot use Kotlin delegation here: kotlin will not poll for the delegate;
-            // instead it will poll once and remember the EM. The EM will get eventually closed after the http request
-            // finishes, which would render the delegator unusable.
-            return Proxy.newProxyInstance(EntityManager::class.java.classLoader, arrayOf(EntityManager::class.java),
-                    InvocationHandler { proxy, method, args ->
-                        if (method!!.name == "close") {
-                            // do nothing, the underlying EM is closed automatically by the ExtendedEMManager web listener
-                            return@InvocationHandler null
-                        }
-                        method.invoke(getExtendedEMDelegate(), *(args ?: arrayOf()))
-                    }) as EntityManager
-        }
     }
 }
+
+/**
+ * The extended entity manager, which stays valid even after the transaction is committed and
+ * the servlet request finishes. Automatically allocates and releases a delegate EntityManager.
+ *
+ * Can only be used from Vaadin/web servlet thread - cannot be used from async threads.
+ */
+val extendedEntityManager: EntityManager =
+    // cannot use Kotlin delegation here: kotlin will not poll for the delegate repeatedly;
+    // instead it will poll once and remember the delegate instance (the EM). The EM will get eventually
+    // closed after the http request
+    // finishes, which would render the delegator unusable.
+    Proxy.newProxyInstance(EntityManager::class.java.classLoader, arrayOf(EntityManager::class.java),
+            InvocationHandler { proxy, method, args ->
+                if (method!!.name == "close") {
+                    // do nothing, the underlying EM is closed automatically by the ExtendedEMManager web listener
+                    return@InvocationHandler null
+                }
+                method.invoke(ExtendedEMManager.getExtendedEMDelegate(), *(args ?: arrayOf()))
+            }) as EntityManager
