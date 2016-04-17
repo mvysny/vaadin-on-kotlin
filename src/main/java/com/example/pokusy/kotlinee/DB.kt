@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.PrintWriter
 import java.lang.reflect.InvocationHandler
-import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.sql.Connection
-import java.util.*
 import java.util.logging.Logger
 import javax.persistence.EntityManager
 import javax.persistence.EntityManagerFactory
@@ -165,9 +163,7 @@ fun EntityManager.deleteAll(clazz: Class<*>) {
 }
 
 /**
- * [TypedQuery.getSingleResult] funguje iba na primitivnych typoch ako Long atd, nefunguje na JPA entitach.
- * @param query the query
- * @param  the entity type
+ * [TypedQuery.getSingleResult] works only for simple types such as Long - it does not work when retrieving a single JPA entity.
  * @return the entity or null if no entity was found
  */
 fun <T> TypedQuery<T>.single(): T? {
@@ -182,6 +178,9 @@ fun <T> TypedQuery<T>.single(): T? {
     }
 }
 
+/**
+ * Call [get] to obtain the Extended Entity Manager which survives over transaction commits and even servlet request end.
+ */
 @WebListener
 class ExtendedEMManager: ServletRequestListener {
     override fun requestDestroyed(sre: ServletRequestEvent?) {
@@ -204,7 +203,6 @@ class ExtendedEMManager: ServletRequestListener {
             if (delegate == null) {
                 delegate = PersistenceContext.create().em
                 extendedEMDelegate.set(delegate)
-                log.error("EM CREATED: $delegate")
             }
             return delegate
         }
@@ -213,7 +211,7 @@ class ExtendedEMManager: ServletRequestListener {
         private val extendedEMDelegate = ThreadLocal<EntityManager>()
 
         /**
-         * The extended entity manager, which stays valid even after the transaction is committed.
+         * Returns the extended entity manager, which stays valid even after the transaction is committed.
          * Automatically allocates and releases a delegate EntityManager.
          *
          * Can only be used from Vaadin/web servlet thread - cannot be used from async threads.

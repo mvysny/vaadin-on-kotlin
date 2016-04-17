@@ -38,19 +38,14 @@ CRUD application implemented, please see `MyUI.kt` for details.
 
 Done:
 
-* JPA (via Hibernate) and transactions (via transaction {})
+* JPA (via Hibernate) and transactions (via `db {}`); Extended EntityManager is also supported
 * Migrations (Flyway) - the migrations are run automatically when the WAR is started.
-* Vaadin with JPAContainer
+* Vaadin with JPAContainer and Extended EntityManager
 * Async tasks & Vaadin Push
-* Drop-in replacements for SFSBs bound to session: see LastAddedPersonCache.kt for details.
+* Drop-in replacements for SFSBs bound to session: see `LastAddedPersonCache.kt` for details.
 * REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
 * Vaadin UI builder - see `MyUI.kt` for details.
 * JDBC connection pooling (HikariCP)
-
-Todo:
-
-* Implement EntityManager which auto-closes underlying connection when the request finishes, then reacquires JDBC connection.
-This needs to be done, to circumvent the horribly broken Vaadin JPAContainer API
 
 Ignored:
 
