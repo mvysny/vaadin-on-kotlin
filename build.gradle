@@ -47,7 +47,7 @@ dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // db
-    compile 'org.flywaydb:flyway-core:3.2.1'
+    compile 'org.flywaydb:flyway-core:4.0'
     compile 'org.hibernate:hibernate-entitymanager:5.1.0.Final'
     compile 'org.hibernate:hibernate-hikaricp:5.1.0.Final'
     compile 'com.vaadin.addon:jpacontainer:3.2.0'
