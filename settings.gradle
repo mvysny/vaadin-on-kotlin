@@ -1,2 +1,3 @@
-rootProject.name = 'pokusy_kotlinee'
+rootProject.name = 'kotlinee'
+include 'kotlinee-framework', 'kotlinee-example-crud'
 

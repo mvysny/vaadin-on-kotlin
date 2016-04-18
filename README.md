@@ -68,10 +68,10 @@ Ignored:
 * Open the project in IDEA
 * Download the Jetty Distribution zip file from here: http://download.eclipse.org/jetty/stable-9/dist/
 * Unpack the Jetty Distribution
-* In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the WAR-exploded artefact to the runner
-* Run or Debug the runner
+* In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the `kotlinee-example-crud` WAR-exploded artifact to the runner
+* Run or Debug the launcher
 
 ### Tomcat
 
 * Open the project in IDEA
-* https://kotlinlang.org/docs/tutorials/httpservlets.html
+* Launch the `kotlinee-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html

@@ -1,59 +1,25 @@
 defaultTasks 'clean', 'build'
 
-group 'com.example.kotlinee'
-version '1.0-SNAPSHOT'
+allprojects {
+    group 'com.github.kotlinee'
+    version '1.0-SNAPSHOT'
 
-buildscript {
-    ext.kotlin_version = '1.0.1-2'
-    ext.vaadin_version= '7.6.4'
+    buildscript {
+        ext.kotlin_version = '1.0.1-2'
+        ext.vaadin_version= '7.6.4'
+        repositories {
+            mavenCentral()
+        }
+        dependencies {
+            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        }
+    }
+
     repositories {
         mavenCentral()
+        maven {
+            name 'vaadin-addons'
+            url 'http://maven.vaadin.com/vaadin-addons'
+        }
     }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'war'
-
-sourceCompatibility = 1.5
-
-repositories {
-    mavenCentral()
-    maven {
-        name 'vaadin-addons'
-        url 'http://maven.vaadin.com/vaadin-addons'
-    }
-}
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-
-    // logging
-    compile 'ch.qos.logback:logback-classic:1.1.3'
-    compile 'org.slf4j:slf4j-api:1.7.13'
-
-    // Vaadin
-    compile "com.vaadin:vaadin-client-compiled:$vaadin_version"
-    compile "com.vaadin:vaadin-server:$vaadin_version"
-    compile "com.vaadin:vaadin-push:$vaadin_version"
-    compile "com.vaadin:vaadin-themes:$vaadin_version"
-    compile 'javax.validation:validation-api:1.0.0.GA'  // Validacie
-    compile 'org.hibernate:hibernate-validator:4.3.2.Final'
-    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-
-    // db
-    compile 'org.flywaydb:flyway-core:4.0'
-    compile 'org.hibernate:hibernate-entitymanager:5.1.0.Final'
-    compile 'org.hibernate:hibernate-hikaricp:5.1.0.Final'
-    compile 'com.vaadin.addon:jpacontainer:3.2.0'
-    compile 'com.h2database:h2:1.3.176'
-
-    // REST
-    compile 'org.jboss.resteasy:resteasy-servlet-initializer:3.0.16.Final'
-    compile 'org.jboss.resteasy:resteasy-jackson2-provider:3.0.16.Final'
 }
