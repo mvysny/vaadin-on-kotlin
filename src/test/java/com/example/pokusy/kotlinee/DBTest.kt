@@ -33,6 +33,14 @@ class DBTest {
     }
 
     @Test
+    fun commitInNestedDbBlocks() {
+        val person = db { db { db {
+            TestPerson(name = "foo", age = 25).apply { em.persist(this) }
+        }}}
+        expect(listOf(person)) { db { em.findAll<TestPerson>() }}
+    }
+
+    @Test
     fun exceptionRollsBackInNestedDbBlocks() {
         try {
             db { db { db {
@@ -73,5 +81,17 @@ class DBTest {
         expect(listOf(person)) { db { em.findAll<TestPerson>() }}
         db { em.deleteById<TestPerson>(person.id!!) }
         expect(listOf()) { db { em.findAll<TestPerson>() } }
+    }
+
+    @Test
+    fun getById() {
+        val person = db { TestPerson(name = "Laurel", age = 50).apply { em.persist(this) } }
+        expect(person) { db { em.get<TestPerson>(person.id!!) } }
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun getByIdFailsOnNonExistingEntity() {
+        db { em.get<TestPerson>(15L) }
+        fail("Should have failed")
     }
 }

@@ -108,7 +108,7 @@ fun <R> db(block: PersistenceContext.()->R): R {
                         try {
                             transaction.rollback()
                         } catch (t: Throwable) {
-                            log.warn("Failed to rollback the transaction", t)
+                            log.error("Failed to rollback the transaction", t)
                         }
                     }
                 }
@@ -130,11 +130,11 @@ inline fun <reified T: Any> EntityManager.findAll(): List<T> =
     createQuery("select b from ${T::class.java.simpleName} b", T::class.java).resultList
 
 /**
- * Finds given JPA entity. Fails if there is no such entity.
+ * Retrieves given JPA entity. Fails if there is no such entity.
  * @param id the entity id
  * @return the JPA instance, not null.
  */
-inline fun <reified T: Any> EntityManager.findById(id: Any): T =
+inline fun <reified T: Any> EntityManager.get(id: Any): T =
         find(T::class.java, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${T::class.java.simpleName}")
 
 /**
