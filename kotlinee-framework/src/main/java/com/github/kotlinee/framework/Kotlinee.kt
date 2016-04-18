@@ -3,6 +3,7 @@ package com.github.kotlinee.framework
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import org.slf4j.LoggerFactory
+import java.io.Serializable
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.properties.ReadOnlyProperty
@@ -105,14 +106,14 @@ infix operator fun Int.times(timeUnit: TimeUnit): Long = toLong() * timeUnit
  * constructor), stored into the session and retrieved.
  *
  * To use this feature, simply define a global property returning desired object as follows:
- * `val loggedInUser: LoggedInUser by SessionScoped.get()`
+ * `val Session.loggedInUser: LoggedInUser by SessionScoped.get()`
  * Then simply read this property from anywhere, to retrieve the instance. Note that your class needs to be [Serializable] (required when
  * storing stuff into session).
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock!
  */
-class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Nothing?, R> {
-    override fun getValue(thisRef: Nothing?, property: KProperty<*>): R = getOrCreate()
+class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
 
     private fun getOrCreate(): R = UI.getCurrent().session.getOrCreate()
 
@@ -122,13 +123,19 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Nothing?, 
             // look up the zero-arg constructor. the constructor should be private if the user follows our recommendations.
             val constructor = clazz.declaredConstructors.first { it.parameterCount == 0 }
             constructor.isAccessible = true
-            result = constructor.newInstance() as R
+            result = clazz.cast(constructor.newInstance())!!
             setAttribute(clazz, result)
         }
-        return result!!
+        return result
     }
 
     companion object {
         inline fun <reified R> get() where R : kotlin.Any, R : java.io.Serializable = SessionScoped(R::class.java)
     }
+}
+
+/**
+ * Just a namespace object for attaching your [SessionScoped] objects.
+ */
+object Session {
 }

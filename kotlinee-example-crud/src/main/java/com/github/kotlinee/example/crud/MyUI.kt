@@ -64,7 +64,7 @@ class MyUI : UI() {
                 // you can use DB even in background threads :)
             }
             access {
-                timerLabel!!.value = "Timer: $timer; last added = ${lastAddedPersonCache.lastAdded}"
+                timerLabel!!.value = "Timer: $timer; last added = ${Session.lastAddedPersonCache.lastAdded}"
             }
         }
     }

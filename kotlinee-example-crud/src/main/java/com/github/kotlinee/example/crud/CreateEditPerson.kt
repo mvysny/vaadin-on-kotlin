@@ -21,7 +21,7 @@ class CreateEditPerson(val person: Person): Window() {
     private val creating: Boolean
         get() = person.id == null
 
-    private var persist: Button? = null
+    private var persistButton: Button? = null
 
     init {
         fieldGroup.setItemDataSource(person)
@@ -40,7 +40,7 @@ class CreateEditPerson(val person: Person): Window() {
             }
             horizontalLayout {
                 isSpacing = true
-                persist = button(if(creating) "Create" else "Save") {
+                persistButton = button(if(creating) "Create" else "Save") {
                     setLeftClickListener(Button.ClickListener { okPressed() })
                 }
                 button("Cancel") {
@@ -54,12 +54,12 @@ class CreateEditPerson(val person: Person): Window() {
         try {
             fieldGroup.commit()
         } catch(e: FieldGroup.CommitException) {
-            persist!!.componentError = UserError("Please fix the errors on the form")
+            persistButton!!.componentError = UserError("Please fix the errors on the form")
             return
         }
         db {
             if (creating) em.persist(person) else em.merge(person)
-            lastAddedPersonCache.lastAdded = person
+            Session.lastAddedPersonCache.lastAdded = person
         }
         close()
     }

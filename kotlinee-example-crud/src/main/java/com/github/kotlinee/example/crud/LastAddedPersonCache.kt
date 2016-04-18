@@ -1,5 +1,6 @@
 package com.github.kotlinee.example.crud
 
+import com.github.kotlinee.framework.Session
 import com.github.kotlinee.framework.SessionScoped
 import java.io.Serializable
 
@@ -25,4 +26,4 @@ class LastAddedPersonCache private constructor() : Serializable {
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock!
  */
-val lastAddedPersonCache: LastAddedPersonCache by SessionScoped.get()
+val Session.lastAddedPersonCache: LastAddedPersonCache by SessionScoped.get()
