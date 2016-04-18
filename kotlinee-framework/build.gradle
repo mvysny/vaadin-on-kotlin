@@ -14,7 +14,7 @@ dependencies {
 
     // Vaadin
     compile "com.vaadin:vaadin-server:$vaadin_version"
-    compileOnly 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
     testCompile 'javax.validation:validation-api:1.0.0.GA'
 
     // db

@@ -250,3 +250,12 @@ fun Grid.addButtonColumn(propertyId: String, caption: String, listener: Clickabl
         headerCaption = ""
     }
 }
+
+/**
+ * Walks over this component and all descendants of this component.
+ */
+fun HasComponents.walk(): Iterable<Component> = Iterable {
+    TreeIterator<Component>(this, {
+        if (it is HasComponents) it else listOf()
+    })
+}
