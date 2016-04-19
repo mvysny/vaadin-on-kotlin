@@ -12,7 +12,9 @@ import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
 import com.vaadin.event.ShortcutListener
 import com.vaadin.server.AbstractClientConnector
+import com.vaadin.server.Page
 import com.vaadin.server.Sizeable
+import com.vaadin.server.VaadinService
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
@@ -20,6 +22,7 @@ import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import java.io.Serializable
 import java.util.*
+import javax.servlet.http.Cookie
 
 /**
  * Creates a container which lists all instances of given entity. To restrict the list to a particular entity only,
@@ -260,3 +263,15 @@ fun HasComponents.walk(): Iterable<Component> = Iterable {
         if (component is HasComponents) component else listOf()
     })
 }
+
+/**
+ * Finds a cookie by name.
+ * @param name cookie name
+ * @return cookie or null if there is no such cookie.
+ */
+fun getCookie(name: String): Cookie? = VaadinService.getCurrentRequest().cookies?.firstOrNull { it.name == name }
+
+/**
+ * Directs the browser to go back.
+ */
+fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
