@@ -1,11 +1,11 @@
 package com.github.kotlinee.framework
 
 import com.vaadin.server.*
-import com.vaadin.ui.Component
-import com.vaadin.ui.UI
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import org.junit.Before
 import org.junit.Test
+import java.io.ByteArrayOutputStream
+import java.io.ObjectOutputStream
 import java.util.*
 import kotlin.test.expect
 
@@ -57,4 +57,20 @@ class VaadinUtilsTest {
         expect(expected) { root.walk().toSet() }
         expect(root) { root.walk().toList()[0] }
     }
+
+    @Test
+    fun buttonListenerSerializable() {
+        Button().apply {
+            setLeftClickListener { println("bla") }
+        }.serializeToBytes()
+    }
+
+    @Test
+    fun imageListenerSerializable() {
+        Image().apply {
+            setLeftClickListener { println("bla") }
+        }.serializeToBytes()
+    }
 }
+
+fun Any.serializeToBytes(): ByteArray = ByteArrayOutputStream().use { it -> ObjectOutputStream(it).writeObject(this); it }.toByteArray()

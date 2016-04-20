@@ -62,6 +62,8 @@ fun HasComponents.horizontalLayout(block: HorizontalLayout.()->Unit = {}) = init
 
 fun HasComponents.formLayout(block: FormLayout.()->Unit = {}) = init(FormLayout(), block)
 
+fun HasComponents.absoluteLayout(block: AbsoluteLayout.()->Unit = {}) = init(AbsoluteLayout(), block)
+
 fun HasComponents.button(caption: String? = null, block: Button.() -> Unit = {}) = init(Button(caption), block)
 
 fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
@@ -196,7 +198,7 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: LayoutEvent
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Button.setLeftClickListener(listener: Button.ClickListener): Unit {
+fun Button.setLeftClickListener(listener: (Button.ClickEvent)->Unit): Unit {
     getListeners(Button.ClickEvent::class.java).toList().forEach { removeClickListener(it as Button.ClickListener) }
     // Button only fires left-click events.
     addClickListener(listener)
@@ -206,10 +208,10 @@ fun Button.setLeftClickListener(listener: Button.ClickListener): Unit {
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Image.setLeftClickListener(listener: MouseEvents.ClickListener): Unit {
+fun Image.setLeftClickListener(listener: (MouseEvents.ClickEvent)->Unit): Unit {
     getListeners(MouseEvents.ClickEvent::class.java).toList().forEach { removeClickListener(it as MouseEvents.ClickListener) }
     addClickListener {
-        if (it.button == MouseEventDetails.MouseButton.LEFT) listener.click(it)
+        if (it.button == MouseEventDetails.MouseButton.LEFT) listener(it)
     }
 }
 
