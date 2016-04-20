@@ -27,7 +27,9 @@ import javax.servlet.http.Cookie
  * @param entity the entity type
  * @return the new container which can be assigned to a [Grid]
  */
-fun <T> createContainer(entity: Class<T>): JPAContainer<T> {
+inline fun <reified T: Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
+
+fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
     val provider = CachingBatchableLocalEntityProvider(entity, extendedEntityManager)
     val container = JPAContainer(entity)
     container.entityProvider = provider
@@ -177,11 +179,25 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
 /**
  * Adds a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
  * except for descendants which have their own click listeners attached.
+ *
+ * Removes any previously attached layout click listeners
+ * @param listener the click listener.
+ */
+fun LayoutEvents.LayoutClickNotifier.setChildClickListener(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
+    (this as AbstractClientConnector).getListeners(LayoutEvents.LayoutClickEvent::class.java).toList().forEach {
+        removeLayoutClickListener(it as LayoutEvents.LayoutClickListener)
+    }
+    addChildClickListener(listener)
+}
+
+/**
+ * Adds a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
+ * except for descendants which have their own click listeners attached.
  * @param listener the click listener.
  */
 fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as Component).addStyleName("clickable")
-    addLayoutClickListener(LayoutEvents.LayoutClickListener { event ->
+    addLayoutClickListener({ event ->
         if (event.button != MouseEventDetails.MouseButton.LEFT) {
             // only handle left mouse clicks
         } else if (event.clickedComponent != null && event.clickedComponent.hasClickListeners()) {

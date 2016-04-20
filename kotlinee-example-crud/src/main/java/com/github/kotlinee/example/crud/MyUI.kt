@@ -25,7 +25,7 @@ class MyUI : UI() {
     private val log = LoggerFactory.getLogger(javaClass)
 
     private var personGrid: Grid? = null
-    private val personGridDS = createContainer(Person::class.java)
+    private val personGridDS = jpaContainer<Person>()
     private var createButton: Button? = null
     private var timerLabel: Label? = null
     private val timer = AtomicInteger()
