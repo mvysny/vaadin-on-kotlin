@@ -96,8 +96,10 @@ val autoViewProvider = AutoViewProvider.Companion
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 
 /**
- * Navigates to given view. As a convention, you should introduce a static method `navigateTo(params)` to all of your views,
- * whichi will then simply call this function.
+ * Asks the current UI navigator to navigate to given view.
+ *
+ * As a convention, you should introduce a static method `navigateTo(params)` to all of your views,
+ * which will then simply call this function.
  * @param view the class of the view, not null.
  * @param params an optional list of string params. The View will receive the params via
  * [ViewChangeListener.ViewChangeEvent.getParameters], use [.getParameters] to parse them back in.
@@ -109,8 +111,12 @@ fun navigateTo(view: Class<out View>, params: List<String>?) {
 }
 
 /**
- * Parses the parameters back from the fragment. See [navigateTo] for details.
- * @param event the event received in [ViewChangeListener]
+ * Parses the parameters back from the URI fragment. See [navigateTo] for details. Call in [ViewChangeListener.ViewChangeEvent] provided to you in the
+ * [View.enter] method.
+ *
+ * Note that the parameters are not named - instead, this is a simple list of values.
+ *
+ * To obtain a particular parameter or null if the URL has no such parameter, just call [List.getOrNull] on this list.
  * @return list of parameters, empty if there are no parameters.
  */
 val ViewChangeListener.ViewChangeEvent.parameterList: List<String>
