@@ -61,7 +61,10 @@ fun HasComponents.formLayout(block: FormLayout.()->Unit = {}) = init(FormLayout(
 
 fun HasComponents.absoluteLayout(block: AbsoluteLayout.()->Unit = {}) = init(AbsoluteLayout(), block)
 
-fun HasComponents.button(caption: String? = null, block: Button.() -> Unit = {}) = init(Button(caption), block)
+fun HasComponents.button(caption: String? = null, leftClickListener: ((Button.ClickEvent)->Unit)? = null, block: Button.() -> Unit = {})
+        = init(Button(caption), block).apply {
+    if (leftClickListener != null) setLeftClickListener(leftClickListener)
+}
 
 fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
 
