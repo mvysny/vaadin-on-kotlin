@@ -130,6 +130,10 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
     }
 
     companion object {
+        /**
+         * Gets a provider of given object. The object is created if missing from the session.
+         * @param R the object type
+         */
         inline fun <reified R> get() where R : kotlin.Any, R : java.io.Serializable = SessionScoped(R::class.java)
     }
 }
@@ -138,4 +142,17 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
  * Just a namespace object for attaching your [SessionScoped] objects.
  */
 object Session {
+    /**
+     * Returns the attribute stored in this session under given key.
+     * @param key the key
+     * @return the attribute value, may be null
+     */
+    operator fun get(key: String): Any? = UI.getCurrent().session.getAttribute(key)
+
+    /**
+     * Stores given value under given key in a session. Removes the mapping if value is null
+     * @param key the key
+     * @param value the value to store, may be null if
+     */
+    operator fun set(key: String, value: Any?) = UI.getCurrent().session.setAttribute(key, value)
 }

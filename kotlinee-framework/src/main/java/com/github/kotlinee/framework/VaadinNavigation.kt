@@ -6,8 +6,10 @@ import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.navigator.ViewProvider
 import com.vaadin.ui.UI
+import java.io.Serializable
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.util.*
 import javax.servlet.ServletContainerInitializer
 import javax.servlet.ServletContext
 import javax.servlet.annotation.HandlesTypes
@@ -123,3 +125,88 @@ val ViewChangeListener.ViewChangeEvent.parameterList: List<String>
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
+
+/**
+ * I cannot transfer large objects as parameters via Navigator fragment URLs. Not even serialized/base64-encoded: 2kb URLs are simply gross ;)
+ *
+ * So, instead, I will temporarily remember such objects in session and will assign them short IDs. Kinda like URL shorteners, but with
+ * a catch: bookmarkable URLs are valid only until the server is restarted. Also, at most 30 items are supported per key, to avoid session over-population.
+ *
+ * @param T storing values of this type.
+ * @property sessionKey the list is stored under this Vaadin session key.
+ * @author mvy
+ */
+class UrlParamShortener<T : Serializable> private constructor(private val sessionKey: String) : Serializable {
+    /**
+     * Soft reference mi mozu zmazat pod zadkom. Round-robin s 30 itemami bude stacit - ked sa historia zaplni, proste najstarsi
+     * item nahradim najnovsim. Uvidime ako to bude realne fungovat.
+     */
+    private var oldestItemIndex = 0
+    /**
+     * Pamatam si mappingy pre tieto itemy. Mapuje sa z 0-based Integera.
+     */
+    private val items = ArrayList<T>()
+
+    /**
+     * Returns the value stored under given ID. The ID must have been generated via the [put] item.
+     * @param pathParam the path param parsed as ID
+     * @return the item, may be null if there is no such item stored under given key or it has been forgotten (the shortener stores at most
+     * 30 items).
+     */
+    operator fun get(pathParam: String): T? {
+        val entryOrd = Integer.parseInt(pathParam)
+        return if (items.size <= entryOrd) null else items[entryOrd]
+    }
+
+    private fun saveToSession() {
+        Session[sessionKey] = this
+    }
+
+    /**
+     * Registers given item, generates its ID and returns it.
+     * @param item the item to shorten
+     * @return the item ID, an Int which is automatically converted to String
+     */
+    fun put(item: T): String {
+        var index = items.indexOf(item)
+        if (index < 0) {
+            if (items.size < MAX_LEN) {
+                index = items.size
+                items.add(item)
+            } else {
+                index = oldestItemIndex++ // vymazeme najstarsi item
+                if (oldestItemIndex >= items.size) {
+                    oldestItemIndex = 0
+                }
+                items[index] = item
+            }
+        }
+        saveToSession()
+        return "" + index
+    }
+
+    companion object {
+        private const val MAX_LEN = 30
+
+        /**
+         * Returns the URL shortener for given class. Mostly, a view class uses one shortener to shorten its parameter,
+         * just pass the view's class here.
+         * @param T the type of item this shortener will store.
+         * @param O the owner class. Shorthand for `urlShortener(owner.javaClass.name)`
+         * @return the shortener
+         */
+        inline fun <T : Serializable, reified O: Any> Session.urlShortener(): UrlParamShortener<T> = urlShortener(O::class.java.name)
+
+        /**
+         * Returns the URL shortener stored in a session under given key.
+         * @param key the key, prefixed with SHORTENER_ to avoid session key conflicts.
+         * @return the shortener
+         */
+        fun <T : Serializable> Session.urlShortener(key: String): UrlParamShortener<T> {
+            return fromSession(key)
+        }
+
+        private fun <T : Serializable> fromSession(key: String) =
+                Session["SHORTENER_$key"] as UrlParamShortener<T>? ?: UrlParamShortener<T>(key)
+    }
+}
