@@ -5,6 +5,7 @@ import com.vaadin.ui.*
 import org.junit.Before
 import org.junit.Test
 import java.io.ByteArrayOutputStream
+import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.util.*
 import kotlin.test.expect
@@ -60,6 +61,7 @@ class VaadinUtilsTest {
 
     @Test
     fun buttonListenerSerializable() {
+        { println("foo") }.serializeDeserialize()()
         Button().apply {
             setLeftClickListener { println("bla") }
         }.serializeToBytes()
@@ -74,3 +76,5 @@ class VaadinUtilsTest {
 }
 
 fun Any.serializeToBytes(): ByteArray = ByteArrayOutputStream().use { it -> ObjectOutputStream(it).writeObject(this); it }.toByteArray()
+inline fun <reified T: Any> ByteArray.deserialize(): T = ObjectInputStream(inputStream()).readObject() as T
+inline fun <reified T: Any> T.serializeDeserialize() = serializeToBytes().deserialize<T>()
