@@ -11,10 +11,7 @@ import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
 import com.vaadin.event.ShortcutListener
-import com.vaadin.server.AbstractClientConnector
-import com.vaadin.server.Page
-import com.vaadin.server.Sizeable
-import com.vaadin.server.VaadinService
+import com.vaadin.server.*
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
@@ -67,6 +64,8 @@ fun HasComponents.absoluteLayout(block: AbsoluteLayout.()->Unit = {}) = init(Abs
 fun HasComponents.button(caption: String? = null, block: Button.() -> Unit = {}) = init(Button(caption), block)
 
 fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
+
+fun HasComponents.image(caption: String? = null, resource: Resource? = null, block: Image.()->Unit = {}) = init(Image(caption, resource), block)
 
 /**
  * Creates a [TextField] and attaches it to this component. [TextField.nullRepresentation] is set to an empty string.
@@ -177,7 +176,7 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
  * except for descendants which have their own click listeners attached.
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: LayoutEvents.LayoutClickListener) {
+fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as Component).addStyleName("clickable")
     addLayoutClickListener(LayoutEvents.LayoutClickListener { event ->
         if (event.button != MouseEventDetails.MouseButton.LEFT) {
@@ -189,7 +188,7 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: LayoutEvent
         if (event.clickedComponent != null && event.clickedComponent.getAscendantLayoutWithLayoutClickNotifier() !== this@addChildClickListener) {
             // do nothing
         } else {
-            listener.layoutClick(event)
+            listener(event)
         }
     })
 }
@@ -240,6 +239,13 @@ val Component.isSizeFull: Boolean
 var Component.alignment: Alignment
     get() = (parent as AbstractOrderedLayout).getComponentAlignment(this)
     set(value) = (parent as AbstractOrderedLayout).setComponentAlignment(this, value)
+
+/**
+ * Sets [AbsoluteLayout.ComponentPosition.zIndex]. Fails if this component is not nested inside [AbsoluteLayout]
+ */
+var Component.zIndex: Int
+    get() = (parent as AbsoluteLayout).getPosition(this).zIndex
+    set(value) { (parent as AbsoluteLayout).getPosition(this).zIndex = value }
 
 /**
  * An utility method which adds an item and sets item's caption.
