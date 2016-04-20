@@ -45,7 +45,7 @@ private fun String.shouldPrependHyphen(i: Int): Boolean {
 }
 
 /**
- * Internal class which enumerates views.
+ * Internal class which enumerates views. Do not use directly - instead, just add [autoViewProvider] to your [com.vaadin.navigator.Navigator]
  */
 @HandlesTypes(View::class)
 class AutoViewProvider : ServletContainerInitializer {
