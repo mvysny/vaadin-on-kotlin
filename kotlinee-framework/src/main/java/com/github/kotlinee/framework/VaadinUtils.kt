@@ -203,6 +203,17 @@ fun Button.setLeftClickListener(listener: Button.ClickListener): Unit {
 }
 
 /**
+ * Replaces any click listeners with this one.
+ * @param listener the listener to set. Only called on left-click.
+ */
+fun Image.setLeftClickListener(listener: MouseEvents.ClickListener): Unit {
+    getListeners(MouseEvents.ClickEvent::class.java).toList().forEach { removeClickListener(it as MouseEvents.ClickListener) }
+    addClickListener {
+        if (it.button == MouseEventDetails.MouseButton.LEFT) listener.click(it)
+    }
+}
+
+/**
  * true if this component width is set to 100%
  */
 val Component.widthIsFillParent: Boolean
