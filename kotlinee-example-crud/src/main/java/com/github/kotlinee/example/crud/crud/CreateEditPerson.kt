@@ -1,5 +1,7 @@
-package com.github.kotlinee.example.crud
+package com.github.kotlinee.example.crud.crud
 
+import com.github.kotlinee.example.crud.crud.Person
+import com.github.kotlinee.example.crud.lastAddedPersonCache
 import com.github.kotlinee.framework.*
 import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.data.fieldgroup.FieldGroup
@@ -11,7 +13,7 @@ import com.vaadin.ui.Window
  * Edits or creates a person. Use [Window.addCloseListener] to handle window close.
  * @property person the person to edit or create.
  */
-class CreateEditPerson(val person: Person): Window() {
+internal class CreateEditPerson(val person: Person): Window() {
     // the validation demo. infer validations from JSR303 annotations attached to the Person class, when
     // the fieldGroup.bind() is called.
     private val fieldGroup = BeanFieldGroup<Person>(Person::class.java)

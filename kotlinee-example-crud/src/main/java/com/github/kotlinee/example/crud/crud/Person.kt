@@ -1,4 +1,4 @@
-package com.github.kotlinee.example.crud
+package com.github.kotlinee.example.crud.crud
 
 import java.io.Serializable
 import javax.persistence.*

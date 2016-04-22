@@ -1,5 +1,6 @@
 package com.github.kotlinee.example.crud
 
+import com.github.kotlinee.example.crud.crud.Person
 import com.github.kotlinee.framework.Session
 import com.github.kotlinee.framework.SessionScoped
 import java.io.Serializable

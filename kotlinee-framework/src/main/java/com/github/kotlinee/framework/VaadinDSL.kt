@@ -99,3 +99,38 @@ fun HasComponents.nativeButton(caption: String? = null, leftClickListener: ((But
 }
 
 fun HasComponents.nativeSelect(caption: String? = null, block: NativeSelect.()->Unit = {}) = init(NativeSelect(), block)
+
+fun HasComponents.optionGroup(caption: String? = null, block: OptionGroup.()->Unit = {}) = init(OptionGroup(), block)
+
+fun HasComponents.panel(caption: String? = null, block: Panel.()->Unit = {}) = init(Panel(), block)
+
+fun HasComponents.popupDateField(caption: String? = null, block: PopupDateField.()->Unit = {}) = init(PopupDateField(caption), block)
+
+fun HasComponents.passwordField(caption: String? = null, block: PasswordField.()->Unit = {}) = init(PasswordField(caption), block)
+
+fun HasComponents.progressBar(block: ProgressBar.()->Unit = {}) = init(ProgressBar(), block)
+
+fun HasComponents.richTextArea(caption: String? = null, block: RichTextArea.()->Unit = {}) = init(RichTextArea(caption), block)
+
+fun HasComponents.slider(caption: String? = null, block: Slider.()->Unit = {}) = init(Slider(caption), block)
+
+fun HasComponents.table(caption: String? = null, dataSource: Container? = null, block: Table.()->Unit = {}) =
+        init(Table(caption, dataSource), block)
+
+fun HasComponents.tabSheet(block: TabSheet.()->Unit = {}) = init(TabSheet(), block)
+
+fun HasComponents.textArea(caption: String? = null, block: TextArea.()->Unit = {}) =
+        init(TextArea(), block).apply { nullRepresentation = "" }
+
+fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(), block)
+
+fun HasComponents.treeTable(caption: String? = null, dataSource: Container? = null, block: TreeTable.()->Unit = {}) =
+        init(TreeTable(caption, dataSource), block)
+
+fun HasComponents.upload(caption: String? = null, block: Upload.()->Unit = {}) = init(Upload(caption, null), block)
+
+fun HasComponents.verticalSplitPanel(block: VerticalSplitPanel.()->Unit = {}) = init(VerticalSplitPanel(), block)
+
+fun HasComponents.horizontalSplitPanel(block: HorizontalSplitPanel.()->Unit = {}) = init(HorizontalSplitPanel(), block)
+
+fun HasComponents.video(caption: String? = null, resource: Resource? = null, block: Video.()->Unit = {}) = init(Video(caption, resource), block)

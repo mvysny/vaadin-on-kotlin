@@ -74,7 +74,7 @@ class AutoViewProvider : ServletContainerInitializer {
 
     private fun Class<*>.toViewName(): String {
         val name = getAnnotation(ViewName::class.java)?.value ?: VIEW_NAME_USE_DEFAULT
-        return if (name == VIEW_NAME_USE_DEFAULT) javaClass.simpleName.upperCamelToLowerHyphen() else name
+        return if (name == VIEW_NAME_USE_DEFAULT) simpleName.removeSuffix("View").upperCamelToLowerHyphen() else name
     }
 
     override fun onStartup(c: MutableSet<Class<*>>?, ctx: ServletContext?) {
@@ -104,7 +104,7 @@ private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
  * @param params an optional list of string params. The View will receive the params via
  * [ViewChangeListener.ViewChangeEvent.getParameters], use [.getParameters] to parse them back in.
  */
-fun navigateTo(view: Class<out View>, params: List<String>?) {
+fun navigateToView(view: Class<out View>, params: List<String>? = null) {
     val mapping = AutoViewProvider.getMapping(view)
     val param = params?.map { URLEncoder.encode(it, "UTF-8") }?.joinToString("/", "/") ?: ""
     UI.getCurrent().navigator.navigateTo("$mapping$param")

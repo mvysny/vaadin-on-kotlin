@@ -1,5 +1,6 @@
 package com.github.kotlinee.example.crud
 
+import com.github.kotlinee.example.crud.crud.Person
 import com.github.kotlinee.framework.db
 import com.github.kotlinee.framework.findAll
 import javax.ws.rs.GET
