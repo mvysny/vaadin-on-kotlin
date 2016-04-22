@@ -44,7 +44,7 @@ Done:
 * Async tasks & Vaadin Push
 * Drop-in replacements for SFSBs bound to session: see `LastAddedPersonCache.kt` for details.
 * REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
-* Vaadin UI builder - see `MyUI.kt` for details.
+* Vaadin DSL builder - see `MyUI.kt` for details.
 * JDBC connection pooling (HikariCP)
 
 Ignored:

@@ -37,61 +37,6 @@ fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
 }
 
 /**
- * When introducing extensions for your custom components, just call this in your method. For example:
- *
- * `fun HasComponents.shinyComponent(caption: String? = null, block: ShinyComponent.()->Unit = {}) = init(ShinyComponent(caption), block)`
- *
- * Input [component] is automatically added to the children of this [ComponentContainer], or replaces content in [SingleComponentContainer].
- * @param component the component to attach
- * @param block optional block to run over the component, allowing you to add children to the [component]
- */
-fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
-    when (this) {
-        is ComponentContainer -> addComponent(component)
-        is SingleComponentContainer -> content = component
-        else -> throw RuntimeException("Unsupported component container $this")
-    }
-    component.block()
-    return component
-}
-
-fun HasComponents.verticalLayout(block: VerticalLayout.()->Unit = {}) = init(VerticalLayout(), block)
-
-fun HasComponents.horizontalLayout(block: HorizontalLayout.()->Unit = {}) = init(HorizontalLayout(), block)
-
-fun HasComponents.formLayout(block: FormLayout.()->Unit = {}) = init(FormLayout(), block)
-
-fun HasComponents.absoluteLayout(block: AbsoluteLayout.()->Unit = {}) = init(AbsoluteLayout(), block)
-
-fun HasComponents.button(caption: String? = null, leftClickListener: ((Button.ClickEvent)->Unit)? = null, block: Button.() -> Unit = {})
-        = init(Button(caption), block).apply {
-    if (leftClickListener != null) setLeftClickListener(leftClickListener)
-}
-
-fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
-
-fun HasComponents.image(caption: String? = null, resource: Resource? = null, block: Image.()->Unit = {}) = init(Image(caption, resource), block)
-
-/**
- * Creates a [TextField] and attaches it to this component. [TextField.nullRepresentation] is set to an empty string.
- * @param caption optional caption
- * @param value the optional value
- */
-fun HasComponents.textField(caption: String? = null, value: String? = null, block: TextField.()->Unit = {}): TextField {
-    val textField = TextField(caption, value)
-    init(textField, block)
-    textField.nullRepresentation = ""
-    return textField
-}
-
-/**
- * Creates a [Label]
- * @param content the label content
- * @param block use to set additional label parameters
- */
-fun HasComponents.label(content: String? = null, block: Label.()->Unit = {}) = init(Label(content), block)
-
-/**
  * Shows given html in this label.
  * @param html the html code to show.
  */

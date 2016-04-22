@@ -83,7 +83,7 @@ class AutoViewProvider : ServletContainerInitializer {
 }
 
 /**
- * Set this view provider to the Navigator:
+ * Set this view provider to the [com.vaadin.navigator.Navigator]:
  *
  * `navigator.addProvider(autoViewProvider)`
  *
