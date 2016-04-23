@@ -4,6 +4,7 @@ import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Container
 import com.vaadin.data.Item
+import com.vaadin.data.fieldgroup.BeanFieldGroup
 import com.vaadin.data.util.GeneratedPropertyContainer
 import com.vaadin.data.util.PropertyValueGenerator
 import com.vaadin.data.util.converter.Converter
@@ -258,3 +259,8 @@ fun getCookie(name: String): Cookie? = VaadinService.getCurrentRequest().cookies
  * Directs the browser to go back.
  */
 fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
+
+/**
+ * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
+ */
+inline fun <reified T: Any> BeanFieldGroup(): BeanFieldGroup<T> = com.vaadin.data.fieldgroup.BeanFieldGroup(T::class.java)
