@@ -1,6 +1,5 @@
 package com.github.kotlinee.example.crud.crud
 
-import com.github.kotlinee.example.crud.crud.Person
 import com.github.kotlinee.framework.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

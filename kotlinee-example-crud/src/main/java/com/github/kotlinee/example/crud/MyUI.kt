@@ -33,8 +33,8 @@ class MyUI : UI() {
     }
 }
 
-class Content: VerticalLayout(), ViewDisplay {
-    private var viewPlaceholder: CssLayout? = null
+private class Content: VerticalLayout(), ViewDisplay {
+    private val viewPlaceholder: CssLayout
     private var currentTimeLabel: Label? = null
     init {
         setSizeFull()
@@ -57,10 +57,8 @@ class Content: VerticalLayout(), ViewDisplay {
     }
 
     override fun showView(view: View?) {
-        viewPlaceholder!!.apply {
-            removeAllComponents()
-            addComponent(view as Component)
-        }
+        viewPlaceholder.removeAllComponents()
+        viewPlaceholder.addComponent(view as Component)
     }
 
     private val timer = AtomicInteger()
