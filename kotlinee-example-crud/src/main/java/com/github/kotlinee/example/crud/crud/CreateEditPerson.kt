@@ -21,7 +21,7 @@ internal class CreateEditPerson(val person: Person): Window() {
     private val creating: Boolean
         get() = person.id == null
 
-    private var persistButton: Button? = null
+    private lateinit var persistButton: Button
 
     init {
         fieldGroup.setItemDataSource(person)
@@ -54,7 +54,7 @@ internal class CreateEditPerson(val person: Person): Window() {
         try {
             fieldGroup.commit()
         } catch(e: FieldGroup.CommitException) {
-            persistButton!!.componentError = UserError("Please fix the errors on the form")
+            persistButton.componentError = UserError("Please fix the errors on the form")
             return
         }
         db {

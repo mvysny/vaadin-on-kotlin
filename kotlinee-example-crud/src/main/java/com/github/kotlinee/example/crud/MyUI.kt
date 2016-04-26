@@ -35,7 +35,7 @@ class MyUI : UI() {
 
 private class Content: VerticalLayout(), ViewDisplay {
     private val viewPlaceholder: CssLayout
-    private var currentTimeLabel: Label? = null
+    private lateinit var currentTimeLabel: Label
     init {
         setSizeFull()
         // the Vaadin DSL demo - build your UI, builder-style!
@@ -73,7 +73,7 @@ private class Content: VerticalLayout(), ViewDisplay {
                 // you can use DB even in background threads :)
             }
             ui.access {
-                currentTimeLabel!!.value = "Timer: $timer; last added = ${Session.lastAddedPersonCache.lastAdded}"
+                currentTimeLabel.value = "Timer: $timer; last added = ${Session.lastAddedPersonCache.lastAdded}"
             }
         }
     }
