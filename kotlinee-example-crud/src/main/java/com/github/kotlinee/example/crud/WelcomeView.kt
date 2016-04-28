@@ -1,9 +1,6 @@
 package com.github.kotlinee.example.crud
 
-import com.github.kotlinee.framework.ViewName
-import com.github.kotlinee.framework.html
-import com.github.kotlinee.framework.label
-import com.github.kotlinee.framework.navigateToView
+import com.github.kotlinee.framework.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout
@@ -28,8 +25,10 @@ class WelcomeView: VerticalLayout(), View {
             <li>Provides simple database access via db {} function</li></ul>
             And more.""")
         }
+        addComponent(NumberFilterPopup())
     }
 
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
 }
+

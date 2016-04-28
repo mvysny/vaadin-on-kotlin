@@ -18,6 +18,7 @@ fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T 
     when (this) {
         is ComponentContainer -> addComponent(component)
         is SingleComponentContainer -> content = component
+        is PopupView -> popupComponent = component
         else -> throw RuntimeException("Unsupported component container $this")
     }
     component.block()
@@ -134,3 +135,9 @@ fun HasComponents.verticalSplitPanel(block: VerticalSplitPanel.()->Unit = {}) = 
 fun HasComponents.horizontalSplitPanel(block: HorizontalSplitPanel.()->Unit = {}) = init(HorizontalSplitPanel(), block)
 
 fun HasComponents.video(caption: String? = null, resource: Resource? = null, block: Video.()->Unit = {}) = init(Video(caption, resource), block)
+
+fun HasComponents.popupView(small: String? = null, block: PopupView.()->Unit = {}): PopupView {
+    val result = init(PopupView(SimpleContent.EMPTY), block)
+    if (small != null) result.minimizedValueAsHTML = small
+    return result
+}
