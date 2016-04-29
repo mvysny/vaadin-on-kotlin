@@ -30,7 +30,7 @@ class CrudView: VerticalLayout(), View {
         createButton = button("Create New Person") {
             addClickListener { createOrEditPerson(Person()) }
         }
-        // the JPA list demo - shows all instances of a particular JPA entity, allow sorting. @todo filtering
+        // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(dataSource = personGridDS) {
             expandRatio = 1f
             addButtonColumn("edit", "Edit", ClickableRenderer.RendererClickListener {
@@ -42,6 +42,11 @@ class CrudView: VerticalLayout(), View {
             })
             setColumns("id", "name", "age", "edit", "delete")
             setSizeFull()
+            for (column in columns) {
+                if (!column.isGenerated) column.expandRatio = 1
+            }
+            // automatically create filters, based on the types of values present in particular columns.
+            updateFilterBar()
         }
     }
 

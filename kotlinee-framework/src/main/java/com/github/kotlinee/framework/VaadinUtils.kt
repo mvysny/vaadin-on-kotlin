@@ -19,6 +19,7 @@ import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import java.io.Serializable
+import java.lang.reflect.Field
 import java.util.*
 import javax.servlet.http.Cookie
 
@@ -235,8 +236,23 @@ fun Grid.addButtonColumn(propertyId: String, caption: String, listener: Clickabl
     return getColumn(propertyId).apply {
         renderer = ButtonRenderer(listener)
         headerCaption = ""
+        expandRatio = 0
     }
 }
+
+private val gridColumnGrid: java.lang.reflect.Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
+
+val Grid.Column.grid: Grid
+    get() = gridColumnGrid.get(this) as Grid
+
+private val propertyGenerators: Field = GeneratedPropertyContainer::class.java.getDeclaredField("propertyGenerators").apply { isAccessible = true }
+
+fun GeneratedPropertyContainer.isGenerated(propertyId: Any?) = (propertyGenerators.get(this) as Map<Any, *>).containsKey(propertyId)
+
+fun Container.isGenerated(propertyId: Any?) = if (this is GeneratedPropertyContainer) isGenerated(propertyId) else false
+
+val Grid.Column.isGenerated: Boolean
+    get() = grid.containerDataSource.isGenerated(getPropertyId())
 
 /**
  * Walks over this component and all descendants of this component, breadth-first.
