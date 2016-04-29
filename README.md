@@ -40,7 +40,7 @@ Done:
 
 * JPA (via Hibernate) and transactions (via `db {}`); Extended EntityManager is also supported
 * Migrations (Flyway) - the migrations are run automatically when the WAR is started.
-* Vaadin with JPAContainer and Extended EntityManager
+* Vaadin with JPAContainer and Extended EntityManager, including a filter generator which auto-generates filter Fields for your Grid
 * Async tasks & Vaadin Push
 * Drop-in replacements for SFSBs bound to session: see `LastAddedPersonCache.kt` for details.
 * REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
