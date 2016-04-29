@@ -102,7 +102,7 @@ private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
  * which will then simply call this function.
  * @param view the class of the view, not null.
  * @param params an optional list of string params. The View will receive the params via
- * [ViewChangeListener.ViewChangeEvent.getParameters], use [.getParameters] to parse them back in.
+ * [ViewChangeListener.ViewChangeEvent.getParameters], use [parameterList] to parse them back in.
  */
 fun navigateToView(view: Class<out View>, params: List<String>? = null) {
     val mapping = AutoViewProvider.getMapping(view)

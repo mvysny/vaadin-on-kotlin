@@ -282,12 +282,8 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     }
 
     override fun setValue(newFieldValue: DateInterval?) {
-        var newFieldValue = newFieldValue
-        if (newFieldValue == null) {
-            newFieldValue = DateInterval(null, null)
-        }
-        fromField.value = newFieldValue.from
-        toField.value = newFieldValue.to
+        fromField.value = newFieldValue?.from
+        toField.value = newFieldValue?.to
         super.setValue(newFieldValue)
         updateCaption()
     }
@@ -379,9 +375,9 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 }
 
 /**
- * Provides default implementation for {@link com.whitestein.lsps.vaadin.ui.components.table.filter.FilterFieldFactory}.
+ * Provides default implementation for [FilterFieldFactory].
  * Supports filter fields for dates, numbers and strings.
- * @author mvy
+ * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFactory(container) {
     /**
@@ -424,13 +420,8 @@ class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFa
         enumSelect.setItemCaption(nullItem, "")
         /* Add items from enumeration */
         for (o in type.enumConstants) {
-            enumSelect.addItem(o)
-            val caption = getEnumFilterDisplayName(propertyId, o as Enum<*>)
-            enumSelect.setItemCaption(o, caption ?: o.name)
-            val icon = getEnumFilterIcon(propertyId, o)
-            if (icon != null) {
-                enumSelect.setItemIcon(o, icon)
-            }
+            enumSelect.addItem(o, getEnumFilterDisplayName(propertyId, o as Enum<*>) ?: o.name)
+            enumSelect.setItemIcon(o, getEnumFilterIcon(propertyId, o))
         }
         return enumSelect
     }
