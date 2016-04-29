@@ -8,7 +8,7 @@ import com.vaadin.data.util.filter.Compare
 import com.vaadin.ui.*
 import java.io.Serializable
 
-data class NumberInterval<T: Number>(val lessThanValue: T?, val greaterThanValue: T?, val equalsValue: T?) : Serializable {
+data class NumberInterval<T : Number>(val lessThanValue: T?, val greaterThanValue: T?, val equalsValue: T?) : Serializable {
     fun toFilter(propertyId: Any?): Container.Filter? {
         if (equalsValue != null) return Compare.Equal(propertyId, equalsValue)
         if (lessThanValue != null && greaterThanValue != null) {
@@ -18,12 +18,18 @@ data class NumberInterval<T: Number>(val lessThanValue: T?, val greaterThanValue
         if (greaterThanValue != null) return Compare.Greater(propertyId, greaterThanValue)
         return null
     }
+
+    val isEmpty: Boolean
+        get() = lessThanValue == null && greaterThanValue == null && equalsValue == null
 }
+
+val NumberInterval<*>?.isBlank: Boolean
+    get() = this == null || isEmpty
 
 /**
  * A filter component which allows the user to filter numeric value which is greater than, equal, or less than a value which user enters.
  */
-class NumberFilterPopup: CustomField<NumberInterval<Double>>() {
+class NumberFilterPopup : CustomField<NumberInterval<Double>>() {
     override fun getType(): Class<out NumberInterval<Double>>? = NumberInterval::class.java as Class<NumberInterval<Double>>
 
     private lateinit var ok: Button
@@ -48,6 +54,10 @@ class NumberFilterPopup: CustomField<NumberInterval<Double>>() {
                 eqInput = textField {
                     setConverter(StringToDoubleConverter())
                     inputPrompt = "Equal to"
+                    addTextChangeListener { event ->
+                        gtInput.isEnabled = event.text == ""
+                        ltInput.isEnabled = event.text == ""
+                    }
                 }
                 label(">")
                 gtInput = textField {
@@ -70,10 +80,10 @@ class NumberFilterPopup: CustomField<NumberInterval<Double>>() {
                             }
                         }
                     }
-                    reset = button("Reset") {
+                    reset = button("Reset", {
                         this@NumberFilterPopup.value = null
                         isPopupVisible = false
-                    }
+                    })
                 }
                 addComponent(buttons, 0, 3, 1, 3)
             }
@@ -82,11 +92,37 @@ class NumberFilterPopup: CustomField<NumberInterval<Double>>() {
 
     override fun setReadOnly(readOnly: Boolean) {
         super.setReadOnly(readOnly)
-        ok.setEnabled(!readOnly)
-        reset.setEnabled(!readOnly)
+        ok.isEnabled = !readOnly
+        reset.isEnabled = !readOnly
         ltInput.isEnabled = !readOnly
         gtInput.isEnabled = !readOnly
         eqInput.isEnabled = !readOnly
     }
 
+    private fun updateCaption() {
+        val content = content as PopupView
+        if (value.isBlank) {
+            content.minimizedValueAsHTML = "All"
+        } else {
+            if (value.equalsValue != null) {
+                content.minimizedValueAsHTML = "[x] = ${value.equalsValue}"
+            } else if (value.greaterThanValue != null && value.lessThanValue != null) {
+                content.minimizedValueAsHTML = "${value.greaterThanValue} < [x] < ${value.lessThanValue}"
+            } else if (value.greaterThanValue != null) {
+                content.minimizedValueAsHTML = "[x] > ${value.greaterThanValue}"
+            } else if (value.lessThanValue != null) {
+                content.minimizedValueAsHTML = "[x] < ${value.lessThanValue}"
+            }
+        }
+    }
+
+    override fun setValue(newFieldValue: NumberInterval<Double>?) {
+        ltInput.convertedValue = newFieldValue?.lessThanValue
+        gtInput.convertedValue = newFieldValue?.greaterThanValue
+        eqInput.convertedValue = newFieldValue?.equalsValue
+        gtInput.isEnabled = eqInput.convertedValue == null
+        ltInput.isEnabled = eqInput.convertedValue == null
+        super.setValue(newFieldValue)
+        updateCaption()
+    }
 }
