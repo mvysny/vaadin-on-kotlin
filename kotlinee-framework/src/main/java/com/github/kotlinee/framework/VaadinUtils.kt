@@ -236,7 +236,6 @@ fun Grid.addButtonColumn(propertyId: String, caption: String, listener: Clickabl
     return getColumn(propertyId).apply {
         renderer = ButtonRenderer(listener)
         headerCaption = ""
-        expandRatio = 0
     }
 }
 

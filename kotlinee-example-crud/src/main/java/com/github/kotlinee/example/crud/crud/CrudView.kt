@@ -42,11 +42,8 @@ class CrudView: VerticalLayout(), View {
             })
             setColumns("id", "name", "age", "edit", "delete")
             setSizeFull()
-            for (column in columns) {
-                if (!column.isGenerated) column.expandRatio = 1
-            }
             // automatically create filters, based on the types of values present in particular columns.
-            updateFilterBar()
+            appendHeaderRow().generateFilterComponents(this)
         }
     }
 

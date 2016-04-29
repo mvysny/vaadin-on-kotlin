@@ -483,16 +483,15 @@ class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFa
 }
 
 /**
- * Re-creates filters in given header row.
- * @param headerRow re-create the filters here. If null, a new header row is created, to accommodate the filters.
+ * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
+ * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ * @param grid the owner grid.
  * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
- * @return the header row where the filters were placed.
  */
-fun Grid.updateFilterBar(headerRow: Grid.HeaderRow = appendHeaderRow(),
-                         filterFieldFactory: FilterFieldFactory = DefaultFilterFieldFactory(containerDataSource as Container.Filterable)): Grid.HeaderRow {
-    for (propertyId in containerDataSource.containerPropertyIds) {
-        val field = if (containerDataSource.isGenerated(propertyId)) null else filterFieldFactory.createField(propertyId)
-        val cell = headerRow.getCell(propertyId)
+fun Grid.HeaderRow.generateFilterComponents(grid: Grid, filterFieldFactory: FilterFieldFactory = DefaultFilterFieldFactory(grid.containerDataSource as Container.Filterable)) {
+    for (propertyId in grid.containerDataSource.containerPropertyIds) {
+        val field = if (grid.containerDataSource.isGenerated(propertyId)) null else filterFieldFactory.createField(propertyId)
+        val cell = getCell(propertyId)
         if (field == null) {
             cell.text = null  // this also removes the cell from the row
         } else {
@@ -500,5 +499,4 @@ fun Grid.updateFilterBar(headerRow: Grid.HeaderRow = appendHeaderRow(),
             cell.component = field
         }
     }
-    return headerRow
 }
