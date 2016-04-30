@@ -246,9 +246,9 @@ val Grid.Column.grid: Grid
 
 private val propertyGenerators: Field = GeneratedPropertyContainer::class.java.getDeclaredField("propertyGenerators").apply { isAccessible = true }
 
-fun GeneratedPropertyContainer.isGenerated(propertyId: Any?) = (propertyGenerators.get(this) as Map<Any, *>).containsKey(propertyId)
+fun GeneratedPropertyContainer.isGenerated(propertyId: Any?): Boolean = (propertyGenerators.get(this) as Map<Any, *>).containsKey(propertyId)
 
-fun Container.isGenerated(propertyId: Any?) = if (this is GeneratedPropertyContainer) isGenerated(propertyId) else false
+fun Container.isGenerated(propertyId: Any?): Boolean = if (this is GeneratedPropertyContainer) isGenerated(propertyId) else false
 
 val Grid.Column.isGenerated: Boolean
     get() = grid.containerDataSource.isGenerated(getPropertyId())
