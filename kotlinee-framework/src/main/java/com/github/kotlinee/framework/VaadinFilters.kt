@@ -453,14 +453,11 @@ class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFa
 
     protected fun getBooleanFilterDisplayName(propertyId: Any?, value: Boolean): String? = null
 
-    override fun createFilter(value: Any?, filterField: Field<*>, propertyId: Any?): Container.Filter? {
-        when (value) {
-            null -> return null
-            is NumberInterval<*> -> return value.toFilter(propertyId)
-            is DateInterval -> return value.toFilter(container, propertyId)
-            is String -> if (!value.isEmpty()) return generateGenericFilter(filterField, propertyId, value.trim())
-        }
-        return null
+    override fun createFilter(value: Any?, filterField: Field<*>, propertyId: Any?): Container.Filter? = when {
+        value is NumberInterval<*> -> value.toFilter(propertyId)
+        value is DateInterval -> value.toFilter(container, propertyId)
+        value is String && !value.isEmpty() -> generateGenericFilter(filterField, propertyId, value.trim())
+        else -> null
     }
 
     protected fun generateGenericFilter(field: Property<*>, propertyId: Any?, value: Any): Container.Filter {
