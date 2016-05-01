@@ -95,20 +95,22 @@ val autoViewProvider = AutoViewProvider.Companion
 
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 
-/**
- * Asks the current UI navigator to navigate to given view.
- *
- * As a convention, you should introduce a static method `navigateTo(params)` to all of your views,
- * which will then simply call this function.
- * @param view the class of the view, not null.
- * @param params an optional list of string params. The View will receive the params via
- * [ViewChangeListener.ViewChangeEvent.getParameters], use [parameterList] to parse them back in.
- */
 fun navigateToView(view: Class<out View>, params: List<String>? = null) {
     val mapping = AutoViewProvider.getMapping(view)
     val param = params?.map { URLEncoder.encode(it, "UTF-8") }?.joinToString("/", "/") ?: ""
     UI.getCurrent().navigator.navigateTo("$mapping$param")
 }
+
+/**
+ * Asks the current UI navigator to navigate to given view.
+ *
+ * As a convention, you should introduce a static method `navigateTo(params)` to all of your views,
+ * which will then simply call this function.
+ * @param V the class of the view, not null.
+ * @param params an optional list of string params. The View will receive the params via
+ * [ViewChangeListener.ViewChangeEvent.getParameters], use [parameterList] to parse them back in.
+ */
+inline fun <reified V : View> navigateToView(params: List<String>? = null) = navigateToView(V::class.java, params)
 
 /**
  * Parses the parameters back from the URI fragment. See [navigateTo] for details. Call in [ViewChangeListener.ViewChangeEvent] provided to you in the
@@ -144,12 +146,11 @@ annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
  */
 class UrlParamShortener<T : Serializable> private constructor(private val sessionKey: String) : Serializable {
     /**
-     * Soft reference mi mozu zmazat pod zadkom. Round-robin s 30 itemami bude stacit - ked sa historia zaplni, proste najstarsi
-     * item nahradim najnovsim. Uvidime ako to bude realne fungovat.
+     * Soft reference may be GC-ed randomly. A round-robin with 30 items should suffice.
      */
     private var oldestItemIndex = 0
     /**
-     * Pamatam si mappingy pre tieto itemy. Mapuje sa z 0-based Integera.
+     * Mutable list of remembered items.
      */
     private val items = ArrayList<T>()
 

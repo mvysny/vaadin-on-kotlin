@@ -18,7 +18,7 @@ class CrudView: VerticalLayout(), View {
     }
 
     companion object {
-        fun navigateTo() = navigateToView(CrudView::class.java)
+        fun navigateTo() = navigateToView<CrudView>()
     }
 
     private val createButton: Button

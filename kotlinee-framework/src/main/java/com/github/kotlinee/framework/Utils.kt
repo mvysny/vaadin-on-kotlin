@@ -1,5 +1,7 @@
 package com.github.kotlinee.framework
 
+import org.slf4j.LoggerFactory
+import java.io.Closeable
 import java.util.*
 
 /**
@@ -21,5 +23,13 @@ class TreeIterator<T>(private val root: T, private val children:(T)->Iterable<T>
         val result = queue.remove()
         queue.addAll(children(result))
         return result
+    }
+}
+
+fun Closeable.closeQuietly() {
+    try {
+        close()
+    } catch (e: Exception) {
+        LoggerFactory.getLogger(javaClass).info("Failed to close $this", e)
     }
 }

@@ -16,7 +16,7 @@ import com.vaadin.ui.VerticalLayout
 class WelcomeView: VerticalLayout(), View {
 
     companion object {
-        fun navigateTo() = navigateToView(WelcomeView::class.java)
+        fun navigateTo() = navigateToView<WelcomeView>()
     }
 
     init {
