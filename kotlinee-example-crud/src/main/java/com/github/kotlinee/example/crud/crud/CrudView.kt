@@ -4,6 +4,7 @@ import com.github.kotlinee.framework.*
 import com.github.kotlinee.framework.ModifierKey.Alt
 import com.github.kotlinee.framework.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction
+import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Button
@@ -32,7 +33,7 @@ class CrudView: VerticalLayout(), View {
         setSizeFull()
         createButton = button("Create New Person (Ctrl+Alt+C)") {
             addClickListener { createOrEditPerson(Person()) }
-            setClickShortcut(ShortcutAction.KeyCode.C, setOf(Ctrl, Alt))
+            setClickShortcut(Ctrl + Alt + C)
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(dataSource = personGridDS) {

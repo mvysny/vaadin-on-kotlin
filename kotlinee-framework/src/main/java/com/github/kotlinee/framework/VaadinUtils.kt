@@ -12,6 +12,7 @@ import com.vaadin.data.util.converter.Converter
 import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
+import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.event.ShortcutListener
 import com.vaadin.server.*
 import com.vaadin.shared.MouseEventDetails
@@ -81,7 +82,7 @@ interface EnterPressedListener : Serializable {
  * @param enterListener the listener to invoke.
  */
 fun AbstractTextField.onEnterPressed(enterListener: EnterPressedListener) {
-    val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ShortcutAction.KeyCode.ENTER) {
+    val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ENTER) {
         override fun handleAction(sender: Any, target: Any) {
             enterListener.onEnterPressed(this@onEnterPressed)
         }
@@ -176,7 +177,7 @@ fun Button.setLeftClickListener(listener: (Button.ClickEvent)->Unit) {
  */
 fun Button.setPrimary() {
     styleName += " ${ValoTheme.BUTTON_PRIMARY}"
-    setClickShortcut(ShortcutAction.KeyCode.ENTER)
+    setClickShortcut(ENTER)
 }
 
 /**
@@ -332,23 +333,49 @@ enum class ModifierKey(val value: Int) {
     Shift(ShortcutAction.ModifierKey.SHIFT),
     Ctrl(ShortcutAction.ModifierKey.CTRL),
     Alt(ShortcutAction.ModifierKey.ALT),
-    Meta(ShortcutAction.ModifierKey.META)
+    Meta(ShortcutAction.ModifierKey.META);
+    infix operator fun plus(other: ModifierKey) = setOf(this, other)
+    infix operator fun plus(key: Int) = KeyShortcut(setOf(this), key)
 }
+
+/**
+ * Denotes a keyboard shortcut, such as `ModifierKey.Ctrl + ModifierKey.Alt + ShortcutAction.KeyCode.C`. When properly imported, this
+ * becomes `Ctrl + Alt + C` ;)
+ */
+data class KeyShortcut(val modifierKeys: Set<ModifierKey> = setOf(), val keyCode: Int) {
+    val vaadinModifiers: IntArray = modifierKeys.map { it.value }.toIntArray()
+}
+
+infix operator fun Set<ModifierKey>.plus(key: Int) = KeyShortcut(this, key)
 
 /**
  * Creates a global [ShortcutListener] with no caption.
  * @param keyCode one of [com.vaadin.event.ShortcutAction.KeyCode] constants
  * @param modifierKeys optional modifier keys
  */
-fun shortcutListener(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf(), action: ()->Unit): ShortcutListener =
+fun shortcutListener(keyCode: Int, vararg modifierKeys: ModifierKey, action: ()->Unit): ShortcutListener =
         ShortcutListeners.listener(keyCode, modifierKeys.map { it.value }.toIntArray(), action)
+
+/**
+ * Creates a global [ShortcutListener] with no caption.
+ * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
+ */
+fun shortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener =
+        ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, action)
 
 /**
  * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
  * Panel, UI or Window.
  */
-fun Component.addShortcutListener(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf(), action: ()->Unit): ShortcutListener =
-        shortcutListener(keyCode, modifierKeys, action).apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
+fun Component.addShortcutListener(keyCode: Int, vararg modifierKeys: ModifierKey, action: ()->Unit): ShortcutListener =
+        shortcutListener(keyCode, *modifierKeys) { action } .apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
+
+/**
+ * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
+ * Panel, UI or Window.
+ */
+fun Component.addShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener =
+        shortcutListener(shortcut, action) .apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
 
 /**
  * Makes it possible to invoke a click on this button by pressing the given
@@ -357,6 +384,12 @@ fun Component.addShortcutListener(keyCode: Int, modifierKeys: Set<ModifierKey> =
  * @param keyCode the keycode for invoking the shortcut
  * @param modifierKeys the (optional) modifiers for invoking the shortcut
  */
-fun Button.setClickShortcut(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf()) {
-    setClickShortcut(keyCode, *modifierKeys.map { it.value }.toIntArray())
-}
+fun Button.setClickShortcut(keyCode: Int, vararg modifierKeys: ModifierKey) = setClickShortcut(keyCode, *modifierKeys.map { it.value }.toIntArray())
+
+/**
+ * Makes it possible to invoke a click on this button by pressing the given
+ * {@link KeyCode} and (optional) {@link ModifierKey}s.
+ * The shortcut is global (bound to the containing Window).
+ * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
+ */
+fun Button.setClickShortcut(shortcut: KeyShortcut) = setClickShortcut(shortcut.keyCode, *shortcut.vaadinModifiers)
