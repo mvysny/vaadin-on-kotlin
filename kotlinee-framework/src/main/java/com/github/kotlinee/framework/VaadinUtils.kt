@@ -335,34 +335,37 @@ enum class ModifierKey(val value: Int) {
     Alt(ShortcutAction.ModifierKey.ALT),
     Meta(ShortcutAction.ModifierKey.META);
     infix operator fun plus(other: ModifierKey) = setOf(this, other)
-    infix operator fun plus(key: Int) = KeyShortcut(setOf(this), key)
+    infix operator fun plus(key: Int) = KeyShortcut(key, setOf(this))
 }
+
+infix operator fun Set<ModifierKey>.plus(key: Int) = KeyShortcut(key, this)
 
 /**
  * Denotes a keyboard shortcut, such as [ModifierKey.Ctrl]+[ModifierKey.Alt]+[ShortcutAction.KeyCode.C]`. When properly imported, this
  * becomes `Ctrl+Alt+C` ;)
  * @property keyCode one of the ShortcutAction.KeyCode.* constants.
  */
-data class KeyShortcut(val modifierKeys: Set<ModifierKey> = setOf(), val keyCode: Int) {
+data class KeyShortcut(val keyCode: Int, val modifierKeys: Set<ModifierKey> = setOf()) {
     val vaadinModifiers: IntArray = modifierKeys.map { it.value }.toIntArray()
 }
-
-infix operator fun Set<ModifierKey>.plus(key: Int) = KeyShortcut(this, key)
-
-/**
- * Creates a global [ShortcutListener] with no caption.
- * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
- */
-fun shortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener =
-        ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, action)
 
 /**
  * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
  * Panel, UI or Window.
  * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
-fun Component.addShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener =
-        shortcutListener(shortcut, action) .apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
+fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener {
+    val listener = ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, action)
+    (this as AbstractComponent).addShortcutListener(listener)
+    return listener
+}
+
+/**
+ * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
+ * Panel, UI or Window.
+ * @param keyCode the key code, e.g. [ShortcutAction.KeyCode.C]
+ */
+fun Component.addGlobalShortcutListener(keyCode: Int, action: ()->Unit) = addGlobalShortcutListener(KeyShortcut(keyCode), action)
 
 /**
  * Makes it possible to invoke a click on this button by pressing the given
