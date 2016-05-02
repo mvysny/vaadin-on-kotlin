@@ -339,22 +339,15 @@ enum class ModifierKey(val value: Int) {
 }
 
 /**
- * Denotes a keyboard shortcut, such as `ModifierKey.Ctrl + ModifierKey.Alt + ShortcutAction.KeyCode.C`. When properly imported, this
- * becomes `Ctrl + Alt + C` ;)
+ * Denotes a keyboard shortcut, such as [ModifierKey.Ctrl]+[ModifierKey.Alt]+[ShortcutAction.KeyCode.C]`. When properly imported, this
+ * becomes `Ctrl+Alt+C` ;)
+ * @property keyCode one of the ShortcutAction.KeyCode.* constants.
  */
 data class KeyShortcut(val modifierKeys: Set<ModifierKey> = setOf(), val keyCode: Int) {
     val vaadinModifiers: IntArray = modifierKeys.map { it.value }.toIntArray()
 }
 
 infix operator fun Set<ModifierKey>.plus(key: Int) = KeyShortcut(this, key)
-
-/**
- * Creates a global [ShortcutListener] with no caption.
- * @param keyCode one of [com.vaadin.event.ShortcutAction.KeyCode] constants
- * @param modifierKeys optional modifier keys
- */
-fun shortcutListener(keyCode: Int, vararg modifierKeys: ModifierKey, action: ()->Unit): ShortcutListener =
-        ShortcutListeners.listener(keyCode, modifierKeys.map { it.value }.toIntArray(), action)
 
 /**
  * Creates a global [ShortcutListener] with no caption.
@@ -366,25 +359,10 @@ fun shortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener 
 /**
  * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
  * Panel, UI or Window.
- */
-fun Component.addShortcutListener(keyCode: Int, vararg modifierKeys: ModifierKey, action: ()->Unit): ShortcutListener =
-        shortcutListener(keyCode, *modifierKeys) { action } .apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
-
-/**
- * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
- * Panel, UI or Window.
+ * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
 fun Component.addShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener =
         shortcutListener(shortcut, action) .apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
-
-/**
- * Makes it possible to invoke a click on this button by pressing the given
- * {@link KeyCode} and (optional) {@link ModifierKey}s.
- * The shortcut is global (bound to the containing Window).
- * @param keyCode the keycode for invoking the shortcut
- * @param modifierKeys the (optional) modifiers for invoking the shortcut
- */
-fun Button.setClickShortcut(keyCode: Int, vararg modifierKeys: ModifierKey) = setClickShortcut(keyCode, *modifierKeys.map { it.value }.toIntArray())
 
 /**
  * Makes it possible to invoke a click on this button by pressing the given
