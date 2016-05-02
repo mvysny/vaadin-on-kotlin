@@ -1,5 +1,6 @@
 package com.github.kotlinee.framework
 
+import com.github.kotlinee.framework.vaadin.ShortcutListeners
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Container
@@ -18,6 +19,7 @@ import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
+import com.vaadin.ui.themes.ValoTheme
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.util.*
@@ -163,10 +165,18 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Button.setLeftClickListener(listener: (Button.ClickEvent)->Unit): Unit {
+fun Button.setLeftClickListener(listener: (Button.ClickEvent)->Unit) {
     getListeners(Button.ClickEvent::class.java).toList().forEach { removeClickListener(it as Button.ClickListener) }
     // Button only fires left-click events.
     addClickListener(listener)
+}
+
+/**
+ * Configures this button as primary. Beware - all primary buttons attached to the current UI or Window will be pressed on Enter key press.
+ */
+fun Button.setPrimary() {
+    styleName += " ${ValoTheme.BUTTON_PRIMARY}"
+    setClickShortcut(ShortcutAction.KeyCode.ENTER)
 }
 
 /**
@@ -316,4 +326,37 @@ var PopupView.minimizedValueAsHTML: String
 get() = content.minimizedValueAsHTML
 set(value) {
     content = simpleContent.copy(small = value)
+}
+
+enum class ModifierKey(val value: Int) {
+    Shift(ShortcutAction.ModifierKey.SHIFT),
+    Ctrl(ShortcutAction.ModifierKey.CTRL),
+    Alt(ShortcutAction.ModifierKey.ALT),
+    Meta(ShortcutAction.ModifierKey.META)
+}
+
+/**
+ * Creates a global [ShortcutListener] with no caption.
+ * @param keyCode one of [com.vaadin.event.ShortcutAction.KeyCode] constants
+ * @param modifierKeys optional modifier keys
+ */
+fun shortcutListener(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf(), action: ()->Unit): ShortcutListener =
+        ShortcutListeners.listener(keyCode, modifierKeys.map { it.value }.toIntArray(), action)
+
+/**
+ * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
+ * Panel, UI or Window.
+ */
+fun Component.addShortcutListener(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf(), action: ()->Unit): ShortcutListener =
+        shortcutListener(keyCode, modifierKeys, action).apply { (this@addShortcutListener as AbstractComponent).addShortcutListener(this@apply) }
+
+/**
+ * Makes it possible to invoke a click on this button by pressing the given
+ * {@link KeyCode} and (optional) {@link ModifierKey}s.
+ * The shortcut is global (bound to the containing Window).
+ * @param keyCode the keycode for invoking the shortcut
+ * @param modifierKeys the (optional) modifiers for invoking the shortcut
+ */
+fun Button.setClickShortcut(keyCode: Int, modifierKeys: Set<ModifierKey> = setOf()) {
+    setClickShortcut(keyCode, *modifierKeys.map { it.value }.toIntArray())
 }

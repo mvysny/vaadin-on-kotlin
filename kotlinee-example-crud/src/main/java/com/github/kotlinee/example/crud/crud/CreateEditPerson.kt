@@ -33,6 +33,7 @@ internal class CreateEditPerson(val person: Person): Window() {
                 isSpacing = true
                 val name = textField("Name:") {
                     trimmingConverter()
+                    focus()
                 }
                 fieldGroup.bind(name, "name")
                 val age = textField("Age:")
@@ -42,6 +43,7 @@ internal class CreateEditPerson(val person: Person): Window() {
                 isSpacing = true
                 persistButton = button(if(creating) "Create" else "Save") {
                     setLeftClickListener { okPressed() }
+                    setPrimary()
                 }
                 button("Cancel") {
                     setLeftClickListener { close() }
