@@ -62,12 +62,12 @@ set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
 /**
  * Sets the component width to 100%
  */
-fun Component.setWidthFull() = setWidth(100f, Sizeable.Unit.PERCENTAGE)
+fun Component.setWidthFull() { w = 100.perc }
 
 /**
  * Sets the component height to 100%
  */
-fun Component.setHeightFull() = setHeight(100f, Sizeable.Unit.PERCENTAGE)
+fun Component.setHeightFull() { h = 100.perc }
 
 interface EnterPressedListener : Serializable {
     /**
