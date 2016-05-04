@@ -210,7 +210,7 @@ data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
     val isWrapContent = size < 0
     val isUndefined = isWrapContent
 
-    override fun toString() = "$size$units"
+    override fun toString() = "$size${units.symbol}"
 }
 
 val Int.px: Size
