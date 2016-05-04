@@ -192,22 +192,45 @@ fun Image.setLeftClickListener(listener: (MouseEvents.ClickEvent)->Unit): Unit {
 }
 
 /**
- * true if this component width is set to 100%
+ * Represents a Vaadin component width or height.
+ * @param size the size
+ * @param units states the size units.
  */
-val Component.widthIsFillParent: Boolean
-    get() = width >= 100 && widthUnits == Sizeable.Unit.PERCENTAGE
+data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
+    /**
+     * true if this size is set to 100% and the component fills its parent in this dimension.
+     */
+    val isFillParent = size >= 100 && units == Sizeable.Unit.PERCENTAGE
+    val isFull = isFillParent
+    /**
+     * true if this component wraps its content in this dimension (size is -1px).
+     */
+    val isWrapContent = size < 0
+    val isUndefined = isWrapContent
 
-/**
- * true if this component height is set to 100%
- */
-val Component.heightIsFillParent: Boolean
-    get() = width >= 100 && widthUnits == Sizeable.Unit.PERCENTAGE
+    override fun toString() = "$size$units"
+}
+
+val Int.px: Size
+    get() = toFloat().px
+val Float.px: Size
+    get() = Size(this, Sizeable.Unit.PIXELS)
+val Int.perc: Size
+    get() = toFloat().perc
+val Float.perc: Size
+    get() = Size(this, Sizeable.Unit.PERCENTAGE)
+var Component.w: Size
+    get() = Size(width, widthUnits)
+    set(value) { setWidth(value.size, value.units) }
+var Component.h: Size
+    get() = Size(height, heightUnits)
+    set(value) { setHeight(value.size, value.units) }
 
 /**
  * true if both the component width and height is set to 100%
  */
 val Component.isSizeFull: Boolean
-    get() = widthIsFillParent && heightIsFillParent
+    get() = w.isFillParent && h.isFillParent
 
 /**
  * Sets or gets alignment for this component with respect to its parent layout. Use
@@ -221,8 +244,26 @@ var Component.alignment: Alignment
  * Sets [AbsoluteLayout.ComponentPosition.zIndex]. Fails if this component is not nested inside [AbsoluteLayout]
  */
 var Component.zIndex: Int
-    get() = (parent as AbsoluteLayout).getPosition(this).zIndex
-    set(value) { (parent as AbsoluteLayout).getPosition(this).zIndex = value }
+    get() = absolutePosition.zIndex
+    set(value) { absolutePosition.zIndex = value }
+
+/**
+ * Returns the [AbsoluteLayout.ComponentPosition] of this component. Fails if this component is not nested inside [AbsoluteLayout]
+ */
+val Component.absolutePosition: AbsoluteLayout.ComponentPosition
+    get() = (parent as AbsoluteLayout).getPosition(this)
+var AbsoluteLayout.ComponentPosition.top: Size
+    get() = Size(topValue, topUnits)
+    set(value) { topValue = value.size; topUnits = value.units }
+var AbsoluteLayout.ComponentPosition.bottom: Size
+    get() = Size(bottomValue, bottomUnits)
+    set(value) { bottomValue = value.size; bottomUnits = value.units }
+var AbsoluteLayout.ComponentPosition.left: Size
+    get() = Size(leftValue, leftUnits)
+    set(value) { leftValue = value.size; leftUnits = value.units }
+var AbsoluteLayout.ComponentPosition.right: Size
+    get() = Size(rightValue, rightUnits)
+    set(value) { rightValue = value.size; rightUnits = value.units }
 
 /**
  * An utility method which adds an item and sets item's caption.
@@ -273,13 +314,6 @@ fun HasComponents.walk(): Iterable<Component> = Iterable {
         if (component is HasComponents) component else listOf()
     })
 }
-
-/**
- * Finds a cookie by name.
- * @param name cookie name
- * @return cookie or null if there is no such cookie.
- */
-fun getCookie(name: String): Cookie? = VaadinService.getCurrentRequest().cookies?.firstOrNull { it.name == name }
 
 /**
  * Directs the browser to go back.

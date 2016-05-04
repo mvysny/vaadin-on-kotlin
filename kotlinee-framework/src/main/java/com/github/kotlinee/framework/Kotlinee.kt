@@ -1,11 +1,13 @@
 package com.github.kotlinee.framework
 
+import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+import javax.servlet.http.Cookie
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -155,4 +157,29 @@ object Session {
      * @param value the value to store, may be null if
      */
     operator fun set(key: String, value: Any?) = UI.getCurrent().session.setAttribute(key, value)
+}
+
+object Cookies {
+    /**
+     * Finds a cookie by name.
+     * @param name cookie name
+     * @return cookie or null if there is no such cookie.
+     */
+    operator fun get(name: String): Cookie? = VaadinService.getCurrentRequest().cookies?.firstOrNull { it.name == name }
+
+    /**
+     * Overwrites given cookie, or deletes it.
+     * @param name cookie name
+     * @param cookie the cookie to overwrite. If null, the cookie is deleted.
+     */
+    operator fun set(name: String, cookie: Cookie?) {
+        if (cookie == null) {
+            val cookie = Cookie(name, null)
+            cookie.maxAge = 0  // delete immediately
+            cookie.path = "/"
+            VaadinService.getCurrentResponse().addCookie(cookie)
+        } else {
+            VaadinService.getCurrentResponse().addCookie(cookie)
+        }
+    }
 }
