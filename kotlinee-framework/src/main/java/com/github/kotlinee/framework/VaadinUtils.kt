@@ -349,13 +349,18 @@ data class KeyShortcut(val keyCode: Int, val modifierKeys: Set<ModifierKey> = se
     val vaadinModifiers: IntArray = modifierKeys.map { it.value }.toIntArray()
 }
 
+fun shortcutListener(shortcut: KeyShortcut, block: ()->Unit): ShortcutListener =
+        ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, block)
+
+fun shortcutListener(shortcut: Int, block: ()->Unit) = shortcutListener(KeyShortcut(shortcut), block)
+
 /**
  * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
  * Panel, UI or Window.
  * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
 fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener {
-    val listener = ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, action)
+    val listener = shortcutListener(shortcut.keyCode, action)
     (this as AbstractComponent).addShortcutListener(listener)
     return listener
 }
