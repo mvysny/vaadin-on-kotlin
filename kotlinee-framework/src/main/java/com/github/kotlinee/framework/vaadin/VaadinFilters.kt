@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework
+package com.github.kotlinee.framework.vaadin
 
 import com.vaadin.data.Container
 import com.vaadin.data.Property
@@ -14,6 +14,10 @@ import com.vaadin.server.Resource
 import com.vaadin.shared.ui.datefield.Resolution
 import com.vaadin.ui.*
 import java.io.Serializable
+import java.lang.Byte
+import java.lang.Float
+import java.lang.Long
+import java.lang.Short
 import java.sql.Timestamp
 import java.text.DateFormat
 import java.util.*
@@ -170,11 +174,11 @@ abstract class FilterFieldFactory(protected val container: Container.Filterable)
         val clazz = container.getType(propertyId)
         return when(clazz) {
             Integer.TYPE -> Integer::class.java
-            java.lang.Long.TYPE -> java.lang.Long::class.java
-            java.lang.Float.TYPE -> java.lang.Float::class.java
+            java.lang.Long.TYPE -> Long::class.java
+            java.lang.Float.TYPE -> Float::class.java
             java.lang.Double.TYPE -> java.lang.Double::class.java
-            java.lang.Short.TYPE -> java.lang.Short::class.java
-            java.lang.Byte.TYPE -> java.lang.Byte::class.java
+            java.lang.Short.TYPE -> Short::class.java
+            java.lang.Byte.TYPE -> Byte::class.java
             else -> clazz
         }
     }

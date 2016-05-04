@@ -2,6 +2,7 @@ package com.github.kotlinee.example.crud.crud
 
 import com.github.kotlinee.example.crud.lastAddedPersonCache
 import com.github.kotlinee.framework.*
+import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.data.fieldgroup.FieldGroup
 import com.vaadin.server.UserError
 import com.vaadin.ui.Button

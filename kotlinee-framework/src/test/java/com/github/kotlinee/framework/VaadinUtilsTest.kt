@@ -1,5 +1,6 @@
 package com.github.kotlinee.framework
 
+import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.server.*
 import com.vaadin.ui.*
 import org.junit.Before

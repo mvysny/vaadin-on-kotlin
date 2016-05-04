@@ -1,8 +1,9 @@
 package com.github.kotlinee.example.crud.crud
 
 import com.github.kotlinee.framework.*
-import com.github.kotlinee.framework.ModifierKey.Alt
-import com.github.kotlinee.framework.ModifierKey.Ctrl
+import com.github.kotlinee.framework.vaadin.*
+import com.github.kotlinee.framework.vaadin.ModifierKey.Alt
+import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View

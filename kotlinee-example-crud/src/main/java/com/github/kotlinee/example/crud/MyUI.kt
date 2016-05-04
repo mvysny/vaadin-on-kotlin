@@ -2,6 +2,7 @@ package com.github.kotlinee.example.crud
 
 import com.github.kotlinee.example.crud.crud.CrudView
 import com.github.kotlinee.framework.*
+import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title

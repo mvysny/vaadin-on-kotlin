@@ -1,9 +1,9 @@
 package com.github.kotlinee.example.crud
 
-import com.github.kotlinee.framework.ViewName
-import com.github.kotlinee.framework.html
-import com.github.kotlinee.framework.label
-import com.github.kotlinee.framework.navigateToView
+import com.github.kotlinee.framework.vaadin.ViewName
+import com.github.kotlinee.framework.vaadin.html
+import com.github.kotlinee.framework.vaadin.label
+import com.github.kotlinee.framework.vaadin.navigateToView
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout

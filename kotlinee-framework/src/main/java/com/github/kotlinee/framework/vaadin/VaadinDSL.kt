@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework
+package com.github.kotlinee.framework.vaadin
 
 import com.vaadin.data.Container
 import com.vaadin.server.ExternalResource
@@ -137,7 +137,7 @@ fun HasComponents.horizontalSplitPanel(block: HorizontalSplitPanel.()->Unit = {}
 fun HasComponents.video(caption: String? = null, resource: Resource? = null, block: Video.()->Unit = {}) = init(Video(caption, resource), block)
 
 fun HasComponents.popupView(small: String? = null, block: PopupView.()->Unit = {}): PopupView {
-    val result = init(PopupView(SimpleContent.EMPTY), block)
+    val result = init(PopupView(SimpleContent.Companion.EMPTY), block)
     if (small != null) result.minimizedValueAsHTML = small
     return result
 }

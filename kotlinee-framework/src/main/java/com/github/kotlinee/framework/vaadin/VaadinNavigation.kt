@@ -1,5 +1,6 @@
-package com.github.kotlinee.framework
+package com.github.kotlinee.framework.vaadin
 
+import com.github.kotlinee.framework.Session
 import com.google.gwt.thirdparty.guava.common.collect.BiMap
 import com.google.gwt.thirdparty.guava.common.collect.HashBiMap
 import com.vaadin.navigator.View
@@ -91,7 +92,7 @@ class AutoViewProvider : ServletContainerInitializer {
  * To navigate to a view, just call the [navigateTo] helper method which will generate the correct URI fragment and will navigate.
  * You can parse the parameters back later on in your [View.enter], by calling `event.parameterList`.
  */
-val autoViewProvider = AutoViewProvider.Companion
+val autoViewProvider = AutoViewProvider
 
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 

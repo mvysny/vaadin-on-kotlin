@@ -1,5 +1,7 @@
-package com.github.kotlinee.framework
+package com.github.kotlinee.framework.vaadin
 
+import com.github.kotlinee.framework.TreeIterator
+import com.github.kotlinee.framework.extendedEntityManager
 import com.github.kotlinee.framework.vaadin.ShortcutListeners
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
@@ -291,7 +293,7 @@ fun Grid.addButtonColumn(propertyId: String, caption: String, listener: Clickabl
     }
 }
 
-private val gridColumnGrid: java.lang.reflect.Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
+private val gridColumnGrid: Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
 
 val Grid.Column.grid: Grid
     get() = gridColumnGrid.get(this) as Grid
@@ -323,7 +325,7 @@ fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
 /**
  * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
  */
-inline fun <reified T: Any> BeanFieldGroup(): BeanFieldGroup<T> = com.vaadin.data.fieldgroup.BeanFieldGroup(T::class.java)
+inline fun <reified T: Any> BeanFieldGroup(): BeanFieldGroup<T> = BeanFieldGroup(T::class.java)
 
 data class SimpleContent(val small: String, val large: Component): PopupView.Content {
     companion object {
