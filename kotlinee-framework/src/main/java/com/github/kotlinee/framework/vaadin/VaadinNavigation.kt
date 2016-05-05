@@ -141,6 +141,8 @@ annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
  * So, instead, I will temporarily remember such objects in session and will assign them short IDs. Kinda like URL shorteners, but with
  * a catch: bookmarkable URLs are valid only until the server is restarted. Also, at most 30 items are supported per key, to avoid session over-population.
  *
+ * Usage: obtain from Session via `Session.urlShortener()` or `Session.urlShortener(key)`
+ *
  * @param T storing values of this type.
  * @property sessionKey the list is stored under this Vaadin session key.
  * @author mvy
