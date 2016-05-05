@@ -96,9 +96,9 @@ val autoViewProvider = AutoViewProvider
 
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 
-fun navigateToView(view: Class<out View>, params: List<String>? = null) {
+fun navigateToView(view: Class<out View>, vararg params: String) {
     val mapping = AutoViewProvider.getMapping(view)
-    val param = params?.map { URLEncoder.encode(it, "UTF-8") }?.joinToString("/", "/") ?: ""
+    val param = if (params.isEmpty()) "" else params.map { URLEncoder.encode(it, "UTF-8") }.joinToString("/", "/")
     UI.getCurrent().navigator.navigateTo("$mapping$param")
 }
 
@@ -109,9 +109,9 @@ fun navigateToView(view: Class<out View>, params: List<String>? = null) {
  * which will then simply call this function.
  * @param V the class of the view, not null.
  * @param params an optional list of string params. The View will receive the params via
- * [ViewChangeListener.ViewChangeEvent.getParameters], use [parameterList] to parse them back in.
+ * [View.enter]'s [ViewChangeListener.ViewChangeEvent], use [parameterList] to parse them back in.
  */
-inline fun <reified V : View> navigateToView(params: List<String>? = null) = navigateToView(V::class.java, params)
+inline fun <reified V : View> navigateToView(vararg params: String) = navigateToView(V::class.java, *params)
 
 /**
  * Parses the parameters back from the URI fragment. See [navigateTo] for details. Call in [ViewChangeListener.ViewChangeEvent] provided to you in the
