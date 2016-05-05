@@ -196,25 +196,26 @@ class UrlParamShortener<T : Serializable> private constructor(private val sessio
     companion object {
         private const val MAX_LEN = 30
 
-        /**
-         * Returns the URL shortener for given class. Mostly, a view class uses one shortener to shorten its parameter,
-         * just pass the view's class here.
-         * @param T the type of item this shortener will store.
-         * @param O the owner class. Shorthand for `urlShortener(owner.javaClass.name)`
-         * @return the shortener
-         */
-        inline fun <T : Serializable, reified O: Any> Session.urlShortener(): UrlParamShortener<T> = urlShortener(O::class.java.name)
-
-        /**
-         * Returns the URL shortener stored in a session under given key.
-         * @param key the key, prefixed with SHORTENER_ to avoid session key conflicts.
-         * @return the shortener
-         */
-        fun <T : Serializable> Session.urlShortener(key: String): UrlParamShortener<T> {
-            return fromSession(key)
-        }
-
-        private fun <T : Serializable> fromSession(key: String) =
+        internal fun <T : Serializable> fromSession(key: String) =
                 Session["SHORTENER_$key"] as UrlParamShortener<T>? ?: UrlParamShortener<T>(key)
     }
 }
+
+/**
+ * Returns the URL shortener for given class. Mostly, a view class uses one shortener to shorten its parameter,
+ * just pass the view's class here.
+ * @param T the type of item this shortener will store.
+ * @param O the owner class. Shorthand for `urlShortener(owner.javaClass.name)`
+ * @return the shortener
+ */
+inline fun <T : Serializable, reified O: Any> Session.urlShortener(): UrlParamShortener<T> = urlShortener(O::class.java.name)
+
+/**
+ * Returns the URL shortener stored in a session under given key.
+ * @param key the key, prefixed with SHORTENER_ to avoid session key conflicts.
+ * @return the shortener
+ */
+fun <T : Serializable> Session.urlShortener(key: String): UrlParamShortener<T> {
+    return UrlParamShortener.fromSession(key)
+}
+

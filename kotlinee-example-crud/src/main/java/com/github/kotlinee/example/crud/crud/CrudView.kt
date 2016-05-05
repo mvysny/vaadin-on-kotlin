@@ -1,10 +1,11 @@
 package com.github.kotlinee.example.crud.crud
 
-import com.github.kotlinee.framework.*
+import com.github.kotlinee.framework.db
+import com.github.kotlinee.framework.deleteById
+import com.github.kotlinee.framework.get
 import com.github.kotlinee.framework.vaadin.*
 import com.github.kotlinee.framework.vaadin.ModifierKey.Alt
 import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
-import com.vaadin.event.ShortcutAction
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
@@ -18,7 +19,7 @@ import com.vaadin.ui.renderers.ClickableRenderer
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
  */
 class CrudView: VerticalLayout(), View {
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         refreshGrid()
     }
 
