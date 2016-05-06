@@ -56,16 +56,16 @@ class DBTest {
 
     @Test
     fun singleOrNull() {
-        expect(null) { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull }}
+        expect(null) { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }}
         db { em.persist(TestPerson(name = "Laurel", age = 50)) }
-        expect("Laurel") { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull!!.name }}
+        expect("Laurel") { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull()!!.name }}
     }
 
     @Test(expected = IllegalStateException::class)
     fun singleOrNullFailsOnTwoResults() {
         db { em.persist(TestPerson(name = "Laurel", age = 50)) }
         db { em.persist(TestPerson(name = "Hardy", age = 55)) }
-        db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull }
+        db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }
         fail("Should have failed")
     }
 

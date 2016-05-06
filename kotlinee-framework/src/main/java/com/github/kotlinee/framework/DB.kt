@@ -165,8 +165,7 @@ inline fun <reified T: Any> EntityManager.deleteAll() = createQuery("delete from
  * and will fail with `NoResultException: No entity found for query` when no entities are found. Often, null is a better alternative.
  * @return the entity or null if no entity was found
  */
-val <T> TypedQuery<T>.singleOrNull: T?
-get() {
+fun <T> TypedQuery<T>.singleOrNull(): T? {
     val list = resultList
     if (list.size > 1) throw IllegalStateException("query $this: expected 0 or 1 results but got ${list.size}")
     return list.firstOrNull()

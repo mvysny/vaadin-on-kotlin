@@ -81,7 +81,7 @@ fun <R> async(block: ()->R): Future<R> = executor!!.submit(Callable<R> {
  * may start late, but will not concurrently execute.
  *
  * @param command the task to execute
- * @param initialDelay the time to delay first execution, in millis. You can use expressions like `5 * TimeUnit.DAYS + 2 * TimeUnit.SECONDS` to compute this value.
+ * @param initialDelay the time to delay first execution, in millis. You can use expressions like `5.days + 2.seconds` to compute this value.
  * @param period the period between successive executions, in millis
  * @return a ScheduledFuture representing pending completion of
  *         the task, and whose `get()` method will throw an
@@ -95,13 +95,20 @@ fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): Sc
             try {
                 command.invoke()
             } catch (t: Throwable) {
+                // if nobody is using Future to wait for the result of this op, the exception is lost. better log it here.
                 log.error("Async failed: $t", t)
                 throw t
             }
         }, initialDelay, period, TimeUnit.MILLISECONDS)
 
-infix operator fun Long.times(timeUnit: TimeUnit): Long = timeUnit.toMillis(this)
-infix operator fun Int.times(timeUnit: TimeUnit): Long = toLong() * timeUnit
+val Int.days: Long get() = toLong().days
+val Long.days: Long get() = TimeUnit.DAYS.toMillis(this)
+val Int.hours: Long get() = toLong().hours
+val Long.hours: Long get() = TimeUnit.HOURS.toMillis(this)
+val Int.minutes: Long get() = toLong().minutes
+val Long.minutes: Long get() = TimeUnit.MINUTES.toMillis(this)
+val Int.seconds: Long get() = toLong().seconds
+val Long.seconds: Long get() = TimeUnit.SECONDS.toMillis(this)
 
 /**
  * Manages session-scoped objects. If the object is not yet present in the session, it is created (using the zero-arg
