@@ -166,6 +166,10 @@ object Session {
     operator fun set(key: String, value: Any?) = UI.getCurrent().session.setAttribute(key, value)
 }
 
+/**
+ * You can use `Cookies["mycookie"]` to retrieve a cookie named "mycookie" (or null if no such cookie exists.
+ * You can also use `Cookies += cookie` to add a pre-created cookie to a session.
+ */
 object Cookies {
     /**
      * Finds a cookie by name.
@@ -190,3 +194,7 @@ object Cookies {
         }
     }
 }
+
+infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
+
+infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
