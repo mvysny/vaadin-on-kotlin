@@ -34,8 +34,8 @@ class CrudView: VerticalLayout(), View {
     init {
         setSizeFull()
         createButton = button("Create New Person (Ctrl+Alt+C)") {
-            setLeftClickListener { createOrEditPerson(Person()) }
-            setClickShortcut(Ctrl + Alt + C)
+            onLeftClick { createOrEditPerson(Person()) }
+            clickShortcut = Ctrl + Alt + C
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(dataSource = personGridDS) {

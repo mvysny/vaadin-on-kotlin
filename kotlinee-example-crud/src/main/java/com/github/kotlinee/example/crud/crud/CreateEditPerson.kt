@@ -43,11 +43,11 @@ internal class CreateEditPerson(val person: Person): Window() {
             horizontalLayout {
                 isSpacing = true
                 persistButton = button(if(creating) "Create" else "Save") {
-                    setLeftClickListener { okPressed() }
+                    onLeftClick { okPressed() }
                     setPrimary()
                 }
                 button("Cancel") {
-                    setLeftClickListener { close() }
+                    onLeftClick { close() }
                 }
             }
         }

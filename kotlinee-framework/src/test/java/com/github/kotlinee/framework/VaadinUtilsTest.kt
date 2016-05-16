@@ -64,14 +64,14 @@ class VaadinUtilsTest {
     fun buttonListenerSerializable() {
         { println("foo") }.serializeDeserialize()()
         Button().apply {
-            setLeftClickListener { println("bla") }
+            onLeftClick { println("bla") }
         }.serializeToBytes()
     }
 
     @Test
     fun imageListenerSerializable() {
         Image().apply {
-            setLeftClickListener { println("bla") }
+            onLeftClick { println("bla") }
         }.serializeToBytes()
     }
 }

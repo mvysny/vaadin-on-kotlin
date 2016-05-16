@@ -54,8 +54,8 @@ import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 
 button("Create New Person (Ctrl+Alt+C)") {
-  setLeftClickListener { ... }
-  setClickShortcut(Ctrl + Alt + C)
+  onLeftClick { ... }
+  clickShortcut = Ctrl + Alt + C
 }
 ```
 

@@ -34,7 +34,7 @@ import javax.servlet.http.Cookie
  * @param entity the entity type
  * @return the new container which can be assigned to a [Grid]
  */
-inline fun <reified T: Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
+inline fun <reified T : Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
 
 fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
     val provider = CachingBatchableLocalEntityProvider(entity, extendedEntityManager)
@@ -58,35 +58,31 @@ fun Label.html(html: String?) {
  * Fails if this component is not nested inside [AbstractOrderedLayout].
  */
 var Component.expandRatio: Float
-get() = (parent as AbstractOrderedLayout).getExpandRatio(this)
-set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
+    get() = (parent as AbstractOrderedLayout).getExpandRatio(this)
+    set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
 
 /**
  * Sets the component width to 100%
  */
-fun Component.setWidthFull() { w = 100.perc }
+fun Component.setWidthFull() {
+    w = 100.perc
+}
 
 /**
  * Sets the component height to 100%
  */
-fun Component.setHeightFull() { h = 100.perc }
-
-interface EnterPressedListener : Serializable {
-    /**
-     * Invoked when the text field is focused and the user presses Enter.
-     * @param source the [TextField] which triggered the event.
-     */
-    fun onEnterPressed(source: AbstractTextField): Unit
+fun Component.setHeightFull() {
+    h = 100.perc
 }
 
 /**
  * Triggers given listener when the text field is focused and user presses the Enter key.
- * @param enterListener the listener to invoke.
+ * @param enterListener the listener to invoke when the user presses the Enter key.
  */
-fun AbstractTextField.onEnterPressed(enterListener: EnterPressedListener) {
+fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit) {
     val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ENTER) {
         override fun handleAction(sender: Any, target: Any) {
-            enterListener.onEnterPressed(this@onEnterPressed)
+            enterListener(this@onEnterPressed)
         }
     }
     addFocusListener { addShortcutListener(enterShortCut) }
@@ -111,7 +107,7 @@ fun AbstractField<String>.trimmingConverter() {
 }
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
-    if (this is AbstractClientConnector) this.getListeners(eventType).toList() else listOf<Any>()
+        if (this is AbstractClientConnector) this.getListeners(eventType).toList() else listOf<Any>()
 
 private fun Component.hasListenersHandling(eventType: Class<*>) = !getListenersHandling(eventType).isEmpty()
 
@@ -129,13 +125,13 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
 }
 
 /**
- * Adds a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
+ * Sets a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
  * except for descendants which have their own click listeners attached.
  *
  * Removes any previously attached layout click listeners
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.setChildClickListener(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
+fun LayoutEvents.LayoutClickNotifier.onChildClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as AbstractClientConnector).getListeners(LayoutEvents.LayoutClickEvent::class.java).toList().forEach {
         removeLayoutClickListener(it as LayoutEvents.LayoutClickListener)
     }
@@ -147,7 +143,7 @@ fun LayoutEvents.LayoutClickNotifier.setChildClickListener(listener: (LayoutEven
  * except for descendants which have their own click listeners attached.
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
+fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent) -> Unit) {
     (this as Component).addStyleName("clickable")
     addLayoutClickListener({ event ->
         if (event.button != MouseEventDetails.MouseButton.LEFT) {
@@ -156,11 +152,11 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
             // the component has its own click listeners, do nothing
         } else
         // what if some child layout listens for the layout click event as well?
-        if (event.clickedComponent != null && event.clickedComponent.getAscendantLayoutWithLayoutClickNotifier() !== this@addChildClickListener) {
-            // do nothing
-        } else {
-            listener(event)
-        }
+            if (event.clickedComponent != null && event.clickedComponent.getAscendantLayoutWithLayoutClickNotifier() !== this@addChildClickListener) {
+                // do nothing
+            } else {
+                listener(event)
+            }
     })
 }
 
@@ -168,7 +164,7 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Button.setLeftClickListener(listener: (Button.ClickEvent)->Unit) {
+fun Button.onLeftClick(listener: (Button.ClickEvent)->Unit) {
     getListeners(Button.ClickEvent::class.java).toList().forEach { removeClickListener(it as Button.ClickListener) }
     // Button only fires left-click events.
     addClickListener(listener)
@@ -186,7 +182,7 @@ fun Button.setPrimary() {
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Image.setLeftClickListener(listener: (MouseEvents.ClickEvent)->Unit): Unit {
+fun Image.onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
     getListeners(MouseEvents.ClickEvent::class.java).toList().forEach { removeClickListener(it as MouseEvents.ClickListener) }
     addClickListener {
         if (it.button == MouseEventDetails.MouseButton.LEFT) listener(it)
@@ -223,10 +219,12 @@ val Float.perc: Size
     get() = Size(this, Sizeable.Unit.PERCENTAGE)
 var Component.w: Size
     get() = Size(width, widthUnits)
-    set(value) { setWidth(value.size, value.units) }
+    set(value) {
+        setWidth(value.size, value.units)
+    }
 var Component.h: Size
     get() = Size(height, heightUnits)
-    set(value) { setHeight(value.size, value.units) }
+    set(value) = setHeight(value.size, value.units)
 
 /**
  * true if both the component width and height is set to 100%
@@ -247,7 +245,9 @@ var Component.alignment: Alignment
  */
 var Component.zIndex: Int
     get() = absolutePosition.zIndex
-    set(value) { absolutePosition.zIndex = value }
+    set(value) {
+        absolutePosition.zIndex = value
+    }
 
 /**
  * Returns the [AbsoluteLayout.ComponentPosition] of this component. Fails if this component is not nested inside [AbsoluteLayout]
@@ -256,16 +256,24 @@ val Component.absolutePosition: AbsoluteLayout.ComponentPosition
     get() = (parent as AbsoluteLayout).getPosition(this)
 var AbsoluteLayout.ComponentPosition.top: Size
     get() = Size(topValue, topUnits)
-    set(value) { topValue = value.size; topUnits = value.units }
+    set(value) {
+        topValue = value.size; topUnits = value.units
+    }
 var AbsoluteLayout.ComponentPosition.bottom: Size
     get() = Size(bottomValue, bottomUnits)
-    set(value) { bottomValue = value.size; bottomUnits = value.units }
+    set(value) {
+        bottomValue = value.size; bottomUnits = value.units
+    }
 var AbsoluteLayout.ComponentPosition.left: Size
     get() = Size(leftValue, leftUnits)
-    set(value) { leftValue = value.size; leftUnits = value.units }
+    set(value) {
+        leftValue = value.size; leftUnits = value.units
+    }
 var AbsoluteLayout.ComponentPosition.right: Size
     get() = Size(rightValue, rightUnits)
-    set(value) { rightValue = value.size; rightUnits = value.units }
+    set(value) {
+        rightValue = value.size; rightUnits = value.units
+    }
 
 /**
  * An utility method which adds an item and sets item's caption.
@@ -273,39 +281,6 @@ var AbsoluteLayout.ComponentPosition.right: Size
  * @param caption the new caption
  */
 fun AbstractSelect.addItem(itemId: Any?, caption: String) = addItem(itemId).apply { setItemCaption(itemId, caption) }!!
-
-/**
- * Adds a button column to a grid.
- * @param propertyId the generated column propertyId, for example "edit"
- * @param caption human-readable button caption, e.g. "Edit"
- * @param listener invoked when the button is clicked. The [RendererClickEvent.itemId] is the ID of the JPA bean.
- * @return the grid column which you can tweak further.
- */
-fun Grid.addButtonColumn(propertyId: String, caption: String, listener: ClickableRenderer.RendererClickListener): Grid.Column {
-    if (containerDataSource !is GeneratedPropertyContainer) containerDataSource = GeneratedPropertyContainer(containerDataSource)
-    (containerDataSource as GeneratedPropertyContainer).addGeneratedProperty(propertyId, object: PropertyValueGenerator<String>() {
-        override fun getValue(item: Item?, itemId: Any?, propertyId: Any?): String? = caption
-        override fun getType(): Class<String>? = String::class.java
-    })
-    return getColumn(propertyId).apply {
-        renderer = ButtonRenderer(listener)
-        headerCaption = ""
-    }
-}
-
-private val gridColumnGrid: Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
-
-val Grid.Column.grid: Grid
-    get() = gridColumnGrid.get(this) as Grid
-
-private val propertyGenerators: Field = GeneratedPropertyContainer::class.java.getDeclaredField("propertyGenerators").apply { isAccessible = true }
-
-fun GeneratedPropertyContainer.isGenerated(propertyId: Any?): Boolean = (propertyGenerators.get(this) as Map<Any, *>).containsKey(propertyId)
-
-fun Container.isGenerated(propertyId: Any?): Boolean = if (this is GeneratedPropertyContainer) isGenerated(propertyId) else false
-
-val Grid.Column.isGenerated: Boolean
-    get() = grid.containerDataSource.isGenerated(getPropertyId())
 
 /**
  * Walks over this component and all descendants of this component, breadth-first.
@@ -325,12 +300,13 @@ fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
 /**
  * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
  */
-inline fun <reified T: Any> BeanFieldGroup(): BeanFieldGroup<T> = BeanFieldGroup(T::class.java)
+inline fun <reified T : Any> BeanFieldGroup(): BeanFieldGroup<T> = BeanFieldGroup(T::class.java)
 
-data class SimpleContent(val small: String, val large: Component): PopupView.Content {
+data class SimpleContent(val small: String, val large: Component) : PopupView.Content {
     companion object {
         val EMPTY = SimpleContent("", Label(""))
     }
+
     constructor(content: PopupView.Content) : this(content.minimizedValueAsHTML, content.popupComponent)
 
     override fun getPopupComponent(): Component? = large
@@ -339,37 +315,38 @@ data class SimpleContent(val small: String, val large: Component): PopupView.Con
 }
 
 private var PopupView.simpleContent: SimpleContent
-get() {
-    val content = content
-    return if (content is SimpleContent) content else SimpleContent(content)
-}
-set(value) {
-    content = value
-}
+    get() {
+        val content = content
+        return if (content is SimpleContent) content else SimpleContent(content)
+    }
+    set(value) {
+        content = value
+    }
 
 /**
  * Allows you to set the popup component directly, without changing [minimizedValueAsHTML]
  */
 var PopupView.popupComponent: Component
-get() = content.popupComponent
-set(value) {
-    content = simpleContent.copy(large = value)
-}
+    get() = content.popupComponent
+    set(value) {
+        content = simpleContent.copy(large = value)
+    }
 
 /**
  * Allows you to set the minimized text directly, without changing [popupComponent]
  */
 var PopupView.minimizedValueAsHTML: String
-get() = content.minimizedValueAsHTML
-set(value) {
-    content = simpleContent.copy(small = value)
-}
+    get() = content.minimizedValueAsHTML
+    set(value) {
+        content = simpleContent.copy(small = value)
+    }
 
 enum class ModifierKey(val value: Int) {
     Shift(ShortcutAction.ModifierKey.SHIFT),
     Ctrl(ShortcutAction.ModifierKey.CTRL),
     Alt(ShortcutAction.ModifierKey.ALT),
     Meta(ShortcutAction.ModifierKey.META);
+
     infix operator fun plus(other: ModifierKey) = setOf(this, other)
     infix operator fun plus(key: Int) = KeyShortcut(key, setOf(this))
 }
@@ -385,17 +362,17 @@ data class KeyShortcut(val keyCode: Int, val modifierKeys: Set<ModifierKey> = se
     val vaadinModifiers: IntArray = modifierKeys.map { it.value }.toIntArray()
 }
 
-fun shortcutListener(shortcut: KeyShortcut, block: ()->Unit): ShortcutListener =
+fun shortcutListener(shortcut: KeyShortcut, block: () -> Unit): ShortcutListener =
         ShortcutListeners.listener(shortcut.keyCode, shortcut.vaadinModifiers, block)
 
-fun shortcutListener(shortcut: Int, block: ()->Unit) = shortcutListener(KeyShortcut(shortcut), block)
+fun shortcutListener(shortcut: Int, block: () -> Unit) = shortcutListener(KeyShortcut(shortcut), block)
 
 /**
  * Adds global shortcut listener. The listener is not added directly for this component - instead it is global, up to the nearest parent
  * Panel, UI or Window.
  * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
-fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: ()->Unit): ShortcutListener {
+fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: () -> Unit): ShortcutListener {
     val listener = shortcutListener(shortcut.keyCode, action)
     (this as AbstractComponent).addShortcutListener(listener)
     return listener
@@ -406,7 +383,7 @@ fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: ()->Unit)
  * Panel, UI or Window.
  * @param keyCode the key code, e.g. [ShortcutAction.KeyCode.C]
  */
-fun Component.addGlobalShortcutListener(keyCode: Int, action: ()->Unit) = addGlobalShortcutListener(KeyShortcut(keyCode), action)
+fun Component.addGlobalShortcutListener(keyCode: Int, action: () -> Unit) = addGlobalShortcutListener(KeyShortcut(keyCode), action)
 
 /**
  * Makes it possible to invoke a click on this button by pressing the given
@@ -414,4 +391,6 @@ fun Component.addGlobalShortcutListener(keyCode: Int, action: ()->Unit) = addGlo
  * The shortcut is global (bound to the containing Window).
  * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
-fun Button.setClickShortcut(shortcut: KeyShortcut) = setClickShortcut(shortcut.keyCode, *shortcut.vaadinModifiers)
+var Button.clickShortcut: KeyShortcut
+    get() = throw RuntimeException("Property is write-only")
+    set(shortcut) = setClickShortcut(shortcut.keyCode, *shortcut.vaadinModifiers)

@@ -35,7 +35,7 @@ fun HasComponents.absoluteLayout(block: AbsoluteLayout.()->Unit = {}) = init(Abs
 
 fun HasComponents.button(caption: String? = null, leftClickListener: ((Button.ClickEvent)->Unit)? = null, block: Button.() -> Unit = {})
         = init(Button(caption), block).apply {
-    if (leftClickListener != null) setLeftClickListener(leftClickListener)
+    if (leftClickListener != null) onLeftClick(leftClickListener)
 }
 
 fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
@@ -96,7 +96,7 @@ fun HasComponents.menuBar(block: MenuBar.()->Unit = {}) = init(MenuBar(), block)
 
 fun HasComponents.nativeButton(caption: String? = null, leftClickListener: ((Button.ClickEvent)->Unit)? = null, block: NativeButton.() -> Unit = {})
         = init(NativeButton(caption), block).apply {
-    if (leftClickListener != null) setLeftClickListener(leftClickListener)
+    if (leftClickListener != null) onLeftClick(leftClickListener)
 }
 
 fun HasComponents.nativeSelect(caption: String? = null, block: NativeSelect.()->Unit = {}) = init(NativeSelect(), block)

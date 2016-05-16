@@ -83,7 +83,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                     ok = button("Ok") {
                         expandRatio = 1f
                         alignment = Alignment.MIDDLE_RIGHT
-                        setLeftClickListener {
+                        onLeftClick {
                             try {
                                 this@NumberFilterPopup.value = NumberInterval<Double>(ltInput.convertedValue as Double?,
                                         gtInput.convertedValue as Double?, eqInput.convertedValue as Double?)
