@@ -55,7 +55,6 @@ button("Create New Person (Ctrl+Alt+C)") {
   setLeftClickListener { ... }
   setClickShortcut(Ctrl + Alt + C)
 }
-
 ```
 
 #### Width/height
@@ -66,7 +65,7 @@ button {
   w = 48.px
   h = 50.perc
 }
-if (w.isFillParent) { ... }
+if (button.w.isFillParent) { ... }
 ```
 
 
@@ -86,7 +85,7 @@ grid(dataSource = jpaContainer<Person>()) {
   // automatically create filters, based on the types of values present in particular columns.
   appendHeaderRow().generateFilterComponents(this)
 }
-
+```
 
 ## Motivation
 
