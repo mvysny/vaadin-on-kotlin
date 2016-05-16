@@ -8,28 +8,13 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import java.lang.reflect.Field
-
-/**
- * Adds a button column to a grid.
- * @param propertyId the generated column propertyId, for example "edit"
- * @param caption human-readable button caption, e.g. "Edit"
- * @param listener invoked when the button is clicked. The [RendererClickEvent.itemId] is the ID of the JPA bean.
- * @return the grid column which you can tweak further.
- */
-fun Grid.addButtonColumn(propertyId: String, caption: String, listener: ClickableRenderer.RendererClickListener): Grid.Column {
-    if (containerDataSource !is GeneratedPropertyContainer) containerDataSource = GeneratedPropertyContainer(containerDataSource)
-    (containerDataSource as GeneratedPropertyContainer).addGeneratedProperty(propertyId, object : PropertyValueGenerator<String>() {
-        override fun getValue(item: Item?, itemId: Any?, propertyId: Any?): String? = caption
-        override fun getType(): Class<String>? = String::class.java
-    })
-    return getColumn(propertyId).apply {
-        renderer = ButtonRenderer(listener)
-        headerCaption = ""
-    }
-}
+import java.util.*
 
 private val gridColumnGrid: Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
 
+/**
+ * Owner grid.
+ */
 val Grid.Column.grid: Grid
     get() = gridColumnGrid.get(this) as Grid
 
@@ -39,5 +24,53 @@ fun GeneratedPropertyContainer.isGenerated(propertyId: Any?): Boolean = (propert
 
 fun Container.isGenerated(propertyId: Any?): Boolean = if (this is GeneratedPropertyContainer) isGenerated(propertyId) else false
 
+/**
+ * True if this column is a generated column (part of the [GeneratedPropertyContainer]).
+ */
 val Grid.Column.isGenerated: Boolean
-    get() = grid.containerDataSource.isGenerated(getPropertyId())
+    get() = grid.containerDataSource.isGenerated(propertyId)
+
+/**
+ * Starts adding of the columns into the grid.
+ */
+fun Grid.cols(block: GridColumnBuilder.()->Unit): Unit {
+    val adder = GridColumnBuilder(this)
+    adder.block()
+    setColumns(*adder.columnProperties.toTypedArray())
+}
+
+class GridColumnBuilder(val grid: Grid) {
+    internal val columnProperties = LinkedList<Any?>()
+
+    fun column(propertyId: Any?, block: Grid.Column.()->Unit = {}) {
+        columnProperties += propertyId
+        grid.getColumn(propertyId).block()
+    }
+
+    /**
+     * Adds a generated column. Grid's data source is automatically converted to [GeneratedPropertyContainer]
+     * @param propertyId the generated column propertyId, for example "edit"
+     * @param generator generates values for the cells
+     */
+    fun generated(propertyId: Any?, generator: PropertyValueGenerator<*>, block: Grid.Column.()->Unit = {}) {
+        if (grid.containerDataSource !is GeneratedPropertyContainer) grid.containerDataSource = GeneratedPropertyContainer(grid.containerDataSource)
+        (grid.containerDataSource as GeneratedPropertyContainer).addGeneratedProperty(propertyId, generator)
+        column(propertyId, block)
+    }
+
+    /**
+     * Adds a column which only contains a single button.
+     * @param propertyId the generated column propertyId, for example "edit"
+     * @param caption all buttons will have this caption
+     * @param onClick invoked when the button is clicked. The [RendererClickEvent.itemId] is the ID of the JPA bean.
+     */
+    fun button(propertyId: Any?, caption: String, onClick: (ClickableRenderer.RendererClickEvent)->Unit, block: Grid.Column.()->Unit = {}) {
+        generated(propertyId, object : PropertyValueGenerator<String>() {
+            override fun getValue(item: Item?, itemId: Any?, propertyId: Any?): String? = caption
+            override fun getType(): Class<String>? = String::class.java
+        }) {
+            renderer = ButtonRenderer(onClick)
+            headerCaption = ""
+        }
+    }
+}

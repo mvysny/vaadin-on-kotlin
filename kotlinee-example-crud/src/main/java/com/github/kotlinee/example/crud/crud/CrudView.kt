@@ -40,18 +40,24 @@ class CrudView: VerticalLayout(), View {
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(dataSource = personGridDS) {
             expandRatio = 1f
-            addButtonColumn("edit", "Edit", ClickableRenderer.RendererClickListener {
-                db { createOrEditPerson(em.get(it.itemId)) }
-            })
-            addButtonColumn("delete", "Delete", ClickableRenderer.RendererClickListener {
-                db { em.deleteById<Person>(it.itemId) }
-                refreshGrid()
-            })
-            setColumns("id", "name", "age", "edit", "delete")
+            cols {
+                column("id") {
+                    isSortable = false
+                }
+                column("name")
+                column("age")
+                button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
+                button("delete", "Delete", { deletePerson(it.itemId as Long) })
+            }
             setSizeFull()
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this)
         }
+    }
+
+    private fun deletePerson(id: Long) {
+        db { em.deleteById<Person>(id) }
+        refreshGrid()
     }
 
     private fun createOrEditPerson(person: Person) {
