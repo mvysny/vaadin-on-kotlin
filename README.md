@@ -36,9 +36,11 @@ formLayout {
 ### Simple popups
 
 ```kotlin
-popupView {
-  verticalLayout { ... }
-  button("Close", { isPopupVisible = false })
+popupView("Details") {
+  verticalLayout {
+    formLayout { ... }
+    button("Close", { isPopupVisible = false })
+  }
 }
 ```
 
