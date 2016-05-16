@@ -17,10 +17,7 @@ and database support - a very simple but powerful quickstart project.
 ### Easy database transactions:
 
 ```kotlin
-button("Save") {
-  setLeftClickListener { db { em.persist(person) } }
-}
-
+button("Save", { db { em.persist(person) } })
 ```
 
 ### The DSL structural Example
