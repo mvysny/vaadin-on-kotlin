@@ -40,6 +40,7 @@ popupView {
   verticalLayout { ... }
   button("Close", { isPopupVisible = false })
 }
+```
 
 ### Advanced syntax
 
