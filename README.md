@@ -63,7 +63,7 @@ button("Create New Person (Ctrl+Alt+C)") {
 
 ```kotlin
 button {
-  iconResource = ...
+  icon = ...
   w = 48.px
   h = 50.perc
 }
