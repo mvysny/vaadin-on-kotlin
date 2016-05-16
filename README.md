@@ -12,6 +12,84 @@ This project is an attempt to simplify such projects:
 Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
 and database support - a very simple but powerful quickstart project.
 
+## Examples
+
+### Easy database transactions:
+
+```kotlin
+button("Save") {
+  setLeftClickListener { db { em.persist(person) } }
+}
+
+```
+
+### The DSL structural Example
+
+```kotlin
+formLayout {
+  isSpacing = true
+  textField("Name:") {
+    trimmingConverter()
+    focus()
+  }
+  textField("Age:")
+}
+```
+
+### Simple popups
+
+```kotlin
+popupView {
+  verticalLayout { ... }
+  button("Close", { isPopupVisible = false })
+}
+
+### Advanced syntax
+
+#### Keyboard shortcuts via operator overloading
+
+```kotlin
+import com.github.kotlinee.framework.vaadin.ModifierKey.Alt
+import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
+import com.vaadin.event.ShortcutAction.KeyCode.C
+
+button("Create New Person (Ctrl+Alt+C)") {
+  setLeftClickListener { ... }
+  setClickShortcut(Ctrl + Alt + C)
+}
+
+```
+
+#### Width/height
+
+```kotlin
+button {
+  iconResource = ...
+  w = 48.px
+  h = 50.perc
+}
+if (w.isFillParent) { ... }
+```
+
+
+### JPA-based grid is a breeze
+
+Support for sorting and filtering out-of-the-box:
+
+```kotlin
+grid(dataSource = jpaContainer<Person>()) {
+  setSizeFull()
+  // add a generated column with a single button which deletes the person in question
+  addButtonColumn("delete", "Delete", ClickableRenderer.RendererClickListener {
+    db { em.deleteById<Person>(it.itemId) }
+    refreshGrid()
+  })
+  setColumns("id", "name", "age", "edit", "delete")
+  // automatically create filters, based on the types of values present in particular columns.
+  appendHeaderRow().generateFilterComponents(this)
+}
+
+
 ## Motivation
 
 Please read this first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
@@ -28,7 +106,7 @@ you make every Vaadin component a managed bean, but that's just plain weird. How
 having a global val with a getter which produces the correct bean instance on demand?
 * Imagine that you wish to store a class, which is able to access a database, to a session. Some sort of cache, perhaps. In order to do this
 JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject some SLSB to it (cause managed beans do not yet have support for
-transactions), manually store it into the session and then run into abovementioned issues with websocket xhr. What the fuck? I want to focus on coding,
+transactions), manually store it into the session and then run into abovementioned issues with websocket xhr. What the heck? I want to focus on coding,
 not @configuring the world until JavaEE is satisfied.
 
 ## Status
@@ -49,7 +127,6 @@ Done:
 
 Ignored:
 
-* Cluster-wide singleton
 * Messaging
 * Security
 * Injections
@@ -75,3 +152,4 @@ Ignored:
 
 * Open the project in IDEA
 * Launch the `kotlinee-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
+
