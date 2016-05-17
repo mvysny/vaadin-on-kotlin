@@ -78,12 +78,15 @@ Support for sorting and filtering out-of-the-box:
 ```kotlin
 grid(dataSource = jpaContainer<Person>()) {
   setSizeFull()
-  // add a generated column with a single button which deletes the person in question
-  addButtonColumn("delete", "Delete", ClickableRenderer.RendererClickListener {
-    db { em.deleteById<Person>(it.itemId) }
-    refreshGrid()
-  })
-  setColumns("id", "name", "age", "edit", "delete")
+  cols {
+    column(Person::id) {
+      isSortable = false
+    }
+    column(Person::name)
+    column(Person::age)
+    button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
+    button("delete", "Delete", { deletePerson(it.itemId as Long) })
+  }
   // automatically create filters, based on the types of values present in particular columns.
   appendHeaderRow().generateFilterComponents(this)
 }

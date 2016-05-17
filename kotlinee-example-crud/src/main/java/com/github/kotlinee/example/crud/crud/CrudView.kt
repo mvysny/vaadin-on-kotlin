@@ -41,11 +41,11 @@ class CrudView: VerticalLayout(), View {
         personGrid = grid(dataSource = personGridDS) {
             expandRatio = 1f
             cols {
-                column("id") {
+                column(Person::id) {
                     isSortable = false
                 }
-                column("name")
-                column("age")
+                column(Person::name)
+                column(Person::age)
                 button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
                 button("delete", "Delete", { deletePerson(it.itemId as Long) })
             }
@@ -62,7 +62,7 @@ class CrudView: VerticalLayout(), View {
 
     private fun createOrEditPerson(person: Person) {
         CreateEditPerson(person).apply {
-            addCloseListener({ refreshGrid() })
+            addCloseListener { refreshGrid() }
             UI.getCurrent().addWindow(this)
         }
     }

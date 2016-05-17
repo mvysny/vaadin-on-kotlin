@@ -9,6 +9,7 @@ import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import java.lang.reflect.Field
 import java.util.*
+import kotlin.reflect.KProperty
 
 private val gridColumnGrid: Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
 
@@ -43,8 +44,10 @@ class GridColumnBuilder(val grid: Grid) {
     internal val columnProperties = LinkedList<Any?>()
 
     fun column(propertyId: Any?, block: Grid.Column.()->Unit = {}) {
-        columnProperties += propertyId
-        grid.getColumn(propertyId).block()
+        // allow to add columns for properties and unwrap them for the JPAContainer
+        val pid = if (propertyId is KProperty<*>) propertyId.name else propertyId
+        columnProperties += pid
+        grid.getColumn(pid).block()
     }
 
     /**
@@ -71,6 +74,7 @@ class GridColumnBuilder(val grid: Grid) {
         }) {
             renderer = ButtonRenderer(onClick)
             headerCaption = ""
+            block()
         }
     }
 }
