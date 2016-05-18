@@ -394,3 +394,10 @@ fun Component.addGlobalShortcutListener(keyCode: Int, action: () -> Unit) = addG
 var Button.clickShortcut: KeyShortcut
     get() = throw RuntimeException("Property is write-only")
     set(shortcut) = setClickShortcut(shortcut.keyCode, *shortcut.vaadinModifiers)
+
+/**
+ * Sets all four margins to given value.
+ */
+var AbstractOrderedLayout.isMargin: Boolean
+get() = margin.hasAll()
+set(value) { setMargin(value) }
