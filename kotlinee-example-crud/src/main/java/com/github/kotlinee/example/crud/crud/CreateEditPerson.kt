@@ -12,7 +12,7 @@ import com.vaadin.ui.Window
  * Edits or creates a person. Use [Window.addCloseListener] to handle window close.
  * @property person the person to edit or create.
  */
-internal class CreateEditPerson(val person: Person): Window() {
+internal class CreateEditPerson(val person: Person) : Window() {
     // the validation demo. infer validations from JSR303 annotations attached to the Person class, when
     // the fieldGroup.bind() is called.
     private val fieldGroup = BeanFieldGroup<Person>()
@@ -28,8 +28,7 @@ internal class CreateEditPerson(val person: Person): Window() {
         fieldGroup.setItemDataSource(person)
         isModal = true
         verticalLayout {
-            isSpacing = true
-            setMargin(true)
+            isSpacing = true; isMargin = true
             formLayout {
                 isSpacing = true
                 val name = textField("Name:") {
@@ -42,7 +41,7 @@ internal class CreateEditPerson(val person: Person): Window() {
             }
             horizontalLayout {
                 isSpacing = true
-                persistButton = button(if(creating) "Create" else "Save") {
+                persistButton = button(if (creating) "Create" else "Save") {
                     onLeftClick { okPressed() }
                     setPrimary()
                 }

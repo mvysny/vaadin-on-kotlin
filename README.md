@@ -20,16 +20,26 @@ and database support - a very simple but powerful quickstart project.
 button("Save", { db { em.persist(person) } })
 ```
 
-### The DSL structural Example
+### Defining UI DSL-style
 
 ```kotlin
-formLayout {
-  isSpacing = true
-  textField("Name:") {
-    trimmingConverter()
-    focus()
+verticalLayout {
+  formLayout {
+    isSpacing = true
+    textField("Name:") {
+      trimmingConverter()
+      focus()
+    }
+    textField("Age:")
   }
-  textField("Age:")
+  horizontalLayout {
+    w = 100.perc
+    isSpacing = true
+    button("Save") {
+      onLeftClick { okPressed() }
+      setPrimary()
+    }
+  }
 }
 ```
 
@@ -41,6 +51,27 @@ popupView("Details") {
     formLayout { ... }
     button("Close", { isPopupVisible = false })
   }
+}
+```
+
+### JPA-based grid is a breeze
+
+Support for sorting and filtering out-of-the-box:
+
+```kotlin
+grid(dataSource = jpaContainer<Person>()) {
+  setSizeFull()
+  cols {
+    column(Person::id) {
+      isSortable = false
+    }
+    column(Person::name)
+    column(Person::age)
+    button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
+    button("delete", "Delete", { deletePerson(it.itemId as Long) })
+  }
+  // automatically create filters, based on the types of values present in particular columns.
+  appendHeaderRow().generateFilterComponents(this)
 }
 ```
 
@@ -70,28 +101,6 @@ button {
 if (button.w.isFillParent) { ... }
 ```
 
-
-### JPA-based grid is a breeze
-
-Support for sorting and filtering out-of-the-box:
-
-```kotlin
-grid(dataSource = jpaContainer<Person>()) {
-  setSizeFull()
-  cols {
-    column(Person::id) {
-      isSortable = false
-    }
-    column(Person::name)
-    column(Person::age)
-    button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
-    button("delete", "Delete", { deletePerson(it.itemId as Long) })
-  }
-  // automatically create filters, based on the types of values present in particular columns.
-  appendHeaderRow().generateFilterComponents(this)
-}
-```
-
 ## Motivation
 
 Please read this first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
@@ -108,7 +117,7 @@ you make every Vaadin component a managed bean, but that's just plain weird. How
 having a global val with a getter which produces the correct bean instance on demand?
 * Imagine that you wish to store a class, which is able to access a database, to a session. Some sort of cache, perhaps. In order to do this
 JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject some SLSB to it (cause managed beans do not yet have support for
-transactions), manually store it into the session and then run into abovementioned issues with websocket xhr. What the heck? I want to focus on coding,
+transactions), manually store it into the session and then run into above-mentioned issues with websocket xhr. What the heck? I want to focus on coding,
 not @configuring the world until JavaEE is satisfied.
 
 ## Status

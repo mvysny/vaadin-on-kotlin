@@ -1,9 +1,6 @@
 package com.github.kotlinee.example.crud
 
-import com.github.kotlinee.framework.vaadin.ViewName
-import com.github.kotlinee.framework.vaadin.html
-import com.github.kotlinee.framework.vaadin.label
-import com.github.kotlinee.framework.vaadin.navigateToView
+import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout
@@ -20,8 +17,7 @@ class WelcomeView: VerticalLayout(), View {
     }
 
     init {
-        setSizeFull()
-        setMargin(true)
+        setSizeFull(); isMargin = true
         label {
             html("""<h3>Kotlinee</h3>Welcome to the Kotlinee demo. Kotlinee provides means to creating rich Vaadin apps:
             <ul><li>Provides Vaadin DSL builder support</li>

@@ -39,7 +39,7 @@ class CrudView: VerticalLayout(), View {
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(dataSource = personGridDS) {
-            expandRatio = 1f
+            expandRatio = 1f; setSizeFull()
             cols {
                 column(Person::id) {
                     isSortable = false
@@ -49,7 +49,6 @@ class CrudView: VerticalLayout(), View {
                 button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
                 button("delete", "Delete", { deletePerson(it.itemId as Long) })
             }
-            setSizeFull()
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this)
         }

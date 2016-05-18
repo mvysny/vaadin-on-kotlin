@@ -13,7 +13,6 @@ import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
 import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -52,8 +51,7 @@ private class Content: VerticalLayout(), ViewDisplay {
             }
         }
         viewPlaceholder = cssLayout {
-            setSizeFull()
-            expandRatio = 1f
+            setSizeFull(); expandRatio = 1f
         }
     }
 
