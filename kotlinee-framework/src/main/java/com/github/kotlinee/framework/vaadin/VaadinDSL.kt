@@ -99,11 +99,11 @@ fun HasComponents.nativeButton(caption: String? = null, leftClickListener: ((But
     if (leftClickListener != null) onLeftClick(leftClickListener)
 }
 
-fun HasComponents.nativeSelect(caption: String? = null, block: NativeSelect.()->Unit = {}) = init(NativeSelect(), block)
+fun HasComponents.nativeSelect(caption: String? = null, block: NativeSelect.()->Unit = {}) = init(NativeSelect(caption), block)
 
-fun HasComponents.optionGroup(caption: String? = null, block: OptionGroup.()->Unit = {}) = init(OptionGroup(), block)
+fun HasComponents.optionGroup(caption: String? = null, block: OptionGroup.()->Unit = {}) = init(OptionGroup(caption), block)
 
-fun HasComponents.panel(caption: String? = null, block: Panel.()->Unit = {}) = init(Panel(), block)
+fun HasComponents.panel(caption: String? = null, block: Panel.()->Unit = {}) = init(Panel(caption), block)
 
 fun HasComponents.popupDateField(caption: String? = null, block: PopupDateField.()->Unit = {}) = init(PopupDateField(caption), block)
 
@@ -121,9 +121,9 @@ fun HasComponents.table(caption: String? = null, dataSource: Container? = null, 
 fun HasComponents.tabSheet(block: TabSheet.()->Unit = {}) = init(TabSheet(), block)
 
 fun HasComponents.textArea(caption: String? = null, block: TextArea.()->Unit = {}) =
-        init(TextArea(), block).apply { nullRepresentation = "" }
+        init(TextArea(caption), block).apply { nullRepresentation = "" }
 
-fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(), block)
+fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(caption), block)
 
 fun HasComponents.treeTable(caption: String? = null, dataSource: Container? = null, block: TreeTable.()->Unit = {}) =
         init(TreeTable(caption, dataSource), block)
