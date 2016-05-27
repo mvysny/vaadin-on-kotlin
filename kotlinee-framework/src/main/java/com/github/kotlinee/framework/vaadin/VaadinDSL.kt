@@ -49,8 +49,8 @@ fun HasComponents.image(caption: String? = null, resource: Resource? = null, blo
  */
 fun HasComponents.textField(caption: String? = null, value: String? = null, block: TextField.()->Unit = {}): TextField {
     val textField = TextField(caption, value)
-    init(textField, block)
     textField.nullRepresentation = ""
+    init(textField, block)
     return textField
 }
 
@@ -107,7 +107,19 @@ fun HasComponents.panel(caption: String? = null, block: Panel.()->Unit = {}) = i
 
 fun HasComponents.popupDateField(caption: String? = null, block: PopupDateField.()->Unit = {}) = init(PopupDateField(caption), block)
 
-fun HasComponents.passwordField(caption: String? = null, block: PasswordField.()->Unit = {}) = init(PasswordField(caption), block)
+/**
+ * Creates a [PasswordField]. [TextField.nullRepresentation] is set to an empty string, and the trimming converter is automatically pre-set.
+ *
+ * Auto-trimming: passwords generally do not have whitespaces. Pasting a password to a field in a mobile phone will also add a trailing whitespace, which
+ * will cause the password to not to match, which is a source of great confusion.
+ */
+fun HasComponents.passwordField(caption: String? = null, block: PasswordField.()->Unit = {}): PasswordField {
+    val component = PasswordField(caption)
+    component.trimmingConverter()
+    component.nullRepresentation = ""
+    init(component, block)
+    return component
+}
 
 fun HasComponents.progressBar(block: ProgressBar.()->Unit = {}) = init(ProgressBar(), block)
 
@@ -120,8 +132,17 @@ fun HasComponents.table(caption: String? = null, dataSource: Container? = null, 
 
 fun HasComponents.tabSheet(block: TabSheet.()->Unit = {}) = init(TabSheet(), block)
 
-fun HasComponents.textArea(caption: String? = null, block: TextArea.()->Unit = {}) =
-        init(TextArea(caption), block).apply { nullRepresentation = "" }
+/**
+ * Creates a [TextArea] and attaches it to this component. [TextField.nullRepresentation] is set to an empty string.
+ * @param caption optional caption
+ * @param value the optional value
+ */
+fun HasComponents.textArea(caption: String? = null, block: TextArea.()->Unit = {}): TextArea {
+    val component = TextArea(caption)
+    component.nullRepresentation = ""
+    init(component, block)
+    return component
+}
 
 fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(caption), block)
 
