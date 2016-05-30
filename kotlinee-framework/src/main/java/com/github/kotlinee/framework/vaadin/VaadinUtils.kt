@@ -31,6 +31,12 @@ import javax.servlet.http.Cookie
 /**
  * Creates a container which lists all instances of given entity. To restrict the list to a particular entity only,
  * simply call [JPAContainer.addContainerFilter] on the container produced.
+ *
+ * Containers produced by this method have the following properties:
+ * * The container's [Item] IDs are not the entity instances themselves - instead, [Item] ID contains the value of the JPA entity ID. This is important when using the container
+ * together with [AbstractSelect] as the select's value is taken amongst the Item ID.
+ * * [Item]'s Property IDs are [String] values - the field names of given JPA bean.
+ *
  * @param entity the entity type
  * @return the new container which can be assigned to a [Grid]
  */
@@ -279,8 +285,11 @@ var AbsoluteLayout.ComponentPosition.right: Size
  * An utility method which adds an item and sets item's caption.
  * @param the Identification of the item to be created.
  * @param caption the new caption
+ * @return the newly created item ID.
  */
 fun AbstractSelect.addItem(itemId: Any?, caption: String) = addItem(itemId).apply { setItemCaption(itemId, caption) }!!
+
+
 
 /**
  * Walks over this component and all descendants of this component, breadth-first.
