@@ -43,11 +43,21 @@ fun Grid.cols(block: GridColumnBuilder.()->Unit): Unit {
 class GridColumnBuilder(val grid: Grid) {
     internal val columnProperties = LinkedList<Any?>()
 
+    /**
+     * Adds a column which shows JPA Bean's property values. Applicable only when the Grid is backed by [JPAContainer].
+     * @param property the JPA bean property (field)
+     */
+    fun column(property: KProperty<*>, block: Grid.Column.()->Unit = {}) {
+        column(property.name, block)
+    }
+
+    /**
+     * Adds an arbitrary column to the Grid. The Container must provide property values for given propertyId.
+     * @param propertyId the container property ID
+     */
     fun column(propertyId: Any?, block: Grid.Column.()->Unit = {}) {
-        // allow to add columns for properties and unwrap them for the JPAContainer
-        val pid = if (propertyId is KProperty<*>) propertyId.name else propertyId
-        columnProperties += pid
-        grid.getColumn(pid).block()
+        columnProperties += propertyId
+        grid.getColumn(propertyId).block()
     }
 
     /**
