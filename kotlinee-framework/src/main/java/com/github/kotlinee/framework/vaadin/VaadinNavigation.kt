@@ -1,12 +1,12 @@
 package com.github.kotlinee.framework.vaadin
 
 import com.github.kotlinee.framework.Session
-import com.google.gwt.thirdparty.guava.common.collect.BiMap
-import com.google.gwt.thirdparty.guava.common.collect.HashBiMap
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.navigator.ViewProvider
 import com.vaadin.ui.UI
+import io.michaelrocks.bimap.HashBiMap
+import io.michaelrocks.bimap.MutableBiMap
 import java.io.Serializable
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -67,10 +67,10 @@ class AutoViewProvider : ServletContainerInitializer {
         /**
          * Maps view name to the view class.
          */
-        private val viewNameToClass: BiMap<String, Class<out View>> = HashBiMap.create()
+        private val viewNameToClass: MutableBiMap<String, Class<out View>> = HashBiMap()
 
         internal fun <T: View> getMapping(clazz: Class<T>): String =
-            viewNameToClass.inverse()[clazz] ?: throw IllegalArgumentException("$clazz is not known view class")
+            viewNameToClass.inverse[clazz] ?: throw IllegalArgumentException("$clazz is not known view class")
     }
 
     private fun Class<*>.toViewName(): String {

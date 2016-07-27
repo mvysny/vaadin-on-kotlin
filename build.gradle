@@ -5,8 +5,8 @@ allprojects {
     version '1.0-SNAPSHOT'
 
     buildscript {
-        ext.kotlin_version = '1.0.2'
-        ext.vaadin_version= '7.6.6'
+        ext.kotlin_version = '1.0.3'
+        ext.vaadin_version= '7.7.0.beta1'
         repositories {
             mavenCentral()
         }
@@ -17,9 +17,14 @@ allprojects {
 
     repositories {
         mavenCentral()
+        jcenter()
         maven {
             name 'vaadin-addons'
             url 'http://maven.vaadin.com/vaadin-addons'
+        }
+        maven {
+            name 'vaadin-prereleases'
+            url 'https://maven.vaadin.com/vaadin-prereleases'
         }
     }
 }
