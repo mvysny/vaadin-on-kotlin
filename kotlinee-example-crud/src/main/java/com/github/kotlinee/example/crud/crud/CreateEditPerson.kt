@@ -5,6 +5,7 @@ import com.github.kotlinee.framework.*
 import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.data.fieldgroup.FieldGroup
 import com.vaadin.server.UserError
+import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
 import com.vaadin.ui.Window
 
@@ -27,10 +28,11 @@ internal class CreateEditPerson(val person: Person) : Window() {
     init {
         fieldGroup.setItemDataSource(person)
         isModal = true
+        caption = if (creating) "New Person" else "Edit #${person.id}"
         verticalLayout {
-            isSpacing = true; isMargin = true
+            isMargin = true
             formLayout {
-                isSpacing = true
+                w = wrapContent
                 val name = textField("Name:") {
                     trimmingConverter()
                     focus()
@@ -40,7 +42,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 fieldGroup.bind(age, "age")
             }
             horizontalLayout {
-                isSpacing = true
+                isSpacing = true; alignment = Alignment.MIDDLE_CENTER
                 persistButton = button(if (creating) "Create" else "Save") {
                     onLeftClick { okPressed() }
                     setPrimary()

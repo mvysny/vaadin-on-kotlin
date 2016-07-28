@@ -53,8 +53,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            setWidthFull()
-            minimizedValueAsHTML = "All"
+            w = fillParent; minimizedValueAsHTML = "All"
             gridLayout(2, 4) {
                 isSpacing = true
                 setMargin(true)
@@ -79,7 +78,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                     inputPrompt = "Greater than"
                 }
                 val buttons = HorizontalLayout().apply {
-                    setWidthFull()
+                    w = fillParent
                     ok = button("Ok") {
                         expandRatio = 1f
                         alignment = Alignment.MIDDLE_RIGHT
@@ -331,13 +330,9 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            setWidthFull()
-            minimizedValueAsHTML = "All"
+            w = fillParent; minimizedValueAsHTML = "All"
             verticalLayout {
-                styleName = "datefilterpopupcontent"
-                setSizeUndefined()
-                isSpacing = true
-                setMargin(true)
+                styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
                 horizontalLayout {
                     isSpacing = true
                     fromField = inlineDateField()
@@ -408,8 +403,9 @@ class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFa
         } else {
             field = createTextField(propertyId)
         }
-        field.setWidthFull()
-        field.isImmediate = true
+        field.apply {
+            w = fillParent; isImmediate = true
+        }
         return field
     }
 

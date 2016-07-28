@@ -40,7 +40,7 @@ private class Content: VerticalLayout(), ViewDisplay {
         setSizeFull()
         // the Vaadin DSL demo - build your UI, builder-style!
         horizontalLayout {
-            setWidthFull()
+            w = fillParent
             menuBar {
                 expandRatio = 1f
                 addItem("Welcome") { WelcomeView.navigateTo() }

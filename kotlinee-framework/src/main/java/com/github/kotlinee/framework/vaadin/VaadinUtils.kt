@@ -68,20 +68,6 @@ var Component.expandRatio: Float
     set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
 
 /**
- * Sets the component width to 100%
- */
-fun Component.setWidthFull() {
-    w = 100.perc
-}
-
-/**
- * Sets the component height to 100%
- */
-fun Component.setHeightFull() {
-    h = 100.perc
-}
-
-/**
  * Triggers given listener when the text field is focused and user presses the Enter key.
  * @param enterListener the listener to invoke when the user presses the Enter key.
  */
@@ -204,16 +190,30 @@ data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
     /**
      * true if this size is set to 100% and the component fills its parent in this dimension.
      */
-    val isFillParent = size >= 100 && units == Sizeable.Unit.PERCENTAGE
-    val isFull = isFillParent
+    val isFillParent: Boolean
+            get() = size >= 100 && units == Sizeable.Unit.PERCENTAGE
+    val isFull: Boolean
+            get() = isFillParent
     /**
      * true if this component wraps its content in this dimension (size is -1px).
      */
-    val isWrapContent = size < 0
-    val isUndefined = isWrapContent
+    val isWrapContent: Boolean
+            get() = size < 0
+    val isUndefined: Boolean
+            get() = isWrapContent
 
     override fun toString() = "$size${units.symbol}"
 }
+
+/**
+ * Tells the component to wrap-content in particular direction. Typing `w = wrapContent` is equal to calling [Sizeable.setWidthUndefined]
+ * or setWidth(null) or setWidth(-1, Sizeable.Unit.PIXELS).
+ */
+val wrapContent = (-1).px
+/**
+ * Tells the component to fill-parent in particular direction. Typing `w = fillParent` is equal to calling setWidth("100%").
+ */
+val fillParent = 100.perc
 
 val Int.px: Size
     get() = toFloat().px
