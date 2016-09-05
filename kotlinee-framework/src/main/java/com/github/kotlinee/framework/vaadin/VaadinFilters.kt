@@ -169,6 +169,7 @@ abstract class FilterFieldFactory(protected val container: Container.Filterable)
      * @param propertyId the column id, not null
      * @return the type, auto-converted from primitive type to corresponding boxed type, never null.
      */
+    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
     protected fun getValueClass(propertyId: Any?): Class<*> {
         val clazz = container.getType(propertyId)
         return when(clazz) {

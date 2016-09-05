@@ -3,6 +3,7 @@ package com.github.kotlinee.example.crud
 import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.shared.Version
 import com.vaadin.ui.VerticalLayout
 
 /**
@@ -25,6 +26,7 @@ class WelcomeView: VerticalLayout(), View {
             <li>Provides simple database access via db {} function</li></ul>
             And more.""")
         }
+        label("Vaadin version ${Version.getFullVersion()}")
     }
 
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
