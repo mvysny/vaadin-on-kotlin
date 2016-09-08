@@ -19,8 +19,8 @@ dependencies {
     compile "com.vaadin:vaadin-server:$vaadin_version"
     compile "com.vaadin:vaadin-push:$vaadin_version"
     compile "com.vaadin:vaadin-themes:$vaadin_version"
-    compile 'javax.validation:validation-api:1.0.0.GA'  // Validacie
-    compile 'org.hibernate:hibernate-validator:4.3.2.Final'
+    compile 'javax.validation:validation-api:1.0.0.GA'  // so that the BeanFieldGroup will perform JSR303 validations
+    compile 'org.hibernate:hibernate-validator:5.2.4.Final'
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // db
