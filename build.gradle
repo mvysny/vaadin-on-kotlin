@@ -5,8 +5,8 @@ allprojects {
     version '1.0-SNAPSHOT'
 
     buildscript {
-        ext.kotlin_version = '1.0.3'
-        ext.vaadin_version= '7.7.0'
+        ext.kotlin_version = '1.0.4'
+        ext.vaadin_version= '7.7.1'
         repositories {
             mavenCentral()
         }
