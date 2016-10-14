@@ -2,31 +2,25 @@ package com.github.kotlinee.framework.vaadin
 
 import com.github.kotlinee.framework.TreeIterator
 import com.github.kotlinee.framework.extendedEntityManager
-import com.github.kotlinee.framework.vaadin.ShortcutListeners
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
-import com.vaadin.data.Container
 import com.vaadin.data.Item
 import com.vaadin.data.fieldgroup.BeanFieldGroup
-import com.vaadin.data.util.GeneratedPropertyContainer
-import com.vaadin.data.util.PropertyValueGenerator
 import com.vaadin.data.util.converter.Converter
 import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.event.ShortcutListener
-import com.vaadin.server.*
+import com.vaadin.server.AbstractClientConnector
+import com.vaadin.server.Page
+import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
-import com.vaadin.ui.renderers.ButtonRenderer
-import com.vaadin.ui.renderers.ClickableRenderer
 import com.vaadin.ui.themes.ValoTheme
 import java.io.Serializable
-import java.lang.reflect.Field
 import java.util.*
-import javax.servlet.http.Cookie
 
 /**
  * Creates a container which lists all instances of given entity. To restrict the list to a particular entity only,
@@ -183,7 +177,7 @@ fun Image.onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
 
 /**
  * Represents a Vaadin component width or height.
- * @param size the size
+ * @param size the size, may be negative for undefined/wrapContent size.
  * @param units states the size units.
  */
 data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
@@ -203,6 +197,16 @@ data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
             get() = isWrapContent
 
     override fun toString() = "$size${units.symbol}"
+
+    val isPixels: Boolean get() = units == Sizeable.Unit.PIXELS
+
+    val isPercent: Boolean get() = units == Sizeable.Unit.PERCENTAGE
+
+    /**
+     * True if the component is of fixed size, e.g. 48px, 20em etc. When the size is fixed,
+     * it cannot be [isWrapContent] nor [isFillParent]
+     */
+    val isFixed: Boolean get() = !isPercent && size >= 0
 }
 
 /**
