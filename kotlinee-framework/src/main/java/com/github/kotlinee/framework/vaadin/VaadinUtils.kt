@@ -414,3 +414,7 @@ var Button.clickShortcut: KeyShortcut
 var AbstractOrderedLayout.isMargin: Boolean
 get() = margin.hasAll()
 set(value) { setMargin(value) }
+
+fun Notification.info(caption: String, description: String? = null) = Notification.show(caption, description, Notification.Type.HUMANIZED_MESSAGE)
+fun Notification.warn(caption: String, description: String? = null) = Notification.show(caption, description, Notification.Type.WARNING_MESSAGE)
+fun Notification.error(caption: String, description: String? = null) = Notification.show(caption, description, Notification.Type.ERROR_MESSAGE)
