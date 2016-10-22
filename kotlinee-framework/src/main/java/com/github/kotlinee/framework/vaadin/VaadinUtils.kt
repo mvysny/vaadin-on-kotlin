@@ -310,6 +310,8 @@ fun HasComponents.walk(): Iterable<Component> = Iterable {
  */
 fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
 
+fun navigateBack() = goBack()
+
 /**
  * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
  */
