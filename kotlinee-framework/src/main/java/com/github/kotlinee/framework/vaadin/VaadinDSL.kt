@@ -6,17 +6,58 @@ import com.vaadin.server.Resource
 import com.vaadin.ui.*
 
 /**
+ * A simplified version of [ComponentContainer], for certain special lightweight containers.
+ */
+interface SimpleContainer : HasComponents {
+    /**
+     * Adds the component into this container.
+     * @param component the component to be added.
+     */
+    fun addComponent(component: Component)
+
+    /**
+     * Removes the component from this container.
+     * @param component the component to be removed.
+     */
+    fun removeComponent(component: Component)
+
+    fun removeAllComponents() {
+        // make a copy of children, to avoid concurrent modification exceptions when removing
+        toList().forEach { removeComponent(it) }
+    }
+
+    /**
+     * Lists all children.
+     *
+     * This implementation is highly ineffective as it polls the [HasComponents.iterator]
+     * and creates new list on every call. It is advised to override this property and return the inner list.
+     */
+    val children: List<Component>
+    get() = toList()
+
+    /**
+     * Gets the number of children this [SimpleContainer] has. This
+     * must be symmetric with what [HasComponents.iterator] returns.
+     * @return The number of child components this container has.
+     */
+    fun getComponentCount() = children.count()
+}
+
+/**
  * When introducing extensions for your custom components, just call this in your method. For example:
  *
  * `fun HasComponents.shinyComponent(caption: String? = null, block: ShinyComponent.()->Unit = {}) = init(ShinyComponent(caption), block)`
  *
- * Input [component] is automatically added to the children of this [ComponentContainer], or replaces content in [SingleComponentContainer].
+ * Input [component] is automatically added to the children of this [ComponentContainer], or replaces content in [SingleComponentContainer] or [PopupView].
+ * For custom lightweight containers just implement the [SimpleContainer] interface.
+ *
  * @param component the component to attach
  * @param block optional block to run over the component, allowing you to add children to the [component]
  */
 fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
     when (this) {
         is ComponentContainer -> addComponent(component)
+        is SimpleContainer -> addComponent(component)
         is SingleComponentContainer -> content = component
         is PopupView -> popupComponent = component
         else -> throw RuntimeException("Unsupported component container $this")
