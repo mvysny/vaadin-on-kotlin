@@ -169,7 +169,8 @@ fun Button.setPrimary() {
  * @param listener the listener to set. Only called on left-click.
  */
 fun Image.onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
-    getListeners(MouseEvents.ClickEvent::class.java).toList().forEach { removeClickListener(it as MouseEvents.ClickListener) }
+    // warning, here we may receive listeners for ContextClickEvents!
+    getListeners(MouseEvents.ClickEvent::class.java).filterIsInstance<MouseEvents.ClickListener>().forEach { removeClickListener(it) }
     addClickListener {
         if (it.button == MouseEventDetails.MouseButton.LEFT) listener(it)
     }

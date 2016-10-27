@@ -66,6 +66,9 @@ fun <R> async(block: ()->R): Future<R> = executor!!.submit(Callable<R> {
     }
 })
 
+val asyncExecutor: ScheduledExecutorService
+get() = executor!!
+
 /**
  * Creates and executes a periodic action that becomes enabled first
  * after the given initial delay, and subsequently with the given
