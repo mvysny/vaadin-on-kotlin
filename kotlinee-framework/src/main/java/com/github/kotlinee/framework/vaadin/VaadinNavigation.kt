@@ -56,10 +56,10 @@ class AutoViewProvider : ServletContainerInitializer {
             return if (viewNameToClass.containsKey(viewName)) viewName else null
         }
 
-        private fun parseViewName(viewAndParameters: String) : String {
+        internal fun parseViewName(viewAndParameters: String) : String {
             val viewName = viewAndParameters.removePrefix("!")
             val firstSlash = viewName.indexOf('/')
-            return viewName.substring(0..(if(firstSlash < 0) viewName.length - 1 else firstSlash))
+            return viewName.substring(0..(if(firstSlash < 0) viewName.length - 1 else firstSlash - 1))
         }
 
         override fun getView(viewName: String): View? = viewNameToClass.get(viewName)?.newInstance()
