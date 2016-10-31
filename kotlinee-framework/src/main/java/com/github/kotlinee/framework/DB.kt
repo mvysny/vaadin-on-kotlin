@@ -22,9 +22,11 @@ import javax.sql.DataSource
 
 private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
 
-private val entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
-
-private object ConnectionDS: DataSource {
+/**
+ * A basic implementation of [DataSource] which polls given factory for connections.
+ * @property emf poll this factory for JDBC connections.
+ */
+class EntityManagerFactoryDataSource(val emf: EntityManagerFactory): DataSource {
     override fun setLogWriter(out: PrintWriter?) = throw UnsupportedOperationException()
 
     override fun setLoginTimeout(seconds: Int) = throw UnsupportedOperationException()
@@ -39,34 +41,33 @@ private object ConnectionDS: DataSource {
 
     override fun <T : Any?> unwrap(iface: Class<T>?) = throw UnsupportedOperationException()
 
-    override fun getConnection(): Connection? = PersistenceContext.create().connection
+    override fun getConnection(): Connection? = PersistenceContext(emf.createEntityManager()).connection
 
     override fun getConnection(username: String?, password: String?): Connection? = connection
 }
-
-/**
- * The data source.
- */
-val dataSource: DataSource = ConnectionDS
 
 private class DisableTransactionControlEMDelegate(val em: EntityManager): EntityManager by em {
     override fun getTransaction(): EntityTransaction? = throw IllegalStateException("Transactions are managed by the db() function")
 }
 
 /**
- * Provides the entity manager, the JDBC connection and several utility methods.
+ * Returns a new [EntityManager] which proxies all calls to this but fails with [.getTransaction] is called.
+ */
+fun EntityManager.withTransactionControlDisabled(): EntityManager = DisableTransactionControlEMDelegate(this)
+
+/**
+ * Provides a [DataSource] which creates JDBC connections using this factory.
+ */
+val EntityManagerFactory.dataSource: DataSource
+get() = EntityManagerFactoryDataSource(this)
+
+/**
+ * Provides access to a single JDBC connection and its [EntityManager], and several utility methods.
+ *
+ * The [db] function executes block in context of this class.
  * @property em the entity manager reference
  */
 class PersistenceContext(val em: EntityManager) : Closeable {
-    companion object {
-        fun create(disableTransactionControl: Boolean = false): PersistenceContext {
-            var em = entityManagerFactory.createEntityManager()
-            if (disableTransactionControl) {
-                em = DisableTransactionControlEMDelegate(em)
-            }
-            return PersistenceContext(em)
-        }
-    }
     /**
      * The underlying JDBC connection.
      */
@@ -98,21 +99,21 @@ fun <R> db(block: PersistenceContext.()->R): R {
     if (context != null) {
         return context.block()
     } else {
-        context = PersistenceContext.create(disableTransactionControl = true)
+        val em = Kotlinee.entityManagerFactory.createEntityManager()
+        context = PersistenceContext(em.withTransactionControlDisabled())
         try {
             contexts.set(context)
             return context.use {
-                val transaction = (context.em as DisableTransactionControlEMDelegate).em.transaction
+                val transaction = em.transaction
                 transaction.begin()
                 var success = false
                 val result: R
                 try {
                     result = it.block()
+                    transaction.commit()
                     success = true
                 } finally {
-                    if (success) {
-                        transaction.commit()
-                    } else {
+                    if (!success) {
                         try {
                             transaction.rollback()
                         } catch (t: Throwable) {
@@ -199,7 +200,7 @@ class ExtendedEMManager: ServletRequestListener {
             if (!ongoingServletRequest) throw IllegalStateException("Not called from servlet thread")
             var delegate = extendedEMDelegate.get()
             if (delegate == null) {
-                delegate = PersistenceContext.create().em
+                delegate = Kotlinee.entityManagerFactory.createEntityManager()
                 extendedEMDelegate.set(delegate)
             }
             return delegate

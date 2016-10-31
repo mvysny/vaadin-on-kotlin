@@ -7,39 +7,82 @@ import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+import javax.persistence.EntityManagerFactory
+import javax.persistence.Persistence
 import javax.servlet.http.Cookie
+import javax.sql.DataSource
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-private val log = LoggerFactory.getLogger("kotlinee")
-
-/**
- * Initializes the KotlinEE framework. Just call this from your context listener.
- */
-fun kotlineeInit() {
-    // TomEE also has by default 5 threads, so I guess this is okay :-D
-    executor = Executors.newScheduledThreadPool(5, AsyncThreadFactory)
-}
-
-/**
- * Destroys the KotlinEE framework. Just call this from your context listener.
- */
-fun kotlineeDestroy() {
-    executor!!.shutdown()
-    executor!!.awaitTermination(1, TimeUnit.DAYS)
-    executor = null
-}
-
-private object AsyncThreadFactory : ThreadFactory {
-    private val id = AtomicInteger()
-    override fun newThread(r: Runnable): Thread? {
-        val thread = Thread(r)
-        thread.name = "async-${id.incrementAndGet()}"
-        return thread
+object Kotlinee {
+    /**
+     * Initializes the KotlinEE framework. Just call this from your context listener.
+     */
+    fun kotlineeInit() = synchronized(this) {
+        // TomEE also has by default 5 threads, so I guess this is okay :-D
+        executor = Executors.newScheduledThreadPool(5, threadFactory)
     }
-}
 
-private var executor: ScheduledExecutorService? = null
+    /**
+     * Destroys the KotlinEE framework. Just call this from your context listener.
+     */
+    fun kotlineeDestroy() = synchronized(this) {
+        if (isStarted) {
+            executor!!.shutdown()
+            executor!!.awaitTermination(1, TimeUnit.DAYS)
+            executor = null
+        }
+    }
+
+    /**
+     * True if [kotlineeInit] has been called.
+     */
+    val isStarted: Boolean
+    get() = synchronized(this) { executor != null }
+
+    private var executor: ScheduledExecutorService? = null
+
+    private fun checkStarted() {
+        if (!isStarted) throw IllegalStateException("kotlineeInit() has not been called, or Kotlinee is already destroyed")
+    }
+
+    /**
+     * The executor used by [async] and [scheduleAtFixedRate]. You can submit your own tasks as you wish.
+     */
+    val asyncExecutor: ScheduledExecutorService
+        get() = synchronized(this) { checkStarted(); executor!! }
+
+    /**
+     * The thread factory used by the [async] method. By default the factory
+     * creates non-daemon threads named "async-ID".
+     *
+     * Needs to be set before [kotlineeInit] is called.
+     */
+    @Volatile
+    var threadFactory: ThreadFactory = object : ThreadFactory {
+        private val id = AtomicInteger()
+        override fun newThread(r: Runnable): Thread? {
+            val thread = Thread(r)
+            thread.name = "async-${id.incrementAndGet()}"
+            return thread
+        }
+    }
+
+    internal val log = LoggerFactory.getLogger(javaClass)
+
+    /**
+     * Used for data persistence - the JDBC/EntityManager/JPA thingy. By default uses the "sample" persistence unit
+     * present in `META-INF/persistence.xml` but you can of course use any factory you wish.
+     */
+    @Volatile
+    var entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
+
+    /**
+     * Shorthand for [entityManagerFactory].dataSource
+     */
+    val dataSource: DataSource
+    get() = entityManagerFactory.dataSource
+}
 
 /**
  * Submits a value-returning task for execution and returns a
@@ -57,17 +100,14 @@ private var executor: ScheduledExecutorService? = null
  * @throws RejectedExecutionException if the task cannot be
  *         scheduled for execution
  */
-fun <R> async(block: ()->R): Future<R> = executor!!.submit(Callable<R> {
+fun <R> async(block: () -> R): Future<R> = Kotlinee.asyncExecutor.submit(Callable<R> {
     try {
         block.invoke()
     } catch (t: Throwable) {
-        log.error("Async failed: $t", t)
+        Kotlinee.log.error("Async failed: $t", t)
         throw t
     }
 })
-
-val asyncExecutor: ScheduledExecutorService
-get() = executor!!
 
 /**
  * Creates and executes a periodic action that becomes enabled first
@@ -93,13 +133,13 @@ get() = executor!!
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = executor!!.scheduleAtFixedRate(
+fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = Kotlinee.asyncExecutor.scheduleAtFixedRate(
         {
             try {
                 command.invoke()
             } catch (t: Throwable) {
                 // if nobody is using Future to wait for the result of this op, the exception is lost. better log it here.
-                log.error("Async failed: $t", t)
+                Kotlinee.log.error("Async failed: $t", t)
                 throw t
             }
         }, initialDelay, period, TimeUnit.MILLISECONDS)
@@ -201,3 +241,10 @@ object Cookies {
 infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
 
 infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
+
+/**
+ * Checks that this thread runs with Vaadin UI set.
+ * @return the UI instance, not null.
+ * @throws IllegalStateException if not run in the UI thread.
+ */
+fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread")
