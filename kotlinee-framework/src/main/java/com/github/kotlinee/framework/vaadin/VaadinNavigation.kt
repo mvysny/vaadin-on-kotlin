@@ -125,6 +125,11 @@ inline fun <reified V : View> navigateToView(vararg params: String) = navigateTo
 val ViewChangeListener.ViewChangeEvent.parameterList: List<String>
     get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8") }
 
+fun ViewChangeListener.ViewChangeEvent.unshortenParam(index: Int): Any? {
+    val list = parameterList
+    return if (list.size <= index) null else Session.urlParamShortener[list[index]]
+}
+
 /**
  * By default the view will be assigned a colon-separated name, derived from your view class name. The trailing View is dropped.
  * For example, UserListView will be mapped to user-list. You can attach this annotation to a view, to modify this behavior.
@@ -139,23 +144,19 @@ annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
  * I cannot transfer large objects as parameters via Navigator fragment URLs. Not even serialized/base64-encoded: 2kb URLs are simply gross ;)
  *
  * So, instead, I will temporarily remember such objects in session and will assign them short IDs. Kinda like URL shorteners, but with
- * a catch: bookmarkable URLs are valid only until the server is restarted. Also, at most 30 items are supported per key, to avoid session over-population.
+ * a catch: bookmarkable URLs are valid only until the user session is valid. Also, at most 100 items are supported per session, to avoid session over-population.
  *
- * Usage: obtain from Session via `Session.urlShortener()` or `Session.urlShortener(key)`
- *
- * @param T storing values of this type.
- * @property sessionKey the list is stored under this Vaadin session key.
  * @author mvy
  */
-class UrlParamShortener<T : Serializable> private constructor(private val sessionKey: String) : Serializable {
+class UrlParamShortener : Serializable {
     /**
      * Soft reference may be GC-ed randomly. A round-robin with 30 items should suffice.
      */
-    private var oldestItemIndex = 0
+    private var latestIDUsed = 0
     /**
      * Mutable list of remembered items.
      */
-    private val items = ArrayList<T>()
+    private val items = TreeMap<Int, Any>()
 
     /**
      * Returns the value stored under given ID. The ID must have been generated via the [put] item.
@@ -163,13 +164,10 @@ class UrlParamShortener<T : Serializable> private constructor(private val sessio
      * @return the item, may be null if there is no such item stored under given key or it has been forgotten (the shortener stores at most
      * 30 items).
      */
-    operator fun get(pathParam: String): T? {
-        val entryOrd = Integer.parseInt(pathParam)
-        return if (items.size <= entryOrd) null else items[entryOrd]
-    }
+    operator fun get(pathParam: String): Any? = items[pathParam.toInt()]
 
     private fun saveToSession() {
-        Session[sessionKey] = this
+        Session[javaClass.kotlin] = this
     }
 
     /**
@@ -177,47 +175,17 @@ class UrlParamShortener<T : Serializable> private constructor(private val sessio
      * @param item the item to shorten
      * @return the item ID, an Int which is automatically converted to String
      */
-    fun put(item: T): String {
-        var index = items.indexOf(item)
-        if (index < 0) {
-            if (items.size < MAX_LEN) {
-                index = items.size
-                items.add(item)
-            } else {
-                index = oldestItemIndex++ // vymazeme najstarsi item
-                if (oldestItemIndex >= items.size) {
-                    oldestItemIndex = 0
-                }
-                items[index] = item
-            }
+    fun put(item: Any): String = synchronized(this) {
+        latestIDUsed++
+        items[latestIDUsed] = item
+        while (items.size > MAX_LEN) {
+            items.remove(items.firstKey())
         }
         saveToSession()
-        return "" + index
+        return latestIDUsed.toString()
     }
 
     companion object {
-        private const val MAX_LEN = 30
-
-        internal fun <T : Serializable> fromSession(key: String) =
-                Session["SHORTENER_$key"] as UrlParamShortener<T>? ?: UrlParamShortener<T>(key)
+        private const val MAX_LEN = 100
     }
 }
-
-/**
- * Returns the URL shortener for given class. Mostly, a view class uses one shortener to shorten its parameter,
- * just pass the view's class here.
- * @param T the type of item this shortener will store.
- * @param O the owner class. Shorthand for `urlShortener(owner.javaClass.name)`
- * @return the shortener
- */
-inline fun <T : Serializable, reified O: Any> Session.urlShortener(): UrlParamShortener<T> = urlShortener(O::class.java.name)
-
-/**
- * Returns the URL shortener stored in a session under given key.
- * @param key the key, prefixed with SHORTENER_ to avoid session key conflicts.
- * @return the shortener
- */
-fun <T : Serializable> Session.urlShortener(key: String): UrlParamShortener<T> {
-    return UrlParamShortener.fromSession(key)
-}
-

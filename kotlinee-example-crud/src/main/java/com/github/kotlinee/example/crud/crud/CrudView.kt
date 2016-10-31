@@ -46,6 +46,7 @@ class CrudView: VerticalLayout(), View {
                 }
                 column(Person::name)
                 column(Person::age)
+                button("show", "Show", { PersonView.navigateTo(db { em.get<Person>(it.itemId) } ) })
                 button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
                 button("delete", "Delete", { deletePerson(it.itemId as Long) })
             }

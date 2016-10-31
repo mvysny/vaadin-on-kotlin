@@ -3,6 +3,7 @@ package com.github.kotlinee.example.crud
 import com.github.kotlinee.example.crud.crud.Person
 import com.github.kotlinee.framework.Session
 import com.github.kotlinee.framework.SessionScoped
+import org.slf4j.LoggerFactory
 import java.io.Serializable
 
 /**
@@ -12,8 +13,9 @@ import java.io.Serializable
  * @author mvy
  */
 class LastAddedPersonCache private constructor() : Serializable {
+    private val log = LoggerFactory.getLogger(javaClass)
     init {
-        println("LastAddedPersonCache created")
+        log.warn("LastAddedPersonCache created")
     }
 
     /**

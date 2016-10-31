@@ -1,5 +1,6 @@
 package com.github.kotlinee.framework
 
+import com.github.kotlinee.framework.vaadin.UrlParamShortener
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
@@ -11,6 +12,7 @@ import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
 import javax.servlet.http.Cookie
 import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 object Kotlinee {
@@ -165,7 +167,7 @@ val Long.seconds: Long get() = TimeUnit.SECONDS.toMillis(this)
 class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
 
-    private fun getOrCreate(): R = UI.getCurrent().session.getOrCreate()
+    private fun getOrCreate(): R = checkUIThread().session.getOrCreate()
 
     private fun VaadinSession.getOrCreate(): R {
         var result: R? = getAttribute(clazz)
@@ -197,14 +199,34 @@ object Session {
      * @param key the key
      * @return the attribute value, may be null
      */
-    operator fun get(key: String): Any? = UI.getCurrent().session.getAttribute(key)
+    operator fun get(key: String): Any? = checkUIThread().session.getAttribute(key)
+
+    /**
+     * Returns the attribute stored in this session under given key.
+     * @param key the key
+     * @return the attribute value, may be null
+     */
+    operator fun <T: Any> get(key: KClass<T>): T? = checkUIThread().session.getAttribute(key.java)
 
     /**
      * Stores given value under given key in a session. Removes the mapping if value is null
      * @param key the key
      * @param value the value to store, may be null if
      */
-    operator fun set(key: String, value: Any?) = UI.getCurrent().session.setAttribute(key, value)
+    operator fun set(key: String, value: Any?) = checkUIThread().session.setAttribute(key, value)
+
+    /**
+     * Stores given value under given key in a session. Removes the mapping if value is null
+     * @param key the key
+     * @param value the value to store, may be null if
+     */
+    operator fun <T: Any> set(key: KClass<T>, value: T?) = checkUIThread().session.setAttribute(key.java, value)
+
+    /**
+     * Shortens the URL parameters to a simple number. If you need to pass complex objects as View parameters, then this
+     * class is for you.
+    */
+    val urlParamShortener: UrlParamShortener by SessionScoped.get()
 }
 
 /**
