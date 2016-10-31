@@ -156,7 +156,7 @@ class UrlParamShortener : Serializable {
     /**
      * Mutable list of remembered items.
      */
-    private val items = TreeMap<Int, Any>()
+    private val items = TreeMap<Int, Serializable>()
 
     /**
      * Returns the value stored under given ID. The ID must have been generated via the [put] item.
@@ -164,7 +164,7 @@ class UrlParamShortener : Serializable {
      * @return the item, may be null if there is no such item stored under given key or it has been forgotten (the shortener stores at most
      * 30 items).
      */
-    operator fun get(pathParam: String): Any? = items[pathParam.toInt()]
+    operator fun get(pathParam: String): Serializable? = items[pathParam.toInt()]
 
     private fun saveToSession() {
         Session[javaClass.kotlin] = this
@@ -175,7 +175,7 @@ class UrlParamShortener : Serializable {
      * @param item the item to shorten
      * @return the item ID, an Int which is automatically converted to String
      */
-    fun put(item: Any): String = synchronized(this) {
+    fun put(item: Serializable): String = synchronized(this) {
         latestIDUsed++
         items[latestIDUsed] = item
         while (items.size > MAX_LEN) {
