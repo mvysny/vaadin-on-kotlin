@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
 import javax.servlet.http.Cookie
-import javax.sql.DataSource
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
@@ -78,10 +77,9 @@ object Kotlinee {
     var entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
 
     /**
-     * Shorthand for [entityManagerFactory].dataSource
+     * Shorthand for [entityManagerFactory].toDataSource()
      */
-    val dataSource: DataSource
-    get() = entityManagerFactory.dataSource
+    fun getDataSource() = entityManagerFactory.toDataSource()
 }
 
 /**

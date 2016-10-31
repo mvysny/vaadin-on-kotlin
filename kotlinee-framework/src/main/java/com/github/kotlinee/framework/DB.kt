@@ -41,7 +41,7 @@ class EntityManagerFactoryDataSource(val emf: EntityManagerFactory): DataSource 
 
     override fun <T : Any?> unwrap(iface: Class<T>?) = throw UnsupportedOperationException()
 
-    override fun getConnection(): Connection? = PersistenceContext(emf.createEntityManager()).connection
+    override fun getConnection(): Connection? = emf.createEntityManager().connection
 
     override fun getConnection(username: String?, password: String?): Connection? = connection
 }
@@ -51,15 +51,21 @@ private class DisableTransactionControlEMDelegate(val em: EntityManager): Entity
 }
 
 /**
- * Returns a new [EntityManager] which proxies all calls to this but fails with [.getTransaction] is called.
+ * Returns a new [EntityManager] which delegates all calls `this`, with the following exceptions:
+ * * The [EntityManager.getTransaction] will fail with [IllegalStateException].
  */
 fun EntityManager.withTransactionControlDisabled(): EntityManager = DisableTransactionControlEMDelegate(this)
 
 /**
  * Provides a [DataSource] which creates JDBC connections using this factory.
  */
-val EntityManagerFactory.dataSource: DataSource
-get() = EntityManagerFactoryDataSource(this)
+fun EntityManagerFactory.toDataSource(): DataSource = EntityManagerFactoryDataSource(this)
+
+/**
+ * Provides the JDBC connection used by this entity manager.
+ */
+val EntityManager.connection: Connection
+get() = PersistenceContext(this).connection
 
 /**
  * Provides access to a single JDBC connection and its [EntityManager], and several utility methods.
