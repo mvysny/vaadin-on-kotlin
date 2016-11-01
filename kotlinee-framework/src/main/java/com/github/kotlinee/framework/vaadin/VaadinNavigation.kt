@@ -123,7 +123,7 @@ inline fun <reified V : View> navigateToView(vararg params: String) = navigateTo
  * @return list of parameters, empty if there are no parameters.
  */
 val ViewChangeListener.ViewChangeEvent.parameterList: List<String>
-    get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8") }
+    get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8")!! } .filterNot(String::isEmpty)
 
 fun ViewChangeListener.ViewChangeEvent.unshortenParam(index: Int): Any? {
     val list = parameterList
