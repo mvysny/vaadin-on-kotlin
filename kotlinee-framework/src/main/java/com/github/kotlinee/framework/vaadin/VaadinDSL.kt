@@ -4,14 +4,11 @@ import com.vaadin.data.Container
 import com.vaadin.server.ExternalResource
 import com.vaadin.server.Resource
 import com.vaadin.ui.*
-import java.io.Serializable
 
 /**
  * A simplified version of [ComponentContainer], for certain special lightweight containers.
- *
- * Does not extend [HasComponents] on purpose - the container may decide not to nest the component in itself as children.
  */
-interface SimpleContainer : Serializable {
+interface SimpleContainer : HasComponents {
     /**
      * Adds the component into this container.
      * @param component the component to be added.
@@ -26,13 +23,24 @@ interface SimpleContainer : Serializable {
 
     fun removeAllComponents() {
         // make a copy of children, to avoid concurrent modification exceptions when removing
-        children.toList().forEach { removeComponent(it) }
+        toList().forEach { removeComponent(it) }
     }
 
     /**
-     * Lists all children. The list itself is immutable, use [.addComponent] and [.removeComponent] to mutate the container.
+     * Lists all children.
+     *
+     * This implementation is highly ineffective as it polls the [HasComponents.iterator]
+     * and creates new list on every call. It is advised to override this property and return the inner list.
      */
     val children: List<Component>
+    get() = toList()
+
+    /**
+     * Gets the number of children this [SimpleContainer] has. This
+     * must be symmetric with what [HasComponents.iterator] returns.
+     * @return The number of child components this container has.
+     */
+    fun getComponentCount() = children.count()
 }
 
 /**
