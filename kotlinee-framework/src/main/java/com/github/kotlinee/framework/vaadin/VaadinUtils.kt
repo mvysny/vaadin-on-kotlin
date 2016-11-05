@@ -389,7 +389,7 @@ fun shortcutListener(shortcut: Int, block: () -> Unit) = shortcutListener(KeySho
  * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
  */
 fun Component.addGlobalShortcutListener(shortcut: KeyShortcut, action: () -> Unit): ShortcutListener {
-    val listener = shortcutListener(shortcut.keyCode, action)
+    val listener = shortcutListener(shortcut, action)
     (this as AbstractComponent).addShortcutListener(listener)
     return listener
 }
