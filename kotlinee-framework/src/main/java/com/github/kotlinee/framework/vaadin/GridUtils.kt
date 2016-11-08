@@ -56,8 +56,9 @@ class GridColumnBuilder(val grid: Grid) {
      * @param propertyId the container property ID
      */
     fun column(propertyId: Any?, block: Grid.Column.()->Unit = {}) {
+        val column = grid.getColumn(propertyId) ?: throw IllegalArgumentException("No such property $propertyId, available properties: ${grid.columns}")
         columnProperties += propertyId
-        grid.getColumn(propertyId).block()
+        column.block()
     }
 
     /**
