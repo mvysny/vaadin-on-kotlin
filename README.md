@@ -105,7 +105,7 @@ if (button.w.isFillParent) { ... }
 
 Please read this (potentionally opinionated, offensive and subjective - I apologize upfront) post first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
 
-In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following issues:
+In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following JavaEE issues:
 
 * Crashes when accessing @SessionScoped beans from websocket xhr code - https://vaadin.com/forum#!/thread/11474306 ; @NormalUIScoped produces
 org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOut and javax.ejb.NoSuchEJBException - you need to add
