@@ -103,7 +103,7 @@ if (button.w.isFillParent) { ... }
 
 ## Motivation
 
-Please read this first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
+Please read this (potentionally opinionated, offensive and subjective - I apologize upfront) post first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
 
 In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following issues:
 
