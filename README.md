@@ -143,6 +143,7 @@ Please find the very simple sample application here: [kotlinee-example-crud](kot
 * Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/crud) on how to write one yourself.
 * Logging: uses SLF4j with Logback, configured as follows: [logback.xml](kotlinee-example-crud/src/main/resources/logback.xml)
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/LastAddedPersonCache.kt).
+* Running: [kotlinee-example-crud](kotlinee-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
 ## Motivation
 
@@ -187,10 +188,13 @@ Ignored:
 
 ## To run the WAR outside of any IDE:
 
+Run it with Jetty Runner:
+
 * Download Jetty Runner here: http://www.eclipse.org/jetty/documentation/current/runner.html
 * Run `./gradlew`
 * Locate the WAR in `build/libs/`
 * Run the WAR via the Runner: `java -jar jetty-runner*.jar *.war`
+* Open http://localhost:8080/
 
 ## To develop in IDEA:
 
