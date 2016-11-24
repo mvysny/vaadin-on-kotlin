@@ -194,7 +194,7 @@ Run it with Jetty Runner:
 * Run `./gradlew`
 * Locate the WAR in `build/libs/`
 * Run the WAR via the Runner: `java -jar jetty-runner*.jar *.war`
-* Open http://localhost:8080/
+* Open [http://localhost:8080](http://localhost:8080)
 
 ## To develop in IDEA:
 
