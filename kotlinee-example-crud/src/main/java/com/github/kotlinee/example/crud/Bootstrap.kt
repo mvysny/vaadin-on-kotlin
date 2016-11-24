@@ -23,7 +23,6 @@ import javax.ws.rs.core.Application
  */
 @WebListener
 class Bootstrap: ServletContextListener {
-    private val log = LoggerFactory.getLogger(javaClass)
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
         log.info("Running DB migrations")
@@ -40,6 +39,10 @@ class Bootstrap: ServletContextListener {
         log.info("Destroying KotlinEE")
         Kotlinee.kotlineeDestroy()
         log.info("Shutdown complete")
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(Bootstrap::class.java)
     }
 }
 

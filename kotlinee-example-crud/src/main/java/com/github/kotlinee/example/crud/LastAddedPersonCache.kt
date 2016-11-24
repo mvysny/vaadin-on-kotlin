@@ -13,7 +13,6 @@ import java.io.Serializable
  * @author mvy
  */
 class LastAddedPersonCache private constructor() : Serializable {
-    private val log = LoggerFactory.getLogger(javaClass)
     init {
         log.warn("LastAddedPersonCache created")
     }
@@ -22,6 +21,10 @@ class LastAddedPersonCache private constructor() : Serializable {
      * A simple placeholder where the last-created person is stored.
      */
     var lastAdded: Person? = null
+
+    companion object {
+        private val log = LoggerFactory.getLogger(LastAddedPersonCache::class.java)
+    }
 }
 
 /**
