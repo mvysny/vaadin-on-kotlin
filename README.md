@@ -127,7 +127,7 @@ Please find the very simple sample application here: [kotlinee-example-crud](kot
 * Linking to a database. Kotlinee uses Hibernate for JPA O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](kotlinee-example-crud/build.gradle) the db section for more details.
   To link to the database, we use the traditional JPA [persistence.xml](kotlinee-example-crud/src/main/resources/META-INF/persistence.xml). Please note that HikariCP is used for DB
-  connection pooling, which provides production-ready performance.
+  connection pooling, which provides production-grade performance.
 * Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
   The migration is safe on cluster as well as a database lock is obtained.
   Please see [Bootstrap.kt](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
