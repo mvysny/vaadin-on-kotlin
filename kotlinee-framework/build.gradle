@@ -22,6 +22,9 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.2.4.Final'
     compile 'com.vaadin.addon:jpacontainer:3.2.0'
     testCompile 'com.h2database:h2:1.4.193'
+
+    // IDEA language injections
+    compile 'com.intellij:annotations:12.0'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {

@@ -19,6 +19,7 @@ import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.label.ContentMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import org.intellij.lang.annotations.Language
 import java.io.Serializable
 import java.util.*
 
@@ -47,7 +48,7 @@ fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
  * Shows given html in this label.
  * @param html the html code to show.
  */
-fun Label.html(html: String?) {
+fun Label.html(@Language("HTML") html: String?) {
     contentMode = ContentMode.HTML
     value = html
 }
