@@ -48,7 +48,7 @@ class Bootstrap: ServletContextListener {
 
 @WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
-class MyUIServlet : VaadinServlet() { }
+class MyUIServlet : VaadinServlet()
 
 /**
  * RESTEasy configuration. Do not use Jersey, it has a tons of dependencies
