@@ -6,41 +6,25 @@ import com.vaadin.server.Resource
 import com.vaadin.ui.*
 
 /**
- * A simplified version of [ComponentContainer], for certain special lightweight containers.
+ * A specialized version of [ComponentContainer], for certain special containers. The DSL's
+ * [init] method will invoke [addComponent] method with the components being registered.
+ *
+ * For example, there may be a special container (say, a ticker) which does not attach the components as its Vaadin
+ * children immediately - rather it only remembers the components added via [addComponent] in a special list and
+ * Vaadin-attaches them once every 10 seconds, one at a time. This way, you can use the DSL to define all children (or
+ * pages) of this special component, without having them attached immediately as Vaadin children.
  */
-interface SimpleContainer : HasComponents {
+interface SpecialContainer : HasComponents {
     /**
-     * Adds the component into this container.
+     * Adds the component into this container. Called by [init] when DSL-adding children to this container.
+     *
+     * Note that there is no `removeComponent()` method nor any sort of support for listing of the components added via this
+     * method. This is because the DSL only needs to add the components; the component list itself highly depends on the implementation
+     * of the component and might cause confusion with the [HasComponents] list of attached components.
+     * Therefore, I'm keeping this interface as dumb as possible.
      * @param component the component to be added.
      */
     fun addComponent(component: Component)
-
-    /**
-     * Removes the component from this container.
-     * @param component the component to be removed.
-     */
-    fun removeComponent(component: Component)
-
-    fun removeAllComponents() {
-        // make a copy of children, to avoid concurrent modification exceptions when removing
-        toList().forEach { removeComponent(it) }
-    }
-
-    /**
-     * Lists all children.
-     *
-     * This implementation is highly ineffective as it polls the [HasComponents.iterator]
-     * and creates new list on every call. It is advised to override this property and return the inner list.
-     */
-    val children: List<Component>
-    get() = toList()
-
-    /**
-     * Gets the number of children this [SimpleContainer] has. This
-     * must be symmetric with what [HasComponents.iterator] returns.
-     * @return The number of child components this container has.
-     */
-    fun getComponentCount() = children.count()
 }
 
 /**
@@ -49,7 +33,7 @@ interface SimpleContainer : HasComponents {
  * `fun HasComponents.shinyComponent(caption: String? = null, block: ShinyComponent.()->Unit = {}) = init(ShinyComponent(caption), block)`
  *
  * Input [component] is automatically added to the children of this [ComponentContainer], or replaces content in [SingleComponentContainer] or [PopupView].
- * For custom lightweight containers just implement the [SimpleContainer] interface.
+ * For custom containers just implement the [SpecialContainer] interface.
  *
  * @param component the component to attach
  * @param block optional block to run over the component, allowing you to add children to the [component]
@@ -57,7 +41,7 @@ interface SimpleContainer : HasComponents {
 fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
     when (this) {
         is ComponentContainer -> addComponent(component)
-        is SimpleContainer -> addComponent(component)
+        is SpecialContainer -> addComponent(component)
         is SingleComponentContainer -> content = component
         is PopupView -> popupComponent = component
         else -> throw RuntimeException("Unsupported component container $this")
