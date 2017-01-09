@@ -32,6 +32,7 @@ object Kotlinee {
             executor!!.shutdown()
             executor!!.awaitTermination(1, TimeUnit.DAYS)
             executor = null
+            entityManagerFactory.close()
         }
     }
 
@@ -77,6 +78,7 @@ object Kotlinee {
      */
     @Volatile
     var entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
+    set(value) { field.close(); field = value }
 
     /**
      * Shorthand for [entityManagerFactory].toDataSource()
