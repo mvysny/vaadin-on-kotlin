@@ -77,7 +77,7 @@ class PersistenceContext(val em: EntityManager) : Closeable {
     /**
      * The underlying JDBC connection.
      */
-    val connection: Connection by lazy(LazyThreadSafetyMode.NONE) { session.connection() }
+    val connection: Connection get() = session.connection()
 
     /**
      * Hibernate session; you can e.g. create a criteria query from this session:
