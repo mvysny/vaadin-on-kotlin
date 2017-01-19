@@ -1,7 +1,7 @@
 defaultTasks 'clean', 'build'
 
 allprojects {
-    group 'com.github.kotlinee'
+    group 'com.github.vok'
     version '1.0-SNAPSHOT'
 
     buildscript {

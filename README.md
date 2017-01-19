@@ -1,4 +1,4 @@
-# pokusy_kotlinee
+# Vaadin On Kotlin
 
 Lots of projects actually do not use all capabilities of JavaEE, just a subset of JavaEE features: mostly the database access of course,
 the Async, the REST webservices, and that's it.
