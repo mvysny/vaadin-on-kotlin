@@ -20,7 +20,7 @@ dependencies {
 
     // db
     compile('org.hibernate:hibernate-core:5.2.6.Final') {
-        exclude group: 'javax.enterprise'  // there is no need for EL-API nor @Inject stuff
+        exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
     }
     compile 'com.vaadin.addon:jpacontainer:3.2.0'
     testCompile 'com.h2database:h2:1.4.193'
