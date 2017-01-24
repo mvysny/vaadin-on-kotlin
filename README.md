@@ -3,7 +3,7 @@
 A new way of writing simple Vaadin apps. Only requires Servlet container such as Jetty or Tomcat to run.
 Features:
 
-* Full RDBMS stack, from automatic database migrations to O/R mapping
+* Full RDBMS+O/R stack, from automatic database migrations to O/R mapping
 * Simple DSL-like UI definition
 * Provides JPA Container for easy integration of JPA beans with Grid and Table
 * No Spring nor JavaEE EJBs nor CDI necessary!
