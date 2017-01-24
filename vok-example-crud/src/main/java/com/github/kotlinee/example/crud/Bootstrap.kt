@@ -17,7 +17,7 @@ import javax.ws.rs.core.Application
  *
  * * Makes sure that the database is up-to-date, by running migration scripts with Flyway. This will work even in cluster as Flyway
  *   automatically obtains a cluster-wide database lock.
- * * Initializes the KotlinEE framework.
+ * * Initializes the VaadinOnKotlin framework.
  * * Maps Vaadin to `/`, maps REST server to `/rest`
  * @author mvy
  */
@@ -29,14 +29,14 @@ class Bootstrap: ServletContextListener {
         val flyway = Flyway()
         flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
-        log.info("Initializing KotlinEE")
+        log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Initialization complete")
     }
 
     override fun contextDestroyed(sce: ServletContextEvent?) {
         log.info("Shutting down");
-        log.info("Destroying KotlinEE")
+        log.info("Destroying VaadinOnKotlin")
         VaadinOnKotlin.destroy()
         log.info("Shutdown complete")
     }

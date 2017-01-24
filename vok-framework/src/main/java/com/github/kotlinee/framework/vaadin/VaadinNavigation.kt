@@ -122,12 +122,12 @@ inline fun <reified V : View> navigateToView(vararg params: String) = navigateTo
  * To obtain a particular parameter or null if the URL has no such parameter, just call [List.getOrNull] on this list.
  * @return list of parameters, empty if there are no parameters.
  */
-val ViewChangeListener.ViewChangeEvent.parameterList: List<String>
-    get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8")!! } .filterNot(String::isEmpty)
+val ViewChangeListener.ViewChangeEvent.parameterList: Map<Int, String>
+    get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8")!! } .filterNot(String::isEmpty).mapIndexed { i, param -> i to param }.toMap()
 
 fun ViewChangeListener.ViewChangeEvent.unshortenParam(index: Int): Any? {
-    val list = parameterList
-    return if (list.size <= index) null else Session.urlParamShortener[list[index]]
+    val param = parameterList[index]
+    return if (param == null) null else Session.urlParamShortener[param]
 }
 
 /**
