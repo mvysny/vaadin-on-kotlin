@@ -15,11 +15,11 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
-object Kotlinee {
+object VaadinOnKotlin {
     /**
      * Initializes the KotlinEE framework. Just call this from your context listener.
      */
-    fun kotlineeInit() = synchronized(this) {
+    fun init() = synchronized(this) {
         // TomEE also has by default 5 threads, so I guess this is okay :-D
         executor = Executors.newScheduledThreadPool(5, threadFactory)
     }
@@ -27,7 +27,7 @@ object Kotlinee {
     /**
      * Destroys the KotlinEE framework. Just call this from your context listener.
      */
-    fun kotlineeDestroy() = synchronized(this) {
+    fun destroy() = synchronized(this) {
         if (isStarted) {
             executor!!.shutdown()
             executor!!.awaitTermination(1, TimeUnit.DAYS)
@@ -45,7 +45,7 @@ object Kotlinee {
     private var executor: ScheduledExecutorService? = null
 
     private fun checkStarted() {
-        if (!isStarted) throw IllegalStateException("kotlineeInit() has not been called, or Kotlinee is already destroyed")
+        if (!isStarted) throw IllegalStateException("init() has not been called, or VaadinOnKotlin is already destroyed")
     }
 
     /**
@@ -58,7 +58,7 @@ object Kotlinee {
      * The thread factory used by the [async] method. By default the factory
      * creates non-daemon threads named "async-ID".
      *
-     * Needs to be set before [kotlineeInit] is called.
+     * Needs to be set before [init] is called.
      */
     @Volatile
     var threadFactory: ThreadFactory = object : ThreadFactory {
@@ -102,11 +102,11 @@ object Kotlinee {
  * @throws RejectedExecutionException if the task cannot be
  *         scheduled for execution
  */
-fun <R> async(block: () -> R): Future<R> = Kotlinee.asyncExecutor.submit(Callable<R> {
+fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(Callable<R> {
     try {
         block.invoke()
     } catch (t: Throwable) {
-        Kotlinee.log.error("Async failed: $t", t)
+        VaadinOnKotlin.log.error("Async failed: $t", t)
         throw t
     }
 })
@@ -135,13 +135,13 @@ fun <R> async(block: () -> R): Future<R> = Kotlinee.asyncExecutor.submit(Callabl
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = Kotlinee.asyncExecutor.scheduleAtFixedRate(
+fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate(
         {
             try {
                 command.invoke()
             } catch (t: Throwable) {
                 // if nobody is using Future to wait for the result of this op, the exception is lost. better log it here.
-                Kotlinee.log.error("Async failed: $t", t)
+                VaadinOnKotlin.log.error("Async failed: $t", t)
                 throw t
             }
         }, initialDelay, period, TimeUnit.MILLISECONDS)
@@ -165,6 +165,8 @@ val Long.seconds: Long get() = TimeUnit.SECONDS.toMillis(this)
  * storing stuff into session).
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock!
+ *
+ * @todo fix naming of this, so that the code is more readable
  */
 class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
@@ -228,6 +230,7 @@ object Session {
      * Shortens the URL parameters to a simple number. If you need to pass complex objects as View parameters, then this
      * class is for you.
     */
+    @Deprecated("This is probably not used ")
     val urlParamShortener: UrlParamShortener by SessionScoped.get()
 }
 

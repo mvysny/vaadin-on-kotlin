@@ -1,13 +1,14 @@
 # Vaadin On Kotlin
 
-Lots of projects actually do not use all capabilities of JavaEE, just a subset of JavaEE features: mostly the database access of course,
-the Async, the REST webservices, and that's it.
+A new way of writing simple Vaadin apps. Only requires Servlet container such as Jetty or Tomcat to run.
+Features:
 
-This project is an (oppiniated) attempt to simplify such projects:
+* Full RDBMS stack, from migrations to O/R mapping
+* 
 
-* Allow them to run in a pure servlet environment (such as Jetty, Tomcat)
-* Remove complex stuff such as injections, SLSBs, SFSBs
-* Allow any object to be bound to a session (e.g. caches) in a simple manner
+## QuickStart
+
+todo create a gradle archetype and publish VOK to jcenter.
 
 Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
 and database support - a very simple but powerful quickstart project.
@@ -122,32 +123,30 @@ if (button.w.isFillParent) { ... }
 
 ## How this is done / Sample application
 
-Please find the very simple sample application here: [kotlinee-example-crud](kotlinee-example-crud). The application demonstrates the following things:
+Please find the very simple sample application here: [vok-example-crud](vok-example-crud). The application demonstrates the following things:
 
-* Linking to a database. Kotlinee uses Hibernate for JPA O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
-  [build.gradle](kotlinee-example-crud/build.gradle) the db section for more details.
-  To link to the database, we use the traditional JPA [persistence.xml](kotlinee-example-crud/src/main/resources/META-INF/persistence.xml). Please note that HikariCP is used for DB
+* Linking to a database. VaadinOnKotlin uses Hibernate for JPA O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
+  [build.gradle](vok-example-crud/build.gradle) the db section for more details.
+  To link to the database, we use the traditional JPA [persistence.xml](vok-example-crud/src/main/resources/META-INF/persistence.xml). Please note that HikariCP is used for DB
   connection pooling, which provides production-grade performance.
 * Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
   The migration is safe on cluster as well as a database lock is obtained.
-  Please see [Bootstrap.kt](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
-  You will need to write the database migration scripts yourself: see [sample migrations](kotlinee-example-crud/src/main/resources/db/migration) for details. More details here: https://flywaydb.org/documentation/migration/sql
-* Accessing the database: just create your JPA beans [(example Person)](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/crud/Person.kt) and use them in any way you see fit:
-  `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined in [DB.kt](kotlinee-framework/src/main/java/com/github/kotlinee/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
-* Serving the data via REST: add RESTEasy to your project, see [build.gradle](kotlinee-example-crud/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
-  [Bootstrap.kt](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
+  Please see [Bootstrap.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
+  You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud/src/main/resources/db/migration) for details. More details here: https://flywaydb.org/documentation/migration/sql
+* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/crud/Person.kt) and use them in any way you see fit:
+  `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/java/com/github/kotlinee/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
+* Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
+  [Bootstrap.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
   the `@ApplicationPath("/rest")` stanza. After that, just define your REST-accessing classes, for example
-  [PersonRest](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/PersonRest.kt)
+  [PersonRest](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/PersonRest.kt)
 * Creating the UI: there are lots of great Vaadin tutorials, in general you declare UI and populate it with components. See
-  [MyUI](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/MyUI.kt)
-* Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/crud) on how to write one yourself.
-* Logging: uses SLF4j with Logback, configured as follows: [logback.xml](kotlinee-example-crud/src/main/resources/logback.xml)
-* Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](kotlinee-example-crud/src/main/java/com/github/kotlinee/example/crud/LastAddedPersonCache.kt).
-* Running: [kotlinee-example-crud](kotlinee-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
+  [MyUI](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/MyUI.kt)
+* Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/crud) on how to write the CRUD UI yourself very easily.
+* Logging: uses SLF4j with Logback, configured as follows: [logback.xml](vok-example-crud/src/main/resources/logback.xml)
+* Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/LastAddedPersonCache.kt).
+* Running: [vok-example-crud](vok-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
 ## Motivation
-
-Please read this (potentionally opinionated, offensive and subjective - I apologize upfront) post first: http://vyzivus.blogspot.sk/2016/04/java-sucks.html
 
 In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following JavaEE issues:
 
@@ -164,10 +163,19 @@ JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject
 transactions), manually store it into the session and then run into above-mentioned issues with websocket xhr. What the heck? I want to focus on coding,
 not @configuring the world until JavaEE is satisfied.
 
+Lots of projects actually do not use all capabilities of JavaEE, just a subset of JavaEE features: mostly the database access of course,
+the Async, the REST webservices, and that's it.
+
+This project is an (opiniated) attempt to simplify such projects:
+
+* Allow them to run in a pure servlet environment (such as Jetty, Tomcat)
+* Remove complex stuff such as injections, SLSBs, SFSBs
+* Allow any object to be bound to a session (e.g. caches) in a simple manner
+
+
 ## Status
 
-This is just a prototype project. A real-world app needs to be built on top of this, to see how well this quasi-framework will fare. There is a sample
-CRUD application implemented, please see `MyUI.kt` for details.
+There is [https://aedict-online.eu](Aedict Online) running on top of VoK, therefore VoK is considered to be production-ready.
 
 Done:
 

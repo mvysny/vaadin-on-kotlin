@@ -38,7 +38,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'kotlinee-framework'
+            artifactId 'vok-framework'
             version project.version
             from components.java
             artifact sourceJar {

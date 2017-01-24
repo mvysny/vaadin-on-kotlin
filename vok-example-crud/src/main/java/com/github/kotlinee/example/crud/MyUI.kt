@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author mvy
  */
 @Theme("valo")
-@Title("Kotlinee Demo")
+@Title("VaadinOnKotlin Demo")
 @Push(transport = Transport.WEBSOCKET_XHR)
 class MyUI : UI() {
 

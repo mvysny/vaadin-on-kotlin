@@ -1,6 +1,6 @@
 package com.github.kotlinee.example.crud
 
-import com.github.kotlinee.framework.Kotlinee
+import com.github.kotlinee.framework.VaadinOnKotlin
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
@@ -27,17 +27,17 @@ class Bootstrap: ServletContextListener {
         log.info("Starting up")
         log.info("Running DB migrations")
         val flyway = Flyway()
-        flyway.dataSource = Kotlinee.getDataSource()
+        flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
         log.info("Initializing KotlinEE")
-        Kotlinee.kotlineeInit()
+        VaadinOnKotlin.init()
         log.info("Initialization complete")
     }
 
     override fun contextDestroyed(sce: ServletContextEvent?) {
         log.info("Shutting down");
         log.info("Destroying KotlinEE")
-        Kotlinee.kotlineeDestroy()
+        VaadinOnKotlin.destroy()
         log.info("Shutdown complete")
     }
 

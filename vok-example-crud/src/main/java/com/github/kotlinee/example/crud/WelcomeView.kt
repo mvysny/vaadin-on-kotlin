@@ -20,7 +20,7 @@ class WelcomeView: VerticalLayout(), View {
     init {
         setSizeFull(); isMargin = true
         label {
-            html("""<h3>Kotlinee</h3>Welcome to the Kotlinee demo. Kotlinee provides means to creating rich Vaadin apps:
+            html("""<h3>VaadinOnKotlin</h3>Welcome to the VaadinOnKotlin demo. VaadinOnKotlin provides means to creating rich Vaadin apps:
             <ul><li>Provides Vaadin DSL builder support</li>
             <li>Provides simple database access via db {} function</li></ul>
             And more.""")

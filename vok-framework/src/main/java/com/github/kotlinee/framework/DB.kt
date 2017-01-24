@@ -105,7 +105,7 @@ fun <R> db(block: PersistenceContext.()->R): R {
     if (context != null) {
         return context.block()
     } else {
-        val em = Kotlinee.entityManagerFactory.createEntityManager()
+        val em = VaadinOnKotlin.entityManagerFactory.createEntityManager()
         context = PersistenceContext(em.withTransactionControlDisabled())
         try {
             contexts.set(context)
@@ -206,7 +206,7 @@ class ExtendedEMManager: ServletRequestListener {
             if (!ongoingServletRequest) throw IllegalStateException("Not called from servlet thread")
             var delegate = extendedEMDelegate.get()
             if (delegate == null) {
-                delegate = Kotlinee.entityManagerFactory.createEntityManager()
+                delegate = VaadinOnKotlin.entityManagerFactory.createEntityManager()
                 extendedEMDelegate.set(delegate)
             }
             return delegate
