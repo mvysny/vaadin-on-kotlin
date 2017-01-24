@@ -20,12 +20,14 @@ dependencies {
     compile "com.vaadin:vaadin-push:$vaadin_version"
     compile "com.vaadin:vaadin-themes:$vaadin_version"
     compile 'javax.validation:validation-api:1.0.0.GA'  // so that the BeanFieldGroup will perform JSR303 validations
-    compile 'org.hibernate:hibernate-validator:5.2.4.Final'
+    compile 'org.hibernate:hibernate-validator:5.3.4.Final'
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // db
     compile 'org.flywaydb:flyway-core:4.0.3'
-    compile 'org.hibernate:hibernate-hikaricp:5.2.4.Final'
+    compile('org.hibernate:hibernate-hikaricp:5.2.6.Final') {
+        exclude group: 'javax.enterprise'
+    }
     compile 'com.h2database:h2:1.4.193'
 
     // REST
