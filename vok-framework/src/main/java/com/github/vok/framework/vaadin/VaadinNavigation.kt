@@ -7,10 +7,9 @@ import com.vaadin.navigator.ViewProvider
 import com.vaadin.ui.UI
 import io.michaelrocks.bimap.HashBiMap
 import io.michaelrocks.bimap.MutableBiMap
-import java.io.Serializable
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.*
+import java.util.List
 import javax.servlet.ServletContainerInitializer
 import javax.servlet.ServletContext
 import javax.servlet.annotation.HandlesTypes
@@ -125,11 +124,6 @@ inline fun <reified V : View> navigateToView(vararg params: String) = navigateTo
 val ViewChangeListener.ViewChangeEvent.parameterList: Map<Int, String>
     get() = parameters.trim().split('/').map { URLDecoder.decode(it, "UTF-8")!! } .filterNot(String::isEmpty).mapIndexed { i, param -> i to param }.toMap()
 
-fun ViewChangeListener.ViewChangeEvent.unshortenParam(index: Int): Any? {
-    val param = parameterList[index]
-    return if (param == null) null else Session.urlParamShortener[param]
-}
-
 /**
  * By default the view will be assigned a colon-separated name, derived from your view class name. The trailing View is dropped.
  * For example, UserListView will be mapped to user-list. You can attach this annotation to a view, to modify this behavior.
@@ -139,53 +133,3 @@ fun ViewChangeListener.ViewChangeEvent.unshortenParam(index: Int): Any? {
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
 annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
-
-/**
- * I cannot transfer large objects as parameters via Navigator fragment URLs. Not even serialized/base64-encoded: 2kb URLs are simply gross ;)
- *
- * So, instead, I will temporarily remember such objects in session and will assign them short IDs. Kinda like URL shorteners, but with
- * a catch: bookmarkable URLs are valid only until the user session is valid. Also, at most 100 items are supported per session, to avoid session over-population.
- *
- * @author mvy
- */
-class UrlParamShortener : Serializable {
-    /**
-     * Soft reference may be GC-ed randomly. A round-robin with 30 items should suffice.
-     */
-    private var latestIDUsed = 0
-    /**
-     * Mutable list of remembered items.
-     */
-    private val items = TreeMap<Int, Serializable>()
-
-    /**
-     * Returns the value stored under given ID. The ID must have been generated via the [put] item.
-     * @param pathParam the path param parsed as ID
-     * @return the item, may be null if there is no such item stored under given key or it has been forgotten (the shortener stores at most
-     * 30 items).
-     */
-    operator fun get(pathParam: String): Serializable? = items[pathParam.toInt()]
-
-    private fun saveToSession() {
-        Session[javaClass.kotlin] = this
-    }
-
-    /**
-     * Registers given item, generates its ID and returns it.
-     * @param item the item to shorten
-     * @return the item ID, an Int which is automatically converted to String
-     */
-    fun put(item: Serializable): String = synchronized(this) {
-        latestIDUsed++
-        items[latestIDUsed] = item
-        while (items.size > MAX_LEN) {
-            items.remove(items.firstKey())
-        }
-        saveToSession()
-        return latestIDUsed.toString()
-    }
-
-    companion object {
-        private const val MAX_LEN = 100
-    }
-}

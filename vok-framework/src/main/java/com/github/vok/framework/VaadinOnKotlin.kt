@@ -1,6 +1,5 @@
 package com.github.vok.framework
 
-import com.github.vok.framework.vaadin.UrlParamShortener
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
@@ -225,14 +224,6 @@ object Session {
      * @param value the value to store, may be null if
      */
     operator fun <T: Any> set(key: KClass<T>, value: T?) = checkUIThread().session.setAttribute(key.java, value)
-
-    /**
-     * Shortens the URL parameters to a simple number. If you need to pass complex objects as View parameters, then this
-     * class is for you.
-     * @todo remove prior publishing
-    */
-    @Deprecated("This is probably not used ")
-    val urlParamShortener: UrlParamShortener by SessionScoped.get()
 }
 
 /**
