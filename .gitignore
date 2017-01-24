@@ -3,4 +3,5 @@ out
 build
 .gradle
 classes
+local.properties
 

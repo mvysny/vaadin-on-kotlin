@@ -1,3 +1,7 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
@@ -42,6 +46,12 @@ publishing {
             groupId project.group
             artifactId 'vok-framework'
             version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Vaadin-On-Kotlin, a simple way to build webapp with Kotlin and Vaadin')
+                root.appendNode('name', 'Vaadin-On-Kotlin')
+                root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
+            }
             from components.java
             artifact sourceJar {
                 classifier "sources"
@@ -51,3 +61,18 @@ publishing {
 }
 
 build.dependsOn publishToMavenLocal
+
+bintray {
+    pkg {
+        repo = 'vaadin-on-kotlin'
+        name = 'vaadin-on-kotlin'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/mvysny/vaadin-on-kotlin'
+        publish = true
+        publications = ['mavenJava']
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+}
