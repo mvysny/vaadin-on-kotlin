@@ -186,10 +186,11 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
 
     companion object {
         /**
-         * Gets a provider of given object. The object is created if missing from the session.
+         * Gets a binder for given object. The object is auto-created and bound to the session if missing from the session.
+         * The object is bound under the string key of class full name.
          * @param R the object type
          */
-        inline fun <reified R> get() where R : Any, R : Serializable = SessionScoped(R::class.java)
+        inline fun <reified R> binder() where R : Any, R : Serializable = SessionScoped(R::class.java)
     }
 }
 

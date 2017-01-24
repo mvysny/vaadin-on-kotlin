@@ -33,4 +33,4 @@ class LastAddedPersonCache private constructor() : Serializable {
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock! That is, this class is not accessible from a background thread.
  */
-val Session.lastAddedPersonCache: LastAddedPersonCache by SessionScoped.get()
+val Session.lastAddedPersonCache: LastAddedPersonCache by SessionScoped.binder()
