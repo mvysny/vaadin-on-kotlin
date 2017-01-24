@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework
+package com.github.vok.framework
 
 import org.slf4j.LoggerFactory
 import java.io.Closeable

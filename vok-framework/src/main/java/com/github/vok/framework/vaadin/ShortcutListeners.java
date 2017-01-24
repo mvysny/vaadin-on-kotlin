@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework.vaadin;
+package com.github.vok.framework.vaadin;
 
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;

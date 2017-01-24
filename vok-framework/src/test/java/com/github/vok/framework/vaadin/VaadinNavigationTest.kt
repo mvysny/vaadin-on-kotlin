@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework.vaadin
+package com.github.vok.framework.vaadin
 
 import org.junit.Test
 import kotlin.test.expect

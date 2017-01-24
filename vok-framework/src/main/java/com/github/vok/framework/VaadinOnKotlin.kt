@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework
+package com.github.vok.framework
 
 import com.github.kotlinee.framework.vaadin.UrlParamShortener
 import com.vaadin.server.VaadinService
@@ -190,7 +190,7 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
          * Gets a provider of given object. The object is created if missing from the session.
          * @param R the object type
          */
-        inline fun <reified R> get() where R : kotlin.Any, R : java.io.Serializable = SessionScoped(R::class.java)
+        inline fun <reified R> get() where R : Any, R : Serializable = SessionScoped(R::class.java)
     }
 }
 

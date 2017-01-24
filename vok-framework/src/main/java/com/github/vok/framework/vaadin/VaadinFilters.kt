@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework.vaadin
+package com.github.vok.framework.vaadin
 
 import com.vaadin.data.Container
 import com.vaadin.data.Property

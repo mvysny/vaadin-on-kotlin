@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework
+package com.github.vok.framework
 
 import com.github.kotlinee.framework.vaadin.*
 import com.vaadin.server.*

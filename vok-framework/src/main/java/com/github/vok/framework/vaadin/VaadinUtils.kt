@@ -1,4 +1,4 @@
-package com.github.kotlinee.framework.vaadin
+package com.github.vok.framework.vaadin
 
 import com.github.kotlinee.framework.TreeIterator
 import com.github.kotlinee.framework.extendedEntityManager

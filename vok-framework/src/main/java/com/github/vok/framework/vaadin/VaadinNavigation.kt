@@ -1,6 +1,6 @@
-package com.github.kotlinee.framework.vaadin
+package com.github.vok.framework.vaadin
 
-import com.github.kotlinee.framework.Session
+import com.github.vok.framework.Session
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.navigator.ViewProvider
