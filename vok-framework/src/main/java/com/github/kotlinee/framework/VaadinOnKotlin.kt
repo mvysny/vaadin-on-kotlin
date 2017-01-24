@@ -229,6 +229,7 @@ object Session {
     /**
      * Shortens the URL parameters to a simple number. If you need to pass complex objects as View parameters, then this
      * class is for you.
+     * @todo remove prior publishing
     */
     @Deprecated("This is probably not used ")
     val urlParamShortener: UrlParamShortener by SessionScoped.get()
