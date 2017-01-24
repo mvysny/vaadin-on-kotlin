@@ -3,12 +3,16 @@
 A new way of writing simple Vaadin apps. Only requires Servlet container such as Jetty or Tomcat to run.
 Features:
 
-* Full RDBMS stack, from migrations to O/R mapping
-* 
+* Full RDBMS stack, from automatic database migrations to O/R mapping
+* Simple DSL-like UI definition
+* Provides JPA Container for easy integration of JPA beans with Grid and Table
+* No Spring nor JavaEE EJBs nor CDI necessary!
 
 ## QuickStart
 
-todo create a gradle archetype and publish VOK to jcenter.
+todo create a gradle archetype or a tutorial project
+
+todo provide jetty runner akin to Vaadin AddOns
 
 Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
 and database support - a very simple but powerful quickstart project.
