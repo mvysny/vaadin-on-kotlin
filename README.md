@@ -10,9 +10,10 @@ Features:
 
 ## QuickStart
 
-todo create a gradle archetype or a tutorial project
+1. Checkout the project and import it into your IDE
+2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
 
-todo provide jetty runner akin to Vaadin AddOns
+For other launch options please see below.
 
 Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
 and database support - a very simple but powerful quickstart project.
@@ -209,6 +210,10 @@ Run it with Jetty Runner:
 * Open [http://localhost:8080](http://localhost:8080)
 
 ## To develop in IDEA:
+
+### Embedded Jetty
+
+* The easiest option: just open Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
 
 ### Jetty
 

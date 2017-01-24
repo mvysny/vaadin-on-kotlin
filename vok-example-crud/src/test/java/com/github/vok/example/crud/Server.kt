@@ -8,7 +8,7 @@ import org.eclipse.jetty.webapp.*
 
 
 /**
- * Runs the testing Jetty-based server.
+ * Runs the testing Jetty-based server. Just open http://localhost:8080/ in your browser.
  */
 fun main(args: Array<String>) {
     val server = Server(8080)
@@ -18,4 +18,7 @@ fun main(args: Array<String>) {
     server.handler = context
     server.start()
     server.join()
+    // @todo note that when you click the "CRUD Demo" tab then you'll receive an exception: SEVERE:
+    // java.lang.IllegalArgumentException: Not an entity: class com.github.vok.example.crud.personeditor.Person
+    // I have asked for help at Hibernate forums, we'll see.
 }
