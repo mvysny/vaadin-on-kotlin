@@ -1,8 +1,9 @@
-package com.github.kotlinee.example.crud.crud
+package com.github.vok.example.crud.personeditor
 
-import com.github.kotlinee.example.crud.lastAddedPersonCache
-import com.github.kotlinee.framework.*
-import com.github.kotlinee.framework.vaadin.*
+import com.github.vok.example.crud.lastAddedPersonCache
+import com.github.vok.framework.Session
+import com.github.vok.framework.db
+import com.github.vok.framework.vaadin.*
 import com.vaadin.data.fieldgroup.FieldGroup
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment

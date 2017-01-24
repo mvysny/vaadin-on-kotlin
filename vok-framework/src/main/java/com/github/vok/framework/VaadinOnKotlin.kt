@@ -1,6 +1,6 @@
 package com.github.vok.framework
 
-import com.github.kotlinee.framework.vaadin.UrlParamShortener
+import com.github.vok.framework.vaadin.UrlParamShortener
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI

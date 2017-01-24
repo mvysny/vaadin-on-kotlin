@@ -1,11 +1,9 @@
-package com.github.kotlinee.example.crud.crud
+package com.github.vok.example.crud.personeditor
 
-import com.github.kotlinee.example.crud.WelcomeView
-import com.github.kotlinee.framework.Session
-import com.github.kotlinee.framework.db
-import com.github.kotlinee.framework.vaadin.navigateToView
-import com.github.kotlinee.framework.vaadin.parameterList
-import com.github.kotlinee.framework.vaadin.unshortenParam
+import com.github.vok.example.crud.WelcomeView
+import com.github.vok.framework.db
+import com.github.vok.framework.vaadin.navigateToView
+import com.github.vok.framework.vaadin.parameterList
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Label

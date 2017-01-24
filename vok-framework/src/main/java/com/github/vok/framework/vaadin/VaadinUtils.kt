@@ -1,7 +1,7 @@
 package com.github.vok.framework.vaadin
 
-import com.github.kotlinee.framework.TreeIterator
-import com.github.kotlinee.framework.extendedEntityManager
+import com.github.vok.framework.TreeIterator
+import com.github.vok.framework.extendedEntityManager
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.data.Item
@@ -87,9 +87,9 @@ fun AbstractField<String>.trimmingConverter() {
 
         override fun convertToPresentation(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value
 
-        override fun getPresentationType(): Class<String?>? = String::class.java as Class<String?>
+        override fun getPresentationType(): Class<String?> = String::class.java as Class<String?>
 
-        override fun getModelType(): Class<String?>? = String::class.java as Class<String?>
+        override fun getModelType(): Class<String?> = String::class.java as Class<String?>
     })
 }
 

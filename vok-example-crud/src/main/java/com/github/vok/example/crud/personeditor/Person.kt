@@ -1,4 +1,4 @@
-package com.github.kotlinee.example.crud.crud
+package com.github.vok.example.crud.personeditor
 
 import java.io.Serializable
 import javax.persistence.*

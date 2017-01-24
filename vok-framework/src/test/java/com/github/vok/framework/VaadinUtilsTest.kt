@@ -1,6 +1,6 @@
 package com.github.vok.framework
 
-import com.github.kotlinee.framework.vaadin.*
+import com.github.vok.framework.vaadin.*
 import com.vaadin.server.*
 import com.vaadin.ui.*
 import org.junit.Before

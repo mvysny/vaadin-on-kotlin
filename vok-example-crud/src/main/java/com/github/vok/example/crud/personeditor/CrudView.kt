@@ -1,11 +1,11 @@
-package com.github.kotlinee.example.crud.crud
+package com.github.vok.example.crud.personeditor
 
-import com.github.kotlinee.framework.db
-import com.github.kotlinee.framework.deleteById
-import com.github.kotlinee.framework.get
-import com.github.kotlinee.framework.vaadin.*
-import com.github.kotlinee.framework.vaadin.ModifierKey.Alt
-import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
+import com.github.vok.framework.db
+import com.github.vok.framework.deleteById
+import com.github.vok.framework.get
+import com.github.vok.framework.vaadin.*
+import com.github.vok.framework.vaadin.ModifierKey.Alt
+import com.github.vok.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
@@ -13,7 +13,6 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.renderers.ClickableRenderer
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.

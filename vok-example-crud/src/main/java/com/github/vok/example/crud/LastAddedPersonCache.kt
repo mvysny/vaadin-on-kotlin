@@ -1,8 +1,8 @@
-package com.github.kotlinee.example.crud
+package com.github.vok.example.crud
 
-import com.github.kotlinee.example.crud.crud.Person
-import com.github.kotlinee.framework.Session
-import com.github.kotlinee.framework.SessionScoped
+import com.github.vok.example.crud.personeditor.Person
+import com.github.vok.framework.Session
+import com.github.vok.framework.SessionScoped
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 

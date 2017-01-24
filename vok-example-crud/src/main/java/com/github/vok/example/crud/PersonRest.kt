@@ -1,8 +1,8 @@
-package com.github.kotlinee.example.crud
+package com.github.vok.example.crud
 
-import com.github.kotlinee.example.crud.crud.Person
-import com.github.kotlinee.framework.db
-import com.github.kotlinee.framework.findAll
+import com.github.vok.example.crud.personeditor.Person
+import com.github.vok.framework.db
+import com.github.vok.framework.findAll
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
