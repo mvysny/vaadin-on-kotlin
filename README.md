@@ -38,7 +38,7 @@ and introduce a context listener, to auto-update your database to the newest ver
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         val flyway = Flyway()
-        flyway.dataSource = Kotlinee.getDataSource()
+        flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
     }
 }
@@ -105,8 +105,8 @@ grid(dataSource = jpaContainer<Person>()) {
 #### Keyboard shortcuts via operator overloading
 
 ```kotlin
-import com.github.kotlinee.framework.vaadin.ModifierKey.Alt
-import com.github.kotlinee.framework.vaadin.ModifierKey.Ctrl
+import com.github.vok.framework.vaadin.ModifierKey.Alt
+import com.github.vok.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 
 button("Create New Person (Ctrl+Alt+C)") {
@@ -136,19 +136,19 @@ Please find the very simple sample application here: [vok-example-crud](vok-exam
   connection pooling, which provides production-grade performance.
 * Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
   The migration is safe on cluster as well as a database lock is obtained.
-  Please see [Bootstrap.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
+  Please see [Bootstrap.kt](vok-example-crud/src/main/java/com/github/vok/example/crud/Bootstrap.kt)
   You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud/src/main/resources/db/migration) for details. More details here: https://flywaydb.org/documentation/migration/sql
-* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/crud/Person.kt) and use them in any way you see fit:
-  `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/java/com/github/kotlinee/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
+* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/java/com/github/vok/example/crud/crud/Person.kt) and use them in any way you see fit:
+  `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/java/com/github/vok/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
 * Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
-  [Bootstrap.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/Bootstrap.kt)
+  [Bootstrap.kt](vok-example-crud/src/main/java/com/github/vok/example/crud/Bootstrap.kt)
   the `@ApplicationPath("/rest")` stanza. After that, just define your REST-accessing classes, for example
-  [PersonRest](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/PersonRest.kt)
+  [PersonRest](vok-example-crud/src/main/java/com/github/vok/example/crud/PersonRest.kt)
 * Creating the UI: there are lots of great Vaadin tutorials, in general you declare UI and populate it with components. See
-  [MyUI](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/MyUI.kt)
-* Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/crud) on how to write the CRUD UI yourself very easily.
+  [MyUI](vok-example-crud/src/main/java/com/github/vok/example/crud/MyUI.kt)
+* Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](vok-example-crud/src/main/java/com/github/vok/example/crud/personeditor) on how to write the CRUD UI yourself very easily.
 * Logging: uses SLF4j with Logback, configured as follows: [logback.xml](vok-example-crud/src/main/resources/logback.xml)
-* Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud/src/main/java/com/github/kotlinee/example/crud/LastAddedPersonCache.kt).
+* Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud/src/main/java/com/github/vok/example/crud/LastAddedPersonCache.kt).
 * Running: [vok-example-crud](vok-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
 ## Motivation
@@ -220,11 +220,11 @@ Run it with Jetty Runner:
 * Open the project in IDEA
 * Download the Jetty Distribution zip file from here: http://download.eclipse.org/jetty/stable-9/dist/
 * Unpack the Jetty Distribution
-* In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the `kotlinee-example-crud` WAR-exploded artifact to the runner
+* In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the `vok-example-crud` WAR-exploded artifact to the runner
 * Run or Debug the launcher
 
 ### Tomcat
 
 * Open the project in IDEA
-* Launch the `kotlinee-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
+* Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
 
