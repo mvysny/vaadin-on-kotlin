@@ -180,7 +180,7 @@ This project is an (opiniated) attempt to simplify such projects:
 
 ## Status
 
-There is [Aedict Online](https://aedict-online.eu) running on top of VoK, therefore VoK is considered to be production-ready.
+There is [Aedict Online](https://aedict-online.eu) running on top of VoK, so there are no obvious bugs in VoK. Yet, more projects are needed to battle-prove VoK's API.
 
 Done:
 
