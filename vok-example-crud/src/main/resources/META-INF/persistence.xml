@@ -4,8 +4,6 @@
              http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
     <persistence-unit name="sample">
-        <!-- @todo mavi remove when Hibernate auto-discovery issue is resolved -->
-        <class>com.github.vok.example.crud.personeditor.Person</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider"/>
