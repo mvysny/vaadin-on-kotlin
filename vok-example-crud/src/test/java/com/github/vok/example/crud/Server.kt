@@ -26,9 +26,9 @@ fun main(args: Array<String>) {
         }
 
         override fun annotations(): Array<out Class<out Annotation>> = arrayOf(Entity::class.java)
-    }).detect("com.github")
-
+    }).detect("com.github")   // added a package name for the detector to be faster; you can just use detect() to scan the whole classpath
     VaadinOnKotlin.entityManagerFactory = Persistence.createEntityManagerFactory("sample", mapOf(AvailableSettings.LOADED_CLASSES to entities))
+
     val server = Server(8080)
     val context = WebAppContext("src/main/webapp", "/")
     context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/classes/.*")
