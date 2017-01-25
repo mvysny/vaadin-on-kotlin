@@ -138,7 +138,7 @@ Please find the very simple sample application here: [vok-example-crud](vok-exam
   The migration is safe on cluster as well as a database lock is obtained.
   Please see [Bootstrap.kt](vok-example-crud/src/main/java/com/github/vok/example/crud/Bootstrap.kt)
   You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud/src/main/resources/db/migration) for details. More details here: https://flywaydb.org/documentation/migration/sql
-* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/java/com/github/vok/example/crud/crud/Person.kt) and use them in any way you see fit:
+* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/java/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
   `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/java/com/github/vok/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
 * Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
   [Bootstrap.kt](vok-example-crud/src/main/java/com/github/vok/example/crud/Bootstrap.kt)
@@ -180,7 +180,7 @@ This project is an (opiniated) attempt to simplify such projects:
 
 ## Status
 
-There is [https://aedict-online.eu](Aedict Online) running on top of VoK, therefore VoK is considered to be production-ready.
+There is [Aedict Online](https://aedict-online.eu) running on top of VoK, therefore VoK is considered to be production-ready.
 
 Done:
 
