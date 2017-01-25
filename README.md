@@ -205,7 +205,7 @@ Run it with Jetty Runner:
 
 * Download Jetty Runner here: http://www.eclipse.org/jetty/documentation/current/runner.html
 * Run `./gradlew`
-* Locate the WAR in `build/libs/`
+* Locate the WAR in `vok-example-crud/build/libs/`
 * Run the WAR via the Runner: `java -jar jetty-runner*.jar *.war`
 * Open [http://localhost:8080](http://localhost:8080)
 
