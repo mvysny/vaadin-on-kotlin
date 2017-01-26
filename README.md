@@ -18,7 +18,7 @@ and database support - a very simple but powerful quickstart project.
 Just experiment on the example application:
 
 1. Clone this git repository and import it into your IDE, simply by opening the `build.gradle` file.
-2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
+2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it. Please make sure that the launch directory is set to the `vok-example-crud` directory (Intellij: set $MODULE_DIR$ to launcher's Working directory)
 
 For other launch options please see below.
 
