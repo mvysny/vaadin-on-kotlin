@@ -8,17 +8,54 @@ Features:
 * Provides JPA Container for easy integration of JPA beans with Grid and Table
 * No Spring nor JavaEE EJBs nor CDI necessary!
 
+Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
+and database support - a very simple but powerful quickstart project.
+
 ## QuickStart
 
-1. Checkout the project and import it into your IDE
+### Test-drive ASAP
+
+Just experiment on the example application:
+
+1. Clone this git repository and import it into your IDE, simply by opening the `build.gradle` file.
 2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
 
 For other launch options please see below.
 
-Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
-and database support - a very simple but powerful quickstart project.
+### Create your own project
 
-## Examples
+#### Maven quickstart
+
+1. Generate a Vaadin app: https://vaadin.com/maven
+2. Add the JCenter repository to your `pom.xml`:
+```xml
+<repositories>
+    <repository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com/</url>
+    </repository>
+</repositories>
+```
+3. Add VaadinOnKotlin dependency:
+```xml
+<dependency>
+  <groupId>com.github.vok</groupId>
+  <artifactId>vok-framework</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+4. Add Kotlin support to your `pom.xml`: in Intellij just create a Kotlin class, Intellij will offer to auto-add kotlin
+   to your `pom.xml`. Otherwise: https://kotlinlang.org/docs/reference/using-maven.html
+   
+
+#### Gradle quickstart
+Currently there is no template project. Yet VoK is in JCenter:
+ 
+ 1. create a Gradle project: https://github.com/johndevs/gradle-vaadin-plugin/wiki/Getting-Started
+ 2. add dependency on VaadinOnKotlin: `dependency 'com.github.vok:vok-framework:0.1.0`
+ 3. Add Kotlin to your `build.gradle`: https://kotlinlang.org/docs/reference/using-gradle.html
+
+## Code Examples
 
 ### Easy database transactions:
 
