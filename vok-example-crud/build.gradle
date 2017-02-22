@@ -3,6 +3,7 @@ apply plugin: 'kotlin'
 apply plugin: 'war'
 
 sourceCompatibility = 1.6
+ext.jettyVer = '9.4.0.v20161208'
 
 dependencies {
     compile(project(":vok-framework"))
@@ -35,6 +36,8 @@ dependencies {
     compile 'org.jboss.resteasy:resteasy-jackson2-provider:3.0.19.Final'
     
     // easy development with Jetty
-    testCompile 'org.eclipse.jetty:jetty-webapp:9.4.0.v20161208'
-    testCompile 'org.eclipse.jetty:jetty-annotations:9.4.0.v20161208'
+    testCompile "org.eclipse.jetty:jetty-webapp:$jettyVer"
+    testCompile "org.eclipse.jetty:jetty-annotations:$jettyVer"
+    // workaround for https://github.com/Atmosphere/atmosphere/issues/978
+    testCompile "org.eclipse.jetty:jetty-continuation:$jettyVer"
 }
