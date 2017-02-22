@@ -51,6 +51,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 }
             }
         }
+        binder.readBean(person)
     }
 
     private fun okPressed() {
