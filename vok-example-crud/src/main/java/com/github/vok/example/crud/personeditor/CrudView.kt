@@ -13,6 +13,7 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.renderers.ButtonRenderer
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
@@ -26,32 +27,39 @@ class CrudView: VerticalLayout(), View {
         fun navigateTo() = navigateToView<CrudView>()
     }
 
-    private val createButton: Button
-    private val personGrid: Grid
-    private val personGridDS = jpaContainer<Person>()
+    private lateinit var createButton: Button
+    private val personGrid: Grid<Person>
+    private val personGridDS = jpaDataSource<Person>()
 
     init {
         setSizeFull()
-        createButton = button("Create New Person (Ctrl+Alt+C)") {
-            onLeftClick { createOrEditPerson(Person()) }
-            clickShortcut = Ctrl + Alt + C
+        horizontalLayout {
+            createButton = button("Create New Person (Ctrl+Alt+C)") {
+                onLeftClick { createOrEditPerson(Person()) }
+                clickShortcut = Ctrl + Alt + C
+            }
+            button("Generate testing data", { generateTestingData() })
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
-        personGrid = grid(dataSource = personGridDS) {
+        personGrid = grid(Person::class, dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
-            cols {
-                column(Person::id) {
-                    isSortable = false
-                }
-                column(Person::name)
-                column(Person::age)
-                button("show", "Show", { PersonView.navigateTo(db { em.get<Person>(it.itemId) } ) })
-                button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
-                button("delete", "Delete", { deletePerson(it.itemId as Long) })
+            setColumnOrder(Person::id.name, Person::name.name, Person::age.name)
+            getColumn(Person::id.name).apply {
+                isSortable = false
             }
+            addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
+            addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) }))
+            addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
             // automatically create filters, based on the types of values present in particular columns.
-            appendHeaderRow().generateFilterComponents(this)
+//            appendHeaderRow().generateFilterComponents(this)
         }
+    }
+
+    private fun generateTestingData() {
+        db {
+            (0..85).forEach { em.persist(Person(name = "generated$it", age = it + 15)) }
+        }
+        refreshGrid()
     }
 
     private fun deletePerson(id: Long) {
@@ -67,6 +75,6 @@ class CrudView: VerticalLayout(), View {
     }
 
     private fun refreshGrid() {
-        personGridDS.refresh()
+        personGridDS.refreshAll()
     }
 }

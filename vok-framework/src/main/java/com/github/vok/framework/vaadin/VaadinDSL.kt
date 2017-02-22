@@ -1,9 +1,10 @@
 package com.github.vok.framework.vaadin
 
-import com.vaadin.data.Container
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.server.ExternalResource
 import com.vaadin.server.Resource
 import com.vaadin.ui.*
+import kotlin.reflect.KClass
 
 /**
  * A specialized version of [ComponentContainer], for certain special containers. The DSL's
@@ -63,18 +64,22 @@ fun HasComponents.button(caption: String? = null, leftClickListener: ((Button.Cl
     if (leftClickListener != null) onLeftClick(leftClickListener)
 }
 
-fun HasComponents.grid(caption: String? = null, dataSource: Container.Indexed? = null, block: Grid.() -> Unit = {}) = init(Grid(caption, dataSource), block)
+fun <T: Any> HasComponents.grid(clazz: KClass<T>, caption: String? = null, dataProvider: DataProvider<T, *>? = null, block: Grid<T>.() -> Unit = {}) =
+    init(Grid<T>(clazz.java)) {
+        this.caption = caption
+        this.dataProvider = dataProvider
+        block()
+    }
 
 fun HasComponents.image(caption: String? = null, resource: Resource? = null, block: Image.()->Unit = {}) = init(Image(caption, resource), block)
 
 /**
- * Creates a [TextField] and attaches it to this component. [TextField.nullRepresentation] is set to an empty string.
+ * Creates a [TextField] and attaches it to this component.
  * @param caption optional caption
  * @param value the optional value
  */
 fun HasComponents.textField(caption: String? = null, value: String? = null, block: TextField.()->Unit = {}): TextField {
-    val textField = TextField(caption, value)
-    textField.nullRepresentation = ""
+    val textField = TextField(caption, value ?: "")  // TextField no longer accepts null as a value.
     init(textField, block)
     return textField
 }
@@ -93,14 +98,12 @@ fun HasComponents.audio(caption: String? = null, resource: Resource? = null, blo
 fun HasComponents.browserFrame(url: String? = null, block: BrowserFrame.()->Unit = {}) =
     init(BrowserFrame(null, (if (url == null) null else ExternalResource(url))), block)
 
-fun HasComponents.calendar(caption: String? = null, block: Calendar.()->Unit = {}) = init(Calendar(caption), block)
-
 fun HasComponents.checkBox(caption: String? = null, checked:Boolean? = null, block: CheckBox.()->Unit = {}) =
         init(if (checked == null) CheckBox(caption) else CheckBox(caption, checked), block)
 
 fun HasComponents.colorPicker(popupCaption: String? = null, block: ColorPicker.()->Unit = {}) = init(ColorPicker(popupCaption), block)
 
-fun HasComponents.comboBox(caption: String? = null, block: ComboBox.()->Unit = {}) = init(ComboBox(caption), block)
+fun <T> HasComponents.comboBox(caption: String? = null, block: ComboBox<T>.()->Unit = {}) = init(ComboBox<T>(caption), block)
 
 fun HasComponents.cssLayout(block: CssLayout.()->Unit = {}) = init(CssLayout(), block)
 
@@ -115,7 +118,7 @@ fun HasComponents.inlineDateField(caption: String? = null, block: InlineDateFiel
 fun HasComponents.link(caption: String? = null, url: String? = null, block: Link.()->Unit = {}) =
         init(Link(caption, if (url == null) null else ExternalResource(url)), block)
 
-fun HasComponents.listSelect(caption: String? = null, block: ListSelect.()->Unit = {}) = init(ListSelect(caption), block)
+fun <T> HasComponents.listSelect(caption: String? = null, block: ListSelect<T>.()->Unit = {}) = init(ListSelect<T>(caption), block)
 
 fun HasComponents.menuBar(block: MenuBar.()->Unit = {}) = init(MenuBar(), block)
 
@@ -124,24 +127,23 @@ fun HasComponents.nativeButton(caption: String? = null, leftClickListener: ((But
     if (leftClickListener != null) onLeftClick(leftClickListener)
 }
 
-fun HasComponents.nativeSelect(caption: String? = null, block: NativeSelect.()->Unit = {}) = init(NativeSelect(caption), block)
+fun <T> HasComponents.nativeSelect(caption: String? = null, block: NativeSelect<T>.()->Unit = {}) = init(NativeSelect<T>(caption), block)
 
-fun HasComponents.optionGroup(caption: String? = null, block: OptionGroup.()->Unit = {}) = init(OptionGroup(caption), block)
+fun <T> HasComponents.radioButtonGroup(caption: String? = null, block: RadioButtonGroup<T>.()->Unit = {}) = init(RadioButtonGroup<T>(caption), block)
+
+fun <T> HasComponents.checkBoxGroup(caption: String? = null, block: CheckBoxGroup<T>.()->Unit = {}) = init(CheckBoxGroup<T>(caption), block)
 
 fun HasComponents.panel(caption: String? = null, block: Panel.()->Unit = {}) = init(Panel(caption), block)
-
-fun HasComponents.popupDateField(caption: String? = null, block: PopupDateField.()->Unit = {}) = init(PopupDateField(caption), block)
 
 /**
  * Creates a [PasswordField]. [TextField.nullRepresentation] is set to an empty string, and the trimming converter is automatically pre-set.
  *
- * Auto-trimming: passwords generally do not have whitespaces. Pasting a password to a field in a mobile phone will also add a trailing whitespace, which
+ * *WARNING:* When Binding to a field, do not forget to call [Binder.BindingBuilder.trimmingConverter] to perform auto-trimming:
+ * passwords generally do not have whitespaces. Pasting a password to a field in a mobile phone will also add a trailing whitespace, which
  * will cause the password to not to match, which is a source of great confusion.
  */
 fun HasComponents.passwordField(caption: String? = null, block: PasswordField.()->Unit = {}): PasswordField {
     val component = PasswordField(caption)
-    component.trimmingConverter()
-    component.nullRepresentation = ""
     init(component, block)
     return component
 }
@@ -152,9 +154,6 @@ fun HasComponents.richTextArea(caption: String? = null, block: RichTextArea.()->
 
 fun HasComponents.slider(caption: String? = null, block: Slider.()->Unit = {}) = init(Slider(caption), block)
 
-fun HasComponents.table(caption: String? = null, dataSource: Container? = null, block: Table.()->Unit = {}) =
-        init(Table(caption, dataSource), block)
-
 fun HasComponents.tabSheet(block: TabSheet.()->Unit = {}) = init(TabSheet(), block)
 
 /**
@@ -164,15 +163,12 @@ fun HasComponents.tabSheet(block: TabSheet.()->Unit = {}) = init(TabSheet(), blo
  */
 fun HasComponents.textArea(caption: String? = null, block: TextArea.()->Unit = {}): TextArea {
     val component = TextArea(caption)
-    component.nullRepresentation = ""
     init(component, block)
     return component
 }
 
-fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(caption), block)
-
-fun HasComponents.treeTable(caption: String? = null, dataSource: Container? = null, block: TreeTable.()->Unit = {}) =
-        init(TreeTable(caption, dataSource), block)
+// @todo mavi replacement planned in Vaadin 8.1
+//fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(caption), block)
 
 fun HasComponents.upload(caption: String? = null, block: Upload.()->Unit = {}) = init(Upload(caption, null), block)
 
@@ -187,3 +183,11 @@ fun HasComponents.popupView(small: String? = null, block: PopupView.()->Unit = {
     if (small != null) result.minimizedValueAsHTML = small
     return result
 }
+
+
+// Vaadin 7 compat stuff
+//fun HasComponents.treeTable(caption: String? = null, dataSource: Container? = null, block: TreeTable.()->Unit = {}) =
+//        init(TreeTable(caption, dataSource), block)
+//fun HasComponents.table(caption: String? = null, dataSource: Container? = null, block: Table.()->Unit = {}) =
+//        init(Table(caption, dataSource), block)
+//fun HasComponents.calendar(caption: String? = null, block: Calendar.()->Unit = {}) = init(Calendar(caption), block)

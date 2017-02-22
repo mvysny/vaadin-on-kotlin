@@ -3,8 +3,8 @@ package com.github.vok.example.crud.personeditor
 import com.github.vok.example.crud.lastAddedPersonCache
 import com.github.vok.framework.Session
 import com.github.vok.framework.db
+import com.github.vok.framework.dbId
 import com.github.vok.framework.vaadin.*
-import com.vaadin.data.fieldgroup.FieldGroup
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
@@ -17,17 +17,16 @@ import com.vaadin.ui.Window
 internal class CreateEditPerson(val person: Person) : Window() {
     // the validation demo. infer validations from JSR303 annotations attached to the Person class, when
     // the fieldGroup.bind() is called.
-    private val fieldGroup = BeanFieldGroup<Person>()
+    private val binder = BeanValidationBinder<Person>()
     /**
      * True if we are creating a new person, false if we are editing an existing one.
      */
     private val creating: Boolean
-        get() = person.id == null
+        get() = person.dbId == null
 
     private lateinit var persistButton: Button
 
     init {
-        fieldGroup.setItemDataSource(person)
         isModal = true
         caption = if (creating) "New Person" else "Edit #${person.id}"
         verticalLayout {
@@ -35,12 +34,11 @@ internal class CreateEditPerson(val person: Person) : Window() {
             formLayout {
                 w = wrapContent
                 val name = textField("Name:") {
-                    trimmingConverter()
                     focus()
                 }
-                fieldGroup.bind(name, "name")
+                binder.forField(name).trimmingConverter().bind("name")
                 val age = textField("Age:")
-                fieldGroup.bind(age, "age")
+                binder.forField(age).stringToInt().bind("age")
             }
             horizontalLayout {
                 isSpacing = true; alignment = Alignment.MIDDLE_CENTER
@@ -56,9 +54,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
     }
 
     private fun okPressed() {
-        try {
-            fieldGroup.commit()
-        } catch(e: FieldGroup.CommitException) {
+        if (!binder.writeBeanIfValid(person)) {
             persistButton.componentError = UserError("Please fix the errors on the form")
             return
         }

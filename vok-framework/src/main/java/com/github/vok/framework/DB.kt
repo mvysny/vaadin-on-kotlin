@@ -236,3 +236,8 @@ val extendedEntityManager: EntityManager =
                 }
                 method.invoke(ExtendedEMManager.getExtendedEMDelegate(), *(args ?: arrayOf()))
             }) as EntityManager
+
+/**
+ * Returns the entity ID of this JPA bean. Fails if not invoked on a JPA bean.
+ */
+val Any.dbId: Any? get() = VaadinOnKotlin.entityManagerFactory.persistenceUnitUtil.getIdentifier(this)

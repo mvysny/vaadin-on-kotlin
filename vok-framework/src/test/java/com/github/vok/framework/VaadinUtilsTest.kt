@@ -79,3 +79,10 @@ class VaadinUtilsTest {
 fun Any.serializeToBytes(): ByteArray = ByteArrayOutputStream().use { it -> ObjectOutputStream(it).writeObject(this); it }.toByteArray()
 inline fun <reified T: Any> ByteArray.deserialize(): T = ObjectInputStream(inputStream()).readObject() as T
 inline fun <reified T: Any> T.serializeDeserialize() = serializeToBytes().deserialize<T>()
+
+/**
+ * Expects that [actual] list of objects matches [expected] list of objects. Fails otherwise.
+ * @param expected expected list of objects
+ * @param actual actual list of objects
+ */
+fun <T> expectList(vararg expected: T, actual: ()->List<T>) = expect(expected.toList(), actual)

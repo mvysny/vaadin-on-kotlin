@@ -9,6 +9,8 @@ sourceCompatibility = 1.6
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3'
+
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     compile 'io.michaelrocks:bimap:1.0.2'
@@ -19,6 +21,7 @@ dependencies {
 
     // Vaadin
     compile "com.vaadin:vaadin-server:$vaadin_version"
+//    compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     testCompile 'javax.validation:validation-api:1.0.0.GA'
 
@@ -26,7 +29,6 @@ dependencies {
     compile('org.hibernate:hibernate-core:5.2.6.Final') {
         exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
     }
-    compile 'com.vaadin.addon:jpacontainer:3.2.0'
     testCompile 'com.h2database:h2:1.4.193'
 
     // IDEA language injections

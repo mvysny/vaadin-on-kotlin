@@ -1,12 +1,8 @@
 package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.TreeIterator
-import com.github.vok.framework.extendedEntityManager
-import com.vaadin.addon.jpacontainer.JPAContainer
-import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
-import com.vaadin.data.Item
-import com.vaadin.data.fieldgroup.BeanFieldGroup
-import com.vaadin.data.util.converter.Converter
+import com.vaadin.data.*
+import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
@@ -16,33 +12,15 @@ import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Page
 import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
-import com.vaadin.shared.ui.label.ContentMode
+import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 import org.intellij.lang.annotations.Language
 import java.io.Serializable
+import java.text.NumberFormat
 import java.util.*
 
-/**
- * Creates a container which lists all instances of given entity. To restrict the list to a particular entity only,
- * simply call [JPAContainer.addContainerFilter] on the container produced.
- *
- * Containers produced by this method have the following properties:
- * * The container's [Item] IDs are not the entity instances themselves - instead, [Item] ID contains the value of the JPA entity ID. This is important when using the container
- * together with [AbstractSelect] as the select's value is taken amongst the Item ID.
- * * [Item]'s Property IDs are [String] values - the field names of given JPA bean.
- *
- * @param entity the entity type
- * @return the new container which can be assigned to a [Grid]
- */
-inline fun <reified T : Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
-
-fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
-    val provider = CachingBatchableLocalEntityProvider(entity, extendedEntityManager)
-    val container = JPAContainer(entity)
-    container.entityProvider = provider
-    return container
-}
+inline fun <reified T : Any> jpaDataSource(): JPADataSource<T> = JPADataSource(T::class.java)
 
 /**
  * Shows given html in this label.
@@ -81,17 +59,14 @@ fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit)
  * Android keyboard often adds whitespace to the end of the text when auto-completion occurs. Imagine storing a username ending with a space upon registration:
  * such person can no longer log in from his PC unless he explicitely types in the space.
  */
-fun AbstractField<String>.trimmingConverter() {
-    setConverter(object : Converter<String?, String?> {
-        override fun convertToModel(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value?.trim()
-
-        override fun convertToPresentation(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value
-
-        override fun getPresentationType(): Class<String?> = String::class.java as Class<String?>
-
-        override fun getModelType(): Class<String?> = String::class.java as Class<String?>
-    })
-}
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.trimmingConverter(): Binder.BindingBuilder<BEAN, String?> =
+        withConverter(object : Converter<String?, String?> {
+    override fun convertToModel(value: String?, context: ValueContext?): Result<String?> =
+        Result.ok(value?.trim())
+    override fun convertToPresentation(value: String?, context: ValueContext?): String? = value
+})
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToInt(): Binder.BindingBuilder<BEAN, Int?> =
+    withConverter(StringToIntegerConverter("Can't convert to integer"))
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
         if (this is AbstractClientConnector) this.getListeners(eventType).toList() else listOf<Any>()
@@ -288,16 +263,6 @@ var AbsoluteLayout.ComponentPosition.right: Size
     }
 
 /**
- * An utility method which adds an item and sets item's caption.
- * @param the Identification of the item to be created.
- * @param caption the new caption
- * @return the newly created item ID.
- */
-fun AbstractSelect.addItem(itemId: Any?, caption: String) = addItem(itemId).apply { setItemCaption(itemId, caption) }!!
-
-
-
-/**
  * Walks over this component and all descendants of this component, breadth-first.
  * @return iterable which iteratively walks over this component and all of its descendants.
  */
@@ -315,9 +280,9 @@ fun goBack() = Page.getCurrent().javaScript.execute("window.history.back();")
 fun navigateBack() = goBack()
 
 /**
- * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
+ * Allows you to create [Binder] like this: `Binder<Person>()` instead of `Binder(Person::class.java)`
  */
-inline fun <reified T : Any> BeanFieldGroup(): BeanFieldGroup<T> = BeanFieldGroup(T::class.java)
+inline fun <reified T : Any> BeanValidationBinder(): BeanValidationBinder<T> = BeanValidationBinder(T::class.java)
 
 data class SimpleContent(val small: String, val large: Component) : PopupView.Content {
     companion object {
