@@ -17,6 +17,7 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 import org.intellij.lang.annotations.Language
 import java.io.Serializable
+import kotlin.reflect.KProperty1
 
 /**
  * Utility method to create [JPADataSource] like this: `jpaDataSource<Person>()` instead of `JPADataSource(Person::class)`
@@ -387,3 +388,18 @@ set(value) { setMargin(value) }
 
 fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.BindingBuilder<BEAN, FIELDVALUE> =
         binder.forField(this)
+
+/**
+ * Causes the Grid to only show given set of columns, and in given order.
+ * @param ids show only this properties.
+ */
+fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map { it.name }.toTypedArray())
+
+/**
+ * Allows you to configure a particular column in a Grid.
+ * @param prop the bean property for which to retrieve the column
+ * @param block run this block with the column as a receiver
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T, V> Grid<T>.column(prop: KProperty1<T, V>, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
+    (getColumn(prop.name) as Grid.Column<T, V>).apply { block() }

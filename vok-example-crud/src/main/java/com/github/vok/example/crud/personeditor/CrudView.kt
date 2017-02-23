@@ -2,13 +2,13 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.db
 import com.github.vok.framework.deleteById
-import com.github.vok.framework.get
 import com.github.vok.framework.vaadin.*
 import com.github.vok.framework.vaadin.ModifierKey.Alt
 import com.github.vok.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
@@ -43,8 +43,8 @@ class CrudView: VerticalLayout(), View {
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(Person::class, dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
-            setColumnOrder(Person::id.name, Person::name.name, Person::age.name)
-            getColumn(Person::id.name).apply {
+            showColumns(Person::id, Person::name, Person::age)
+            column(Person::id) {
                 isSortable = false
             }
             addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
