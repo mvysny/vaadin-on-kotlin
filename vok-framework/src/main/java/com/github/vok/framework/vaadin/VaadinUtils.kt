@@ -2,6 +2,7 @@ package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.TreeIterator
 import com.vaadin.data.*
+import com.vaadin.data.converter.StringToDoubleConverter
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
@@ -10,6 +11,7 @@ import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.event.ShortcutListener
 import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Page
+import com.vaadin.server.SerializableFunction
 import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.ContentMode
@@ -64,6 +66,8 @@ fun <BEAN> Binder.BindingBuilder<BEAN, String?>.trimmingConverter(): Binder.Bind
 })
 fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToInt(): Binder.BindingBuilder<BEAN, Int?> =
     withConverter(StringToIntegerConverter("Can't convert to integer"))
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToDouble(): Binder.BindingBuilder<BEAN, Double?> =
+        withConverter(StringToDoubleConverter("Can't convert to decimal number"))
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
         if (this is AbstractClientConnector) this.getListeners(eventType).toList() else listOf<Any>()
@@ -389,8 +393,13 @@ set(value) { setMargin(value) }
  * }
  * ```
  */
-fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.BindingBuilder<BEAN, FIELDVALUE> =
-        binder.forField(this)
+fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.BindingBuilder<BEAN, FIELDVALUE> {
+    var builder = binder.forField(this)
+    // workaround for https://github.com/vaadin/framework/issues/8664
+    @Suppress("UNCHECKED_CAST")
+    if (this is AbstractTextField) builder = builder.withNullRepresentation("" as FIELDVALUE)
+    return builder
+}
 
 /**
  * A type-safe binding which binds only to a property of given type, found on given bean.

@@ -1,145 +1,124 @@
 package com.github.vok.framework.vaadin
 
-//import com.vaadin.data.Container
-//import com.vaadin.data.Property
-//import com.vaadin.data.util.GeneratedPropertyContainer
-//import com.vaadin.data.util.converter.Converter
-//import com.vaadin.data.util.converter.StringToDoubleConverter
-//import com.vaadin.data.util.filter.And
-//import com.vaadin.data.util.filter.Between
-//import com.vaadin.data.util.filter.Compare
-//import com.vaadin.data.util.filter.SimpleStringFilter
-//import com.vaadin.event.FieldEvents
-//import com.vaadin.server.Resource
-//import com.vaadin.shared.ui.datefield.Resolution
-//import com.vaadin.ui.*
-//import java.io.Serializable
-//import java.lang.Byte
-//import java.lang.Float
-//import java.lang.Long
-//import java.lang.Short
-//import java.sql.Timestamp
-//import java.text.DateFormat
-//import java.util.*
-//import java.util.Calendar
-//
-//data class NumberInterval<T : Number>(val lessThanValue: T?, val greaterThanValue: T?, val equalsValue: T?) : Serializable {
-//    fun toFilter(propertyId: Any?): Container.Filter? {
-//        if (equalsValue != null) return Compare.Equal(propertyId, equalsValue)
-//        if (lessThanValue != null && greaterThanValue != null) {
-//            return And(Compare.Less(propertyId, lessThanValue), Compare.Greater(propertyId, greaterThanValue))
-//        }
-//        if (lessThanValue != null) return Compare.Less(propertyId, lessThanValue)
-//        if (greaterThanValue != null) return Compare.Greater(propertyId, greaterThanValue)
-//        return null
-//    }
-//
-//    val isEmpty: Boolean
-//        get() = lessThanValue == null && greaterThanValue == null && equalsValue == null
-//}
-//
-///**
-// * A filter component which allows the user to filter numeric value which is greater than, equal, or less than a value which user enters.
-// * Stolen from Teppo Kurki's FilterTable.
-// */
-//class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
-//    override fun getType(): Class<out NumberInterval<Double>>? = NumberInterval::class.java as Class<NumberInterval<Double>>
-//
-//    private lateinit var ok: Button
-//    private lateinit var reset: Button
-//    private lateinit var ltInput: TextField
-//    private lateinit var gtInput: TextField
-//    private lateinit var eqInput: TextField
-//
-//    override fun initContent(): Component? {
-//        return PopupView(SimpleContent.EMPTY).apply {
-//            w = fillParent; minimizedValueAsHTML = "All"
-//            gridLayout(2, 4) {
-//                isSpacing = true
-//                setMargin(true)
-//                setSizeUndefined()
-//                label("<")
-//                ltInput = textField {
-//                    setConverter(StringToDoubleConverter())
-//                    inputPrompt = "Less than"
-//                }
-//                label("=")
-//                eqInput = textField {
-//                    setConverter(StringToDoubleConverter())
-//                    inputPrompt = "Equal to"
-//                    addTextChangeListener { event ->
-//                        gtInput.isEnabled = event.text == ""
-//                        ltInput.isEnabled = event.text == ""
-//                    }
-//                }
-//                label(">")
-//                gtInput = textField {
-//                    setConverter(StringToDoubleConverter())
-//                    inputPrompt = "Greater than"
-//                }
-//                val buttons = HorizontalLayout().apply {
-//                    w = fillParent
-//                    ok = button("Ok") {
-//                        expandRatio = 1f
-//                        alignment = Alignment.MIDDLE_RIGHT
-//                        onLeftClick {
-//                            try {
-//                                this@NumberFilterPopup.value = NumberInterval<Double>(ltInput.convertedValue as Double?,
-//                                        gtInput.convertedValue as Double?, eqInput.convertedValue as Double?)
-//                                isPopupVisible = false
-//                            } catch (ex: Converter.ConversionException) {
-//                                // no need to log this - it is sufficient that the conversion error messages are already shown
-//                                // next to component labels
-//                            }
-//                        }
-//                    }
-//                    reset = button("Reset", {
-//                        this@NumberFilterPopup.value = null
-//                        isPopupVisible = false
-//                    })
-//                }
-//                addComponent(buttons, 0, 3, 1, 3)
-//            }
-//        }
-//    }
-//
-//    override fun setReadOnly(readOnly: Boolean) {
-//        super.setReadOnly(readOnly)
-//        ok.isEnabled = !readOnly
-//        reset.isEnabled = !readOnly
-//        ltInput.isEnabled = !readOnly
-//        gtInput.isEnabled = !readOnly
-//        eqInput.isEnabled = !readOnly
-//    }
-//
-//    private fun updateCaption() {
-//        val content = content as PopupView
-//        val value = value
-//        if (value == null || value.isEmpty) {
-//            content.minimizedValueAsHTML = "All"
-//        } else {
-//            if (value.equalsValue != null) {
-//                content.minimizedValueAsHTML = "[x] = ${value.equalsValue}"
-//            } else if (value.greaterThanValue != null && value.lessThanValue != null) {
-//                content.minimizedValueAsHTML = "${value.greaterThanValue} < [x] < ${value.lessThanValue}"
-//            } else if (value.greaterThanValue != null) {
-//                content.minimizedValueAsHTML = "[x] > ${value.greaterThanValue}"
-//            } else if (value.lessThanValue != null) {
-//                content.minimizedValueAsHTML = "[x] < ${value.lessThanValue}"
-//            }
-//        }
-//    }
-//
-//    override fun setValue(newFieldValue: NumberInterval<Double>?) {
-//        ltInput.convertedValue = newFieldValue?.lessThanValue
-//        gtInput.convertedValue = newFieldValue?.greaterThanValue
-//        eqInput.convertedValue = newFieldValue?.equalsValue
-//        gtInput.isEnabled = eqInput.convertedValue == null
-//        ltInput.isEnabled = eqInput.convertedValue == null
-//        super.setValue(newFieldValue)
-//        updateCaption()
-//    }
-//}
+import com.vaadin.data.Binder
+import com.vaadin.ui.*
+import java.io.Serializable
+
+data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
+    fun toFilter(field: String): JPAFilter? {
+        if (equalsValue != null) return EqFilter(field, equalsValue)
+        if (lessThanValue != null && greaterThanValue != null) {
+            return setOf(LtFilter(field, lessThanValue!!), GtFilter(field, greaterThanValue!!)).and()
+        }
+        if (lessThanValue != null) return LtFilter(field, lessThanValue!!)
+        if (greaterThanValue != null) return GtFilter(field, greaterThanValue!!)
+        return null
+    }
+
+    val isEmpty: Boolean
+        get() = lessThanValue == null && greaterThanValue == null && equalsValue == null
+}
+
+/**
+ * A filter component which allows the user to filter numeric value which is greater than, equal, or less than a value which user enters.
+ * Stolen from Teppo Kurki's FilterTable.
+ */
+class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
+
+    private lateinit var ok: Button
+    private lateinit var reset: Button
+    private lateinit var ltInput: TextField
+    private lateinit var gtInput: TextField
+    private lateinit var eqInput: TextField
+    private var boundValue: NumberInterval<Double> = NumberInterval(null, null, null)
+    @Suppress("UNCHECKED_CAST")
+    private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = boundValue }
+    private var internalValue: NumberInterval<Double>? = null
+
+    override fun initContent(): Component? {
+        return PopupView(SimpleContent.EMPTY).apply {
+            w = fillParent; minimizedValueAsHTML = "All"
+            gridLayout(2, 4) {
+                isSpacing = true
+                setMargin(true)
+                setSizeUndefined()
+                label("<")
+                ltInput = textField {
+                    bind(binder).stringToDouble().bind("lessThanValue")
+                    placeholder = "Less than"
+                }
+                label("=")
+                eqInput = textField {
+                    bind(binder).stringToDouble().bind("equalsValue")
+                    placeholder = "Equal to"
+                    addValueChangeListener {
+                        gtInput.isEnabled = isEmpty
+                        ltInput.isEnabled = isEmpty
+                    }
+                }
+                label(">")
+                gtInput = textField {
+                    bind(binder).stringToDouble().bind("greaterThanValue")
+                    placeholder = "Greater than"
+                }
+                val buttons = HorizontalLayout().apply {
+                    w = fillParent
+                    ok = button("Ok") {
+                        expandRatio = 1f
+                        alignment = Alignment.MIDDLE_RIGHT
+                        onLeftClick {
+                            value = boundValue.copy()
+                            isPopupVisible = false
+                        }
+                    }
+                    reset = button("Reset", {
+                        value = null
+                        isPopupVisible = false
+                    })
+                }
+                addComponent(buttons, 0, 3, 1, 3)
+            }
+        }
+    }
+
+    override fun setReadOnly(readOnly: Boolean) {
+        super.setReadOnly(readOnly)
+        ok.isEnabled = !readOnly
+        reset.isEnabled = !readOnly
+        ltInput.isEnabled = !readOnly
+        gtInput.isEnabled = !readOnly
+        eqInput.isEnabled = !readOnly
+    }
+
+    private fun updateCaption() {
+        val content = content as PopupView
+        val value = value
+        if (value == null || value.isEmpty) {
+            content.minimizedValueAsHTML = "All"
+        } else {
+            if (value.equalsValue != null) {
+                content.minimizedValueAsHTML = "[x] = ${value.equalsValue}"
+            } else if (value.greaterThanValue != null && value.lessThanValue != null) {
+                content.minimizedValueAsHTML = "${value.greaterThanValue} < [x] < ${value.lessThanValue}"
+            } else if (value.greaterThanValue != null) {
+                content.minimizedValueAsHTML = "[x] > ${value.greaterThanValue}"
+            } else if (value.lessThanValue != null) {
+                content.minimizedValueAsHTML = "[x] < ${value.lessThanValue}"
+            }
+        }
+    }
+
+    override fun doSetValue(value: NumberInterval<Double>?) {
+        boundValue = value?.copy() ?: NumberInterval<Double>(null, null, null)
+        internalValue = value?.copy()
+        gtInput.isEnabled = boundValue.equalsValue == null
+        ltInput.isEnabled = boundValue.equalsValue == null
+        binder.bean = boundValue
+        updateCaption()
+    }
+
+    override fun getValue() = internalValue?.copy()
+}
 //
 ///**
 // * Produces filter fields and binds them to the container, to automatically perform the filtering itself.
