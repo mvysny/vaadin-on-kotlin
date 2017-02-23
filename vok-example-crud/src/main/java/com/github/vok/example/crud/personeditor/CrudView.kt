@@ -8,7 +8,6 @@ import com.github.vok.framework.vaadin.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.shared.data.sort.SortDirection
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
@@ -30,6 +29,9 @@ class CrudView: VerticalLayout(), View {
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
     private val personGridDS = jpaDataSource<Person>()
+
+    // you can restrict the values by writing the following expression:
+//    private val personGridDS = jpaDataSource<Person>().and { Person::age between 20..60 }
 
     init {
         setSizeFull()

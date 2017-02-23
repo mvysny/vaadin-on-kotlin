@@ -9,9 +9,11 @@ import java.io.Serializable
 import java.util.stream.Stream
 import javax.persistence.criteria.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 /**
  * Provides instances of given JPA class from the database. Currently only supports sorting, currently does not support joins.
+ * @todo mavi joins?
  */
 class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider<T, JPAFilter?>() {
 
@@ -38,33 +40,164 @@ class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider
     }
 
     override fun getId(item: T): Any = item.dbId!!
+    override fun toString() = "JPADataSource($entity)"
 }
 
+/**
+ * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
+ * @return data provider which can be configured to always apply given filter.
+ */
 fun <T> DataProvider<T, JPAFilter?>.configurableFilter() : ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?> =
-        withConfigurableFilter({ f1: JPAFilter?, f2: JPAFilter? -> listOf(f1, f2).filterNotNull().and() })
+    withConfigurableFilter({ f1: JPAFilter?, f2: JPAFilter? -> listOf(f1, f2).filterNotNull().toSet().and() })
 
+/**
+ * Produces a new data provider which restricts rows returned by the original data provider to given filter.
+ *
+ * Invoking this method multiple times will restrict the rows further.
+ * @param other applies this filter
+ */
 fun <T> DataProvider<T, JPAFilter?>.and(other: JPAFilter) : DataProvider<T, JPAFilter?> = configurableFilter().apply {
     setFilter(other)
 }
 
-fun Collection<JPAFilter>.and(): JPAFilter? = when (size) {
+/**
+ * Produces a new data provider which restricts rows returned by the original data provider to given filter. Allows you to write
+ * expressions like this: `jpaDataProvider<Person>().and { Person::age lt 25 }`
+ * See [JPAWhereBuilder] for a complete list of applicable operators.
+ *
+ * Invoking this method multiple times will restrict the rows further.
+ * @param block the block which allows you to build the `where` expression.
+ */
+fun <T> DataProvider<T, JPAFilter?>.and(block: JPAWhereBuilder<T>.()->JPAFilter) : DataProvider<T, JPAFilter?> = configurableFilter().apply {
+    setFilter(block)
+}
+
+/**
+ * Removes the original filter and sets the new filter. Allows you to write
+ * expressions like this: `jpaDataProvider<Person>().and { Person::age lt 25 }`.
+ * See [JPAWhereBuilder] for a complete list of applicable operators.
+ *
+ * Invoking this method multiple times will overwrite the previous filter.
+ * @param block the block which allows you to build the `where` expression.
+ */
+fun <T> ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>.setFilter(block: JPAWhereBuilder<T>.()->JPAFilter) {
+    setFilter(block(JPAWhereBuilder()))
+}
+
+fun Set<JPAFilter>.and(): JPAFilter? = when (size) {
     0 -> null
     1 -> iterator().next()
-    else -> AndFilter(toList())
+    else -> AndFilter(this)
+}
+fun Set<JPAFilter>.or(): JPAFilter? = when (size) {
+    0 -> null
+    1 -> iterator().next()
+    else -> OrFilter(this)
 }
 
+/**
+ * A JPA filter. See concrete implementation classes for further information.
+ */
 interface JPAFilter : Serializable {
+    /**
+     * Converts this filter to a JPA Criteria API Predicate.
+     * @param cb the criteria builder which contains factory methods for various Predicates.
+     * @param root creates Expressions for fields
+     * @return a predicate which actually matches the database rows.
+     */
     fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate
+
+    /**
+     * Negates this filter.
+     * @return this filter negated.
+     */
+    operator fun not(): JPAFilter = NotFilter(this)
+
+    /**
+     * Produces a filter which only matches rows which are matched both by this and the other filter.
+     * @param other rows must match also this filter.
+     * @return AND of `this` and `other`
+     */
+    infix fun and(other: JPAFilter): JPAFilter = setOf(this, other).and()!!
+    /**
+     * Produces a filter which matches rows which are matched by either this or the other filter.
+     * @param other rows may match also this filter.
+     * @return OR of `this` and `other`
+     */
+    infix fun or(other: JPAFilter): JPAFilter = setOf(this, other).or()!!
 }
 
-class AndFilter(val filters: List<JPAFilter>) : JPAFilter {
+data class AndFilter(val filters: Set<JPAFilter>) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.and(*filters.map { it.toPredicate(cb, root) }.toTypedArray())
+    override fun toString() = filters.joinToString(" and ", transform = { it -> "($it)" })
 }
-
-class OrFilter(val filters: List<JPAFilter>) : JPAFilter {
+data class OrFilter(val filters: Set<JPAFilter>) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.or(*filters.map { it.toPredicate(cb, root) }.toTypedArray())
+    override fun toString() = filters.joinToString(" or ", transform = { it -> "($it)" })
+}
+data class NotFilter(val filter: JPAFilter) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.not(filter.toPredicate(cb, root))
+    override fun toString() = "!$filter"
+}
+data class EqFilter(val field: String, val value: Serializable?) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.equal(root.get<Any>(field), value)
+    override fun toString() = "$field == $value"
+}
+data class LeFilter(val field: String, val value: Number) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.le(root.get<Number>(field), value)
+    override fun toString() = "$field <= $value"
+}
+data class LtFilter(val field: String, val value: Number) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.lt(root.get<Number>(field), value)
+    override fun toString() = "$field < $value"
+}
+data class GeFilter(val field: String, val value: Number) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.ge(root.get<Number>(field), value)
+    override fun toString() = "$field >= $value"
+}
+data class GtFilter(val field: String, val value: Number) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.gt(root.get<Number>(field), value)
+    override fun toString() = "$field > $value"
+}
+data class IsNullFilter(val field: String) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNull(root.get<Number>(field))
+    override fun toString() = "$field is null"
+}
+data class IsNotNullFilter(val field: String) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNotNull(root.get<Number>(field))
+    override fun toString() = "$field is not null"
+}
+data class IsTrueFilter(val field: String) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isTrue(root.get<Boolean>(field))
+    override fun toString() = field
+}
+data class LikeFilter(val field: String, val value: String) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.like(root.get<String>(field), value)
+    override fun toString() = "$field like $value"
 }
 
-class EqFilter(val field: String, val value: Serializable) : JPAFilter {
-    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.equal(root.get<Any>(field), value)
+/**
+ * Running block with this class as its receiver will allow you to write expressions like this:
+ * `Person::age lt 25`.
+ *
+ * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe?
+ * @todo mavi what about joins?
+ */
+class JPAWhereBuilder<T> {
+    infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): JPAFilter = EqFilter(name, value)
+    infix fun <R: Number> KProperty1<T, R?>.le(value: R): JPAFilter = LeFilter(name, value)
+    infix fun <R: Number> KProperty1<T, R?>.lt(value: R): JPAFilter = LtFilter(name, value)
+    infix fun <R: Number> KProperty1<T, R?>.ge(value: R): JPAFilter = GeFilter(name, value)
+    infix fun <R: Number> KProperty1<T, R?>.gt(value: R): JPAFilter = GtFilter(name, value)
+    infix fun KProperty1<T, String?>.like(value: String): JPAFilter = LikeFilter(name, value)
+    /**
+     * Matches only values contained in given range.
+     * @param range the range
+     */
+    infix fun <R> KProperty1<T, R?>.between(range: ClosedRange<R>): JPAFilter where R: Number, R: Comparable<R> =
+            GeFilter(name, range.start) and LeFilter(name, range.endInclusive)
+    val KProperty1<T, *>.isNull: JPAFilter get() = IsNullFilter(name)
+    val KProperty1<T, *>.isNotNull: JPAFilter get() = IsNotNullFilter(name)
+    val KProperty1<T, Boolean?>.isTrue: JPAFilter get() = IsTrueFilter(name)
+    val KProperty1<T, Boolean?>.isFalse: JPAFilter get() = !IsTrueFilter(name)
 }
