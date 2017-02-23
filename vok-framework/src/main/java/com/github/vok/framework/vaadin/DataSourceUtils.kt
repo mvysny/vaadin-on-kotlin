@@ -155,16 +155,32 @@ data class LeFilter(val field: String, val value: Number) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.le(root.get<Number>(field), value)
     override fun toString() = "$field <= $value"
 }
+data class Le2Filter<V: Comparable<V>>(val field: String, val value: V) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.lessThanOrEqualTo(root.get<V>(field), value)
+    override fun toString() = "$field <= $value"
+}
 data class LtFilter(val field: String, val value: Number) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.lt(root.get<Number>(field), value)
+    override fun toString() = "$field < $value"
+}
+data class Lt2Filter<V: Comparable<V>>(val field: String, val value: V) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.lessThan(root.get<V>(field), value)
     override fun toString() = "$field < $value"
 }
 data class GeFilter(val field: String, val value: Number) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.ge(root.get<Number>(field), value)
     override fun toString() = "$field >= $value"
 }
+data class Ge2Filter<V: Comparable<V>>(val field: String, val value: V) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.greaterThanOrEqualTo(root.get<V>(field), value)
+    override fun toString() = "$field >= $value"
+}
 data class GtFilter(val field: String, val value: Number) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.gt(root.get<Number>(field), value)
+    override fun toString() = "$field > $value"
+}
+data class Gt2Filter<V: Comparable<V>>(val field: String, val value: V) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.greaterThan(root.get<V>(field), value)
     override fun toString() = "$field > $value"
 }
 data class IsNullFilter(val field: String) : JPAFilter {
@@ -194,9 +210,13 @@ data class LikeFilter(val field: String, val value: String) : JPAFilter {
 class JPAWhereBuilder<T> {
     infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): JPAFilter = EqFilter(name, value)
     infix fun <R: Number> KProperty1<T, R?>.le(value: R): JPAFilter = LeFilter(name, value)
+    infix fun <R: Comparable<R>> KProperty1<T, R?>.le(value: R): JPAFilter = Le2Filter(name, value)
     infix fun <R: Number> KProperty1<T, R?>.lt(value: R): JPAFilter = LtFilter(name, value)
+    infix fun <R: Comparable<R>> KProperty1<T, R?>.lt(value: R): JPAFilter = Lt2Filter(name, value)
     infix fun <R: Number> KProperty1<T, R?>.ge(value: R): JPAFilter = GeFilter(name, value)
+    infix fun <R: Comparable<R>> KProperty1<T, R?>.ge(value: R): JPAFilter = Ge2Filter(name, value)
     infix fun <R: Number> KProperty1<T, R?>.gt(value: R): JPAFilter = GtFilter(name, value)
+    infix fun <R: Comparable<R>> KProperty1<T, R?>.gt(value: R): JPAFilter = Gt2Filter(name, value)
     infix fun KProperty1<T, String?>.like(value: String): JPAFilter = LikeFilter(name, value)
     /**
      * Matches only values contained in given range.

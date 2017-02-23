@@ -1,8 +1,15 @@
 package com.github.vok.framework.vaadin
 
 import com.vaadin.data.Binder
+import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
 import java.io.Serializable
+import java.text.DateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 
 data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
     fun toFilter(field: String): JPAFilter? {
@@ -226,14 +233,15 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 //    }
 //}
 //
-//data class DateInterval(val from: Date?, val to: Date?) : Serializable {
-//    val isEmpty: Boolean
-//        get() = from == null && to == null
-//
-//    fun toFilter(container: Container.Filterable, propertyId: Any?): Container.Filter? {
-//        if (isEmpty) return null
-//        var actualFrom = from
-//        var actualTo = to
+
+data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Serializable {
+    val isEmpty: Boolean
+        get() = from == null && to == null
+
+    fun toFilter(field: String): JPAFilter? {
+        if (isEmpty) return null
+        var actualFrom = from
+        var actualTo = to
 //        val type = container.getType(propertyId)
 //        if (type == java.sql.Date::class.java) {
 //            actualFrom = if (actualFrom == null) null else java.sql.Date(actualFrom.time)
@@ -242,116 +250,108 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 //            actualFrom = if (actualFrom == null) null else Timestamp(actualFrom.time)
 //            actualTo = if (actualTo == null) null else Timestamp(actualTo.time)
 //        }
-//        if (actualFrom != null && actualTo != null) {
-//            return Between(propertyId, actualFrom, actualTo)
-//        } else if (actualFrom != null) {
-//            return Compare.GreaterOrEqual(propertyId, actualFrom)
-//        } else {
-//            return Compare.LessOrEqual(propertyId, actualTo)
-//        }
-//    }
-//}
-//
-//class DateFilterPopup: CustomField<DateInterval?>() {
-//    private val dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, UI.getCurrent().locale ?: Locale.getDefault())
-//    private lateinit var fromField: DateField
-//    private lateinit var toField: DateField
-//    private lateinit var set: Button
-//    private lateinit var clear: Button
-//    val resolution: Resolution = Resolution.DAY
-//
-//    init {
-//        styleName = "datefilterpopup"
-//    }
-//
-//    override fun setValue(newFieldValue: DateInterval?) {
-//        fromField.value = newFieldValue?.from
-//        toField.value = newFieldValue?.to
-//        super.setValue(newFieldValue)
-//        updateCaption()
-//    }
-//
-//    private fun format(date: Date?) = if (date == null) "" else dateFormat.format(date)
-//
-//    private fun updateCaption() {
-//        val content = content as PopupView
-//        val value = value
-//        if (value == null || value.isEmpty) {
-//            content.minimizedValueAsHTML = "All"
-//        } else {
-//            content.minimizedValueAsHTML = "${format(fromField.value)} - ${format(toField.value)}"
-//        }
-//    }
-//
-//    private fun truncateDate(date: Date?, resolution: Resolution, start: Boolean): Date? {
-//        if (date == null) {
-//            return null
-//        }
-//        val cal = Calendar.getInstance(locale ?: UI.getCurrent().locale ?: Locale.getDefault())
-//        cal.time = date
-//        cal.set(Calendar.MILLISECOND, if (start) 0 else 999)
-//        for (res in Resolution.getResolutionsLowerThan(resolution)) {
-//            if (res == Resolution.SECOND) {
-//                cal.set(Calendar.SECOND, if (start) 0 else 59)
-//            } else if (res == Resolution.MINUTE) {
-//                cal.set(Calendar.MINUTE, if (start) 0 else 59)
-//            } else if (res == Resolution.HOUR) {
-//                cal.set(Calendar.HOUR_OF_DAY, if (start) 0 else 23)
-//            } else if (res == Resolution.DAY) {
-//                cal.set(Calendar.DAY_OF_MONTH,
-//                        if (start) 1 else cal.getActualMaximum(Calendar.DAY_OF_MONTH))
-//            } else if (res == Resolution.MONTH) {
-//                cal.set(Calendar.MONTH,
-//                        if (start) 0 else cal.getActualMaximum(Calendar.MONTH))
-//            }
-//        }
-//        return cal.time
-//    }
-//
-//    override fun initContent(): Component? {
-//        return PopupView(SimpleContent.EMPTY).apply {
-//            w = fillParent; minimizedValueAsHTML = "All"
-//            verticalLayout {
-//                styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
-//                horizontalLayout {
-//                    isSpacing = true
-//                    fromField = inlineDateField()
-//                    toField = inlineDateField()
-//                }
-//                horizontalLayout {
-//                    alignment = Alignment.BOTTOM_RIGHT
-//                    isSpacing = true
-//                    set = button("Set", {
-//                        value = DateInterval(truncateDate(fromField.value, resolution, true), truncateDate(toField.value, resolution, false))
-//                        isPopupVisible = false
-//                    })
-//                    clear = button("Clear", {
-//                        value = null
-//                        isPopupVisible = false
-//                    })
-//                }
-//            }
-//        }
-//    }
-//
-//    override fun attach() {
-//        super.attach()
-//        fromField.locale = locale
-//        toField.locale = locale
-//    }
-//
-//    override fun getType(): Class<out DateInterval> {
-//        return DateInterval::class.java
-//    }
-//
-//    override fun setReadOnly(readOnly: Boolean) {
-//        super.setReadOnly(readOnly)
-//        set.isEnabled = !readOnly
-//        clear.isEnabled = !readOnly
-//        fromField.isEnabled = !readOnly
-//        toField.isEnabled = !readOnly
-//    }
-//}
+        if (actualFrom != null && actualTo != null) {
+            return setOf(Ge2Filter(field, actualFrom), Le2Filter(field, actualTo)).and()
+        } else if (actualFrom != null) {
+            return Ge2Filter(field, actualFrom)
+        } else {
+            return Le2Filter(field, actualTo!!)
+        }
+    }
+}
+
+class DateFilterPopup: CustomField<DateInterval?>() {
+    private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale ?: Locale.getDefault())
+    private lateinit var fromField: InlineDateTimeField
+    private lateinit var toField: InlineDateTimeField
+    private lateinit var set: Button
+    private lateinit var clear: Button
+    val resolution: DateTimeResolution = DateTimeResolution.DAY
+    private var internalValue: DateInterval? = null
+
+    init {
+        styleName = "datefilterpopup"
+    }
+
+    override fun doSetValue(value: DateInterval?) {
+        internalValue = value?.copy()
+        fromField.value = internalValue?.from
+        toField.value = internalValue?.to
+        updateCaption()
+    }
+
+    override fun getValue() = internalValue?.copy()
+
+    private fun format(date: LocalDateTime?) = if (date == null) "" else formatter.format(date)
+
+    private fun updateCaption() {
+        val content = content as PopupView
+        val value = value
+        if (value == null || value.isEmpty) {
+            content.minimizedValueAsHTML = "All"
+        } else {
+            content.minimizedValueAsHTML = "${format(fromField.value)} - ${format(toField.value)}"
+        }
+    }
+
+    private fun truncateDate(date: LocalDateTime?, resolution: DateTimeResolution, start: Boolean): LocalDateTime? {
+        var date = date ?: return null
+        for (res in DateTimeResolution.values().slice(resolution.ordinal + 1..DateTimeResolution.values().size - 1)) {
+            if (res == DateTimeResolution.SECOND) {
+                date = date.withSecond(if (start) 0 else 59)
+            } else if (res == DateTimeResolution.MINUTE) {
+                date = date.withMinute(if (start) 0 else 59)
+            } else if (res == DateTimeResolution.HOUR) {
+                date = date.withHour(if (start) 0 else 23)
+            } else if (res == DateTimeResolution.DAY) {
+                date = date.withDayOfMonth(if (start) 1 else date.toLocalDate().lengthOfMonth())
+            } else if (res == DateTimeResolution.MONTH) {
+                date = date.withMonth(if (start) 1 else 12)
+            }
+        }
+        return date
+    }
+
+    override fun initContent(): Component? {
+        return PopupView(SimpleContent.EMPTY).apply {
+            w = fillParent; minimizedValueAsHTML = "All"
+            verticalLayout {
+                styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
+                horizontalLayout {
+                    isSpacing = true
+                    fromField = inlineDateTimeField()
+                    toField = inlineDateTimeField()
+                }
+                horizontalLayout {
+                    alignment = Alignment.BOTTOM_RIGHT
+                    isSpacing = true
+                    set = button("Set", {
+                        value = DateInterval(truncateDate(fromField.value, resolution, true), truncateDate(toField.value, resolution, false))
+                        isPopupVisible = false
+                    })
+                    clear = button("Clear", {
+                        value = null
+                        isPopupVisible = false
+                    })
+                }
+            }
+        }
+    }
+
+    override fun attach() {
+        super.attach()
+        fromField.locale = locale
+        toField.locale = locale
+    }
+
+    override fun setReadOnly(readOnly: Boolean) {
+        super.setReadOnly(readOnly)
+        set.isEnabled = !readOnly
+        clear.isEnabled = !readOnly
+        fromField.isEnabled = !readOnly
+        toField.isEnabled = !readOnly
+    }
+}
 //
 ///**
 // * Provides default implementation for [FilterFieldFactory].

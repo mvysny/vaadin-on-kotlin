@@ -115,6 +115,8 @@ fun HasComponents.gridLayout(columns: Int = 1, rows: Int = 1, block: GridLayout.
 
 fun HasComponents.inlineDateField(caption: String? = null, block: InlineDateField.()->Unit = {}) = init(InlineDateField(caption), block)
 
+fun HasComponents.inlineDateTimeField(caption: String? = null, block: InlineDateTimeField.()->Unit = {}) = init(InlineDateTimeField(caption), block)
+
 fun HasComponents.link(caption: String? = null, url: String? = null, block: Link.()->Unit = {}) =
         init(Link(caption, if (url == null) null else ExternalResource(url)), block)
 
