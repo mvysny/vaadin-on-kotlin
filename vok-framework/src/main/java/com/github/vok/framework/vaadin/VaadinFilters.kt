@@ -44,12 +44,12 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                 setSizeUndefined()
                 label("<")
                 ltInput = textField {
-                    bind(binder).stringToDouble().bind("lessThanValue")
+                    bind(binder).stringToDouble().bind(NumberInterval<Double>::lessThanValue)
                     placeholder = "Less than"
                 }
                 label("=")
                 eqInput = textField {
-                    bind(binder).stringToDouble().bind("equalsValue")
+                    bind(binder).stringToDouble().bind(NumberInterval<Double>::equalsValue)
                     placeholder = "Equal to"
                     addValueChangeListener {
                         gtInput.isEnabled = isEmpty
@@ -58,7 +58,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                 }
                 label(">")
                 gtInput = textField {
-                    bind(binder).stringToDouble().bind("greaterThanValue")
+                    bind(binder).stringToDouble().bind(NumberInterval<Double>::greaterThanValue)
                     placeholder = "Greater than"
                 }
                 val buttons = HorizontalLayout().apply {
