@@ -21,6 +21,7 @@ import java.util.stream.Stream
 import java.util.stream.StreamSupport
 import javax.persistence.EntityManager
 import javax.persistence.TypedQuery
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
 //private val gridColumnGrid: Field = Grid.Column::class.java.getDeclaredField("grid").apply { isAccessible = true }
@@ -108,10 +109,10 @@ import kotlin.reflect.KProperty
  * Provides instances of given JPA class from the database. Currently only supports sorting, currently does not support joins.
  * @todo mavi add support for filters
  */
-class JPADataSource<T: Any>(val entity: Class<T>) : AbstractBackEndDataProvider<T, Unit>() {
+class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider<T, Unit>() {
 
     private fun Query<T, Unit>.toQlString(): String = buildString {
-        append("from ${entity.simpleName} a")
+        append("from ${entity.java.simpleName} a")
         if (!sortOrders.isEmpty()) {
             append(" order by ")
             sortOrders.joinTo(this, transform = { "a.${it.toQlOrderByClause()}" })
@@ -121,7 +122,7 @@ class JPADataSource<T: Any>(val entity: Class<T>) : AbstractBackEndDataProvider<
     private fun QuerySortOrder.toQlOrderByClause() = sorted + if (direction != SortDirection.ASCENDING) " desc" else ""
 
     override fun fetchFromBackEnd(query: Query<T, Unit>): Stream<T> = db {
-        em.createQuery(query.toQlString(), entity).apply {
+        em.createQuery(query.toQlString(), entity.java).apply {
             firstResult = query.offset
             if (query.limit < Integer.MAX_VALUE) maxResults = query.limit
         }.resultList.stream()

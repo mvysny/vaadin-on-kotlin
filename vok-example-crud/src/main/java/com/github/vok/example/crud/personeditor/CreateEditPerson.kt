@@ -33,12 +33,13 @@ internal class CreateEditPerson(val person: Person) : Window() {
             isMargin = true
             formLayout {
                 w = wrapContent
-                val name = textField("Name:") {
+                textField("Name:") {
                     focus()
+                    bind(binder).trimmingConverter().bind("name")
                 }
-                binder.forField(name).trimmingConverter().bind("name")
-                val age = textField("Age:")
-                binder.forField(age).stringToInt().bind("age")
+                textField("Age:") {
+                    bind(binder).stringToInt().bind("age")
+                }
             }
             horizontalLayout {
                 isSpacing = true; alignment = Alignment.MIDDLE_CENTER
@@ -46,9 +47,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
                     onLeftClick { okPressed() }
                     setPrimary()
                 }
-                button("Cancel") {
-                    onLeftClick { close() }
-                }
+                button("Cancel", { close() })
             }
         }
         binder.readBean(person)

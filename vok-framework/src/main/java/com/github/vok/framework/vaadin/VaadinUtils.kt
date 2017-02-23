@@ -17,10 +17,11 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 import org.intellij.lang.annotations.Language
 import java.io.Serializable
-import java.text.NumberFormat
-import java.util.*
 
-inline fun <reified T : Any> jpaDataSource(): JPADataSource<T> = JPADataSource(T::class.java)
+/**
+ * Utility method to create [JPADataSource] like this: `jpaDataSource<Person>()` instead of `JPADataSource(Person::class)`
+ */
+inline fun <reified T : Any> jpaDataSource(): JPADataSource<T> = JPADataSource(T::class)
 
 /**
  * Shows given html in this label.
@@ -383,3 +384,6 @@ var Button.clickShortcut: KeyShortcut
 var AbstractOrderedLayout.isMargin: Boolean
 get() = margin.hasAll()
 set(value) { setMargin(value) }
+
+fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.BindingBuilder<BEAN, FIELDVALUE> =
+        binder.forField(this)
