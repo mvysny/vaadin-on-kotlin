@@ -15,7 +15,7 @@ import kotlin.reflect.KProperty1
  * Provides instances of given JPA class from the database. Currently only supports sorting, currently does not support joins.
  * @todo mavi joins?
  */
-class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider<T, JPAFilter?>() {
+class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider<T, JPAFilter?>() {
 
     private fun QuerySortOrder.toOrder(cb: CriteriaBuilder, root: Root<T>) = if (direction == SortDirection.ASCENDING) cb.asc(root.get<T>(sorted)) else cb.desc(root.get<T>(sorted))
 
@@ -25,7 +25,10 @@ class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider
             val root = q.from(entity.java)
             q.orderBy(query.sortOrders.map { it.toOrder(cb, root) })
             if (query.filter.isPresent) q.where(query.filter.get()!!.toPredicate(cb, root))
-            em.createQuery(q).resultList
+            val q2 = em.createQuery(q)
+            q2.firstResult = query.offset
+            if (query.limit < Int.MAX_VALUE) q2.maxResults = query.limit
+            q2.resultList
         }.stream()
     }
 
@@ -40,8 +43,13 @@ class JPADataSource<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider
     }
 
     override fun getId(item: T): Any = item.dbId!!
-    override fun toString() = "JPADataSource($entity)"
+    override fun toString() = "JPADataProvider($entity)"
 }
+
+/**
+ * Utility method to create [JPADataProvider] like this: `jpaDataProvider<Person>()` instead of `JPADataProvider(Person::class)`
+ */
+inline fun <reified T : Any> jpaDataProvider(): JPADataProvider<T> = JPADataProvider(T::class)
 
 /**
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.

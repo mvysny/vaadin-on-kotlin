@@ -20,11 +20,6 @@ import java.io.Serializable
 import kotlin.reflect.KProperty1
 
 /**
- * Utility method to create [JPADataSource] like this: `jpaDataSource<Person>()` instead of `JPADataSource(Person::class)`
- */
-inline fun <reified T : Any> jpaDataSource(): JPADataSource<T> = JPADataSource(T::class)
-
-/**
  * Shows given html in this label.
  * @param html the html code to show.
  */
@@ -386,8 +381,23 @@ var AbstractOrderedLayout.isMargin: Boolean
 get() = margin.hasAll()
 set(value) { setMargin(value) }
 
+/**
+ * Allows you to bind the component directly in the component's definition. E.g.
+ * ```
+ * textField("Name:") {
+ *   bind(binder).trimmingConverter().bind(Person::name)
+ * }
+ * ```
+ */
 fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.BindingBuilder<BEAN, FIELDVALUE> =
         binder.forField(this)
+
+/**
+ * A type-safe binding which binds only to a property of given type, found on given bean.
+ * @param prop the bean property
+ */
+fun <BEAN, FIELDVALUE> Binder.BindingBuilder<BEAN, FIELDVALUE>.bind(prop: KProperty1<BEAN, FIELDVALUE?>): Binder.Binding<BEAN, FIELDVALUE> =
+        bind(prop.name)
 
 /**
  * Causes the Grid to only show given set of columns, and in given order.
@@ -396,7 +406,13 @@ fun <BEAN, FIELDVALUE> HasValue<FIELDVALUE>.bind(binder: Binder<BEAN>): Binder.B
 fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map { it.name }.toTypedArray())
 
 /**
- * Allows you to configure a particular column in a Grid.
+ * Allows you to configure a particular column in a Grid. E.g.:
+ * ```
+ * grid(...) {
+ *   showColumns(Person::name, Person::age)
+ *   column(Person::age) { isSortable = false }
+ * }
+ * ```
  * @param prop the bean property for which to retrieve the column
  * @param block run this block with the column as a receiver
  */

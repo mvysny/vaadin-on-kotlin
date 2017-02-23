@@ -28,10 +28,10 @@ class CrudView: VerticalLayout(), View {
 
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
-    private val personGridDS = jpaDataSource<Person>()
+    private val personGridDS = jpaDataProvider<Person>()
 
     // you can restrict the values by writing the following expression:
-//    private val personGridDS = jpaDataSource<Person>().and { Person::age between 20..60 }
+//    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
 
     init {
         setSizeFull()

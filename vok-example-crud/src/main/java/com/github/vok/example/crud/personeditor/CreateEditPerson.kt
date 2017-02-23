@@ -35,10 +35,10 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 w = wrapContent
                 textField("Name:") {
                     focus()
-                    bind(binder).trimmingConverter().bind("name")
+                    bind(binder).trimmingConverter().bind(Person::name)
                 }
                 textField("Age:") {
-                    bind(binder).stringToInt().bind("age")
+                    bind(binder).stringToInt().bind(Person::age)
                 }
             }
             horizontalLayout {
