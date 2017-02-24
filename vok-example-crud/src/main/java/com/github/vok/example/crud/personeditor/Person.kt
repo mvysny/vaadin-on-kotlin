@@ -1,6 +1,8 @@
 package com.github.vok.example.crud.personeditor
 
 import java.io.Serializable
+import java.time.Instant
+import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Max
@@ -28,8 +30,10 @@ data class Person(
         @field:Max(100)
         var age: Int? = null,
 
-        @field:Temporal(TemporalType.DATE)
-        var dateOfBirth: Date? = null,
+        var dateOfBirth: LocalDate? = null,
+
+        @field:NotNull
+        var created: Date? = null,
 
         @field:NotNull
         @field:Enumerated(EnumType.STRING)

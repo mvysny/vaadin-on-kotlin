@@ -2,6 +2,8 @@ package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.TreeIterator
 import com.vaadin.data.*
+import com.vaadin.data.converter.LocalDateTimeToDateConverter
+import com.vaadin.data.converter.LocalDateToDateConverter
 import com.vaadin.data.converter.StringToDoubleConverter
 import com.vaadin.data.converter.StringToIntegerConverter
 import com.vaadin.event.LayoutEvents
@@ -11,14 +13,20 @@ import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.event.ShortcutListener
 import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Page
-import com.vaadin.server.SerializableFunction
 import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.*
+import com.vaadin.ui.renderers.TextRenderer
 import com.vaadin.ui.themes.ValoTheme
+import elemental.json.Json
+import elemental.json.JsonValue
 import org.intellij.lang.annotations.Language
 import java.io.Serializable
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.util.*
 import kotlin.reflect.KProperty1
 
 /**
@@ -65,9 +73,13 @@ fun <BEAN> Binder.BindingBuilder<BEAN, String?>.trimmingConverter(): Binder.Bind
     override fun convertToPresentation(value: String?, context: ValueContext?): String? = value
 })
 fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToInt(): Binder.BindingBuilder<BEAN, Int?> =
-    withConverter(StringToIntegerConverter("Can't convert to integer"))
+        withConverter(StringToIntegerConverter("Can't convert to integer"))
 fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToDouble(): Binder.BindingBuilder<BEAN, Double?> =
         withConverter(StringToDoubleConverter("Can't convert to decimal number"))
+fun <BEAN> Binder.BindingBuilder<BEAN, LocalDate?>.localDateToDate(): Binder.BindingBuilder<BEAN, Date?> =
+        withConverter(LocalDateToDateConverter(ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)))
+fun <BEAN> Binder.BindingBuilder<BEAN, LocalDateTime?>.localDateTimeToDate(): Binder.BindingBuilder<BEAN, Date?> =
+        withConverter(LocalDateTimeToDateConverter(ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)))
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
         if (this is AbstractClientConnector) this.getListeners(eventType).toList() else listOf<Any>()
@@ -428,3 +440,12 @@ fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map 
 @Suppress("UNCHECKED_CAST")
 fun <T, V> Grid<T>.column(prop: KProperty1<T, V>, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
     (getColumn(prop.name) as Grid.Column<T, V>).apply { block() }
+
+class ConvertingRenderer<V>(private val convertor: (V)->String) : TextRenderer() {
+    override fun encode(value: Any?): JsonValue {
+        return if (value == null) super.encode(value) else Json.create(convertor(value as V))
+    }
+}
+fun <T, V> Grid<T>.removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name)
+fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
+        (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }

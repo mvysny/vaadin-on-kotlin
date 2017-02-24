@@ -41,8 +41,8 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 textField("Age:") {
                     bind(binder).stringToInt().bind(Person::age)
                 }
-                inlineDateField("Date of birth:") {
-                    bind(binder).withConverter(LocalDateToDateConverter()).bind(Person::dateOfBirth)
+                dateField("Date of birth:") {
+                    bind(binder).bind(Person::dateOfBirth)
                 }
                 comboBox<MaritalStatus>("Marital status:") {
                     setItems(*MaritalStatus.values())

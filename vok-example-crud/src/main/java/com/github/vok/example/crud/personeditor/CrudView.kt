@@ -13,6 +13,10 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.ButtonRenderer
+import com.vaadin.ui.renderers.DateRenderer
+import java.time.Instant
+import java.time.LocalDate
+import java.util.*
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
@@ -37,7 +41,7 @@ class CrudView: VerticalLayout(), View {
         setSizeFull()
         horizontalLayout {
             createButton = button("Create New Person (Ctrl+Alt+C)") {
-                onLeftClick { createOrEditPerson(Person()) }
+                onLeftClick { createOrEditPerson(Person(created = Date())) }
                 clickShortcut = Ctrl + Alt + C
             }
             button("Generate testing data", { generateTestingData() })
@@ -45,13 +49,26 @@ class CrudView: VerticalLayout(), View {
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(Person::class, dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
-            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive)
+
+            // example of a custom renderer which converts value to a displayable string.
+            // can't currently change renderer: https://github.com/vaadin/framework/issues/8250
+            // thus need to remove the column and add it anew.
+            removeColumn(Person::created)
+            addColumn(Person::created, { it!!.toInstant().toString() })
+
+            // show these columns, and in this order
+            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::created)
+
+            // a sample of how to reconfigure a column
             column(Person::id) {
                 isSortable = false
             }
+
+            // add additional columns with buttons
             addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
             addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) }))
             addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
+            
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this, Person::class)
         }
@@ -59,7 +76,10 @@ class CrudView: VerticalLayout(), View {
 
     private fun generateTestingData() {
         db {
-            (0..85).forEach { em.persist(Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true)) }
+            (0..85).forEach {
+                em.persist(Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single,
+                        alive = true, created = Date()))
+            }
         }
         refreshGrid()
     }

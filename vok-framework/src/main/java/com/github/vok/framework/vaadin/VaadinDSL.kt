@@ -109,6 +109,8 @@ fun HasComponents.cssLayout(block: CssLayout.()->Unit = {}) = init(CssLayout(), 
 
 fun HasComponents.dateField(caption: String? = null, block: DateField.()->Unit = {}) = init(DateField(caption), block)
 
+fun HasComponents.dateTimeField(caption: String? = null, block: DateTimeField.()->Unit = {}) = init(DateTimeField(caption), block)
+
 fun HasComponents.embedded(caption: String? = null, block: Embedded.()->Unit = {}) = init(Embedded(caption), block)
 
 fun HasComponents.gridLayout(columns: Int = 1, rows: Int = 1, block: GridLayout.()->Unit = {}) = init(GridLayout(columns, rows), block)
