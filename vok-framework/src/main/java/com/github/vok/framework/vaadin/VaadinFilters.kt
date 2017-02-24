@@ -396,8 +396,7 @@ class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: Configura
             field = createBooleanField(property as PropertyDefinition<T, Boolean?>)
         } else if (type.isEnum) {
             field = createEnumField(type, property)
-        } else if (type == Date::class.java || type == Timestamp::class.java
-                || type == java.sql.Date::class.java || Temporal::class.java.isAssignableFrom(type)) {
+        } else if (Date::class.java.isAssignableFrom(type) || Temporal::class.java.isAssignableFrom(type)) {
             field = createDateField(property)
         } else if (Number::class.java.isAssignableFrom(type) && isUsePopupForNumericProperty(property)) {
             field = createNumericField(type, property)
@@ -424,7 +423,13 @@ class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: Configura
 
     protected fun createTextField(property: PropertyDefinition<T, *>): HasValue<*> = TextField()
 
-    protected fun createDateField(property: PropertyDefinition<T, *>): DateFilterPopup = DateFilterPopup()
+    protected fun createDateField(property: PropertyDefinition<T, *>): DateFilterPopup {
+        val popup = DateFilterPopup()
+        if (property.type == LocalDate::class.java) {
+            popup.resolution = DateTimeResolution.DAY
+        }
+        return popup
+    }
 
     protected fun createNumericField(type: Class<*>, property: PropertyDefinition<T, *>) = NumberFilterPopup()
 
