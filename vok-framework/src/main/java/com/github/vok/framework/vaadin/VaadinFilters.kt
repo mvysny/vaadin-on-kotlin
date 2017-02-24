@@ -4,8 +4,6 @@ import com.vaadin.data.Binder
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
 import java.io.Serializable
-import java.text.DateFormat
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -266,11 +264,22 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     private lateinit var toField: InlineDateTimeField
     private lateinit var set: Button
     private lateinit var clear: Button
-    val resolution: DateTimeResolution = DateTimeResolution.DAY
+    /**
+     * The desired resolution of this filter popup, defaults to [DateTimeResolution.MINUTE].
+     */
+    var resolution: DateTimeResolution
+        get() = fromField.resolution
+        set(value) {
+            fromField.resolution = value
+            toField.resolution = value
+        }
+
     private var internalValue: DateInterval? = null
 
     init {
         styleName = "datefilterpopup"
+        // force initcontents so that fromField and toField are initialized and one can set resolution to them
+        content
     }
 
     override fun doSetValue(value: DateInterval?) {
@@ -296,7 +305,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 
     private fun truncateDate(date: LocalDateTime?, resolution: DateTimeResolution, start: Boolean): LocalDateTime? {
         var date = date ?: return null
-        for (res in DateTimeResolution.values().slice(resolution.ordinal + 1..DateTimeResolution.values().size - 1)) {
+        for (res in DateTimeResolution.values().slice(0..resolution.ordinal - 1)) {
             if (res == DateTimeResolution.SECOND) {
                 date = date.withSecond(if (start) 0 else 59)
             } else if (res == DateTimeResolution.MINUTE) {
