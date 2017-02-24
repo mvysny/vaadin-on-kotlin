@@ -16,7 +16,6 @@ import java.time.format.FormatStyle
 import java.time.temporal.Temporal
 import java.util.*
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
     fun toFilter(field: String): JPAFilter? {
@@ -450,6 +449,7 @@ class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: Configura
         value is NumberInterval<*> -> value.toFilter(property.name)
         value is DateInterval -> value.toFilter(property.name)
         value is String && !value.isEmpty() -> generateGenericFilter<String>(filterField as HasValue<String?>, property as PropertyDefinition<T, String?>, value.trim())
+        value is Enum<*> || value is Number || value is Boolean -> EqFilter(property.name, value as Serializable)
         else -> null
     }
 
