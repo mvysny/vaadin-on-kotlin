@@ -28,7 +28,7 @@ class CrudView: VerticalLayout(), View {
 
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
-    private val personGridDS = jpaDataProvider<Person>()
+    private val personGridDS = jpaDataProvider<Person>().withConfigurableFilter()
 
     // you can restrict the values by writing the following expression:
 //    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
@@ -45,7 +45,7 @@ class CrudView: VerticalLayout(), View {
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
         personGrid = grid(Person::class, dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
-            showColumns(Person::id, Person::name, Person::age)
+            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive)
             column(Person::id) {
                 isSortable = false
             }
@@ -53,13 +53,13 @@ class CrudView: VerticalLayout(), View {
             addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) }))
             addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
             // automatically create filters, based on the types of values present in particular columns.
-//            appendHeaderRow().generateFilterComponents(this)
+            appendHeaderRow().generateFilterComponents(this, Person::class)
         }
     }
 
     private fun generateTestingData() {
         db {
-            (0..85).forEach { em.persist(Person(name = "generated$it", age = it + 15)) }
+            (0..85).forEach { em.persist(Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true)) }
         }
         refreshGrid()
     }

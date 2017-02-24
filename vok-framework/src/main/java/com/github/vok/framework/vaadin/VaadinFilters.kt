@@ -1,13 +1,22 @@
 package com.github.vok.framework.vaadin
 
 import com.vaadin.data.Binder
+import com.vaadin.data.HasValue
+import com.vaadin.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.server.Resource
+import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
+import com.vaadin.ui.components.grid.HeaderRow
 import java.io.Serializable
+import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.Temporal
 import java.util.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
     fun toFilter(field: String): JPAFilter? {
@@ -124,113 +133,130 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 
     override fun getValue() = internalValue?.copy()
 }
-//
-///**
-// * Produces filter fields and binds them to the container, to automatically perform the filtering itself.
-// *
-// * Currently, the filter fields have to be attached to the Grid manually: you will have to create a special HeaderRow in a Grid, create a field for each column (propertyId),
-// * add the field to the HeaderRow, and finally, [bind][.bind] the field to the container.
-// *
-// * Currently, Vaadin does not support attaching of the filter fields to a vanilla Vaadin Table. Attaching filters to a Tepi FilteringTable
-// * is currently not supported directly, but it may be done manually.
-// * @property container The container on which the filtering will be performed, not null.
-// * @author mvy, stolen from Teppo Kurki's FilterTable.
-// */
-//abstract class FilterFieldFactory(protected val container: Container.Filterable) {
-//    /**
-//     * Creates the filtering component. The component may not necessarily produce values of given data types - for example,
-//     * if the data type is a Double, the filtering component may produce a DoubleRange object which requires given value to be contained in a numeric range.
-//     *
-//     * [createFilter] is later used internally, to construct a filter for given field.
-//     * @param propertyId the column identifier, not null.
-//     * @return A field that can be assigned to the given fieldType and that is
-//     * *         capable of filtering given type of data. May return null if filtering of given data type with given field type is unsupported.
-//     */
-//    abstract fun createField(propertyId: Any?): Field<*>?
-//
-//    /**
-//     * Returns the type of the values present in given column.
-//     * @param propertyId the column id, not null
-//     * @return the type, auto-converted from primitive type to corresponding boxed type, never null.
-//     */
-//    @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-//    protected fun getValueClass(propertyId: Any?): Class<*> {
-//        val clazz = container.getType(propertyId)
-//        return when(clazz) {
-//            Integer.TYPE -> Integer::class.java
-//            java.lang.Long.TYPE -> Long::class.java
-//            java.lang.Float.TYPE -> Float::class.java
-//            java.lang.Double.TYPE -> java.lang.Double::class.java
-//            java.lang.Short.TYPE -> Short::class.java
-//            java.lang.Byte.TYPE -> Byte::class.java
-//            else -> clazz
-//        }
-//    }
-//
-//    /**
-//     * Creates a new Container Filter based on given value.
-//     * @param value the value, may be null.
-//     * @param filterField the filter field itself
-//     * @param propertyId the property ID of the container's column
-//     * @return a filter, may be null if no filtering is needed or if the value indicates that the filtering is disabled for this column.
-//     */
-//    protected abstract fun createFilter(value: Any?, filterField: Field<*>, propertyId: Any?): Container.Filter?
-//
-//    /**
-//     * Binds given filtering field to a container - starts filtering based on the contents of the field, and starts watching for field value changes.
-//     * @param field The field which provides the filtering values, not null. [.createFilter] is used to convert
-//     * the field's value to a filter.
-//     * @param propertyId The column (property) ID of the container, on which the filtering will be performed, not null.
-//     */
-//    fun bind(field: Field<*>, propertyId: Any?) {
-//        val filterFieldWatcher = FilterFieldWatcher(field, propertyId)
-//        if (field is AbstractTextField) {
-//            field.addTextChangeListener(filterFieldWatcher)
-//        } else {
-//            field.addValueChangeListener(filterFieldWatcher)
-//        }
-//    }
-//
-//    /**
-//     * @property field The field which provides the filtering values, not null.
-//     * @property propertyId The column (property) ID of the container, on which the filtering will be performed, not null.
-//     */
-//    private inner class FilterFieldWatcher(private val field: Field<*>, private val propertyId: Any?) : Property.ValueChangeListener, FieldEvents.TextChangeListener {
-//
-//        /**
-//         * The current container filter, may be null if no filtering is currently needed because the
-//         * field's value indicates that the filtering is disabled for this column (e.g. the text filter is blank, the filter field is cleared, etc).
-//         */
-//        private var currentFilter: Container.Filter? = null
-//
-//        init {
-//            valueChange()
-//        }
-//
-//        override fun valueChange(event: Property.ValueChangeEvent) {
-//            valueChange()
-//        }
-//
-//        private fun valueChange(value: Any? = field.value) {
-//            val newFilter = createFilter(value, field, propertyId)
-//            if (newFilter != currentFilter) {
-//                if (currentFilter != null) {
-//                    container.removeContainerFilter(currentFilter)
-//                    currentFilter = null
-//                }
-//                if (newFilter != null) {
-//                    container.addContainerFilter(newFilter)
-//                    currentFilter = newFilter
-//                }
-//            }
-//        }
-//
-//        override fun textChange(event: FieldEvents.TextChangeEvent) {
-//            valueChange(event.text)
-//        }
-//    }
-//}
-//
+
+/**
+ * Returns the type of the values present in this property.
+ * @return the type, auto-converted from primitive type to corresponding boxed type, never null.
+ */
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+fun KProperty<*>.getValueClass(): Class<*> {
+    val clazz = (returnType as KClass<*>).java
+    return when(clazz) {
+        Integer.TYPE -> Integer::class.java
+        java.lang.Long.TYPE -> Long::class.java
+        java.lang.Float.TYPE -> Float::class.java
+        java.lang.Double.TYPE -> java.lang.Double::class.java
+        java.lang.Short.TYPE -> Short::class.java
+        java.lang.Byte.TYPE -> Byte::class.java
+        else -> clazz
+    }
+}
+
+/**
+ * Converts this class to its non-primitive counterpart. For example, converts `int.class` to `Integer.class`.
+ * @return converts class of primitive type to appropriate non-primitive class; other classes are simply returned as-is.
+ */
+val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
+    Integer.TYPE -> Integer::class.java as Class<T>
+    java.lang.Long.TYPE -> Long::class.java as Class<T>
+    java.lang.Float.TYPE -> Float::class.java as Class<T>
+    java.lang.Double.TYPE -> java.lang.Double::class.java as Class<T>
+    java.lang.Short.TYPE -> Short::class.java as Class<T>
+    java.lang.Byte.TYPE -> Byte::class.java as Class<T>
+    else -> this
+}
+
+/**
+ * Produces filter fields and binds them to the container, to automatically perform the filtering itself.
+ *
+ * Currently, the filter fields have to be attached to the Grid manually: you will have to create a special HeaderRow in a Grid, create a field for each column,
+ * add the field to the HeaderRow, and finally, [bind] the field to the container. [generateFilterComponents] can do that for you, just call
+ * ```
+ * grid.appendHeaderRow().generateFilterComponents(grid)
+ * ```
+ *
+ * Currently, Vaadin does not support attaching of the filter fields to a vanilla Vaadin Table. Attaching filters to a Tepi FilteringTable
+ * is currently not supported directly, but it may be done manually.
+ * @property clazz The bean on which the filtering will be performed, not null.
+ * @param T the type of beans handled by the Grid.
+ * @author mvy, stolen from Teppo Kurki's FilterTable.
+ */
+abstract class FilterFieldFactory<T: Any>(protected val clazz: KClass<T>, val dataProvider: ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>) {
+
+    internal val filters = mutableSetOf<JPAFilter>()
+
+    /**
+     * Creates the filtering component. The component may not necessarily produce values of given data types - for example,
+     * if the data type is a Double, the filtering component may produce a DoubleRange object which requires given value to be contained in a numeric range.
+     *
+     * [createFilter] is later used internally, to construct a filter for given field.
+     * @param property the [clazz] property.
+     * @return A field that can be assigned to the given fieldType and that is
+     * *         capable of filtering given type of data. May return null if filtering of given data type with given field type is unsupported.
+     */
+    abstract fun <T> createField(property: KProperty<T>): HasValue<T>?
+
+    protected fun getProperty(name: String) = clazz.members.filterIsInstance<KProperty<*>>().first { it.name == name }
+
+    /**
+     * Creates a new Container Filter based on given value.
+     * @param value the value, may be null.
+     * @param filterField the filter field itself
+     * @param property the property
+     * @return a filter, may be null if no filtering is needed or if the value indicates that the filtering is disabled for this column.
+     */
+    protected abstract fun <T> createFilter(value: T?, filterField: HasValue<T>, property: KProperty<T>): JPAFilter?
+
+    /**
+     * Binds given filtering field to a container - starts filtering based on the contents of the field, and starts watching for field value changes.
+     * @param field The field which provides the filtering values, not null. [createFilter] is used to convert
+     * the field's value to a filter.
+     * @param property The bean property on which the filtering will be performed, not null.
+     */
+    fun <T> bind(field: HasValue<T>, property: KProperty<T>) {
+        val filterFieldWatcher = FilterFieldWatcher(field, property)
+        field.addValueChangeListener(filterFieldWatcher)
+    }
+
+    /**
+     * Listens on value change on given field and updates [ConfigurableFilterDataProvider.setFilter] accordingly.
+     * @property field The field which provides the filtering values.
+     * @property property The bean property on which the filtering will be performed.
+     * @param V the value type
+     */
+    private inner class FilterFieldWatcher<V>(private val field: HasValue<V>, private val property: KProperty<V>) : HasValue.ValueChangeListener<V> {
+
+        /**
+         * The current container filter, may be null if no filtering is currently needed because the
+         * field's value indicates that the filtering is disabled for this column (e.g. the text filter is blank, the filter field is cleared, etc).
+         */
+        private var currentFilter: JPAFilter? = null
+
+        init {
+            valueChange()
+        }
+
+        override fun valueChange(event: HasValue.ValueChangeEvent<V>?) {
+            valueChange()
+        }
+
+        private fun valueChange(value: V? = field.value) {
+            val newFilter = createFilter(value, field, property)
+            if (newFilter != currentFilter) {
+                if (currentFilter != null) {
+                    filters.remove(currentFilter!!)
+                    currentFilter = null
+                }
+                if (newFilter != null) {
+                    currentFilter = newFilter
+                    filters.add(newFilter)
+                }
+                dataProvider.setFilter(filters.and())
+            }
+        }
+    }
+}
+
 
 data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Serializable {
     val isEmpty: Boolean
@@ -361,119 +387,111 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         toField.isEnabled = !readOnly
     }
 }
-//
-///**
-// * Provides default implementation for [FilterFieldFactory].
-// * Supports filter fields for dates, numbers and strings.
-// * @author mvy, stolen from Teppo Kurki's FilterTable.
-// */
-//class DefaultFilterFieldFactory(container: Container.Filterable) : FilterFieldFactory(container) {
-//    /**
-//     * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
-//     * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
-//     *
-//     * Default implementation always returns true.
-//     * @param propertyId column id
-//     */
-//    protected fun isUsePopupForNumericProperty(propertyId: Any?): Boolean = true
-//
-//    override fun createField(propertyId: Any?): Field<*> {
-//        val type = getValueClass(propertyId)
-//        val field: AbstractField<*>
-//        if (type == java.lang.Boolean.TYPE || type == java.lang.Boolean::class.java) {
-//            field = createBooleanField(propertyId)
-//        } else if (type.isEnum) {
-//            field = createEnumField(type, propertyId)
-//        } else if (type == Date::class.java || type == Timestamp::class.java
-//                || type == java.sql.Date::class.java) {
-//            field = createDateField(propertyId)
-//        } else if (Number::class.java.isAssignableFrom(type) && isUsePopupForNumericProperty(propertyId)) {
-//            field = createNumericField(type, propertyId)
-//        } else {
-//            field = createTextField(propertyId)
-//        }
-//        field.apply {
-//            w = fillParent; isImmediate = true
-//        }
-//        return field
-//    }
-//
-//    protected fun getEnumFilterDisplayName(propertyId: Any?, constant: Enum<*>): String? = null
-//
-//    protected fun getEnumFilterIcon(propertyId: Any?, constant: Enum<*>): Resource? = null
-//
-//    private fun createEnumField(type: Class<*>, propertyId: Any?): AbstractField<Any> {
-//        val enumSelect = ComboBox()
-//        val nullItem = enumSelect.addItem()
-//        enumSelect.nullSelectionItemId = nullItem
-//        enumSelect.setItemCaption(nullItem, "")
-//        /* Add items from enumeration */
-//        for (o in type.enumConstants) {
-//            enumSelect.addItem(o, getEnumFilterDisplayName(propertyId, o as Enum<*>) ?: o.name)
-//            enumSelect.setItemIcon(o, getEnumFilterIcon(propertyId, o))
-//        }
-//        return enumSelect
-//    }
-//
-//    private fun createTextField(propertyId: Any?): AbstractField<*> {
-//        val textField = TextField()
-//        textField.nullRepresentation = ""
-//        return textField
-//    }
-//
-//    protected fun createDateField(propertyId: Any?): DateFilterPopup = DateFilterPopup()
-//
-//    protected fun createNumericField(type: Class<*>, propertyId: Any?) = NumberFilterPopup()
-//
-//    private fun createBooleanField(propertyId: Any?): AbstractField<*> {
-//        val booleanSelect = ComboBox()
-//        booleanSelect.addItem(true, getBooleanFilterDisplayName(propertyId, true) ?: "true")
-//        booleanSelect.addItem(false, getBooleanFilterDisplayName(propertyId, false) ?: "false")
-//        /* Add possible 'view all' item */
-//        val nullItem = booleanSelect.addItem()
-//        booleanSelect.nullSelectionItemId = nullItem
-//        booleanSelect.setItemCaption(nullItem, "")
-//        booleanSelect.setItemIcon(true, getBooleanFilterIcon(propertyId, true))
-//        booleanSelect.setItemIcon(false, getBooleanFilterIcon(propertyId, false))
-//        return booleanSelect
-//    }
-//
-//    protected fun getBooleanFilterIcon(propertyId: Any?, value: Boolean): Resource? = null
-//
-//    protected fun getBooleanFilterDisplayName(propertyId: Any?, value: Boolean): String? = null
-//
-//    override fun createFilter(value: Any?, filterField: Field<*>, propertyId: Any?): Container.Filter? = when {
-//        value is NumberInterval<*> -> value.toFilter(propertyId)
-//        value is DateInterval -> value.toFilter(container, propertyId)
-//        value is String && !value.isEmpty() -> generateGenericFilter(filterField, propertyId, value.trim())
-//        else -> null
-//    }
-//
-//    protected fun generateGenericFilter(field: Property<*>, propertyId: Any?, value: Any): Container.Filter {
-//        /* Special handling for ComboBox (= enum properties) */
-//        if (field is ComboBox) {
-//            return Compare.Equal(propertyId, value)
-//        } else {
-//            return SimpleStringFilter(propertyId, value.toString(), true, false)
-//        }
-//    }
-//}
-//
-///**
-// * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
-// * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
-// * @param grid the owner grid.
-// * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
-// */
-//fun Grid.HeaderRow.generateFilterComponents(grid: Grid, filterFieldFactory: FilterFieldFactory = DefaultFilterFieldFactory(grid.containerDataSource as Container.Filterable)) {
-//    for (propertyId in grid.containerDataSource.containerPropertyIds) {
-//        val field = if (grid.containerDataSource.isGenerated(propertyId)) null else filterFieldFactory.createField(propertyId)
-//        val cell = getCell(propertyId)
-//        if (field == null) {
-//            cell.text = null  // this also removes the cell from the row
-//        } else {
-//            filterFieldFactory.bind(field, propertyId)
-//            cell.component = field
-//        }
-//    }
-//}
+
+/**
+ * Provides default implementation for [FilterFieldFactory].
+ * Supports filter fields for dates, numbers and strings.
+ * @author mvy, stolen from Teppo Kurki's FilterTable.
+ */
+class DefaultFilterFieldFactory<T: Any>(clazz: KClass<T>, dataProvider: ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>) : FilterFieldFactory<T>(clazz, dataProvider) {
+    /**
+     * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
+     * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
+     *
+     * Default implementation always returns true.
+     * @param property the bean property
+     */
+    protected fun isUsePopupForNumericProperty(property: KProperty<*>): Boolean = true
+
+    override fun <T> createField(property: KProperty<T>): HasValue<T>? {
+        val type = property.getValueClass() as Class<T>
+        val field: HasValue<*>
+        if (type == java.lang.Boolean.TYPE || type == java.lang.Boolean::class.java) {
+            field = createBooleanField(property as KProperty<Boolean>)
+        } else if (type.isEnum) {
+            field = createEnumField(type, property)
+        } else if (type == Date::class.java || type == Timestamp::class.java
+                || type == java.sql.Date::class.java || Temporal::class.java.isAssignableFrom(type)) {
+            field = createDateField(property)
+        } else if (Number::class.java.isAssignableFrom(type) && isUsePopupForNumericProperty(property)) {
+            field = createNumericField(type, property)
+        } else {
+            field = createTextField(property)
+        }
+        field.apply {
+            (this as Component).w = fillParent; (this as? HasValueChangeMode)?.valueChangeMode = ValueChangeMode.LAZY
+        }
+        @Suppress("UNCHECKED_CAST")
+        return field as HasValue<T>
+    }
+
+    protected fun getEnumFilterDisplayName(property: KProperty<*>, constant: Enum<*>): String? = null
+
+    protected fun getEnumFilterIcon(property: KProperty<*>, constant: Enum<*>): Resource? = null
+
+    private fun <T> createEnumField(type: Class<T>, property: KProperty<T>): HasValue<*> {
+        val enumSelect = ComboBox<T>()
+        enumSelect.setItems(*type.enumConstants)
+        enumSelect.itemCaptionGenerator = ItemCaptionGenerator { e -> getEnumFilterDisplayName(property, e as Enum<*>) ?: e.name }
+        return enumSelect
+    }
+
+    protected fun createTextField(property: KProperty<*>): HasValue<*> = TextField()
+
+    protected fun createDateField(property: KProperty<*>): DateFilterPopup = DateFilterPopup()
+
+    protected fun createNumericField(type: Class<*>, propertyId: Any?) = NumberFilterPopup()
+
+    /**
+     * Don't forget that the returned field must be tri-state - true, false, null (to disable filtering).
+     */
+    protected fun createBooleanField(property: KProperty<Boolean>): HasValue<Boolean> {
+        val booleanSelect = ComboBox<Boolean>()
+        booleanSelect.setItems(listOf(true, false))
+        booleanSelect.itemCaptionGenerator = ItemCaptionGenerator { b -> getBooleanFilterDisplayName(property, b) ?: b.toString() }
+        booleanSelect.itemIconGenerator = IconGenerator { b -> getBooleanFilterIcon(property, b) }
+        return booleanSelect
+    }
+
+    protected fun getBooleanFilterIcon(property: KProperty<Boolean>, value: Boolean): Resource? = null
+
+    protected fun getBooleanFilterDisplayName(property: KProperty<Boolean>, value: Boolean): String? = null
+
+    override fun <T> createFilter(value: T?, filterField: HasValue<T>, property: KProperty<T>): JPAFilter? = when {
+        value is NumberInterval<*> -> value.toFilter(property.name)
+        value is DateInterval -> value.toFilter(property.name)
+        value is String && !value.isEmpty() -> generateGenericFilter<String>(filterField as HasValue<String>, property as KProperty<String>, value.trim())
+        else -> null
+    }
+
+    protected fun <T: Serializable> generateGenericFilter(field: HasValue<T>, property: KProperty<T>, value: T): JPAFilter? {
+        /* Special handling for ComboBox (= enum properties) */
+        if (field is ComboBox) {
+            return EqFilter(property.name, value)
+        } else {
+            return LikeFilter(property.name, "$value%")
+        }
+    }
+}
+
+/**
+ * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
+ * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ * @param grid the owner grid.
+ * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
+ */
+fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
+                                                filterFieldFactory: FilterFieldFactory<T> = DefaultFilterFieldFactory(itemClass, grid.dataProvider as ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>)) {
+    val propertyIds = itemClass.members.filterIsInstance<KProperty<*>>().associateBy { it.name }
+    for (propertyId in grid.columns.map { it.id }) {
+        val property = propertyIds[propertyId]
+        val field = if (property == null) null else filterFieldFactory.createField(property)
+        val cell = getCell(propertyId)
+        if (field == null) {
+            cell.text = null  // this also removes the cell from the row
+        } else {
+            filterFieldFactory.bind(field, property!!)
+            cell.component = field as Component
+        }
+    }
+}

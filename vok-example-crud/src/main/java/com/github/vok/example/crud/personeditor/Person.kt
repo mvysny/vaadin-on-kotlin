@@ -1,8 +1,12 @@
 package com.github.vok.example.crud.personeditor
 
 import java.io.Serializable
+import java.util.*
 import javax.persistence.*
-import javax.validation.constraints.*
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 /**
  * A very simple JPA entity. Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
@@ -22,5 +26,23 @@ data class Person(
         @field:NotNull
         @field:Min(15)
         @field:Max(100)
-        var age: Int? = null
+        var age: Int? = null,
+
+        @field:Temporal(TemporalType.DATE)
+        var dateOfBirth: Date? = null,
+
+        @field:NotNull
+        @field:Enumerated(EnumType.STRING)
+        var maritalStatus: MaritalStatus? = null,
+
+        @field:NotNull
+        var alive: Boolean? = null
+
 ) : Serializable
+
+enum class MaritalStatus {
+    Single,
+    Married,
+    Divorced,
+    Widowed
+}

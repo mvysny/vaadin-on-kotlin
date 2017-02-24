@@ -5,6 +5,7 @@ import com.github.vok.framework.Session
 import com.github.vok.framework.db
 import com.github.vok.framework.dbId
 import com.github.vok.framework.vaadin.*
+import com.vaadin.data.converter.LocalDateToDateConverter
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button
@@ -39,6 +40,16 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 }
                 textField("Age:") {
                     bind(binder).stringToInt().bind(Person::age)
+                }
+                inlineDateField("Date of birth:") {
+                    bind(binder).withConverter(LocalDateToDateConverter()).bind(Person::dateOfBirth)
+                }
+                comboBox<MaritalStatus>("Marital status:") {
+                    setItems(*MaritalStatus.values())
+                    bind(binder).bind(Person::maritalStatus)
+                }
+                checkBox("Alive") {
+                    bind(binder).bind(Person::alive)
                 }
             }
             horizontalLayout {
