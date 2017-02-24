@@ -1,7 +1,9 @@
 package com.github.vok.framework.vaadin
 
+import com.github.vok.framework.toDate
 import com.vaadin.data.*
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.server.Page
 import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
@@ -10,7 +12,9 @@ import com.vaadin.ui.components.grid.HeaderRow
 import kotlinx.support.jdk8.streams.toList
 import java.io.Serializable
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.Temporal
@@ -244,31 +248,26 @@ abstract class FilterFieldFactory<T: Any>(protected val itemClass: Class<T>, val
     }
 }
 
-
 data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Serializable {
     val isEmpty: Boolean
         get() = from == null && to == null
 
-    fun toFilter(field: String): JPAFilter? {
-        if (isEmpty) return null
-        var actualFrom = from
-        var actualTo = to
-//        val type = container.getType(propertyId)
-//        if (type == java.sql.Date::class.java) {
-//            actualFrom = if (actualFrom == null) null else java.sql.Date(actualFrom.time)
-//            actualTo = if (actualTo == null) null else java.sql.Date(actualTo.time)
-//        } else if (type == Timestamp::class.java) {
-//            actualFrom = if (actualFrom == null) null else Timestamp(actualFrom.time)
-//            actualTo = if (actualTo == null) null else Timestamp(actualTo.time)
-//        }
-        if (actualFrom != null && actualTo != null) {
-            return setOf(Ge2Filter(field, actualFrom), Le2Filter(field, actualTo)).and()
-        } else if (actualFrom != null) {
-            return Ge2Filter(field, actualFrom)
-        } else {
-            return Le2Filter(field, actualTo!!)
+    private fun <T: Comparable<T>> T.legeFilter(field: String, isLe: Boolean): JPAFilter =
+        if (isLe) Le2Filter(field, this) else Ge2Filter(field, this)
+
+    private fun LocalDateTime.toFilter(field: String, fieldType: Class<*>, isLe: Boolean): JPAFilter {
+        return when (fieldType) {
+            LocalDateTime::class.java -> legeFilter(field, isLe)
+            LocalDate::class.java -> toLocalDate().legeFilter(field, isLe)
+            else -> {
+                val zoneOffset = ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)
+                toInstant(zoneOffset).toDate.legeFilter(field, isLe)
+            }
         }
     }
+
+    fun toFilter(field: String, fieldType: Class<*>): JPAFilter? =
+        listOf(from?.toFilter(field, fieldType, false), to?.toFilter(field, fieldType, true)).filterNotNull().toSet().and()
 }
 
 class DateFilterPopup: CustomField<DateInterval?>() {
@@ -447,7 +446,7 @@ class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: Configura
     @Suppress("UNCHECKED_CAST")
     override fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): JPAFilter? = when {
         value is NumberInterval<*> -> value.toFilter(property.name)
-        value is DateInterval -> value.toFilter(property.name)
+        value is DateInterval -> value.toFilter(property.name, property.type)
         value is String && !value.isEmpty() -> generateGenericFilter<String>(filterField as HasValue<String?>, property as PropertyDefinition<T, String?>, value.trim())
         value is Enum<*> || value is Number || value is Boolean -> EqFilter(property.name, value as Serializable)
         else -> null

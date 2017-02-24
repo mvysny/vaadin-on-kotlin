@@ -68,7 +68,7 @@ class CrudView: VerticalLayout(), View {
             addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
             addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) }))
             addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
-            
+
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this, Person::class)
         }
