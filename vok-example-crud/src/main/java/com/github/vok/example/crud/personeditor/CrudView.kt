@@ -13,9 +13,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.ButtonRenderer
-import com.vaadin.ui.renderers.DateRenderer
-import java.time.Instant
-import java.time.LocalDate
 import java.util.*
 
 /**
