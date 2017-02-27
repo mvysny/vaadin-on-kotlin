@@ -51,4 +51,7 @@ dependencies {
 
     // Embedded Undertow is currently unsupported since it has no servlet/listener/... autodiscovery capabilities:
     // http://stackoverflow.com/questions/22307748/deploying-servlets-webapp-in-embedded-undertow
+
+    // Embedded Tomcat is currently unsupported since it always starts its own class loader which is only known on Tomcat start time
+    // and we can't thus discover and preload JPA entities.
 }
