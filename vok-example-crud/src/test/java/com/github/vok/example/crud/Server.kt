@@ -1,6 +1,5 @@
 package com.github.vok.example.crud
 
-import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.framework.VaadinOnKotlin
 import org.atmosphere.util.annotation.AnnotationDetector
 import org.eclipse.jetty.annotations.AnnotationConfiguration
