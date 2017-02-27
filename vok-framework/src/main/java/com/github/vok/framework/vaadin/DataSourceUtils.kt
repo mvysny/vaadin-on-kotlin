@@ -13,7 +13,12 @@ import kotlin.reflect.KProperty1
 
 /**
  * Provides instances of given JPA class from the database. Currently only supports sorting, currently does not support joins.
- * @todo mavi joins?
+ * @todo mavi add support for simple joins, that is, the provider will still only provide Employee but employee.department.id=23 or some
+ *
+ * This provider only supports listing of a single bean. If you need to list properties of two or more beans, or fields of some
+ * more complex query, you'll need to write a data provider yourself. It is actually a very easy thing to do, please see sources of this
+ * class for details.
+ * @todo mavi maybe offer possibility to have auto-generate grid filters on custom data provider?
  */
 class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvider<T, JPAFilter?>() {
 
