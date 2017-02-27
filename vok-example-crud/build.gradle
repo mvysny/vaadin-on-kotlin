@@ -49,6 +49,6 @@ dependencies {
     // since the class is no longer there in Jetty 9.4
     testCompile "org.eclipse.jetty.websocket:javax-websocket-server-impl:$jettyVer"
 
-    // Undertow is currently unsupported since it has no servlet/listener/... autodiscovery capabilities:
+    // Embedded Undertow is currently unsupported since it has no servlet/listener/... autodiscovery capabilities:
     // http://stackoverflow.com/questions/22307748/deploying-servlets-webapp-in-embedded-undertow
 }
