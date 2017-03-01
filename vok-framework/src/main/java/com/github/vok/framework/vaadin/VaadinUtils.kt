@@ -15,6 +15,7 @@ import com.vaadin.server.AbstractClientConnector
 import com.vaadin.server.Page
 import com.vaadin.server.Sizeable
 import com.vaadin.shared.MouseEventDetails
+import com.vaadin.shared.Registration
 import com.vaadin.shared.ui.ContentMode
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.TextRenderer
@@ -57,8 +58,9 @@ fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit)
             enterListener(this@onEnterPressed)
         }
     }
-    addFocusListener { addShortcutListener(enterShortCut) }
-    addBlurListener { removeShortcutListener(enterShortCut) }
+    var r: Registration? = null
+    addFocusListener { r?.remove(); r = addShortcutListener(enterShortCut) }
+    addBlurListener { r?.remove() }
 }
 
 /**
@@ -108,6 +110,7 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
  */
 fun LayoutEvents.LayoutClickNotifier.onChildClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as AbstractClientConnector).getListeners(LayoutEvents.LayoutClickEvent::class.java).toList().forEach {
+        @Suppress("DEPRECATION")
         removeLayoutClickListener(it as LayoutEvents.LayoutClickListener)
     }
     addChildClickListener(listener)
@@ -140,7 +143,10 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
  * @param listener the listener to set. Only called on left-click.
  */
 fun Button.onLeftClick(listener: (Button.ClickEvent)->Unit) {
-    getListeners(Button.ClickEvent::class.java).toList().forEach { removeClickListener(it as Button.ClickListener) }
+    getListeners(Button.ClickEvent::class.java).toList().forEach {
+        @Suppress("DEPRECATION")
+        removeClickListener(it as Button.ClickListener)
+    }
     // Button only fires left-click events.
     addClickListener(listener)
 }
@@ -159,7 +165,10 @@ fun Button.setPrimary() {
  */
 fun Image.onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
     // warning, here we may receive listeners for ContextClickEvents!
-    getListeners(MouseEvents.ClickEvent::class.java).filterIsInstance<MouseEvents.ClickListener>().forEach { removeClickListener(it) }
+    getListeners(MouseEvents.ClickEvent::class.java).filterIsInstance<MouseEvents.ClickListener>().forEach {
+        @Suppress("DEPRECATION")
+        removeClickListener(it)
+    }
     addClickListener {
         if (it.button == MouseEventDetails.MouseButton.LEFT) listener(it)
     }
@@ -382,9 +391,10 @@ fun Component.addGlobalShortcutListener(keyCode: Int, action: () -> Unit) = addG
 
 /**
  * Makes it possible to invoke a click on this button by pressing the given
- * {@link KeyCode} and (optional) {@link ModifierKey}s.
+ * [ShortcutAction.KeyCode] and (optional) [ModifierKey]s.
  * The shortcut is global (bound to the containing Window).
- * @param shortcut the shortcut, e.g. `Ctrl + Alt + C`
+ *
+ * Example of shortcut expression: `Ctrl + Alt + C`
  */
 var Button.clickShortcut: KeyShortcut
     get() = throw RuntimeException("Property is write-only")
@@ -441,11 +451,13 @@ fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map 
 fun <T, V> Grid<T>.column(prop: KProperty1<T, V>, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
     (getColumn(prop.name) as Grid.Column<T, V>).apply { block() }
 
+@Suppress("UNCHECKED_CAST")
 class ConvertingRenderer<V>(private val convertor: (V)->String) : TextRenderer() {
     override fun encode(value: Any?): JsonValue {
         return if (value == null) super.encode(value) else Json.create(convertor(value as V))
     }
 }
 fun <T, V> Grid<T>.removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name)
+@Suppress("UNCHECKED_CAST")
 fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
         (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }

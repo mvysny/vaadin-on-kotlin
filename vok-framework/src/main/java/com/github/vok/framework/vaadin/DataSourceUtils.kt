@@ -4,7 +4,6 @@ import com.github.vok.framework.db
 import com.github.vok.framework.dbId
 import com.vaadin.data.provider.*
 import com.vaadin.shared.data.sort.SortDirection
-import kotlinx.support.jdk8.collections.stream
 import java.io.Serializable
 import java.util.stream.Stream
 import javax.persistence.criteria.*
@@ -29,7 +28,7 @@ class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvid
             val q = cb.createQuery(entity.java)
             val root = q.from(entity.java)
             q.orderBy(query.sortOrders.map { it.toOrder(cb, root) })
-            if (query.filter.isPresent) q.where(query.filter.get()!!.toPredicate(cb, root))
+            if (query.filter.isPresent) q.where(query.filter.get().toPredicate(cb, root))
             val q2 = em.createQuery(q)
             q2.firstResult = query.offset
             if (query.limit < Int.MAX_VALUE) q2.maxResults = query.limit
@@ -42,7 +41,7 @@ class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvid
             val q = cb.createQuery(Long::class.java)
             val root = q.from(entity.java)
             q.select(cb.count(root))
-            if (query.filter.isPresent) q.where(query.filter.get()!!.toPredicate(cb, root))
+            if (query.filter.isPresent) q.where(query.filter.get().toPredicate(cb, root))
             em.createQuery(q).singleResult.toInt()
         }
     }

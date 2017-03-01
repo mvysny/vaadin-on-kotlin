@@ -316,6 +316,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     }
 
     private fun truncateDate(date: LocalDateTime?, resolution: DateTimeResolution, start: Boolean): LocalDateTime? {
+        @Suppress("NAME_SHADOWING")
         var date = date ?: return null
         for (res in DateTimeResolution.values().slice(0..resolution.ordinal - 1)) {
             if (res == DateTimeResolution.SECOND) {
@@ -379,7 +380,8 @@ class DateFilterPopup: CustomField<DateInterval?>() {
  * Supports filter fields for dates, numbers and strings.
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
-class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>) : FilterFieldFactory<T>(clazz, dataProvider) {
+@Suppress("UNUSED_PARAMETER")
+open class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>) : FilterFieldFactory<T>(clazz, dataProvider) {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
@@ -393,6 +395,7 @@ class DefaultFilterFieldFactory<T: Any>(clazz: Class<T>, dataProvider: Configura
         val type = property.type.nonPrimitive
         val field: HasValue<*>
         if (type == java.lang.Boolean::class.java) {
+            @Suppress("UNCHECKED_CAST")
             field = createBooleanField(property as PropertyDefinition<T, Boolean?>)
         } else if (type.isEnum) {
             field = createEnumField(type, property)

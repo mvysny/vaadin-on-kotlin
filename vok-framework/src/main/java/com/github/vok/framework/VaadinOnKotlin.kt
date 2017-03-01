@@ -164,8 +164,6 @@ val Long.seconds: Long get() = TimeUnit.SECONDS.toMillis(this)
  * storing stuff into session).
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock!
- *
- * @todo fix naming of this, so that the code is more readable
  */
 class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
@@ -246,10 +244,10 @@ object Cookies {
      */
     operator fun set(name: String, cookie: Cookie?) {
         if (cookie == null) {
-            val cookie = Cookie(name, null)
-            cookie.maxAge = 0  // delete immediately
-            cookie.path = "/"
-            VaadinService.getCurrentResponse().addCookie(cookie)
+            val newCookie = Cookie(name, null)
+            newCookie.maxAge = 0  // delete immediately
+            newCookie.path = "/"
+            VaadinService.getCurrentResponse().addCookie(newCookie)
         } else {
             VaadinService.getCurrentResponse().addCookie(cookie)
         }

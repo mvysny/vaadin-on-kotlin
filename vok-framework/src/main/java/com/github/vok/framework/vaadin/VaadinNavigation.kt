@@ -1,6 +1,5 @@
 package com.github.vok.framework.vaadin
 
-import com.github.vok.framework.Session
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.navigator.ViewProvider
@@ -9,7 +8,6 @@ import io.michaelrocks.bimap.HashBiMap
 import io.michaelrocks.bimap.MutableBiMap
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.List
 import javax.servlet.ServletContainerInitializer
 import javax.servlet.ServletContext
 import javax.servlet.annotation.HandlesTypes
@@ -88,7 +86,7 @@ class AutoViewProvider : ServletContainerInitializer {
  * `navigator.addProvider(autoViewProvider)`
  *
  * The view provider will auto-discover all of your views and will create names for them, see [ViewName] for more details.
- * To navigate to a view, just call the [navigateTo] helper method which will generate the correct URI fragment and will navigate.
+ * To navigate to a view, just call the [navigateToView] helper method which will generate the correct URI fragment and will navigate.
  * You can parse the parameters back later on in your [View.enter], by calling `event.parameterList`.
  */
 val autoViewProvider = AutoViewProvider
@@ -113,12 +111,12 @@ fun navigateToView(view: Class<out View>, vararg params: String) {
 inline fun <reified V : View> navigateToView(vararg params: String) = navigateToView(V::class.java, *params)
 
 /**
- * Parses the parameters back from the URI fragment. See [navigateTo] for details. Call in [ViewChangeListener.ViewChangeEvent] provided to you in the
+ * Parses the parameters back from the URI fragment. See [navigateToView] for details. Call in [ViewChangeListener.ViewChangeEvent] provided to you in the
  * [View.enter] method.
  *
  * Note that the parameters are not named - instead, this is a simple list of values.
  *
- * To obtain a particular parameter or null if the URL has no such parameter, just call [List.getOrNull] on this list.
+ * To obtain a particular parameter or null if the URL has no such parameter, just call [Map.get].
  * @return list of parameters, empty if there are no parameters.
  */
 val ViewChangeListener.ViewChangeEvent.parameterList: Map<Int, String>
