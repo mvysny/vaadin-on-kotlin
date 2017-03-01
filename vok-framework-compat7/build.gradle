@@ -10,6 +10,10 @@ sourceCompatibility = 1.6
 dependencies {
     compile(project(':vok-framework'))
     compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
+
+    // have to wait until jpa container is vaadin 8 compatible
+    // https://github.com/vaadin/framework/issues/8717
+//    compile 'com.vaadin.addon:jpacontainer:3.2.0'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
