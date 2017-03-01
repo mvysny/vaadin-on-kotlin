@@ -229,7 +229,7 @@ val extendedEntityManager: EntityManager =
     // closed after the http request
     // finishes, which would render the delegator unusable.
     Proxy.newProxyInstance(EntityManager::class.java.classLoader, arrayOf(EntityManager::class.java),
-            InvocationHandler { proxy, method, args ->
+            InvocationHandler { _, method, args ->
                 if (method!!.name == "close") {
                     // do nothing, the underlying EM is managed by the ExtendedEMManager web listener
                     return@InvocationHandler null

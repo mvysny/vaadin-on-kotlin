@@ -25,6 +25,7 @@ class DBTest {
                 em.persist(TestPerson(name = "foo", age = 25))
                 throw IOException("simulated")
             }
+            @Suppress("UNREACHABLE_CODE")
             fail("Exception should have been thrown")
         } catch (e: IOException) {
             // okay
@@ -47,6 +48,7 @@ class DBTest {
                 em.persist(TestPerson(name = "foo", age = 25))
                 throw IOException("simulated")
             }}}
+            @Suppress("UNREACHABLE_CODE")
             fail("Exception should have been thrown")
         } catch (e: IOException) {
             // okay

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.framework.vaadin7
 
 import com.github.vok.framework.extendedEntityManager
@@ -43,6 +45,7 @@ fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
  * Shows given html in this label.
  * @param html the html code to show.
  */
+@Deprecated("Deprecated in Vaadin 8")
 fun Label.html(@Language("HTML") html: String?) {
     contentMode = ContentMode.HTML
     value = html
@@ -52,6 +55,7 @@ fun Label.html(@Language("HTML") html: String?) {
  * Triggers given listener when the text field is focused and user presses the Enter key.
  * @param enterListener the listener to invoke when the user presses the Enter key.
  */
+@Deprecated("Deprecated in Vaadin 8")
 fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit) {
     val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ENTER) {
         override fun handleAction(sender: Any, target: Any) {
@@ -67,6 +71,7 @@ fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit)
  * Android keyboard often adds whitespace to the end of the text when auto-completion occurs. Imagine storing a username ending with a space upon registration:
  * such person can no longer log in from his PC unless he explicitely types in the space.
  */
+@Deprecated("Deprecated in Vaadin 8")
 fun AbstractField<String>.trimmingConverter() {
     setConverter(object : Converter<String?, String?> {
         override fun convertToModel(value: String?, targetType: Class<out String?>?, locale: Locale?): String? = value?.trim()
@@ -87,9 +92,11 @@ fun AbstractField<String>.trimmingConverter() {
  * @param caption the new caption
  * @return the newly created item ID.
  */
+@Deprecated("Deprecated in Vaadin 8")
 fun AbstractSelect.addItem(itemId: Any?, caption: String) = addItem(itemId).apply { setItemCaption(itemId, caption) }!!
 
 /**
  * Allows you to create [BeanFieldGroup] like this: `BeanFieldGroup<Person>()` instead of `BeanFieldGroup<Person>(Person::class.java)`
  */
+@Deprecated("Deprecated in Vaadin 8")
 inline fun <reified T : Any> BeanFieldGroup(): BeanFieldGroup<T> = BeanFieldGroup(T::class.java)

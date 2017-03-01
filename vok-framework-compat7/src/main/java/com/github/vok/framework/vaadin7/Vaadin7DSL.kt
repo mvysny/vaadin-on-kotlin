@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.framework.vaadin7
 
 import com.github.vok.framework.vaadin.init

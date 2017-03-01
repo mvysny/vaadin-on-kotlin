@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.framework.vaadin7
 
 import com.vaadin.v7.ui.renderers.ButtonRenderer
