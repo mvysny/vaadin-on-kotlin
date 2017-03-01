@@ -187,11 +187,3 @@ fun HasComponents.popupView(small: String? = null, block: PopupView.()->Unit = {
     if (small != null) result.minimizedValueAsHTML = small
     return result
 }
-
-
-// Vaadin 7 compat stuff
-//fun HasComponents.treeTable(caption: String? = null, dataSource: Container? = null, block: TreeTable.()->Unit = {}) =
-//        init(TreeTable(caption, dataSource), block)
-//fun HasComponents.table(caption: String? = null, dataSource: Container? = null, block: Table.()->Unit = {}) =
-//        init(Table(caption, dataSource), block)
-//fun HasComponents.calendar(caption: String? = null, block: Calendar.()->Unit = {}) = init(Calendar(caption), block)
