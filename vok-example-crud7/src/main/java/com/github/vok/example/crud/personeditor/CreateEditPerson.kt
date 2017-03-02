@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.lastAddedPersonCache

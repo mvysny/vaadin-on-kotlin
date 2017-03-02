@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.example.crud
 
 import com.github.vok.framework.vaadin.*

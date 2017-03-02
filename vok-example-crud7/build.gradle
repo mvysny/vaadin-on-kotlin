@@ -16,13 +16,6 @@ compileTestKotlin {
     }
 }
 
-repositories {
-    // for customized version of jpacontainer
-    maven {
-        url "http://www.baka.sk/maven2"
-    }
-}
-
 ext.jettyVer = '9.4.0.v20161208'
 
 dependencies {
