@@ -19,13 +19,20 @@ compileTestKotlin {
     }
 }
 
+repositories {
+    // for customized version of jpacontainer
+    maven {
+        url "http://www.baka.sk/maven2"
+    }
+}
+
 dependencies {
     compile(project(':vok-framework'))
     compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
 
     // have to wait until jpa container is vaadin 8 compatible
     // https://github.com/vaadin/framework/issues/8717
-//    compile 'com.vaadin.addon:jpacontainer:3.2.0'
+    compile 'com.vaadin.addon:jpacontainer:3.2.0.v8'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {

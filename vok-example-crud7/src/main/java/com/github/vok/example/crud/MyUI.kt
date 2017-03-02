@@ -1,14 +1,12 @@
 package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.CrudView
-import com.github.vok.framework.Session
-import com.github.vok.framework.db
-import com.github.vok.framework.scheduleAtFixedRate
-import com.github.vok.framework.seconds
+import com.github.vok.framework.*
 import com.github.vok.framework.vaadin.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
+import com.vaadin.annotations.Widgetset
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewDisplay
@@ -24,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 @Theme("valo")
 @Title("VaadinOnKotlin Demo")
+@Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
 // Websockets are currently borked in Atmosphere when using Jetty 9.4
 // keeping this disabled until this issue is fixed: https://github.com/vaadin/framework/issues/8134
 // You can simply launch this project in Intellij Ultimate with Tomcat, that'll work
@@ -67,6 +66,7 @@ private class Content: VerticalLayout(), ViewDisplay {
     }
 
     private val timer = AtomicInteger()
+    @Transient
     private var timerHandle: ScheduledFuture<*>? = null
 
     override fun attach() {

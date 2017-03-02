@@ -3,6 +3,8 @@
 package com.github.vok.framework.vaadin7
 
 import com.github.vok.framework.extendedEntityManager
+import com.vaadin.addon.jpacontainer.JPAContainer
+import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.event.ShortcutAction.KeyCode.ENTER
 import com.vaadin.event.ShortcutListener
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup
@@ -28,18 +30,17 @@ import java.util.*
  * @param entity the entity type
  * @return the new container which can be assigned to a [Grid]
  */
+
 // have to wait until jpa container is vaadin 8 compatible
 // https://github.com/vaadin/framework/issues/8717
-//inline fun <reified T : Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
+inline fun <reified T : Any> jpaContainer(): JPAContainer<T> = jpaContainer(T::class.java)
 
-/*
 fun <T> jpaContainer(entity: Class<T>): JPAContainer<T> {
     val provider = CachingBatchableLocalEntityProvider(entity, extendedEntityManager)
     val container = JPAContainer(entity)
     container.entityProvider = provider
     return container
 }
-*/
 
 /**
  * Shows given html in this label.
