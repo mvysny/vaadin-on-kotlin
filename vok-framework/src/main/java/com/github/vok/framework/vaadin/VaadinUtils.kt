@@ -289,9 +289,7 @@ var AbsoluteLayout.ComponentPosition.right: Size
  * @return iterable which iteratively walks over this component and all of its descendants.
  */
 fun HasComponents.walk(): Iterable<Component> = Iterable {
-    TreeIterator<Component>(this, { component ->
-        if (component is HasComponents) component else listOf()
-    })
+    TreeIterator<Component>(this, { component -> component as? HasComponents ?: listOf() })
 }
 
 /**

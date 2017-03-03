@@ -11,7 +11,7 @@ import java.util.*
  * @property root the root object of the tree
  * @property children for given node, returns a list of its children.
  */
-class TreeIterator<T>(private val root: T, private val children:(T)->Iterable<T>): Iterator<T> {
+class TreeIterator<out T>(private val root: T, private val children: (T) -> Iterable<T>) : Iterator<T> {
     /**
      * The items to iterate over. Gradually filled with children, until there are no more items to iterate over.
      */
