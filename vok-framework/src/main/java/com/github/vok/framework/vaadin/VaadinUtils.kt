@@ -459,3 +459,5 @@ fun <T, V> Grid<T>.removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name
 @Suppress("UNCHECKED_CAST")
 fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
         (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }
+
+fun Grid<*>.removeAllColumns() = columns.map { it.id }.forEach { removeColumn(it) }
