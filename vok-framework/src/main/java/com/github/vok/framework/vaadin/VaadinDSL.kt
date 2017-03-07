@@ -67,7 +67,7 @@ fun HasComponents.button(caption: String? = null, leftClickListener: ((Button.Cl
 fun <T: Any> HasComponents.grid(clazz: KClass<T>, caption: String? = null, dataProvider: DataProvider<T, *>? = null, block: Grid<T>.() -> Unit = {}) =
     init(Grid<T>(clazz.java)) {
         this.caption = caption
-        this.dataProvider = dataProvider
+        if (dataProvider != null) this.dataProvider = dataProvider
         block()
     }
 
