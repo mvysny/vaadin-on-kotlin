@@ -30,7 +30,8 @@ object VaadinOnKotlin {
             executor!!.shutdown()
             executor!!.awaitTermination(1, TimeUnit.DAYS)
             executor = null
-            entityManagerFactory.close()
+            // @todo mavi
+//            entityManagerFactory.close()
         }
     }
 
