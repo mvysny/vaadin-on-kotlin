@@ -20,7 +20,24 @@ import javax.servlet.ServletRequestListener
 import javax.servlet.annotation.WebListener
 import javax.sql.DataSource
 
-private val log = LoggerFactory.getLogger("com.example.pokusy.DB")
+private val log = LoggerFactory.getLogger(VaadinOnKotlin.javaClass)
+
+@Volatile
+private var entityManagerFactory2: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
+    set(value) { field.close(); field = value }
+
+/**
+ * Used for data persistence - the JDBC/EntityManager/JPA thingy. By default uses the "sample" persistence unit
+ * present in `META-INF/persistence.xml` but you can of course use any factory you wish.
+ */
+var VaadinOnKotlin.entityManagerFactory: EntityManagerFactory
+    get() = entityManagerFactory2
+    set(value) { entityManagerFactory2 = value }
+
+/**
+ * Shorthand for [entityManagerFactory].toDataSource()
+ */
+fun VaadinOnKotlin.getDataSource() = entityManagerFactory.toDataSource()
 
 /**
  * A basic implementation of [DataSource] which polls given factory for connections.

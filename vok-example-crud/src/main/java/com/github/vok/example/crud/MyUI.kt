@@ -72,7 +72,7 @@ private class Content: VerticalLayout(), ViewDisplay {
     override fun attach() {
         super.attach()
         // async and Push demo - show a label and periodically update its value from the server.
-        timerHandle = scheduleAtFixedRate(0, 1.seconds) {
+        timerHandle = scheduleAtFixedRate(0.seconds, 1.seconds) {
             timer.incrementAndGet()
             db {
                 // you can use DB even in background threads :)

@@ -5,10 +5,9 @@ import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import org.slf4j.LoggerFactory
 import java.io.Serializable
+import java.time.Duration
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
-import javax.persistence.EntityManagerFactory
-import javax.persistence.Persistence
 import javax.servlet.http.Cookie
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
@@ -71,18 +70,7 @@ object VaadinOnKotlin {
 
     internal val log = LoggerFactory.getLogger(javaClass)
 
-    /**
-     * Used for data persistence - the JDBC/EntityManager/JPA thingy. By default uses the "sample" persistence unit
-     * present in `META-INF/persistence.xml` but you can of course use any factory you wish.
-     */
-    @Volatile
-    var entityManagerFactory: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
-    set(value) { field.close(); field = value }
-
-    /**
-     * Shorthand for [entityManagerFactory].toDataSource()
-     */
-    fun getDataSource() = entityManagerFactory.toDataSource()
+    // don't put JPA-related stuff here. VOK needs to function even without any database support.
 }
 
 /**
@@ -134,7 +122,7 @@ fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(C
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): ScheduledFuture<*> = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate(
+fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*> = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate(
         {
             try {
                 command.invoke()
@@ -143,16 +131,18 @@ fun scheduleAtFixedRate(initialDelay: Long, period: Long, command: ()->Unit): Sc
                 VaadinOnKotlin.log.error("Async failed: $t", t)
                 throw t
             }
-        }, initialDelay, period, TimeUnit.MILLISECONDS)
+        }, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
 
-val Int.days: Long get() = toLong().days
-val Long.days: Long get() = TimeUnit.DAYS.toMillis(this)
-val Int.hours: Long get() = toLong().hours
-val Long.hours: Long get() = TimeUnit.HOURS.toMillis(this)
-val Int.minutes: Long get() = toLong().minutes
-val Long.minutes: Long get() = TimeUnit.MINUTES.toMillis(this)
-val Int.seconds: Long get() = toLong().seconds
-val Long.seconds: Long get() = TimeUnit.SECONDS.toMillis(this)
+val Int.days: Duration get() = toLong().days
+val Long.days: Duration get() = Duration.ofDays(this)
+val Int.hours: Duration get() = toLong().hours
+val Long.hours: Duration get() = Duration.ofHours(this)
+val Int.minutes: Duration get() = toLong().minutes
+val Long.minutes: Duration get() = Duration.ofMinutes(this)
+val Int.seconds: Duration get() = toLong().seconds
+val Long.seconds: Duration get() = Duration.ofSeconds(this)
+
+operator fun Duration.times(other: Int) = multipliedBy(other.toLong())
 
 /**
  * Manages session-scoped objects. If the object is not yet present in the session, it is created (using the zero-arg
