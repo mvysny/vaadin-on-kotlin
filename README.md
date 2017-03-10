@@ -21,7 +21,7 @@ and database support - a very simple but powerful quickstart project.
 Just experiment on the example application:
 
 1. Clone this git repository and import it into your IDE, simply by opening the `build.gradle` file.
-2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it. Please make sure that the launch directory is set to the `vok-example-crud` directory (Intellij: set $MODULE_DIR$ to launcher's Working directory)
+2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it. Please make sure that the launch directory is set to the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
 
 For other launch options please see below.
 
@@ -43,8 +43,8 @@ For other launch options please see below.
 ```xml
 <dependency>
   <groupId>com.github.vok</groupId>
-  <artifactId>vok-framework</artifactId>
-  <version>0.1.0</version>
+  <artifactId>vok-framework-jpa</artifactId>
+  <version>0.2.0</version>
 </dependency>
 ```
 4. Add Kotlin support to your `pom.xml`: in Intellij just create a Kotlin class, Intellij will offer to auto-add kotlin
@@ -224,7 +224,7 @@ There is [Aedict Online](https://aedict-online.eu) running on top of VoK, so the
 
 Done:
 
-* JPA (via Hibernate) and transactions (via `db {}`); Extended EntityManager is also supported
+* JPA (via Hibernate) and transactions (via `db {}`); Extended EntityManager is also supported.
 * Migrations (Flyway) - the migrations are run automatically when the WAR is started.
 * Vaadin with JPAContainer and Extended EntityManager, including a filter generator which auto-generates filter Fields for your Grid
 * Async tasks & Vaadin Push
@@ -253,7 +253,7 @@ Run it with Jetty Runner:
 
 ### Embedded Jetty
 
-* The easiest option: just open Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
+* The easiest option: just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
 
 ### Jetty
 
@@ -267,4 +267,3 @@ Run it with Jetty Runner:
 
 * Open the project in IDEA
 * Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
-
