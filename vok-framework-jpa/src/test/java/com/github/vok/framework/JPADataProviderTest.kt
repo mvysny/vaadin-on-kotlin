@@ -1,18 +1,22 @@
-package com.github.vok.framework.vaadin
+package com.github.vok.framework
 
-import com.github.vok.framework.TestPerson
-import com.github.vok.framework.db
-import com.github.vok.framework.deleteAll
-import com.github.vok.framework.expectList
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import kotlinx.support.jdk8.streams.toList
 import org.junit.After
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.expect
 
 class JPADataProviderTest {
+
+    companion object {
+        @BeforeClass @JvmStatic
+        fun initPlugin() {
+            JPAVOKPlugin().init()
+        }
+    }
 
     @Before
     @After
@@ -52,3 +56,10 @@ class JPADataProviderTest {
         expect((40..49).toList()) { ds.fetch(Query(10, 10, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age!! } }
     }
 }
+
+/**
+ * Expects that [actual] list of objects matches [expected] list of objects. Fails otherwise.
+ * @param expected expected list of objects
+ * @param actual actual list of objects
+ */
+fun <T> expectList(vararg expected: T, actual: ()->List<T>) = expect(expected.toList(), actual)

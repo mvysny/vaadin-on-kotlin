@@ -32,7 +32,7 @@ fun main(args: Array<String>) {
     val server = Server(8080)
     val context = WebAppContext("src/main/webapp", "/")
     context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/classes/.*")
-    context.setConfigurations(arrayOf<Configuration>(AnnotationConfiguration(), WebInfConfiguration(), WebXmlConfiguration(), MetaInfConfiguration(), FragmentConfiguration(), EnvConfiguration(), PlusConfiguration(), JettyWebXmlConfiguration()))
+    context.configurations = arrayOf<Configuration>(AnnotationConfiguration(), WebInfConfiguration(), WebXmlConfiguration(), MetaInfConfiguration(), FragmentConfiguration(), EnvConfiguration(), PlusConfiguration(), JettyWebXmlConfiguration())
     server.handler = context
     server.start()
     server.join()

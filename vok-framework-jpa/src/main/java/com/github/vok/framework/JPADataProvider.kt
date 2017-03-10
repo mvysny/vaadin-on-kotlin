@@ -1,4 +1,4 @@
-package com.github.vok.framework.vaadin
+package com.github.vok.framework
 
 import com.github.vok.framework.db
 import com.github.vok.framework.dbId
@@ -80,7 +80,7 @@ fun <T> DataProvider<T, JPAFilter?>.and(other: JPAFilter) : DataProvider<T, JPAF
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T> DataProvider<T, JPAFilter?>.and(block: JPAWhereBuilder<T>.()->JPAFilter) : DataProvider<T, JPAFilter?> = configurableFilter().apply {
+fun <T> DataProvider<T, JPAFilter?>.and(block: JPAWhereBuilder<T>.()-> JPAFilter) : DataProvider<T, JPAFilter?> = configurableFilter().apply {
     setFilter(block)
 }
 
@@ -92,7 +92,7 @@ fun <T> DataProvider<T, JPAFilter?>.and(block: JPAWhereBuilder<T>.()->JPAFilter)
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T> ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>.setFilter(block: JPAWhereBuilder<T>.()->JPAFilter) {
+fun <T> ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?>.setFilter(block: JPAWhereBuilder<T>.()-> JPAFilter) {
     setFilter(block(JPAWhereBuilder()))
 }
 

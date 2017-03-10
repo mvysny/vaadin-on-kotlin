@@ -1,12 +1,20 @@
 package com.github.vok.framework
 
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.expect
 import kotlin.test.fail
 
 class DBTest {
+
+    companion object {
+        @BeforeClass @JvmStatic
+        fun initPlugin() {
+            JPAVOKPlugin().init()
+        }
+    }
 
     @Before
     fun removeAllPersons() {

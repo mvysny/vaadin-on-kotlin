@@ -6,6 +6,7 @@ import com.vaadin.ui.UI
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 import java.time.Duration
+import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.servlet.http.Cookie
@@ -20,6 +21,9 @@ object VaadinOnKotlin {
     fun init() = synchronized(this) {
         // TomEE also has by default 5 threads, so I guess this is okay :-D
         executor = Executors.newScheduledThreadPool(5, threadFactory)
+        val plugins = pluginsLoader.toList()
+        plugins.forEach { it.init() }
+        log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
     }
 
     /**
@@ -27,16 +31,15 @@ object VaadinOnKotlin {
      */
     fun destroy() = synchronized(this) {
         if (isStarted) {
+            pluginsLoader.forEach { it.destroy() }
             executor!!.shutdown()
             executor!!.awaitTermination(1, TimeUnit.DAYS)
             executor = null
-            // @todo mavi
-//            entityManagerFactory.close()
         }
     }
 
     /**
-     * True if [kotlineeInit] has been called.
+     * True if [init] has been called.
      */
     val isStarted: Boolean
     get() = synchronized(this) { executor != null }
@@ -71,7 +74,16 @@ object VaadinOnKotlin {
 
     internal val log = LoggerFactory.getLogger(javaClass)
 
-    // don't put JPA-related stuff here. VOK needs to function even without any database support.
+    /**
+     * INTERNAL: VOK plugins register themselves here, so that they can be inited in [init] and closed on [destroy].
+     * Usually users do not need to pay attention to this field.
+     */
+    private val pluginsLoader = ServiceLoader.load(VOKPlugin::class.java)
+}
+
+interface VOKPlugin {
+    fun init()
+    fun destroy()
 }
 
 /**

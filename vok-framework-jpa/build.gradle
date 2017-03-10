@@ -20,24 +20,18 @@ compileTestKotlin {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3'
+    compile(project(':vok-framework'))
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    compile 'io.michaelrocks:bimap:1.0.2'
 
-    // logging
-    testCompile 'ch.qos.logback:logback-classic:1.1.7'
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    testCompile 'javax.validation:validation-api:1.0.0.GA'
 
-    // Vaadin
-    compile "com.vaadin:vaadin-server:$vaadin_version"
-//    compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
-    compile 'javax.servlet:javax.servlet-api:3.1.0'
-
-    // IDEA language injections
-    compile 'com.intellij:annotations:12.0'
+    // db
+    compile('org.hibernate:hibernate-core:5.2.6.Final') {
+        exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
+    }
+    testCompile 'com.h2database:h2:1.4.193'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
@@ -51,7 +45,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework'
+            artifactId 'vok-framework-jpa'
             version project.version
             pom.withXml {
                 def root = asNode()
@@ -83,3 +77,4 @@ bintray {
         }
     }
 }
+

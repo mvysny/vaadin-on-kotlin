@@ -1,6 +1,6 @@
 package com.github.vok.framework.vaadin
 
-import com.github.vok.framework.toDate
+import com.github.vok.framework.*
 import com.vaadin.data.*
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.server.Page

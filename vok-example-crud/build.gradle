@@ -22,14 +22,17 @@ compileTestKotlin {
 }
 
 dependencies {
-    compile(project(":vok-framework"))
+    compile(project(":vok-framework-jpa"))
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
     // logging
+    // currently we are loggging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
     compile 'ch.qos.logback:logback-classic:1.1.7'
     compile 'org.slf4j:slf4j-api:1.7.21'
+    // this causes Vaadin to log to SLF4J
+    compile 'org.slf4j:jul-to-slf4j:1.7.21'
 
     // Vaadin
     compile "com.vaadin:vaadin-client-compiled:$vaadin_version"

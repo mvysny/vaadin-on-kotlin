@@ -22,17 +22,32 @@ import javax.sql.DataSource
 
 private val log = LoggerFactory.getLogger(VaadinOnKotlin.javaClass)
 
-@Volatile
-private var entityManagerFactory2: EntityManagerFactory = Persistence.createEntityManagerFactory("sample")
-    set(value) { field.close(); field = value }
+class JPAVOKPlugin : VOKPlugin {
+    override fun init() {
+        if (entityManagerFactory2 == null) {
+            entityManagerFactory2 = Persistence.createEntityManagerFactory("sample")
+        }
+    }
+
+    override fun destroy() {
+        entityManagerFactory2?.close()
+        entityManagerFactory2 = null
+    }
+
+    companion object {
+        @Volatile
+        internal var entityManagerFactory2: EntityManagerFactory? = null
+            set(value) { field?.close(); field = value }
+    }
+}
 
 /**
  * Used for data persistence - the JDBC/EntityManager/JPA thingy. By default uses the "sample" persistence unit
  * present in `META-INF/persistence.xml` but you can of course use any factory you wish.
  */
 var VaadinOnKotlin.entityManagerFactory: EntityManagerFactory
-    get() = entityManagerFactory2
-    set(value) { entityManagerFactory2 = value }
+    get() = JPAVOKPlugin.entityManagerFactory2!!
+    set(value) { JPAVOKPlugin.entityManagerFactory2 = value }
 
 /**
  * Shorthand for [entityManagerFactory].toDataSource()

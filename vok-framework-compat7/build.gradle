@@ -21,6 +21,7 @@ compileTestKotlin {
 
 dependencies {
     compile(project(':vok-framework'))
+    compile(project(':vok-framework-jpa'))
     compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
 
     // have to wait until jpa container is vaadin 8 compatible

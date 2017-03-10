@@ -6,6 +6,7 @@ import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
+import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -44,6 +45,12 @@ class Bootstrap: ServletContextListener {
 
     companion object {
         private val log = LoggerFactory.getLogger(Bootstrap::class.java)
+
+        init {
+            // let java.util.logging log to slf4j
+            SLF4JBridgeHandler.removeHandlersForRootLogger()
+            SLF4JBridgeHandler.install()
+        }
     }
 }
 
