@@ -1,3 +1,6 @@
+NOTE: Current version only supports Vaadin 8 (with v7 compatibility extensions). For Vaadin 7 version please
+ see the [vaadin7 branch](https://github.com/mvysny/vaadin-on-kotlin/tree/vaadin7).
+
 # Vaadin On Kotlin
 
 A new way of writing simple Vaadin apps. Only requires Servlet container such as Jetty or Tomcat to run.
@@ -5,7 +8,7 @@ Features:
 
 * Full RDBMS+O/R stack, from automatic database migrations to O/R mapping
 * Simple DSL-like UI definition
-* Provides JPA Container for easy integration of JPA beans with Grid and Table
+* Provides a simple JPA DataProvider for easy integration of JPA beans with Grid
 * No Spring nor JavaEE EJBs nor CDI necessary!
 
 Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
@@ -74,6 +77,7 @@ and introduce a context listener, to auto-update your database to the newest ver
 @WebListener
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
+        VaadinOnKotlin.init()
         val flyway = Flyway()
         flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
@@ -89,7 +93,6 @@ verticalLayout {
   formLayout {
     isSpacing = true
     textField("Name:") {
-      trimmingConverter()
       focus()
     }
     textField("Age:")
@@ -121,7 +124,7 @@ popupView("Details") {
 Support for sorting and filtering out-of-the-box:
 
 ```kotlin
-grid(dataSource = jpaContainer<Person>()) {
+grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFilter()) {
   setSizeFull()
   cols {
     column(Person::id) {

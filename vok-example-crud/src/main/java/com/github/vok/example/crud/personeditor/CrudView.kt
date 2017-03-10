@@ -2,6 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.db
 import com.github.vok.framework.deleteById
+import com.github.vok.framework.jpaDataProvider
 import com.github.vok.framework.vaadin.*
 import com.github.vok.framework.vaadin.ModifierKey.Alt
 import com.github.vok.framework.vaadin.ModifierKey.Ctrl
@@ -30,7 +31,7 @@ class CrudView: VerticalLayout(), View {
 
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
-    private val personGridDS = com.github.vok.framework.jpaDataProvider<Person>().withConfigurableFilter()
+    private val personGridDS = jpaDataProvider<Person>().withConfigurableFilter()
 
     // you can restrict the values by writing the following expression:
 //    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
