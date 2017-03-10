@@ -96,7 +96,8 @@ private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 fun navigateToView(view: Class<out View>, vararg params: String) {
     val mapping = AutoViewProvider.getMapping(view)
     val param = if (params.isEmpty()) "" else params.map { URLEncoder.encode(it, "UTF-8") }.joinToString("/", "/")
-    UI.getCurrent().navigator.navigateTo("$mapping$param")
+    val navigator = UI.getCurrent().navigator ?: throw IllegalStateException("Navigator not set. Just add the following code to your UI.init() method: { navigator = Navigator(this, content as ViewDisplay); navigator.addProvider(autoViewProvider) }")
+    navigator.navigateTo("$mapping$param")
 }
 
 /**
