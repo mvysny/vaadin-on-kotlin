@@ -36,3 +36,5 @@ fun Closeable.closeQuietly() {
 }
 
 val Instant.toDate: Date get() = Date(toEpochMilli())
+
+fun Iterable<String?>.filterNotBlank() = filterNotNull().filter { it.isNotBlank() }

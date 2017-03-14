@@ -1,6 +1,7 @@
 package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.TreeIterator
+import com.github.vok.framework.filterNotBlank
 import com.vaadin.data.*
 import com.vaadin.data.converter.LocalDateTimeToDateConverter
 import com.vaadin.data.converter.LocalDateToDateConverter
@@ -152,10 +153,32 @@ fun Button.onLeftClick(listener: (Button.ClickEvent)->Unit) {
 }
 
 /**
- * Configures this button as primary. Beware - all primary buttons attached to the current UI or Window will be pressed on Enter key press.
+ * Adds or removes given [style] from the component, depending on the value of the [isPresent] parameter.
+ */
+fun Component.toggleStyleName(style: String, isPresent: Boolean) {
+    if (isPresent) addStyleName(style) else removeStyleName(style)
+}
+
+/**
+ * Returns a set of styles currently present on the component.
+ */
+val Component.styleNames: Set<String> get() = styleName.split(' ').filterNotBlank().toSet()
+
+/**
+ * Checks whether the component has given [style].
+ * @param style if contains a space, this is considered to be a list of styles. In such case, all styles must be present on the component.
+ */
+fun Component.hasStyleName(style: String): Boolean {
+    if (style.contains(' ')) return style.split(' ').filterNotBlank().all { hasStyleName(style) }
+    return styleNames.contains(style)
+}
+
+/**
+ * Configures this button as primary. Beware - all buttons marked primary using this function, attached to the current UI
+ * or Window will be pressed on Enter key press.
  */
 fun Button.setPrimary() {
-    styleName += " ${ValoTheme.BUTTON_PRIMARY}"
+    addStyleName(ValoTheme.BUTTON_PRIMARY)
     setClickShortcut(ENTER)
 }
 
