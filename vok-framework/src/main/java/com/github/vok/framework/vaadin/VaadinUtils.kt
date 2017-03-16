@@ -104,12 +104,13 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
 
 /**
  * Sets a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
- * except for descendants which have their own click listeners attached.
+ * except for descendants which have their own click listeners attached. Note that Vaadin does not fire this event e.g. when clicking
+ * on children's captions, so this is not 100% perfect.
  *
  * Removes any previously attached layout click listeners
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.onChildClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
+fun LayoutEvents.LayoutClickNotifier.onLayoutClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as AbstractClientConnector).getListeners(LayoutEvents.LayoutClickEvent::class.java).toList().forEach {
         @Suppress("DEPRECATION")
         removeLayoutClickListener(it as LayoutEvents.LayoutClickListener)
@@ -120,6 +121,8 @@ fun LayoutEvents.LayoutClickNotifier.onChildClick(listener: (LayoutEvents.Layout
 /**
  * Adds a click listener to a layout. The click listener will be called when the layout and any descendant component is clicked,
  * except for descendants which have their own click listeners attached.
+ *
+ * Only left mouse button clicks are reported; double-clicks are ignored.
  * @param listener the click listener.
  */
 fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent) -> Unit) {
@@ -127,6 +130,8 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
     addLayoutClickListener({ event ->
         if (event.button != MouseEventDetails.MouseButton.LEFT) {
             // only handle left mouse clicks
+        } else if (event.isDoubleClick) {
+            // ignore double-clicks
         } else if (event.clickedComponent != null && event.clickedComponent.hasClickListeners()) {
             // the component has its own click listeners, do nothing
         } else
