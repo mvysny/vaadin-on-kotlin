@@ -39,7 +39,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
                     bind(binder).trimmingConverter().bind(Person::name)
                 }
                 textField("Age:") {
-                    bind(binder).stringToInt().bind(Person::age)
+                    bind(binder).toInt().bind(Person::age)
                 }
                 dateField("Date of birth:") {
                     bind(binder).bind(Person::dateOfBirth)

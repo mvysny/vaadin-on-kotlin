@@ -3,10 +3,7 @@ package com.github.vok.framework.vaadin
 import com.github.vok.framework.TreeIterator
 import com.github.vok.framework.filterNotBlank
 import com.vaadin.data.*
-import com.vaadin.data.converter.LocalDateTimeToDateConverter
-import com.vaadin.data.converter.LocalDateToDateConverter
-import com.vaadin.data.converter.StringToDoubleConverter
-import com.vaadin.data.converter.StringToIntegerConverter
+import com.vaadin.data.converter.*
 import com.vaadin.event.LayoutEvents
 import com.vaadin.event.MouseEvents
 import com.vaadin.event.ShortcutAction
@@ -25,6 +22,8 @@ import elemental.json.Json
 import elemental.json.JsonValue
 import org.intellij.lang.annotations.Language
 import java.io.Serializable
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -75,13 +74,20 @@ fun <BEAN> Binder.BindingBuilder<BEAN, String?>.trimmingConverter(): Binder.Bind
         Result.ok(value?.trim())
     override fun convertToPresentation(value: String?, context: ValueContext?): String? = value
 })
-fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToInt(): Binder.BindingBuilder<BEAN, Int?> =
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.toInt(): Binder.BindingBuilder<BEAN, Int?> =
         withConverter(StringToIntegerConverter("Can't convert to integer"))
-fun <BEAN> Binder.BindingBuilder<BEAN, String?>.stringToDouble(): Binder.BindingBuilder<BEAN, Double?> =
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.toDouble(): Binder.BindingBuilder<BEAN, Double?> =
         withConverter(StringToDoubleConverter("Can't convert to decimal number"))
-fun <BEAN> Binder.BindingBuilder<BEAN, LocalDate?>.localDateToDate(): Binder.BindingBuilder<BEAN, Date?> =
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.toLong(): Binder.BindingBuilder<BEAN, Long?> =
+        withConverter(StringToLongConverter("Can't convert to integer"))
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.toBigDecimal(): Binder.BindingBuilder<BEAN, BigDecimal?> =
+        withConverter(StringToBigDecimalConverter("Can't convert to decimal number"))
+fun <BEAN> Binder.BindingBuilder<BEAN, String?>.toBigInteger(): Binder.BindingBuilder<BEAN, BigInteger?> =
+        withConverter(StringToBigIntegerConverter("Can't convert to integer"))
+fun <BEAN> Binder.BindingBuilder<BEAN, LocalDate?>.toDate(): Binder.BindingBuilder<BEAN, Date?> =
         withConverter(LocalDateToDateConverter(ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)))
-fun <BEAN> Binder.BindingBuilder<BEAN, LocalDateTime?>.localDateTimeToDate(): Binder.BindingBuilder<BEAN, Date?> =
+@JvmName("localDateTimeToDate")
+fun <BEAN> Binder.BindingBuilder<BEAN, LocalDateTime?>.toDate(): Binder.BindingBuilder<BEAN, Date?> =
         withConverter(LocalDateTimeToDateConverter(ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)))
 
 private fun Component.getListenersHandling(eventType: Class<*>): List<*> =
@@ -213,6 +219,9 @@ data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
      */
     val isFillParent: Boolean
             get() = size >= 100 && units == Sizeable.Unit.PERCENTAGE
+    /**
+     * Same as [isFillParent], it's here just to keep in sync with Vaadin terminology ([Component.setSizeFull]).
+     */
     val isFull: Boolean
             get() = isFillParent
     /**
@@ -220,6 +229,9 @@ data class Size(val size: Float, val units: Sizeable.Unit) : Serializable {
      */
     val isWrapContent: Boolean
             get() = size < 0
+    /**
+     * Same as [isWrapContent], it's here just to keep in sync with Vaadin terminology ([Component.setSizeUndefined]).
+     */
     val isUndefined: Boolean
             get() = isWrapContent
 
