@@ -20,8 +20,10 @@ compileTestKotlin {
 }
 
 dependencies {
-    compile(project(':vok-framework'))
+    compile(project(':vok-framework-jpa'))
     compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
+
+    compile 'com.vaadin.addon:jpacontainer:4.0.0'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
@@ -35,7 +37,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework-compat7'
+            artifactId 'vok-framework-jpa-compat7'
             version project.version
             pom.withXml {
                 def root = asNode()
