@@ -489,3 +489,44 @@ fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, bloc
         (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }
 
 fun Grid<*>.removeAllColumns() = columns.map { it.id }.forEach { removeColumn(it) }
+
+/**
+ * Returns component at given [index]. Optimized for [CssLayout] and [AbstractOrderedLayout]s, but works with any
+ * [ComponentContainer].
+ * @throws IndexOutOfBoundsException If the index is out of range.
+ */
+fun ComponentContainer.getComponentAt(index: Int): Component = when (this) {
+    is CssLayout -> this.getComponent(index)
+    is AbstractOrderedLayout -> this.getComponent(index)
+    else -> toList()[index]
+}
+
+/**
+ * Removes a component at given [index] from this container. Optimized for [CssLayout] and [AbstractOrderedLayout]s, but works with any
+ * [ComponentContainer].
+ * @throws IndexOutOfBoundsException If the index is out of range.
+ */
+fun ComponentContainer.removeComponentAt(index: Int) {
+    removeComponent(getComponentAt(index))
+}
+
+/**
+ * Returns an [IntRange] of the valid component indices for this container.
+ */
+val ComponentContainer.indices: IntRange get() = 0..componentCount - 1
+
+/**
+ * Removes components with given indices.
+ */
+fun ComponentContainer.removeComponentsAt(indexRange: IntRange) {
+    if (indexRange.isEmpty()) {
+    } else if (indexRange == indices) {
+        removeAllComponents()
+    } else if (this is CssLayout || this is AbstractOrderedLayout) {
+        indexRange.reversed().forEach { removeComponentAt(it) }
+    } else {
+        removeAll(filterIndexed { index, _ -> index in indexRange })
+    }
+}
+
+fun ComponentContainer.removeAll(components: Iterable<Component>) = components.forEach { removeComponent(it) }
