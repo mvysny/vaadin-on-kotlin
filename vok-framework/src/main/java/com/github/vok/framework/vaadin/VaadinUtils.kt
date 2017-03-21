@@ -185,6 +185,11 @@ fun Component.hasStyleName(style: String): Boolean {
 }
 
 /**
+ * Adds multiple [styles]. Individual items in the styles array may contain spaces.
+ */
+fun Component.addStyleNames(vararg styles: String) = styles.forEach { addStyleName(it) }
+
+/**
  * Configures this button as primary. Beware - all buttons marked primary using this function, attached to the current UI
  * or Window will be pressed on Enter key press.
  */
