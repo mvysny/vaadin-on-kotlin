@@ -505,8 +505,6 @@ fun <T, V> Grid<T>.removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name
 fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
         (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }
 
-fun Grid<*>.removeAllColumns() = columns.map { it.id }.forEach { removeColumn(it) }
-
 /**
  * Returns component at given [index]. Optimized for [CssLayout] and [AbstractOrderedLayout]s, but works with any
  * [ComponentContainer].
