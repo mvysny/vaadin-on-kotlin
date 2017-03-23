@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.github.vok.framework
 
 import com.vaadin.addon.jpacontainer.JPAContainer
