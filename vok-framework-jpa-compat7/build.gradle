@@ -56,6 +56,8 @@ publishing {
 build.dependsOn publishToMavenLocal
 
 bintray {
+    user = local.getProperty('bintray.user')
+    key = local.getProperty('bintray.key')
     pkg {
         repo = 'vaadin-on-kotlin'
         name = 'vaadin-on-kotlin'
