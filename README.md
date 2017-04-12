@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mvysny/vaadin-on-kotlin.svg?branch=master)](https://travis-ci.org/mvysny/vaadin-on-kotlin)
+
 NOTE: Current version only supports Vaadin 8 (with v7 compatibility extensions). For Vaadin 7 version please
  see the [vaadin7 branch](https://github.com/mvysny/vaadin-on-kotlin/tree/vaadin7).
 
