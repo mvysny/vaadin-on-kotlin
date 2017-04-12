@@ -35,4 +35,12 @@ allprojects {
             url 'https://maven.vaadin.com/vaadin-prereleases'
         }
     }
+
+    // for Travis to record failures: http://stackoverflow.com/questions/28614865/how-to-read-test-result-reports-on-travis-ci/28617954#28617954
+    test {
+        testLogging {
+            events "failed"
+            exceptionFormat "full"
+        }
+    }
 }
