@@ -50,10 +50,10 @@ class CrudView: VerticalLayout(), View {
             expandRatio = 1f; setSizeFull()
 
             // example of a custom renderer which converts value to a displayable string.
-            // can't currently change renderer: https://github.com/vaadin/framework/issues/8250
-            // thus need to remove the column and add it anew.
-            removeColumn(Person::created)
-            addColumn(Person::created, { it!!.toInstant().toString() })
+            // @todo mavi it is better to employ value provider for this; yet value provider cannot be changed
+            column(Person::created) {
+                setRenderer(ConvertingRenderer<Date?>({ it!!.toInstant().toString() }))
+            }
 
             // show these columns, and in this order
             showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::created)
