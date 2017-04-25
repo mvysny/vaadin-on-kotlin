@@ -4,8 +4,6 @@ apply plugin: 'war'
 
 ext.jettyVer = '9.4.2.v20170220'
 
-apply plugin: 'kotlin'
-
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
