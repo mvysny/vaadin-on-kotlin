@@ -4,6 +4,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 import java.io.IOException
+import javax.persistence.EntityManager
 import kotlin.test.expect
 import kotlin.test.fail
 
@@ -24,6 +25,12 @@ class DBTest {
     @Test(expected = IllegalStateException::class)
     fun testCantControlTxFromDbFun() {
         db { em.transaction }
+    }
+
+    @Test
+    fun verifyEntityManagerClosed() {
+        val em: EntityManager = db { em }
+        expect(false) { em.isOpen }
     }
 
     @Test

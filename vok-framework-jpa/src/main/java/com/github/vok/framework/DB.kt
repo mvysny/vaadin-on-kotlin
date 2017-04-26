@@ -20,8 +20,6 @@ import javax.servlet.ServletRequestListener
 import javax.servlet.annotation.WebListener
 import javax.sql.DataSource
 
-private val log = LoggerFactory.getLogger(VaadinOnKotlin.javaClass)
-
 class JPAVOKPlugin : VOKPlugin {
     override fun init() {
         if (entityManagerFactory2 == null) {
@@ -30,7 +28,6 @@ class JPAVOKPlugin : VOKPlugin {
     }
 
     override fun destroy() {
-        entityManagerFactory2?.close()
         entityManagerFactory2 = null
     }
 
@@ -142,22 +139,16 @@ fun <R> db(block: PersistenceContext.()->R): R {
         try {
             contexts.set(context)
             return context.use {
-                val transaction = em.transaction
+                val transaction: EntityTransaction = em.transaction
                 transaction.begin()
                 var success = false
-                val result: R
-                try {
-                    result = it.block()
-                    transaction.commit()
-                    success = true
-                } finally {
-                    if (!success) {
-                        try {
-                            transaction.rollback()
-                        } catch (t: Throwable) {
-                            log.error("Failed to rollback the transaction", t)
-                        }
+                val result: R = try {
+                    it.block().also {
+                        transaction.commit()
+                        success = true
                     }
+                } finally {
+                    if (!success) transaction.rollbackQuietly()
                 }
                 result
             }
@@ -165,6 +156,12 @@ fun <R> db(block: PersistenceContext.()->R): R {
             contexts.set(null)
         }
     }
+}
+
+private fun EntityTransaction.rollbackQuietly(): Unit = try {
+    rollback()
+} catch (t: Throwable) {
+    LoggerFactory.getLogger(this::class.java).error("Failed to rollback the transaction", t)
 }
 
 /**
