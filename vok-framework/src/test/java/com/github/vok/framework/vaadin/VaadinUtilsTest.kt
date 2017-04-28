@@ -1,6 +1,5 @@
 package com.github.vok.framework.vaadin
 
-import com.github.vok.framework.vaadin.*
 import com.vaadin.server.*
 import com.vaadin.ui.*
 import org.junit.Assume
@@ -21,17 +20,15 @@ object MockVaadin {
      */
     fun setup() {
         val config = DefaultDeploymentConfiguration(MockVaadin::class.java, Properties())
-        VaadinSession(VaadinServletService(VaadinServlet(), config)).apply {
-            VaadinSession.setCurrent(this)
-            strongRefSession.set(this)
-        }
-        object : UI() {
+        val session = VaadinSession(VaadinServletService(VaadinServlet(), config))
+        VaadinSession.setCurrent(session)
+        strongRefSession.set(session)
+        val ui = object : UI() {
             override fun init(request: VaadinRequest?) {
             }
-        }.apply {
-            strongRefUI.set(this)
-            UI.setCurrent(this)
         }
+        strongRefUI.set(ui)
+        UI.setCurrent(ui)
     }
 }
 
