@@ -3,10 +3,12 @@ package com.github.vok.example.crud
 import com.github.vok.framework.VaadinOnKotlin
 import com.github.vok.framework.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
+import com.vaadin.server.Constants
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import javax.servlet.ServletConfig
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -27,12 +29,12 @@ import javax.ws.rs.core.Application
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
+        log.info("Initializing VaadinOnKotlin")
+        VaadinOnKotlin.init()
         log.info("Running DB migrations")
         val flyway = Flyway()
         flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
-        log.info("Initializing VaadinOnKotlin")
-        VaadinOnKotlin.init()
         log.info("Initialization complete")
     }
 
