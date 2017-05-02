@@ -28,12 +28,12 @@ import javax.ws.rs.core.Application
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
+        log.info("Initializing VaadinOnKotlin")
+        VaadinOnKotlin.init()
         log.info("Running DB migrations")
         val flyway = Flyway()
         flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
-        log.info("Initializing VaadinOnKotlin")
-        VaadinOnKotlin.init()
         log.info("Initialization complete")
     }
 
