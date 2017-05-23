@@ -40,15 +40,31 @@ interface SpecialContainer : HasComponents {
  * @param block optional block to run over the component, allowing you to add children to the [component]
  */
 fun <T : Component> HasComponents.init(component: T, block: T.()->Unit = {}): T {
-    when (this) {
-        is ComponentContainer -> addComponent(component)
-        is SpecialContainer -> addComponent(component)
-        is SingleComponentContainer -> content = component
-        is PopupView -> popupComponent = component
-        else -> throw RuntimeException("Unsupported component container $this")
-    }
+    addChild(component)
     component.block()
     return component
+}
+
+/**
+ * Adds a [child] to this component. Only concrete subclasses are supported. The function will fail if the component
+ * is already full (e.g. it is a split panel and it already contains two components).
+ */
+fun HasComponents.addChild(child: Component) {
+    when (this) {
+        is ComponentContainer -> addComponent(child)
+        is SpecialContainer -> addComponent(child)
+        is SingleComponentContainer -> {
+            if (componentCount >= 1) throw IllegalArgumentException("$this can only have one child")
+            content = child
+        }
+        is PopupView -> popupComponent = child
+        is AbstractSplitPanel -> when (componentCount) {
+            0 -> firstComponent = child
+            1 -> secondComponent = child
+            else -> throw IllegalArgumentException("$this can only have 2 children")
+        }
+        else -> throw IllegalArgumentException("Unsupported component container $this")
+    }
 }
 
 fun HasComponents.verticalLayout(block: VerticalLayout.()->Unit = {}) = init(VerticalLayout(), block)
