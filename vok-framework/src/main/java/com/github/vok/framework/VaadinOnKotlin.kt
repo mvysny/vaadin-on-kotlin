@@ -1,5 +1,7 @@
 package com.github.vok.framework
 
+import com.vaadin.server.VaadinRequest
+import com.vaadin.server.VaadinResponse
 import com.vaadin.server.VaadinService
 import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
@@ -75,8 +77,8 @@ object VaadinOnKotlin {
     internal val log = LoggerFactory.getLogger(javaClass)
 
     /**
-     * INTERNAL: VOK plugins register themselves here, so that they can be inited in [init] and closed on [destroy].
-     * Usually users do not need to pay attention to this field.
+     * Discovers VOK plugins, so that they can be inited in [init] and closed on [destroy]. Uses a standard [ServiceLoader]
+     * machinery for discovery.
      */
     private val pluginsLoader = ServiceLoader.load(VOKPlugin::class.java)
 }
@@ -106,7 +108,8 @@ fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(C
     try {
         block.invoke()
     } catch (t: Throwable) {
-        VaadinOnKotlin.log.error("Async failed: $t", t)
+        // log the exception - if nobody is waiting on the Future, the exception would have been lost.
+        LoggerFactory.getLogger(block::class.java).error("Async failed: $t", t)
         throw t
     }
 })
@@ -141,7 +144,7 @@ fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->U
                 command.invoke()
             } catch (t: Throwable) {
                 // if nobody is using Future to wait for the result of this op, the exception is lost. better log it here.
-                VaadinOnKotlin.log.error("Async failed: $t", t)
+                LoggerFactory.getLogger(command::class.java).error("Async failed: $t", t)
                 throw t
             }
         }, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
@@ -155,7 +158,7 @@ val Long.minutes: Duration get() = Duration.ofMinutes(this)
 val Int.seconds: Duration get() = toLong().seconds
 val Long.seconds: Duration get() = Duration.ofSeconds(this)
 
-operator fun Duration.times(other: Int) = multipliedBy(other.toLong())
+operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
 
 /**
  * Manages session-scoped objects. If the object is not yet present in the session, it is created (using the zero-arg
@@ -199,34 +202,43 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
  * Just a namespace object for attaching your [SessionScoped] objects.
  */
 object Session {
+
     /**
-     * Returns the attribute stored in this session under given key.
-     * @param key the key
-     * @return the attribute value, may be null
+     * Returns the current [VaadinSession]; fails if there is no session, most probably since we are not in the UI thread.
      */
-    operator fun get(key: String): Any? = checkUIThread().session.getAttribute(key)
+    val current: VaadinSession get() = VaadinSession.getCurrent() ?: throw IllegalStateException("Not in UI thread")
 
     /**
      * Returns the attribute stored in this session under given key.
      * @param key the key
      * @return the attribute value, may be null
      */
-    operator fun <T: Any> get(key: KClass<T>): T? = checkUIThread().session.getAttribute(key.java)
+    operator fun get(key: String): Any? = current.getAttribute(key)
+
+    /**
+     * Returns the attribute stored in this session under given key.
+     * @param key the key
+     * @return the attribute value, may be null
+     */
+    operator fun <T: Any> get(key: KClass<T>): T? = current.getAttribute(key.java)
 
     /**
      * Stores given value under given key in a session. Removes the mapping if value is null
      * @param key the key
      * @param value the value to store, may be null if
      */
-    operator fun set(key: String, value: Any?) = checkUIThread().session.setAttribute(key, value)
+    operator fun set(key: String, value: Any?) = current.setAttribute(key, value)
 
     /**
      * Stores given value under given key in a session. Removes the mapping if value is null
      * @param key the key
      * @param value the value to store, may be null if
      */
-    operator fun <T: Any> set(key: KClass<T>, value: T?) = checkUIThread().session.setAttribute(key.java, value)
+    operator fun <T: Any> set(key: KClass<T>, value: T?) = current.setAttribute(key.java, value)
 }
+
+val currentRequest: VaadinRequest get() = VaadinService.getCurrentRequest() ?: throw IllegalStateException("No current request")
+val currentResponse: VaadinResponse get() = VaadinService.getCurrentResponse() ?: throw IllegalStateException("No current response")
 
 /**
  * You can use `Cookies["mycookie"]` to retrieve a cookie named "mycookie" (or null if no such cookie exists.
@@ -238,7 +250,7 @@ object Cookies {
      * @param name cookie name
      * @return cookie or null if there is no such cookie.
      */
-    operator fun get(name: String): Cookie? = VaadinService.getCurrentRequest().cookies?.firstOrNull { it.name == name }
+    operator fun get(name: String): Cookie? = currentRequest.cookies?.firstOrNull { it.name == name }
 
     /**
      * Overwrites given cookie, or deletes it.
@@ -250,9 +262,9 @@ object Cookies {
             val newCookie = Cookie(name, null)
             newCookie.maxAge = 0  // delete immediately
             newCookie.path = "/"
-            VaadinService.getCurrentResponse().addCookie(newCookie)
+            currentResponse.addCookie(newCookie)
         } else {
-            VaadinService.getCurrentResponse().addCookie(cookie)
+            currentResponse.addCookie(cookie)
         }
     }
 }
@@ -264,6 +276,6 @@ infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
 /**
  * Checks that this thread runs with Vaadin UI set.
  * @return the UI instance, not null.
- * @throws IllegalStateException if not run in the UI thread.
+ * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
  */
-fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread")
+fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
