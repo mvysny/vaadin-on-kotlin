@@ -188,11 +188,11 @@ data class Gt2Filter<V: Comparable<V>>(val field: String, val value: V) : JPAFil
     override fun toString() = "$field > $value"
 }
 data class IsNullFilter(val field: String) : JPAFilter {
-    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNull(root.get<Number>(field))
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNull(root.get<Any>(field))
     override fun toString() = "$field is null"
 }
 data class IsNotNullFilter(val field: String) : JPAFilter {
-    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNotNull(root.get<Number>(field))
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.isNotNull(root.get<Any>(field))
     override fun toString() = "$field is not null"
 }
 data class IsTrueFilter(val field: String) : JPAFilter {
