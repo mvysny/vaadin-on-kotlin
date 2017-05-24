@@ -2,7 +2,7 @@ defaultTasks 'clean', 'build'
 
 buildscript {
     ext.kotlin_version = '1.1.2-3'
-    ext.vaadin_version = '8.0.6'
+    ext.vaadin_version = '8.1.0.beta1'
     ext.local = new Properties()
     if (project.rootProject.file('local.properties').exists()) {
         ext.local.load(project.rootProject.file('local.properties').newDataInputStream())

@@ -23,10 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Theme("valo")
 @Title("VaadinOnKotlin Demo")
 @Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
-// Websockets are currently borked in Atmosphere when using Jetty 9.4
-// keeping this disabled until this issue is fixed: https://github.com/vaadin/framework/issues/8134
-// You can simply launch this project in Intellij Ultimate with Tomcat, that'll work
-//@Push(transport = Transport.WEBSOCKET_XHR)
+@Push(transport = Transport.WEBSOCKET_XHR)
 class MyUI : UI() {
 
     private val content = Content()

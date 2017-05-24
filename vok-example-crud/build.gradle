@@ -1,5 +1,8 @@
 apply plugin: 'war'
 
+// don't update Jetty carelessly, it tends to break Atmosphere and Push support!
+// test before commit :-)
+// see https://github.com/vaadin/framework/issues/8134 for details
 ext.jettyVer = '9.4.2.v20170220'
 
 dependencies {
