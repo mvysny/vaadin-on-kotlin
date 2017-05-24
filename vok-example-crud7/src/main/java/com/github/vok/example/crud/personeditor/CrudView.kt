@@ -21,7 +21,7 @@ import com.vaadin.ui.VerticalLayout
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
  */
-@ViewName
+@AutoView
 class CrudView: VerticalLayout(), View {
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         refreshGrid()

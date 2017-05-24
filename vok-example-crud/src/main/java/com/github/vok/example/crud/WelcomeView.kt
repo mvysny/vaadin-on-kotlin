@@ -10,7 +10,7 @@ import com.vaadin.ui.VerticalLayout
  * This is the root (or main) view. MyUI initially shows view whose name is "" (an empty string).
  * @author mvy
  */
-@ViewName("")
+@AutoView("")
 class WelcomeView: VerticalLayout(), View {
 
     companion object {

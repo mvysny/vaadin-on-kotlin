@@ -2,7 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.WelcomeView
 import com.github.vok.framework.db
-import com.github.vok.framework.vaadin.ViewName
+import com.github.vok.framework.vaadin.AutoView
 import com.github.vok.framework.vaadin.navigateToView
 import com.github.vok.framework.vaadin.parameterList
 import com.vaadin.navigator.View
@@ -14,7 +14,7 @@ import com.vaadin.ui.VerticalLayout
  * Demonstrates the ability to pass parameters to views.
  * @author mavi
  */
-@ViewName
+@AutoView
 class PersonView: VerticalLayout(), View {
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val id = event.parameterList[0]?.toLong()

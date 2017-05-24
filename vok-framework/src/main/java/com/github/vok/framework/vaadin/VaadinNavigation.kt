@@ -45,7 +45,7 @@ private fun String.shouldPrependHyphen(i: Int): Boolean {
 /**
  * Internal class which enumerates views. Do not use directly - instead, just add [autoViewProvider] to your [com.vaadin.navigator.Navigator]
  */
-@HandlesTypes(ViewName::class)
+@HandlesTypes(AutoView::class)
 class AutoViewProvider : ServletContainerInitializer {
     companion object : ViewProvider {
         override fun getViewName(viewAndParameters: String): String? {
@@ -71,7 +71,7 @@ class AutoViewProvider : ServletContainerInitializer {
     }
 
     private fun Class<*>.toViewName(): String {
-        val name = getAnnotation(ViewName::class.java)!!.value
+        val name = getAnnotation(AutoView::class.java)!!.value
         return if (name == VIEW_NAME_USE_DEFAULT) simpleName.removeSuffix("View").upperCamelToLowerHyphen() else name
     }
 
@@ -79,7 +79,7 @@ class AutoViewProvider : ServletContainerInitializer {
         c?.forEach {
             val viewName = it.toViewName()
             if (viewNameToClass.containsKey(viewName)) {
-                throw RuntimeException("Views $it and ${viewNameToClass[viewName]} are trying to register under a common name '$viewName'. Please annotate one of those views with the @ViewName annotation and specify a different name")
+                throw RuntimeException("Views $it and ${viewNameToClass[viewName]} are trying to register under a common name '$viewName'. Please annotate one of those views with the @AutoView annotation and specify a different name")
             }
             viewNameToClass.put(viewName, it.asSubclass(View::class.java))
         }
@@ -91,8 +91,8 @@ class AutoViewProvider : ServletContainerInitializer {
  *
  * `navigator.addProvider(autoViewProvider)`
  *
- * The view provider will auto-discover all of your views and will create names for them, see [ViewName] for more details.
- * Only views annotated with [ViewName] are discovered - this is to avoid automagically exposing all of views packaged in all jars,
+ * The view provider will auto-discover all of your views and will create names for them, see [AutoView] for more details.
+ * Only views annotated with [AutoView] are discovered - this is to avoid automagically exposing all of views packaged in all jars,
  * even unwanted ones.
  *
  * To navigate to a view, just call the [navigateToView] helper method which will generate the correct URI fragment and will navigate.
@@ -103,7 +103,7 @@ val autoViewProvider = AutoViewProvider
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 
 fun navigateToView(view: Class<out View>, vararg params: String) {
-    require(view.getAnnotation(ViewName::class.java) != null) { "$view is not annotated with @ViewName" }
+    require(view.getAnnotation(AutoView::class.java) != null) { "$view is not annotated with @AutoView" }
     val mapping = AutoViewProvider.getMapping(view)
     val param = if (params.isEmpty()) "" else params.map { URLEncoder.encode(it, "UTF-8") }.joinToString("/", "/")
     val navigator = UI.getCurrent().navigator ?: throw IllegalStateException("Navigator not set. Just add the following code to your UI.init() method: { navigator = Navigator(this, content as ViewDisplay); navigator.addProvider(autoViewProvider) }")
@@ -136,9 +136,9 @@ val ViewChangeListener.ViewChangeEvent.parameterList: Map<Int, String>
 /**
  * By default the view will be assigned a colon-separated name, derived from your view class name. The trailing View is dropped.
  * For example, UserListView will be mapped to user-list. You can attach this annotation to a view, to modify this behavior.
- * It is often a good practice to mark one particular view as the root view, by annotating the class with `ViewName("")`.
+ * It is often a good practice to mark one particular view as the root view, by annotating the class with `AutoView("")`.
  * This view will be shown initially when the user enters your application.
  */
 @Target(AnnotationTarget.CLASS)
 @MustBeDocumented
-annotation class ViewName(val value: String = VIEW_NAME_USE_DEFAULT)
+annotation class AutoView(val value: String = VIEW_NAME_USE_DEFAULT)
