@@ -200,8 +200,7 @@ fun HasComponents.textArea(caption: String? = null, block: (@VaadinDsl TextArea)
     return component
 }
 
-// @todo mavi replacement planned in Vaadin 8.1
-//fun HasComponents.tree(caption: String? = null, block: Tree.()->Unit = {}) = init(Tree(caption), block)
+fun <T: Any> HasComponents.tree(caption: String? = null, block: (@VaadinDsl Tree<T>).()->Unit = {}) = init(Tree<T>(caption), block)
 
 fun HasComponents.upload(caption: String? = null, block: (@VaadinDsl Upload).()->Unit = {}) = init(Upload(caption, null), block)
 
