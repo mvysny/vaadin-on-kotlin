@@ -45,7 +45,7 @@ private fun String.shouldPrependHyphen(i: Int): Boolean {
 /**
  * Internal class which enumerates views. Do not use directly - instead, just add [autoViewProvider] to your [com.vaadin.navigator.Navigator]
  */
-@HandlesTypes(View::class)
+@HandlesTypes(ViewName::class)
 class AutoViewProvider : ServletContainerInitializer {
     companion object : ViewProvider {
         override fun getViewName(viewAndParameters: String): String? {
@@ -71,7 +71,7 @@ class AutoViewProvider : ServletContainerInitializer {
     }
 
     private fun Class<*>.toViewName(): String {
-        val name = getAnnotation(ViewName::class.java)?.value ?: VIEW_NAME_USE_DEFAULT
+        val name = getAnnotation(ViewName::class.java)!!.value
         return if (name == VIEW_NAME_USE_DEFAULT) simpleName.removeSuffix("View").upperCamelToLowerHyphen() else name
     }
 
@@ -92,6 +92,9 @@ class AutoViewProvider : ServletContainerInitializer {
  * `navigator.addProvider(autoViewProvider)`
  *
  * The view provider will auto-discover all of your views and will create names for them, see [ViewName] for more details.
+ * Only views annotated with [ViewName] are discovered - this is to avoid automagically exposing all of views packaged in all jars,
+ * even unwanted ones.
+ *
  * To navigate to a view, just call the [navigateToView] helper method which will generate the correct URI fragment and will navigate.
  * You can parse the parameters back later on in your [View.enter], by calling `event.parameterList`.
  */
@@ -100,6 +103,7 @@ val autoViewProvider = AutoViewProvider
 private const val VIEW_NAME_USE_DEFAULT = "USE_DEFAULT"
 
 fun navigateToView(view: Class<out View>, vararg params: String) {
+    require(view.getAnnotation(ViewName::class.java) != null) { "$view is not annotated with @ViewName" }
     val mapping = AutoViewProvider.getMapping(view)
     val param = if (params.isEmpty()) "" else params.map { URLEncoder.encode(it, "UTF-8") }.joinToString("/", "/")
     val navigator = UI.getCurrent().navigator ?: throw IllegalStateException("Navigator not set. Just add the following code to your UI.init() method: { navigator = Navigator(this, content as ViewDisplay); navigator.addProvider(autoViewProvider) }")

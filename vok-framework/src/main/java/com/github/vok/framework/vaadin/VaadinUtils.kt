@@ -34,7 +34,7 @@ import kotlin.reflect.KProperty1
  * Shows given html in this label.
  * @param html the html code to show.
  */
-fun Label.html(@Language("HTML") html: String?) {
+fun (@VaadinDsl Label).html(@Language("HTML") html: String?) {
     contentMode = ContentMode.HTML
     value = html
 }
@@ -44,7 +44,7 @@ fun Label.html(@Language("HTML") html: String?) {
  *
  * Fails if this component is not nested inside [AbstractOrderedLayout].
  */
-var Component.expandRatio: Float
+var (@VaadinDsl Component).expandRatio: Float
     get() = (parent as AbstractOrderedLayout).getExpandRatio(this)
     set(value) = (parent as AbstractOrderedLayout).setExpandRatio(this, value)
 
@@ -52,7 +52,7 @@ var Component.expandRatio: Float
  * Triggers given listener when the text field is focused and user presses the Enter key.
  * @param enterListener the listener to invoke when the user presses the Enter key.
  */
-fun AbstractTextField.onEnterPressed(enterListener: (AbstractTextField) -> Unit) {
+fun (@VaadinDsl AbstractTextField).onEnterPressed(enterListener: (AbstractTextField) -> Unit) {
     val enterShortCut = object : ShortcutListener("EnterOnTextAreaShorcut", null, ENTER) {
         override fun handleAction(sender: Any, target: Any) {
             enterListener(this@onEnterPressed)
@@ -116,7 +116,7 @@ private fun Component.getAscendantLayoutWithLayoutClickNotifier(): LayoutEvents.
  * Removes any previously attached layout click listeners
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.onLayoutClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
+fun (@VaadinDsl LayoutEvents.LayoutClickNotifier).onLayoutClick(listener: (LayoutEvents.LayoutClickEvent)->Unit) {
     (this as AbstractClientConnector).getListeners(LayoutEvents.LayoutClickEvent::class.java).toList().forEach {
         @Suppress("DEPRECATION")
         removeLayoutClickListener(it as LayoutEvents.LayoutClickListener)
@@ -131,7 +131,7 @@ fun LayoutEvents.LayoutClickNotifier.onLayoutClick(listener: (LayoutEvents.Layou
  * Only left mouse button clicks are reported; double-clicks are ignored.
  * @param listener the click listener.
  */
-fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEvents.LayoutClickEvent) -> Unit) {
+fun (@VaadinDsl LayoutEvents.LayoutClickNotifier).addChildClickListener(listener: (LayoutEvents.LayoutClickEvent) -> Unit) {
     (this as Component).addStyleName("clickable")
     addLayoutClickListener({ event ->
         if (event.button != MouseEventDetails.MouseButton.LEFT) {
@@ -154,7 +154,7 @@ fun LayoutEvents.LayoutClickNotifier.addChildClickListener(listener: (LayoutEven
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Button.onLeftClick(listener: (Button.ClickEvent)->Unit) {
+fun (@VaadinDsl Button).onLeftClick(listener: (Button.ClickEvent)->Unit) {
     getListeners(Button.ClickEvent::class.java).toList().forEach {
         @Suppress("DEPRECATION")
         removeClickListener(it as Button.ClickListener)
@@ -166,20 +166,20 @@ fun Button.onLeftClick(listener: (Button.ClickEvent)->Unit) {
 /**
  * Adds or removes given [style] from the component, depending on the value of the [isPresent] parameter.
  */
-fun Component.toggleStyleName(style: String, isPresent: Boolean) {
+fun (@VaadinDsl Component).toggleStyleName(style: String, isPresent: Boolean) {
     if (isPresent) addStyleName(style) else removeStyleName(style)
 }
 
 /**
  * Returns a set of styles currently present on the component.
  */
-val Component.styleNames: Set<String> get() = styleName.split(' ').filterNotBlank().toSet()
+val (@VaadinDsl Component).styleNames: Set<String> get() = styleName.split(' ').filterNotBlank().toSet()
 
 /**
  * Checks whether the component has given [style].
  * @param style if contains a space, this is considered to be a list of styles. In such case, all styles must be present on the component.
  */
-fun Component.hasStyleName(style: String): Boolean {
+fun (@VaadinDsl Component).hasStyleName(style: String): Boolean {
     if (style.contains(' ')) return style.split(' ').filterNotBlank().all { hasStyleName(style) }
     return styleNames.contains(style)
 }
@@ -187,13 +187,13 @@ fun Component.hasStyleName(style: String): Boolean {
 /**
  * Adds multiple [styles]. Individual items in the styles array may contain spaces.
  */
-fun Component.addStyleNames(vararg styles: String) = styles.forEach { addStyleName(it) }
+fun (@VaadinDsl Component).addStyleNames(vararg styles: String) = styles.forEach { addStyleName(it) }
 
 /**
  * Configures this button as primary. Beware - all buttons marked primary using this function, attached to the current UI
  * or Window will be pressed on Enter key press.
  */
-fun Button.setPrimary() {
+fun (@VaadinDsl Button).setPrimary() {
     addStyleName(ValoTheme.BUTTON_PRIMARY)
     setClickShortcut(ENTER)
 }
@@ -202,7 +202,7 @@ fun Button.setPrimary() {
  * Replaces any click listeners with this one.
  * @param listener the listener to set. Only called on left-click.
  */
-fun Image.onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
+fun (@VaadinDsl Image).onLeftClick(listener: (MouseEvents.ClickEvent)->Unit): Unit {
     // warning, here we may receive listeners for ContextClickEvents!
     getListeners(MouseEvents.ClickEvent::class.java).filterIsInstance<MouseEvents.ClickListener>().forEach {
         @Suppress("DEPRECATION")
@@ -276,28 +276,28 @@ var Component.w: Size
     set(value) {
         setWidth(value.size, value.units)
     }
-var Component.h: Size
+var (@VaadinDsl Component).h: Size
     get() = Size(height, heightUnits)
     set(value) = setHeight(value.size, value.units)
 
 /**
  * true if both the component width and height is set to 100%
  */
-val Component.isSizeFull: Boolean
+val (@VaadinDsl Component).isSizeFull: Boolean
     get() = w.isFillParent && h.isFillParent
 
 /**
  * Sets or gets alignment for this component with respect to its parent layout. Use
  * predefined alignments from Alignment class. Fails if the component is not nested inside [AbstractOrderedLayout]
  */
-var Component.alignment: Alignment
+var (@VaadinDsl Component).alignment: Alignment
     get() = (parent as AbstractOrderedLayout).getComponentAlignment(this)
     set(value) = (parent as AbstractOrderedLayout).setComponentAlignment(this, value)
 
 /**
  * Sets [AbsoluteLayout.ComponentPosition.zIndex]. Fails if this component is not nested inside [AbsoluteLayout]
  */
-var Component.zIndex: Int
+var (@VaadinDsl Component).zIndex: Int
     get() = absolutePosition.zIndex
     set(value) {
         absolutePosition.zIndex = value
@@ -306,24 +306,24 @@ var Component.zIndex: Int
 /**
  * Returns the [AbsoluteLayout.ComponentPosition] of this component. Fails if this component is not nested inside [AbsoluteLayout]
  */
-val Component.absolutePosition: AbsoluteLayout.ComponentPosition
+val (@VaadinDsl Component).absolutePosition: AbsoluteLayout.ComponentPosition
     get() = (parent as AbsoluteLayout).getPosition(this)
-var AbsoluteLayout.ComponentPosition.top: Size
+var (@VaadinDsl AbsoluteLayout.ComponentPosition).top: Size
     get() = Size(topValue, topUnits)
     set(value) {
         topValue = value.size; topUnits = value.units
     }
-var AbsoluteLayout.ComponentPosition.bottom: Size
+var (@VaadinDsl AbsoluteLayout.ComponentPosition).bottom: Size
     get() = Size(bottomValue, bottomUnits)
     set(value) {
         bottomValue = value.size; bottomUnits = value.units
     }
-var AbsoluteLayout.ComponentPosition.left: Size
+var (@VaadinDsl AbsoluteLayout.ComponentPosition).left: Size
     get() = Size(leftValue, leftUnits)
     set(value) {
         leftValue = value.size; leftUnits = value.units
     }
-var AbsoluteLayout.ComponentPosition.right: Size
+var (@VaadinDsl AbsoluteLayout.ComponentPosition).right: Size
     get() = Size(rightValue, rightUnits)
     set(value) {
         rightValue = value.size; rightUnits = value.units
@@ -477,7 +477,7 @@ fun <BEAN, FIELDVALUE> Binder.BindingBuilder<BEAN, FIELDVALUE>.bind(prop: KPrope
  * Causes the Grid to only show given set of columns, and in given order.
  * @param ids show only this properties.
  */
-fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map { it.name }.toTypedArray())
+fun <T> (@VaadinDsl Grid<T>).showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map { it.name }.toTypedArray())
 
 /**
  * Allows you to configure a particular column in a Grid. E.g.:
@@ -491,7 +491,7 @@ fun <T> Grid<T>.showColumns(vararg ids: KProperty1<T, *>) = setColumns(*ids.map 
  * @param block run this block with the column as a receiver
  */
 @Suppress("UNCHECKED_CAST")
-fun <T, V> Grid<T>.column(prop: KProperty1<T, V>, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
+fun <T, V> (@VaadinDsl Grid<T>).column(prop: KProperty1<T, V>, block: (@VaadinDsl Grid.Column<T, V>).() -> Unit = {}): Grid.Column<T, V> =
     (getColumn(prop.name) as Grid.Column<T, V>).apply { block() }
 
 @Suppress("UNCHECKED_CAST")
@@ -500,9 +500,9 @@ class ConvertingRenderer<V>(private val convertor: (V)->String) : TextRenderer()
         return if (value == null) super.encode(value) else Json.create(convertor(value as V))
     }
 }
-fun <T, V> Grid<T>.removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name)
+fun <T, V> (@VaadinDsl Grid<T>).removeColumn(prop: KProperty1<T, V>) = removeColumn(prop.name)
 @Suppress("UNCHECKED_CAST")
-fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
+fun <T, V> (@VaadinDsl Grid<T>).addColumn(prop: KProperty1<T, V>, renderer: (V)->String, block: Grid.Column<T, V>.() -> Unit = {}): Grid.Column<T, V> =
         (addColumn(prop.name, ConvertingRenderer<V>(renderer)) as Grid.Column<T, V>).apply { block() }
 
 /**
@@ -510,7 +510,7 @@ fun <T, V> Grid<T>.addColumn(prop: KProperty1<T, V>, renderer: (V)->String, bloc
  * [ComponentContainer].
  * @throws IndexOutOfBoundsException If the index is out of range.
  */
-fun ComponentContainer.getComponentAt(index: Int): Component = when (this) {
+fun (@VaadinDsl ComponentContainer).getComponentAt(index: Int): Component = when (this) {
     is CssLayout -> this.getComponent(index)
     is AbstractOrderedLayout -> this.getComponent(index)
     else -> toList()[index]
@@ -521,19 +521,19 @@ fun ComponentContainer.getComponentAt(index: Int): Component = when (this) {
  * [ComponentContainer].
  * @throws IndexOutOfBoundsException If the index is out of range.
  */
-fun ComponentContainer.removeComponentAt(index: Int) {
+fun (@VaadinDsl ComponentContainer).removeComponentAt(index: Int) {
     removeComponent(getComponentAt(index))
 }
 
 /**
  * Returns an [IntRange] of the valid component indices for this container.
  */
-val ComponentContainer.indices: IntRange get() = 0..componentCount - 1
+val (@VaadinDsl ComponentContainer).indices: IntRange get() = 0..componentCount - 1
 
 /**
  * Removes components with given indices.
  */
-fun ComponentContainer.removeComponentsAt(indexRange: IntRange) {
+fun (@VaadinDsl ComponentContainer).removeComponentsAt(indexRange: IntRange) {
     if (indexRange.isEmpty()) {
     } else if (indexRange == indices) {
         removeAllComponents()
@@ -544,4 +544,4 @@ fun ComponentContainer.removeComponentsAt(indexRange: IntRange) {
     }
 }
 
-fun ComponentContainer.removeAll(components: Iterable<Component>) = components.forEach { removeComponent(it) }
+fun (@VaadinDsl ComponentContainer).removeAll(components: Iterable<Component>) = components.forEach { removeComponent(it) }

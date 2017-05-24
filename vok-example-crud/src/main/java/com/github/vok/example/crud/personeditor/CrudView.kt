@@ -20,6 +20,7 @@ import java.util.*
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
  */
+@ViewName
 class CrudView: VerticalLayout(), View {
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         refreshGrid()
