@@ -165,11 +165,11 @@ operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
  * constructor), stored into the session and retrieved.
  *
  * To use this feature, simply define a global property returning desired object as follows:
- * `val Session.loggedInUser: LoggedInUser by SessionScoped.get()`
+ * `val Session.loggedInUser: LoggedInUser by lazySession()`
  * Then simply read this property from anywhere, to retrieve the instance. Note that your class needs to be [Serializable] (required when
  * storing stuff into session).
  *
- * WARNING: you can only read the property while holding the Vaadin UI lock!
+ * WARNING: you can only read the property while holding the Vaadin UI lock (that is, there is current session available).
  */
 class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
     override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
@@ -187,16 +187,14 @@ class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
         }
         return result
     }
-
-    companion object {
-        /**
-         * Gets a binder for given object. The object is auto-created and bound to the session if missing from the session.
-         * The object is bound under the string key of class full name.
-         * @param R the object type
-         */
-        inline fun <reified R> binder() where R : Any, R : Serializable = SessionScoped(R::class.java)
-    }
 }
+
+/**
+ * Gets a session-retriever for given object. The object is auto-created and bound to the session if missing from the session.
+ * The object is bound under the string key of class full name.
+ * @param R the object type
+ */
+inline fun <reified R> lazySession() where R : Any, R : Serializable = SessionScoped(R::class.java)
 
 /**
  * Just a namespace object for attaching your [SessionScoped] objects.

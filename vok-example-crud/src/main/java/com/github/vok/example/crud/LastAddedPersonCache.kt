@@ -3,6 +3,7 @@ package com.github.vok.example.crud
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.framework.Session
 import com.github.vok.framework.SessionScoped
+import com.github.vok.framework.lazySession
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 
@@ -33,4 +34,4 @@ class LastAddedPersonCache private constructor() : Serializable {
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock! That is, this class is not accessible from a background thread.
  */
-val Session.lastAddedPersonCache: LastAddedPersonCache by SessionScoped.binder()
+val Session.lastAddedPersonCache: LastAddedPersonCache by lazySession()
