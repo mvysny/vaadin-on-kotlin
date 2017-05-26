@@ -13,8 +13,8 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
     // logging
-    compile 'ch.qos.logback:logback-classic:1.1.7'
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
 
     // Vaadin
     compile "com.vaadin:vaadin-compatibility-client-compiled:$vaadin_version"

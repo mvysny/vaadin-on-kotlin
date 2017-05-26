@@ -11,8 +11,8 @@ dependencies {
     compile 'io.michaelrocks:bimap:1.0.2'
 
     // logging
-    testCompile 'ch.qos.logback:logback-classic:1.1.7'
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
 
     // Vaadin
     compile "com.vaadin:vaadin-server:$vaadin_version"
