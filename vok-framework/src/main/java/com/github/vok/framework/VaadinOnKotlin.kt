@@ -18,7 +18,7 @@ import kotlin.reflect.KProperty
 
 object VaadinOnKotlin {
     /**
-     * Initializes the KotlinEE framework. Just call this from your context listener.
+     * Initializes the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
     fun init() = synchronized(this) {
         // TomEE also has by default 5 threads, so I guess this is okay :-D
@@ -29,7 +29,7 @@ object VaadinOnKotlin {
     }
 
     /**
-     * Destroys the KotlinEE framework. Just call this from your context listener.
+     * Destroys the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
     fun destroy() = synchronized(this) {
         if (isStarted) {
