@@ -15,6 +15,7 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.ButtonRenderer
+import com.vaadin.ui.renderers.LocalDateRenderer
 import java.util.*
 
 /**
@@ -62,6 +63,9 @@ class CrudView: VerticalLayout(), View {
             // a sample of how to reconfigure a column
             column(Person::id) {
                 isSortable = false
+            }
+            column(Person::dateOfBirth) {
+                setRenderer(LocalDateRenderer())
             }
 
             // add additional columns with buttons
