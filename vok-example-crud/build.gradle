@@ -12,7 +12,7 @@ dependencies {
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
     // logging
-    // currently we are loggging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
+    // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.slf4j:slf4j-api:1.7.25'
     // this will configure Vaadin to log to SLF4J
