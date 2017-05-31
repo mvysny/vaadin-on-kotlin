@@ -17,19 +17,6 @@ import javax.persistence.Persistence
  * Runs the testing Jetty-based server. Just open http://localhost:8080/ in your browser.
  */
 fun main(args: Array<String>) {
-    // detect all entities. workaround for Hibernate not able to detect entities outside of jar files
-    // https://forum.hibernate.org/viewtopic.php?f=1&t=1043948&e=0
-    val entities = mutableListOf<Class<*>>()
-    AnnotationDetector(object : AnnotationDetector.TypeReporter {
-        override fun reportTypeAnnotation(annotation: Class<out Annotation>?, className: String?) {
-            entities.add(Class.forName(className))
-        }
-
-        override fun annotations(): Array<out Class<out Annotation>> = arrayOf(Entity::class.java)
-    }).detect("com.github")   // added a package name for the detector to be faster; you can just use detect() to scan the whole classpath
-    println("Auto-detected JPA entities: ${entities.map { it.simpleName }}")
-    VaadinOnKotlin.entityManagerFactory = Persistence.createEntityManagerFactory("sample", mapOf(AvailableSettings.LOADED_CLASSES to entities))
-
     val server = Server(8080)
     val context = WebAppContext("src/main/webapp", "/")
     context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", ".*/classes/.*")

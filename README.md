@@ -23,7 +23,11 @@ and database support - a very simple but powerful quickstart project.
 Just experiment on the example application:
 
 1. Clone this git repository and import it into your IDE, simply by opening the `build.gradle` file.
-2. Open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it. Please make sure that the launch directory is set to the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
+2. Enter the `vaadin-on-kotlin` directory, open your terminal and type in `./gradlew vok-example-crud:appRun`.
+   The web app will be running at http://localhost:8080/vok-example-crud
+3. Or, to run it from your IDE, just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
+   The web app will be running at http://localhost:8080 . Please make sure that the launch/current working directory directory is set to 
+   the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
 
 For other launch options please see below.
 

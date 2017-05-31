@@ -1,13 +1,18 @@
 package com.github.vok.example.crud
 
 import com.github.vok.framework.VaadinOnKotlin
+import com.github.vok.framework.entityManagerFactory
 import com.github.vok.framework.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.Constants
 import com.vaadin.server.VaadinServlet
+import org.atmosphere.util.annotation.AnnotationDetector
 import org.flywaydb.core.Flyway
+import org.hibernate.jpa.AvailableSettings
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
+import javax.persistence.Entity
+import javax.persistence.Persistence
 import javax.servlet.ServletConfig
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
@@ -29,6 +34,7 @@ import javax.ws.rs.core.Application
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
+        discoverJpaEntities()
         log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Running DB migrations")
@@ -36,6 +42,21 @@ class Bootstrap: ServletContextListener {
         flyway.dataSource = VaadinOnKotlin.getDataSource()
         flyway.migrate()
         log.info("Initialization complete")
+    }
+
+    private fun discoverJpaEntities() {
+        // detect all entities. workaround for Hibernate not able to detect entities outside of jar files
+        // https://forum.hibernate.org/viewtopic.php?f=1&t=1043948&e=0
+        val entities = mutableListOf<Class<*>>()
+        AnnotationDetector(object : AnnotationDetector.TypeReporter {
+            override fun reportTypeAnnotation(annotation: Class<out Annotation>?, className: String?) {
+                entities.add(Class.forName(className))
+            }
+
+            override fun annotations(): Array<out Class<out Annotation>> = arrayOf(Entity::class.java)
+        }).detect("com.github")   // added a package name for the detector to be faster; you can just use detect() to scan the whole classpath
+        println("Auto-detected JPA entities: ${entities.map { it.simpleName }}")
+        VaadinOnKotlin.entityManagerFactory = Persistence.createEntityManagerFactory("sample", mapOf(AvailableSettings.LOADED_CLASSES to entities))
     }
 
     override fun contextDestroyed(sce: ServletContextEvent?) {
