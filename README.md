@@ -5,10 +5,10 @@ NOTE: Current version only supports Vaadin 8 (with v7 compatibility extensions).
 
 # Vaadin On Kotlin
 
-A new way of writing simple Vaadin apps. Only requires Servlet container such as Jetty or Tomcat to run.
+A new way of writing simple full-stack Vaadin-based web apps in Kotlin. Only requires Servlet container such as Jetty or Tomcat to run.
 Features:
 
-* Full RDBMS+O/R stack, from automatic database migrations to O/R mapping
+* Full database stack, from automatic database migrations to O/R mapping
 * Simple DSL-like UI definition
 * Provides a simple JPA DataProvider for easy integration of JPA beans with Grid
 * No Spring nor JavaEE EJBs nor CDI necessary!
@@ -223,6 +223,25 @@ This project is an (opiniated) attempt to simplify such projects:
 ## Status
 
 There is [Aedict Online](https://aedict-online.eu) running on top of VoK, so there are no obvious bugs in VoK. Yet, more projects are needed to battle-prove VoK's API.
+
+Todo:
+
+* Improve documentation!
+  * Introduce a nice web page with getting started. Probably hosted on github pages. Nobody is interested in techno-babble. Rip off Ruby-on-Rails site.
+  * Introduce a Maven or Gradle archetype! For a simple Vaadin+JPA app.
+    * Make the sample app use some really nice theme; Material theme? Rip off the Ruby-on-Rails tutorial.
+    * Make the sample app not depend on any IDE; yet include tutorial for Intellij
+  * Explain the motivation properly. Something along these lines:
+    * A Java newbie tries out Vaadin and loves it. Then he tries to save stuff into the database,
+      only to discover that in the Java world one needs to use Spring or JavaEE, needs to learn how to write @Transactional services, dependency injection, then configure CDI or SpringServlet or whatnot.
+      That is a lot of stuff which is a) simply too overwhelming and b) totally unnecessary to do a stupid database insert. So the feeling is generally "screw that I'm moving to Ruby on Rails/Django/Grails".
+      And I believe that a documentation, no matter how greatly it is written, can not hide the complexity of JavaEE and Spring. Java world is basically repulsing new developers.
+    * It is amazing how many (all) web frameworks miss a simple database support: Ktor, Kara, Sparkjava, nobody offers a braindead-simple solution for simple PWAs which want to store shit into the database.
+      Developers want http://loopback.io but for Java. But LoopBack is just a bloody web framework with a database support, REST and Oauth, nothing more!
+    * Vaadin-on-Kotlin changes that. It allows you to write simple SQL-based apps which run on Kotlin; it is modular so you can ditch the SQL module and include a NoSQL module instead, etc etc.
+  * Coordinate with the Vaadin guys to write tutorials on writing Vaadin JavaScript component in kotlin2js
+* Port to Karibu-DSL
+* NoSQL support?
 
 Done:
 
