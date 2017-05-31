@@ -20,6 +20,8 @@ and database support - a very simple but powerful quickstart project.
 
 #### Run the example application from the command-line
 
+You will only need Java 8 JDK installed. Just type this into your terminal:
+
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
