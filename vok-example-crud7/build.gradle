@@ -6,7 +6,8 @@ apply plugin: 'war'
 ext.jettyVer = '9.4.2.v20170220'
 
 dependencies {
-    compile(project(":vok-framework-compat7"))
+    compile 'com.github.vok.karibudsl:karibu-dsl-v8compat7:0.1.0'
+
     compile(project(":vok-framework-jpa-compat7"))
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile 'junit:junit:4.12'

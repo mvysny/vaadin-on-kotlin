@@ -2,9 +2,8 @@
 
 package com.github.vok.example.crud
 
-import com.github.vok.framework.vaadin.*
-import com.github.vok.framework.vaadin7.html
-import com.github.vok.framework.vaadin7.label7
+import com.github.vok.karibudsl.*
+import com.github.vok.karibudsl.v7.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.shared.Version

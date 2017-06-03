@@ -5,7 +5,7 @@ import com.github.vok.framework.Session
 import com.github.vok.framework.db
 import com.github.vok.framework.scheduleAtFixedRate
 import com.github.vok.framework.seconds
-import com.github.vok.framework.vaadin.*
+import com.github.vok.karibudsl.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title

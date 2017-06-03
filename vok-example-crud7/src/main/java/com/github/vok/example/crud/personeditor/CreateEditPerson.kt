@@ -5,10 +5,8 @@ package com.github.vok.example.crud.personeditor
 import com.github.vok.example.crud.lastAddedPersonCache
 import com.github.vok.framework.Session
 import com.github.vok.framework.db
-import com.github.vok.framework.vaadin.*
-import com.github.vok.framework.vaadin7.BeanFieldGroup
-import com.github.vok.framework.vaadin7.textField7
-import com.github.vok.framework.vaadin7.trimmingConverter
+import com.github.vok.karibudsl.*
+import com.github.vok.karibudsl.v7.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button

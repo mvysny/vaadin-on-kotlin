@@ -2,9 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.WelcomeView
 import com.github.vok.framework.db
-import com.github.vok.framework.vaadin.AutoView
-import com.github.vok.framework.vaadin.navigateToView
-import com.github.vok.framework.vaadin.parameterList
+import com.github.vok.karibudsl.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Label

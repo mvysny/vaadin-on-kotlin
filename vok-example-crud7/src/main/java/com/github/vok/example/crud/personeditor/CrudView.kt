@@ -4,12 +4,10 @@ import com.github.vok.framework.db
 import com.github.vok.framework.deleteById
 import com.github.vok.framework.get
 import com.github.vok.framework.jpaContainer
-import com.github.vok.framework.vaadin.*
-import com.github.vok.framework.vaadin.ModifierKey.Alt
-import com.github.vok.framework.vaadin.ModifierKey.Ctrl
-import com.github.vok.framework.vaadin7.cols
-import com.github.vok.framework.vaadin7.generateFilterComponents
-import com.github.vok.framework.vaadin7.grid7
+import com.github.vok.karibudsl.*
+import com.github.vok.karibudsl.v7.*
+import com.github.vok.karibudsl.ModifierKey.Alt
+import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

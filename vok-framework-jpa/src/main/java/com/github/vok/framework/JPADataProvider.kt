@@ -1,7 +1,5 @@
 package com.github.vok.framework
 
-import com.github.vok.framework.db
-import com.github.vok.framework.dbId
 import com.vaadin.data.provider.*
 import com.vaadin.shared.data.sort.SortDirection
 import java.io.Serializable

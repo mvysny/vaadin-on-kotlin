@@ -1,6 +1,7 @@
 package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.*
+import com.github.vok.karibudsl.*
 import com.vaadin.data.*
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.server.Page

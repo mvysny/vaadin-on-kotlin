@@ -1,6 +1,6 @@
 package com.github.vok.example.crud
 
-import com.github.vok.framework.vaadin.*
+import com.github.vok.karibudsl.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.shared.Version

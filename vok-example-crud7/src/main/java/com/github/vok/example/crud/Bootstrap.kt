@@ -1,9 +1,7 @@
 package com.github.vok.example.crud
 
 import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.framework.entityManagerFactory
 import com.github.vok.framework.getDataSource
-import com.github.vok.framework.toDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway

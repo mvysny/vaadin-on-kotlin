@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    compile 'com.github.vok.karibudsl:karibu-dsl-v8:0.1.0'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3'
 

@@ -2,7 +2,7 @@ package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.CrudView
 import com.github.vok.framework.*
-import com.github.vok.framework.vaadin.*
+import com.github.vok.karibudsl.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
