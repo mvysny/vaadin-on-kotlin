@@ -1,3 +1,5 @@
+[Index](index.html) | [Getting Started](gettingstarted.html)
+
 # Vaadin-on-Kotlin
 
 A framework which allows you to design your UI and access your database in the following fashion
@@ -21,5 +23,7 @@ cd vaadin-on-kotlin
 ```
 
 The web app will be running at [http://localhost:8080/vok-example-crud](http://localhost:8080/vok-example-crud)
+
+To get started with VOK, [Start Here](gettingstarted.html).
 
 TODO more documentation coming, for now please visit the [https://github.com/mvysny/vaadin-on-kotlin](https://github.com/mvysny/vaadin-on-kotlin) GitHub pages.
