@@ -83,11 +83,6 @@ object VaadinOnKotlin {
     private val pluginsLoader = ServiceLoader.load(VOKPlugin::class.java)
 }
 
-interface VOKPlugin {
-    fun init()
-    fun destroy()
-}
-
 /**
  * Submits a value-returning task for execution and returns a
  * Future representing the pending results of the task. The
@@ -148,17 +143,6 @@ fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->U
                 throw t
             }
         }, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
-
-val Int.days: Duration get() = toLong().days
-val Long.days: Duration get() = Duration.ofDays(this)
-val Int.hours: Duration get() = toLong().hours
-val Long.hours: Duration get() = Duration.ofHours(this)
-val Int.minutes: Duration get() = toLong().minutes
-val Long.minutes: Duration get() = Duration.ofMinutes(this)
-val Int.seconds: Duration get() = toLong().seconds
-val Long.seconds: Duration get() = Duration.ofSeconds(this)
-
-operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
 
 /**
  * Manages session-scoped objects. If the object is not yet present in the session, it is created (using the zero-arg
