@@ -226,7 +226,7 @@ Open up the `WelcomeView.kt` file and change the `@AutoView("")` annotation to t
 `@AutoView("old-welcome")`. This will map the original "Welcome aboard" page to
 [http://localhost:8080#!old-welcome](http://localhost:8080#!old-welcome) , making space for our new Hello page.
 
-Having the `@AutoView("")` on a View will tell the VOK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
+Having the `@AutoView("")` on `MyWelcomeView` will tell the VOK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
 
 Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
