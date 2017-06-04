@@ -417,10 +417,10 @@ which means you don't have to provide the database name for every property insid
 To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
 
 ```sql
-create TABLE Article(
+create table Article(
   id bigint auto_increment PRIMARY KEY,
   title varchar(200) NOT NULL,
-  text VARCHAR(4000) NOT NULL
+  text varchar(4000) NOT NULL
 );
 ```
 
