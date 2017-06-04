@@ -404,8 +404,8 @@ created the database table for Article yet.
 
 ### 5.4 Creating the Article model
 
-Luckily, we have already created the model - it's the `Article.kt` JPA entity class. We will use so-called
-O/R mapper named Hibernate which will map the Article object to a relational database. By default it will map to the "Article" table.
+Luckily, we have already created the model - it's the `Article` JPA entity class. We will use so-called
+O/R mapper named [Hibernate](http://hibernate.org/orm/) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
 > **Note:** Hibernate is smart enough to automatically map column names to the Article class properties,
@@ -428,8 +428,8 @@ SQL dialect here.
 ### 5.5 Running a Migration
 
 As we've just seen, migrations are simple SQL scripts which create and modify database tables. The database migration is done automatically,
-on the web app startup, by the `Bootstrap.kt` class.  You can also reconfigure your app to do the migrations manually instead,
-simply by commenting out relevant part of the `Bootstrap.kt` class and altering the `build.gradle` file as stated in the
+on the web app startup, by the `Bootstrap` class.  You can also reconfigure your app to do the migrations manually instead,
+simply by commenting out relevant part of the `Bootstrap` class and altering the `build.gradle` file as stated in the
 [Flyway Gradle documentation](https://flywaydb.org/getstarted/firststeps/gradle).
 
 If you look in the `V01__CreateArticle.sql` file, you'll see the `V01` prefix, followed by two underscores, and then the name.
@@ -437,7 +437,7 @@ The name may be arbitrary, and it doesn't affect the migration outcome. The numb
 migration scripts will be run sorted by the version number, and exactly once. You can read more about the exact numbering
 rules in the [Flyway Versioned Migrations Guide](https://flywaydb.org/documentation/migration/versioned).
 
-When you run this migration it will create an articles table with one string column and a text column.
+When Flyway runs this migration it will create an articles table with one string column and a text column.
 
 At this point, you can simply kill and restart the server, to automatically run all migrations.
 Since we are currently using an in-memory H2 database, its contents are gone when the server is killed,
