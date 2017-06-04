@@ -24,6 +24,6 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080/vok-example-crud](http://localhost:8080/vok-example-crud)
 
-To get started with VOK, [Start Here](gettingstarted.html).
+To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html).
 
 TODO more documentation coming, for now please visit the [https://github.com/mvysny/vaadin-on-kotlin](https://github.com/mvysny/vaadin-on-kotlin) GitHub pages.
