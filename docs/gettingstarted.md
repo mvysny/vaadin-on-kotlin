@@ -374,9 +374,6 @@ import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
-/**
- * @author mavi
- */
 @AutoView
 class CreateArticleView: VerticalLayout(), View {
     private val binder = beanValidationBinder<Article>()
@@ -406,4 +403,56 @@ Now when you click the "Save Article" button, you'll see the good old Oops error
 created the database table for Article yet.
 
 ### 5.4 Creating the Article model
+
+Luckily, we have already created the model - it's the `Article.kt` JPA entity class. We will use so-called
+O/R mapper named Hibernate which will map the Article object to a relational database. By default it will map to the "Article" table.
+To create the table, we will have to create the migration.
+
+> **Note:** Hibernate is smart enough to automatically map column names to the Article class properties,
+which means you don't have to provide the database name for every property inside JPA entities, as that will be done automatically by Hibernate.
+
+To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
+
+```sql
+create TABLE Article(
+  id bigint auto_increment PRIMARY KEY,
+  title varchar(200) NOT NULL,
+  text VARCHAR(4000) NOT NULL
+);
+```
+
+This is a SQL data definition (DDL) script which will create a table named Article with three columns. We are using the H2 database
+SQL dialect here.
+
+
+### 5.5 Running a Migration
+
+As we've just seen, migrations are simple SQL scripts which create and modify database tables. The database migration is done automatically,
+on the web app startup, by the `Bootstrap.kt` class.  You can also reconfigure your app to do the migrations manually instead,
+simply by commenting out relevant part of the `Bootstrap.kt` class and altering the `build.gradle` file as stated in the
+[Flyway Gradle documentation](https://flywaydb.org/getstarted/firststeps/gradle).
+
+If you look in the `V01__CreateArticle.sql` file, you'll see the `V01` prefix, followed by two underscores, and then the name.
+The name may be arbitrary, and it doesn't affect the migration outcome. The number defines the ordering -
+migration scripts will be run sorted by the version number, and exactly once. You can read more about the exact numbering
+rules in the [Flyway Versioned Migrations Guide](https://flywaydb.org/documentation/migration/versioned).
+
+When you run this migration it will create an articles table with one string column and a text column.
+
+At this point, you can simply kill and restart the server, to automatically run all migrations.
+Since we are currently using an in-memory H2 database, its contents are gone when the server is killed,
+and since we are starting with a fresh database, all migrations will run. When we'll use a persistent database,
+Flyway will make sure that only a newly defined migrations are run.
+
+### 5.6 Saving data in the CreateArticleView
+
+Back in `CreateArticleView` view, everything is ready. Try clicking the "Save Article" button - seemingly nothing
+will happen, but the article will be saved into the database. To actually see the articles,
+we will redirect to an `ArticlesView` which we'll define later.
+
+> **Note:** You might be wondering why the A in Article is capitalized above, whereas most other references to articles in this guide have used lowercase.
+In this context, we are referring to the class named Article that is defined in `web/src/main/kotlin/com/example/vok/Article.kt`.
+Class names in Kotlin must begin with a capital letter.
+
+> **Note:** As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whether the article was saved or not.
 
