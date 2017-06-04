@@ -249,6 +249,7 @@ Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the follow
 ```kotlin
 package com.example.vok
 
+import com.github.vok.framework.db
 import java.io.Serializable
 import javax.persistence.*
 
@@ -261,7 +262,11 @@ data class Article(
         var title: String? = null,
 
         var text: String? = null
-): Serializable
+) : Serializable {
+    companion object {
+        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
+    }
+}
 ```
 
 This will define a so-called JPA entity, which basically represents a row in the "Article" database table.
@@ -447,12 +452,102 @@ Flyway will make sure that only a newly defined migrations are run.
 ### 5.6 Saving data in the CreateArticleView
 
 Back in `CreateArticleView` view, everything is ready. Try clicking the "Save Article" button - seemingly nothing
-will happen, but the article will be saved into the database. To actually see the articles,
-we will redirect to an `ArticlesView` which we'll define later.
+will happen, but the article will be saved into the database. To actually see the article,
+we will redirect to an `ArticleView` which we'll define later.
 
 > **Note:** You might be wondering why the A in Article is capitalized above, whereas most other references to articles in this guide have used lowercase.
 In this context, we are referring to the class named Article that is defined in `web/src/main/kotlin/com/example/vok/Article.kt`.
 Class names in Kotlin must begin with a capital letter.
 
 > **Note:** As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whether the article was saved or not.
+
+### 5.7 Showing Articles
+
+If you submit the form again now, VOK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
+
+Vaadin Navigator supports adding parameters after the view name. This way, we can pass the Article ID to the `ArticleView` as follows:
+[http://localhost:8080/#!article/12](http://localhost:8080/#!article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.FormLayout
+import com.vaadin.ui.Label
+
+@AutoView
+class ArticleView: FormLayout(), View {
+    private val title: Label
+    private val text: Label
+    init {
+        title = label {
+            caption = "Title:"
+        }
+        text = label {
+            caption = "Text:"
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
+        val article = Article.find(articleId)!!
+        title.value = article.title
+        text.value = article.text
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
+    }
+}
+```
+A couple of things to note. We use `Article.find()` to find the article we're interested in,
+passing in `event.parameterList[0]` to get the first parameter from the request. In Vaadin,
+parameters are slash-separated and are not named. The parameter is passed to the `navigateToView<>()` function
+which takes the view class and a list of string parameters as its input, constructs the target URL
+and redirects the browser to the URL. In this case, [http://localhost:8080/#!article/12](http://localhost:8080/#!article/12).
+
+The Navigator then detects that the URL has been changed, it parses the view name out of the URL and
+invokes the `view.enter()` method. You can retrieve the parameter list using `event.parameterList` map. 
+
+With this change, you should finally be able to create new articles. Visit
+[http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and give it a try!
+
+![Show Article](images/show_article.png)
+
+### 5.8 Listing all articles
+
+We still need a way to list all our articles, so let's do that. We'll create the `web/src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
+following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.jpaDataProvider
+import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.grid
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.Grid
+import com.vaadin.ui.VerticalLayout
+
+@AutoView
+class ArticlesView: VerticalLayout(), View {
+    private val dataSource = jpaDataProvider<Article>()
+    private val grid: Grid<Article>
+    init {
+        setSizeFull()
+        grid = grid(Article::class, "Listing articles", dataSource) {
+            setSizeFull()
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+        grid.dataProvider.refreshAll()
+    }
+}
+```
+
+Now if you go to [http://localhost:8080/#!articles](http://localhost:8080/#!articles) you will see a list of all the articles that you have created.
+Note that we have used the Grid component. Grid is a powerful tabular component which supports paging and lazy-loading of the data,
+sorting and filtering as well.
 
