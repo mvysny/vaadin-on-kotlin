@@ -4,6 +4,8 @@
 
 This guide covers getting up and running with Vaadin On Kotlin (VOK).
 
+> **Note:** This tutorial is heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html). 
+
 After reading this guide, you will know:
 
 * How to create a new VOK application, and connect your application to a database.
@@ -88,11 +90,17 @@ Before you can start building the application, you need to make sure that you ha
 ### 3.1 Prerequisites
 
 Vaadin-on-Kotlin only requires Java 8 JDK do be installed. The example application has Gradle bundled in;
-Gradle will then download everything else (Vaadin, Kotlin, libraries). This makes VOK applications really portable
+Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
+This makes VOK applications really portable
 since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
 
 The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
 is no need for you to set up any database.
+
+While it is possible to edit the project files using any text editor, we recommend to install Intellij IDEA which provides awesome
+Kotlin support including auto-completion. You can use IDEA Community edition, which is free and allows you to run
+gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
+servers, and also offers awesome database integration tools.
 
 ### 3.2 Creating the Blog Application
 
@@ -133,3 +141,29 @@ folders:
 
 ## 4 Hello, Vaadin-on-Kotlin!
 
+To begin with, let's get some text up on screen quickly. To do this, you need to get an application server running.
+
+### 4.1 Starting up the Web Server
+
+You actually have a functional Rails application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
+
+```bash
+$ ./gradlew clean web:appRun
+```
+
+This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
+ to http://localhost:8080. You should see the Vaadin-on-Kotlin default information page:
+
+![Welcome VOK](images/welcome_vok.png)
+
+> **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped 
+you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $. 
+
+> **Note:** changes in theme files will only be propagated when you are running `./gradlew clean web:appRun` and there is no 
+`styles.css` file. If there is, your changes will be ignored until you compile the theme again, by running
+`./gradlew vaadinThemeCompile`.
+>
+> Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
+ running `./gradlew build`.
+ 
+ 
