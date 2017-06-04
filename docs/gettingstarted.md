@@ -83,5 +83,53 @@ more harm than good since it adds unnecessary complexity. Therefore this tutoria
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
 
 By following along with this guide, you'll create a VOK project called blog, a (very) simple weblog.
+Before you can start building the application, you need to make sure that you have Java 8 JDK installed.
 
-@todo more
+### 3.1 Prerequisites
+
+Vaadin-on-Kotlin only requires Java 8 JDK do be installed. The example application has Gradle bundled in;
+Gradle will then download everything else (Vaadin, Kotlin, libraries). This makes VOK applications really portable
+since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
+
+The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
+is no need for you to set up any database.
+
+### 3.2 Creating the Blog Application
+
+Getting the example application is really easy. If you have Git installed, just open a command line and run the
+following command:
+
+```bash
+git clone https://github.com/mvysny/vok-helloword-app
+```
+If you don't, you can simply download the application as a zip file from GitHub https://github.com/mvysny/vok-helloword-app/archive/master.zip
+
+After you create the blog application, switch to its folder:
+
+```bash
+cd vok-helloworld-app
+./gradlew
+```
+
+This will download everything necessary and will compile the example application's WAR file.
+
+> **Note:** WAR (Web ARchive) is Java standard for packaging web applications. WAR file is a zip file which
+can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
+
+The `vok-helloworld-app` directory has a number of files and folders that make up the
+structure of a VOK application. Most of the work in this tutorial will happen in the
+`src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and 
+folders:
+
+| File/Folder       | Purpose                                 |
+|-------------------|-----------------------------------------|
+| `src/main/kotlin` | Contains the source files of all of your Views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
+| `src/main/webapp` | Contains the Vaadin Theme (a SCSS-based theme which gets compiled to CSS). All Themes inherit from the [Valo Theme](https://vaadin.com/valo). JavaScript files, additional CSS files and images are also placed here.  |
+| `src/main/resources` | Contains the logger configuration file (`logback.xml`) and the database configuration file (`persistence.xml`) |
+| `build.gradle`    | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
+| `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
+| `src/test/kotlin` | Unit tests, fixtures, and other test apparatus. These are covered in @todo |
+| .gitignore        | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files. |
+
+## 4 Hello, Vaadin-on-Kotlin!
+
