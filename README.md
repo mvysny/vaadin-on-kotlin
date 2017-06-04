@@ -40,14 +40,18 @@ For other launch options please see below.
 
 ### Create your own project
 
-You should start off the very simple example application, adding your functionality to it. Please find the
-Getting Started guide at http://www.vaadinonkotlin.eu/ :
+You should start off the very simple [Vaadin-on-Kotlin Hello World example application](https://github.com/mvysny/vok-helloword-app) as a template.
+Feel free to add your functionality to the sample app. The full Getting Started guide can be found at http://www.vaadinonkotlin.eu/ .
+
+Just type this into your terminal:
  
 ```bash
 git clone https://github.com/mvysny/vok-helloword-app
 cd vok-helloworld-app
 ./gradlew clean build web:appRun
 ```
+
+The web app will be running at http://localhost:8080/
 
 ## Code Examples
 
