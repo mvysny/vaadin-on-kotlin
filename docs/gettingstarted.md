@@ -284,7 +284,7 @@ class ArticleRest {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article? = db { em.find(Article::class.java, id) }
+    fun get(@PathParam("id") id: Long): Article? = Article.find(id) ?: throw NotFoundException("No article with id $id")
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
