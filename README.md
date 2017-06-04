@@ -40,8 +40,14 @@ For other launch options please see below.
 
 ### Create your own project
 
-You should start off the very simple @todo mavi link weblog example application. Please find the
-Getting Started guide at http://www.vaadinonkotlin.eu/ .
+You should start off the very simple example application, adding your functionality to it. Please find the
+Getting Started guide at http://www.vaadinonkotlin.eu/ :
+ 
+```bash
+git clone https://github.com/mvysny/vok-helloword-app
+cd vok-helloworld-app
+./gradlew clean build web:appRun
+```
 
 ## Code Examples
 
