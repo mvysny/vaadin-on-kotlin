@@ -17,7 +17,7 @@ buildscript {
 
 allprojects {
     group 'com.github.vok'
-    version '0.2.1'
+    version '0.2.2-SNAPSHOT'
 }
 
 subprojects {
