@@ -45,7 +45,7 @@ It is designed to make the art of programming of web applications easier by maki
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
 
-> **Note:** Traditionally either JavaEE or Spring acted as the "glue" which held various frameworks together.
+> **Note:** Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
 But, with the advent of the Kotlin programming language,
 we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
 We believe that Kotlin can replace the traditional approach of using the Dependency Injection to glue stuff together.
