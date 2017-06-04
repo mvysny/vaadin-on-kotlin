@@ -538,6 +538,7 @@ class ArticlesView: VerticalLayout(), View {
     init {
         setSizeFull()
         grid = grid(Article::class, "Listing articles", dataSource) {
+            expandRatio = 1f
             setSizeFull()
         }
     }
@@ -550,4 +551,53 @@ class ArticlesView: VerticalLayout(), View {
 Now if you go to [http://localhost:8080/#!articles](http://localhost:8080/#!articles) you will see a list of all the articles that you have created.
 Note that we have used the Grid component. Grid is a powerful tabular component which supports paging and lazy-loading of the data,
 sorting and filtering as well.
+
+### 5.9 Adding links
+You can now create, show, and list articles. Now let's add some links to navigate through pages.
+
+Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init {}` contents as follows:
+
+```kotlin
+    init {
+        verticalLayout {
+            label("Hello, Vaadin-on-Kotlin!") {
+                styleName = ValoTheme.LABEL_H1
+            }
+            button("My Blog", { navigateToView<ArticlesView>() }) {
+                styleName = ValoTheme.BUTTON_LINK
+            }
+        }
+    }
+```
+
+The Vaadin `Button` component can also act as a link. It thus creates a hyperlink based on text to display and where to go - in this case, to the path for articles.
+
+Let's add links to the other views as well, starting with adding this "New Article" link to `ArticlesView` class, placing it above the `grid` declaration:
+
+```kotlin
+        button("New Article", { navigateToView<CreateArticleView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+```
+
+This link will allow you to bring up the form that lets you create a new article.
+
+Now, add another link in `CreateArticleView`, underneath the form's "Save Article" button, as the last line of the `init{}` block, to go back to the index action:
+
+```kotlin
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+```
+
+Finally, add a link to the `ArticleView` view to go back to the index action as well, so that people who are viewing a single article can go back and view the whole list again:
+
+```kotlin
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+```
+
+> **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
+or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
 
