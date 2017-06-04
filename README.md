@@ -13,8 +13,7 @@ Features:
 * Provides a simple JPA DataProvider for easy integration of JPA beans with Grid
 * No Spring nor JavaEE EJBs nor CDI necessary!
 
-Uses Kotlin. Currently starts its own embedded H2 database. Basically, what I'm trying to do is a very simple Vaadin-based project with async/push support
-and database support - a very simple but powerful quickstart project.
+For a Getting Started guide please see the official documentation at http://www.vaadinonkotlin.eu/ .
 
 ## QuickStart
 
@@ -41,36 +40,8 @@ For other launch options please see below.
 
 ### Create your own project
 
-#### Maven quickstart
-
-1. Generate a Vaadin app: https://vaadin.com/maven
-2. Add the JCenter repository to your `pom.xml`:
-```xml
-<repositories>
-    <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com/</url>
-    </repository>
-</repositories>
-```
-3. Add VaadinOnKotlin dependency:
-```xml
-<dependency>
-  <groupId>com.github.vok</groupId>
-  <artifactId>vok-framework-jpa</artifactId>
-  <version>0.2.0</version>
-</dependency>
-```
-4. Add Kotlin support to your `pom.xml`: in Intellij just create a Kotlin class, Intellij will offer to auto-add kotlin
-   to your `pom.xml`. Otherwise: https://kotlinlang.org/docs/reference/using-maven.html
-   
-
-#### Gradle quickstart
-Currently there is no template project. Yet VoK is in JCenter:
- 
- 1. create a Gradle project: https://github.com/johndevs/gradle-vaadin-plugin/wiki/Getting-Started
- 2. add dependency on VaadinOnKotlin: `dependency 'com.github.vok:vok-framework:0.1.0`
- 3. Add Kotlin to your `build.gradle`: https://kotlinlang.org/docs/reference/using-gradle.html
+You should start off the very simple @todo mavi link weblog example application. Please find the
+Getting Started guide at http://www.vaadinonkotlin.eu/ .
 
 ## Code Examples
 

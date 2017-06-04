@@ -39,7 +39,7 @@ be applicable in the VOK-based apps later on.
 ## 2 What is Vaadin-on-Kotlin?
 
 VOK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
-It is designed to make programming web applications easier by making assumptions about what 
+It is designed to make the art of programming of web applications easier by making assumptions about what 
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
 
