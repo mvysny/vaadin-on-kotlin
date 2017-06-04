@@ -18,7 +18,7 @@ you need to have some prerequisites installed:
    
 * Java 8 JDK or newer.
 
-VOK is an opinonated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
+VOK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
 prior experience with Kotlin nor Vaadin, you will find a very steep learning curve diving straight 
 into VOK. There are several curated lists of online resources for learning Kotlin:
    
@@ -30,7 +30,13 @@ To learn Vaadin:
 * [Official Vaadin website](https://www.vaadin.com)
 * [Vaadin Documentation](https://vaadin.com/docs) - we recommend to download and read the Vaadin Book PDF.
 
+> **Note:** If you have no prior experience with Kotlin nor Vaadin, you may get overwhelmed easily by a lots of 
+new stuff. Therefore, we recommend to get familiar with both Vaadin and Kotlin first. 
+You can also start with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application):
+VOK basically uses Karibu-DSL under the hood, so the lessons learned there are highly useful in VOK.
+
 ## 2 What is Vaadin-on-Kotlin?
+
 VOK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
 It is designed to make programming web applications easier by making assumptions about what 
 every developer needs to get started. It allows you to write less code while accomplishing 
@@ -42,15 +48,25 @@ and it's designed to encourage that way - and in some cases to discourage altern
 The VOK philosophy includes two major guiding principles:
 
 * Simplicity - things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
-  are deliberately left out.
+  and MVC are deliberately left out.
 * Components as basic building blocks - Vaadin is a single-page web component framework as opposed to
   the traditional multiple page frameworks. As such, it resembles the traditional fat client
   Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
   VOK promotes code/UI reuse by means of reusing components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates.
-
+  
+> **Note on MVC**: The [Model-View-Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern
+is very popular with page-oriented frameworks such as Ruby on Rails, Groovy on Grails and Python Django. There is typically
+lot of things going on in the page, and the MVC pattern helps keeping the code separated into smaller,
+more easily digestable packages. 
+>
+> However, since Components are a much smaller unit of reuse than pages, employing MVC with Component-oriented frameworks
+will usually leave you with nearly empty Views. We thus believe that using MVC does 
+does more harm than good since it adds unnecessary complexity. Therefore this tutorial will not use MVC.
 
 ## 3 Creating a New VOK Project
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
 
 By following along with this guide, you'll create a VOK project called blog, a (very) simple weblog.
+
+@todo more
