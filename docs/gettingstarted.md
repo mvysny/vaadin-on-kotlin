@@ -166,4 +166,62 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 > Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
  running `./gradlew build`.
  
- 
+The "Welcome aboard" page is the smoke test for a new VOK application: it makes sure that you
+have your software configured correctly enough to serve a page.
+
+### 4.2 Say "Hello", Vaadin-on-Kotlin
+
+To get VOK saying "Hello", you need to create a View.
+
+A View's purpose is to provide a Vaadin Component (usually a Layout containing other components), which then interacts with the user.
+The Navigator decides which View receives which requests. Usually there is exactly one route to a View. You can collect the data
+to be displayed right in the View itself (for small applications), or you can define so-called Service layer
+(a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
+VOK however does not enforce this, and we will not use this pattern in the tutorial.
+
+All Vaadin Components have three parts:
+
+* Their JavaScript-based client side which you usually can not use directly;
+* A Connector which connects server-side and client-side; also not accessed directly by your code
+* And a server side which you access from your code.
+
+For example, a Button client-side (`VButton`) contains the logic to send the notification about the mouse click
+server-side; server-side `Button` allows you to register listeners which listen for button clicks.
+
+Another example: `VGrid` shows a list of data in tabular fashion; it performs scrolling and fetching of the data as the user scrolls, via the Connector.
+Server-side `Grid` allows you to set the `DataSource` which will actually fetch the data, from the database or from anywhere, depending on how you implement it.
+
+To create a new View, all that's needed is to create a Kotlin class which implements the `View` interface and extends
+some Vaadin Component. 
+
+Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make sure it looks like follows:
+
+```kotlin
+@AutoView("")
+class WelcomeView: VerticalLayout(), View {
+    init {
+        verticalLayout {
+            label("Hello, Vaadin-on-Kotlin!") {
+                styleName = ValoTheme.LABEL_H1
+            }
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    }
+}
+```
+
+### 4.3 Setting the Application Home Page
+Now that we have made the view, we need to tell VOK when we want "Hello, Vaadin-on-Kotlin!" 
+to show up. In our case, we want it to show up when we navigate to the root URL of our site, 
+http://localhost:8080. At the moment, "Welcome aboard" is occupying that spot.
+
+Open up the `WelcomeView.kt` file and change the `@AutoView("")` annotation to the following:
+`@AutoView("old-welcome")`. This will map the original "Welcome aboard" page to
+http://localhost:8080#!old-welcome , making space for our new Hello page.
+
+Having the `@AutoView("")` on a View will tell the VOK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
+
+Launch the web server again and navigate to http://localhost:8080 in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
+message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
+that this new Navigator route is indeed going to `MyWelcomeView` and is rendering the view correctly.
