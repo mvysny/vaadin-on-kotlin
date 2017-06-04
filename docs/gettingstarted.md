@@ -278,7 +278,7 @@ import javax.ws.rs.core.MediaType
 @Path("/articles")
 class ArticleRest {
 
-    @GET()
+    @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     fun get(@PathParam("id") id: Long): Article? = db { em.find(Article::class.java, id) }
@@ -288,3 +288,24 @@ class ArticleRest {
     fun getAll(): List<Article> = db { em.findAll<Article>() }
 }
 ```
+
+This will add the possibility to retrieve the articles via a REST call. Just try
+
+```bash
+wget localhost:8080/rest/articles
+```
+
+You will get 500 internal server error; the server log will show a long stacktrace, with the most interesting
+part being
+```
+Caused by: org.h2.jdbc.JdbcSQLException: Table "ARTICLE" not found; SQL statement:
+select article0_.id as id1_0_0_, article0_.text as text2_0_0_, article0_.title as title3_0_0_ from Article article0_ where article0_.id=? [42102-193]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+```
+
+That is to be expected since we haven't yet created the table for Articles. We'll do that in a minute.
+In the next section, you will add the ability to create new articles in your application and be able to view them. This is the "C" and the "R" from CRUD: create and read. The form for doing this will look like this:
+
+![Create Article Screenshot](images/create_article.png)
