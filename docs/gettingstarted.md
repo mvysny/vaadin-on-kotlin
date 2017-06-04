@@ -30,8 +30,8 @@ To learn Vaadin:
 * [Official Vaadin website](https://www.vaadin.com)
 * [Vaadin Documentation](https://vaadin.com/docs) - we recommend to download and read the Vaadin Book PDF.
 
-> **Note:** If you have no prior experience with Kotlin nor Vaadin, you may get overwhelmed easily by a lots of 
-new stuff. Therefore, we recommend to get familiar with both Vaadin and Kotlin first. 
+> **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
+the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
 You can also start with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application):
 VOK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
 be applicable in the VOK-based apps later on.
