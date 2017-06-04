@@ -197,8 +197,16 @@ some Vaadin Component.
 Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make sure it looks like follows:
 
 ```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
 @AutoView("")
-class WelcomeView: VerticalLayout(), View {
+class MyWelcomeView: VerticalLayout(), View {
     init {
         verticalLayout {
             label("Hello, Vaadin-on-Kotlin!") {
@@ -214,14 +222,69 @@ class WelcomeView: VerticalLayout(), View {
 ### 4.3 Setting the Application Home Page
 Now that we have made the view, we need to tell VOK when we want "Hello, Vaadin-on-Kotlin!" 
 to show up. In our case, we want it to show up when we navigate to the root URL of our site, 
-http://localhost:8080. At the moment, "Welcome aboard" is occupying that spot.
+[http://localhost:8080](http://localhost:8080). At the moment, "Welcome aboard" is occupying that spot.
 
 Open up the `WelcomeView.kt` file and change the `@AutoView("")` annotation to the following:
 `@AutoView("old-welcome")`. This will map the original "Welcome aboard" page to
-http://localhost:8080#!old-welcome , making space for our new Hello page.
+[http://localhost:8080#!old-welcome](http://localhost:8080#!old-welcome) , making space for our new Hello page.
 
 Having the `@AutoView("")` on a View will tell the VOK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
 
-Launch the web server again and navigate to http://localhost:8080 in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
+Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
 that this new Navigator route is indeed going to `MyWelcomeView` and is rendering the view correctly.
+
+## 5 Getting Up and Running
+
+Now that you've seen how to create a view, let's create something with a bit more substance.
+
+In the Blog application, you will now create a new database table, or in REST terms, a resource. A resource is the term used 
+for a collection of similar objects, such as articles, people or animals. You can create, 
+read, update and destroy items for a resource and these operations are referred to as 
+CRUD operations.
+
+VOK provides a resources method which can be used to declare a standard REST resource. But first, let us define the article.
+Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the following contents:
+
+```kotlin
+package com.example.vok
+
+import java.io.Serializable
+import javax.persistence.*
+
+@Entity
+data class Article(
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        var title: String? = null,
+
+        var text: String? = null
+): Serializable
+```
+
+This will define a so-called JPA entity, which basically represents a row in the "Article" table.
+
+You need to add a REST endpoint for the article resource, just create a file `web/src/main/kotlin/com/example/vok/ArticleRest` which will look as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+
+@Path("/articles")
+class ArticleRest {
+
+    @GET()
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun get(@PathParam("id") id: Long): Article? = db { em.find(Article::class.java, id) }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getAll(): List<Article> = db { em.findAll<Article>() }
+}
+```
