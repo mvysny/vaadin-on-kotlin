@@ -89,7 +89,7 @@ Before you can start building the application, you need to make sure that you ha
 
 ### 3.1 Prerequisites
 
-Vaadin-on-Kotlin only requires Java 8 JDK do be installed. The example application has Gradle bundled in;
+Vaadin-on-Kotlin only requires Java 8 JDK to be installed. The example application has Gradle bundled in;
 Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
 This makes VOK applications really portable
 since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
@@ -110,7 +110,7 @@ following command:
 ```bash
 $ git clone https://github.com/mvysny/vok-helloword-app
 ```
-If you don't, you can simply download the application as a zip file from GitHub https://github.com/mvysny/vok-helloword-app/archive/master.zip
+If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloword-app/archive/master.zip](https://github.com/mvysny/vok-helloword-app/archive/master.zip).
 
 After you create the blog application, switch to its folder:
 
@@ -145,14 +145,14 @@ To begin with, let's get some text up on screen quickly. To do this, you need to
 
 ### 4.1 Starting up the Web Server
 
-You actually have a functional Rails application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
+You actually have a functional VOK application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
 
 ```bash
 $ ./gradlew clean web:appRun
 ```
 
 This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
- to http://localhost:8080. You should see the Vaadin-on-Kotlin default information page:
+ to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
 ![Welcome VOK](images/welcome_vok.png)
 
@@ -169,7 +169,7 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 The "Welcome aboard" page is the smoke test for a new VOK application: it makes sure that you
 have your software configured correctly enough to serve a page.
 
-### 4.2 Say "Hello", Vaadin-on-Kotlin
+### 4.2 Say "Hello", Vaadin
 
 To get VOK saying "Hello", you need to create a View.
 
@@ -208,10 +208,8 @@ import com.vaadin.ui.themes.ValoTheme
 @AutoView("")
 class MyWelcomeView: VerticalLayout(), View {
     init {
-        verticalLayout {
-            label("Hello, Vaadin-on-Kotlin!") {
-                styleName = ValoTheme.LABEL_H1
-            }
+        label("Hello, Vaadin-on-Kotlin!") {
+            styleName = ValoTheme.LABEL_H1
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
