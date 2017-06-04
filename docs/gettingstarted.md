@@ -62,8 +62,8 @@ lot of things going on in the page, and the MVC pattern helps keeping the code s
 more easily digestable packages. 
 >
 > However, since Components are a much smaller unit of reuse than pages, employing MVC with Component-oriented frameworks
-will usually leave you with nearly empty Views. We thus believe that using MVC does 
-does more harm than good since it adds unnecessary complexity. Therefore this tutorial will not use MVC.
+does not make that much sense: for example it will usually leave you with nearly empty Views. We thus believe that using MVC does 
+more harm than good since it adds unnecessary complexity. Therefore this tutorial will not use MVC.
 
 ## 3 Creating a New VOK Project
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
