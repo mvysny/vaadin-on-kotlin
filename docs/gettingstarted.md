@@ -255,8 +255,8 @@ import javax.persistence.*
 
 @Entity
 data class Article(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
         var id: Long? = null,
 
         var title: String? = null,
@@ -600,4 +600,59 @@ Finally, add a link to the `ArticleView` view to go back to the index action as 
 
 > **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
 or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
+
+### 5.10 Adding Some Validation
+
+The JPA entity file, `Article.kt` is about as simple as it can get.
+
+There isn't much to this file - but Hibernate supplies a great deal of functionality to your JPA entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
+
+Vaadin-on-Kotlin includes methods to help you validate the data that you send to models.
+Open the `Article.kt` file and edit it:
+
+```kotlin
+@Entity
+data class Article(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 5)
+        var title: String? = null,
+
+        var text: String? = null
+) : Serializable {
+    companion object {
+        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
+    }
+}
+```
+
+These changes will ensure that all articles have a title that is at least five characters long.
+VOK can validate a variety of conditions in a JPA entity, including the presence or uniqueness
+of columns, their format, and the existence of associated objects. The [Hibernate Validator](http://hibernate.org/validator/) is used
+to provide validation support; validations are covered
+in detail in the Hibernate Validator documentation.
+
+With the validation now in place, when you call `binder.writeBeanIfValid(article)` on an invalid
+article, it will return false. If you open `CreateArticleView.kt`
+again, you'll notice that we actually check the result of calling `binder.writeBeanIfValid(article)`
+inside the create action. However, if `writeBeanIfValid()` fails, we need to show the form back to the user,
+and mark all invalid fields. To do this, change the button definition as follows:
+
+```kotlin
+        button("Save Article", { event ->
+            val article = Article()
+            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                db { em.persist(article) }
+                ArticleView.navigateTo(article.id!!)
+            } else {
+                event.button.componentError = UserError("There are invalid fields")
+            }
+        })
+```
+
+If you reload `http://localhost:8080/#!create-article` and try to save an article without a title,
+VOK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
 
