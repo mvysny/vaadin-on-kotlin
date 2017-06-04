@@ -43,6 +43,11 @@ It is designed to make programming web applications easier by making assumptions
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
 
+> **Note:** Traditionally either JavaEE or Spring acted as the "glue" which held various frameworks together.
+But, with the advent of the Kotlin programming language,
+we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
+We believe that Kotlin can replace the traditional approach of using the Dependency Injection to glue stuff together.
+
 VOK is opinionated software. It makes the assumption that there is a "best" way to do things,
 and it's designed to encourage that way - and in some cases to discourage alternatives.
 
@@ -55,7 +60,16 @@ The VOK philosophy includes two major guiding principles:
   Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
   VOK promotes code/UI reuse by means of reusing components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates.
-  
+
+While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
+* The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services is a desirable
+practice in larger project, it is overkill for simple projects.
+* The DI requires you to run on a DI container, such as a JavaEE server, or tons of Spring libraries. While that's nothing
+  new for a seasoned Java developer, this is overwhelming for a newbie which is just starting with the web app development.
+* It quickly tends to get very complex as the DI configuration grows.
+
+Therefore, VOK itself is not using DI; you can of course use Spring or JavaEE in your project alongside VOK if necessary.
+
 > **Note on MVC**: The [Model-View-Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern
 is very popular with page-oriented frameworks such as Ruby on Rails, Groovy on Grails and Python Django. There is typically
 lot of things going on in the page, and the MVC pattern helps keeping the code separated into smaller,
