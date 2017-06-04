@@ -108,15 +108,15 @@ Getting the example application is really easy. If you have Git installed, just 
 following command:
 
 ```bash
-git clone https://github.com/mvysny/vok-helloword-app
+$ git clone https://github.com/mvysny/vok-helloword-app
 ```
 If you don't, you can simply download the application as a zip file from GitHub https://github.com/mvysny/vok-helloword-app/archive/master.zip
 
 After you create the blog application, switch to its folder:
 
 ```bash
-cd vok-helloworld-app
-./gradlew
+$ cd vok-helloworld-app
+$ ./gradlew
 ```
 
 This will download everything necessary and will compile the example application's WAR file.
@@ -264,7 +264,7 @@ data class Article(
 ): Serializable
 ```
 
-This will define a so-called JPA entity, which basically represents a row in the "Article" table.
+This will define a so-called JPA entity, which basically represents a row in the "Article" database table.
 
 You need to add a REST endpoint for the article resource, just create a file `web/src/main/kotlin/com/example/vok/ArticleRest` which will look as follows:
 
@@ -292,7 +292,7 @@ class ArticleRest {
 This will add the possibility to retrieve the articles via a REST call. Just try
 
 ```bash
-wget localhost:8080/rest/articles
+$ wget localhost:8080/rest/articles
 ```
 
 You will get 500 internal server error; the server log will show a long stacktrace, with the most interesting
@@ -309,3 +309,101 @@ That is to be expected since we haven't yet created the table for Articles. We'l
 In the next section, you will add the ability to create new articles in your application and be able to view them. This is the "C" and the "R" from CRUD: create and read. The form for doing this will look like this:
 
 ![Create Article Screenshot](images/create_article.png)
+
+It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
+
+### 5.1 Laying down the groundwork
+
+Firstly, you need a place within the application to create a new article. A great place for that 
+would be at `create-article`. Navigate to [http://localhost:8080#!create-article](http://localhost:8080#!create-article) and you'll see a general error:
+
+![Navigator Error](images/navigator_error.png)
+
+This happens because there is no View yet, mapped to the `create-article` route. 
+
+### 5.2 The first form
+
+The solution to this particular problem is simple:
+create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleView` as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class CreateArticleView: VerticalLayout(), View {
+    private val binder = beanValidationBinder<Article>()
+    init {
+        label("New Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article", {
+        })
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    }
+}
+```
+If you refresh the page now, you'll see the exact same form from our example above.
+Building forms in VOK is really just that easy!
+
+There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
+Currently, the click listener is empty, we will need to add the database code to save the article.
+
+### 5.3 Creating articles
+
+To make the "Save Article" button do something, just change the class as follows:
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+/**
+ * @author mavi
+ */
+@AutoView
+class CreateArticleView: VerticalLayout(), View {
+    private val binder = beanValidationBinder<Article>()
+    init {
+        label("New Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article", {
+            val article = Article()
+            if (binder.writeBeanIfValid(article)) {
+                db { em.persist(article) }
+            }
+        })
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    }
+}
+```
+
+Now when you click the "Save Article" button, you'll see the good old Oops error - it's because we haven't
+created the database table for Article yet.
+
+### 5.4 Creating the Article model
+
