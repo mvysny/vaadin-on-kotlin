@@ -21,7 +21,7 @@ you need to have some prerequisites installed:
 * Java 8 JDK or newer.
 
 VOK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
-prior experience with Kotlin nor Vaadin, you will find a very steep learning curve diving straight 
+prior experience with Kotlin, you will find a very steep learning curve diving straight 
 into VOK. There are several curated lists of online resources for learning Kotlin:
    
 * [Official Kotlin Programming Language website](https://kotlinlang.org/)
@@ -34,7 +34,7 @@ To learn Vaadin:
 
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
 the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
-You can also start with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application):
+Feel free to experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
 VOK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
 be applicable in the VOK-based apps later on.
 
@@ -269,7 +269,13 @@ data class Article(
 
 This will define a so-called JPA entity, which basically represents a row in the "Article" database table.
 
-You need to add a REST endpoint for the article resource, just create a file `web/src/main/kotlin/com/example/vok/ArticleRest` which will look as follows:
+We can now implement the REST endpoint for REST clients to access the article resource.
+> **Note:** This step is completely optional and is actually not used by Vaadin, since
+Vaadin connectors use its internal JSON protocol (called UIDL) to communicate with components.
+Having REST may come handy though, since we can use it to examine the state of the database
+(using curl or wget).
+
+Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest` which will look as follows:
 
 ```kotlin
 package com.example.vok
