@@ -811,9 +811,7 @@ class ArticleEditor : VerticalLayout() {
     var article: Article? = null
     set(value) {
         field = value
-        if (value != null) {
-            binder.readBean(value)
-        }
+        if (value != null) binder.readBean(value)
     }
 
     init {
@@ -860,10 +858,8 @@ Now, let's update the `CreateArticleView.kt` view to use this new component, rew
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.label
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -883,7 +879,95 @@ class CreateArticleView: VerticalLayout(), View {
 }
 ```
 
+Then do the same for the `EditArticleView.kt` view:
 
+```kotlin
+package com.example.vok
 
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class EditArticleView : VerticalLayout(), View {
+    private val editor: ArticleEditor
+    init {
+        label("Edit Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        editor = articleEditor()
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]!!.toLong()
+        editor.article = Article.find(articleId)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<EditArticleView>(articleId.toString())
+    }
+}
+```
+
+### 5.13 Deleting Articles
+
+We're now ready to cover the "D" part of CRUD, deleting articles from the database. To delete the article, all that's
+needed is to call `db { em.deleteById<Article>(id) }` from appropriate place. 
+
+We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything together:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.*
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.ui.*
+import com.vaadin.ui.renderers.ButtonRenderer
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class ArticlesView: VerticalLayout(), View {
+    private val dataSource = jpaDataProvider<Article>()
+    private val grid: Grid<Article>
+    init {
+        setSizeFull()
+        label("Listing Articles") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        button("New Article", { navigateToView<CreateArticleView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+        grid = grid(Article::class, null, dataSource) {
+            expandRatio = 1f; setSizeFull()
+            showColumns(Article::id, Article::title, Article::text)
+            addColumn({ "Show" }, ButtonRenderer<Article>({ event -> ArticleView.navigateTo(event.item.id!!) }))
+            addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> EditArticleView.navigateTo(event.item.id!!) }))
+            addColumn({ "Destroy" }, ButtonRenderer<Article>({ event ->
+                confirmDialog {
+                    db { em.deleteById<Article>(event.item.id!!) }
+                    this@grid.dataProvider.refreshAll()
+                }
+            }))
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+        grid.dataProvider.refreshAll()
+    }
+}
+```
+
+The "Destroy" button calls the `confirmDialog` which shows a simple Vaadin dialog. The function is implemented in a way that
+it will call the follow-up block when the "Yes" button is clicked. The block will just delete the article
+and refresh the Grid, to display the new data. To get rid of the confirmation dialog, just delete the `confirmDialog {` line.
+
+> **Note:** To see the definition of the function,
+just open up Intellij IDEA and click your mouse on the `confirmDialog` function name while holding the `Control` key.
+
+![Delete Article](images/delete_article.png)
+
+Congratulations, you can now create, show, list, update and destroy articles.
+
+## 6 Adding a Second Database Entity
 
 @todo more to come
