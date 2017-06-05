@@ -963,7 +963,13 @@ class ArticlesView: VerticalLayout(), View {
 
 The "Destroy" button calls the `confirmDialog` which shows a simple Vaadin dialog. The function is implemented in a way that
 it will call the follow-up block when the "Yes" button is clicked. The block will just delete the article
-and refresh the Grid, to display the new data. To get rid of the confirmation dialog, just delete the `confirmDialog {` line.
+and refresh the Grid, to display the new data. To get rid of the confirmation dialog, just delete the `confirmDialog` line:
+```kotlin
+            addColumn({ "Destroy" }, ButtonRenderer<Article>({ event ->
+                db { em.deleteById<Article>(event.item.id!!) }
+                this@grid.dataProvider.refreshAll()
+            }))
+```
 
 > **Note:** To see the definition of the function,
 just open up Intellij IDEA and click your mouse on the `confirmDialog` function name while holding the `Control` key.
