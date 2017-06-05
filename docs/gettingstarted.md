@@ -660,3 +660,4 @@ and mark all invalid fields. To do this, change the button definition as follows
 If you reload [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and try to save an article without a title,
 VOK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
 
+@todo more to come
