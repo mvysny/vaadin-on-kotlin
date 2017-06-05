@@ -660,4 +660,81 @@ and mark all invalid fields. To do this, change the button definition as follows
 If you reload [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and try to save an article without a title,
 VOK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
 
+### 5.11 Updating Articles
+
+We've covered the "CR" part of CRUD. Now let's focus on the "U" part, updating articles.
+
+The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/EditArticleView`:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.server.UserError
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class UpdateArticleView: VerticalLayout(), View {
+    private val binder = beanValidationBinder<Article>()
+    private var article: Article? = null
+    init {
+        label("Edit Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article", { event ->
+            val article = Article()
+            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                db { em.persist(article) }
+                ArticleView.navigateTo(article.id!!)
+            } else {
+                event.button.componentError = UserError("There are invalid fields")
+            }
+        })
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]!!.toLong()
+        edit(Article.find(articleId)!!)
+    }
+
+    private fun edit(article: Article) {
+        this.article = article
+        binder.readBean(article)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<UpdateArticleView>(articleId.toString())
+    }
+}
+```
+
+The view will contain a form similar to the one we used when creating new articles. The only difference is that
+when the view is entered (that is, navigated to), it looks up the article ID, loads the article and binds
+it with the components.
+
+Finally, we want to show a link to the edit action in the list of all the articles, so let's add
+that now to `ArticlesView.kt` app/views/articles/index.html.erb to make it appear next to the "Show" link.
+Just change the `grid {}` block as follows:
+
+```kotlin
+        grid = grid(Article::class, "Listing articles", dataSource) {
+            expandRatio = 1f
+            setSizeFull()
+            addColumn({ "Show" }, ButtonRenderer<Article>({ event -> ArticleView.navigateTo(event.item.id!!) }))
+            addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> UpdateArticleView.navigateTo(event.item.id!!) }))
+        }
+```
+
 @todo more to come
