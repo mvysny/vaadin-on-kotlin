@@ -842,12 +842,16 @@ fun HasComponents.articleEditor(block: ArticleEditor.()->Unit = {}) = init(Artic
 
 This is just an ordinary Vaadin component which you can insert anywhere into your View. Its API consists of a single public
 property named `article`. When you assign this property, the `ArticleEditor` will populate the fields and the user will be
-able toedit the article.
+able to edit the article.
 When you press the "Save Article" button, the `ArticleEditor` component will either create a new article, or update an existing one.
 
-The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to build Vaadin UIs in a tree-like
-manner, using purely Kotlin code. This technique is called DSL (Domain Specific Language), which is true - in a way we have constructed
+The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to 
+build Vaadin UIs in a structured way, using purely Kotlin code.
+This technique is called DSL (Domain Specific Language). The name fits - in a way we have constructed
 a 'language' used to create Vaadin UIs. You can find more information about the Kotlin DSL at the [Kotlin Type-Safe Builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
+
+Using type-safe builders or DSL has the advantage that the Kotlin compiler will check
+for typos, and the Kotlin IDEA plugin will help us with the auto-completion.
 
 > **Note:** The [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library actually defines such builder functions for every Vaadin component.
 You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/vok/karibudsl/Basic.kt) file
