@@ -697,7 +697,7 @@ class EditArticleView: VerticalLayout(), View {
         button("Save Article", { event ->
             val article = Article()
             if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                db { em.persist(article) }
+                db { em.merge(article) }
                 ArticleView.navigateTo(article.id!!)
             } else {
                 event.button.componentError = UserError("There are invalid fields")
@@ -789,6 +789,100 @@ And here's how our app looks so far:
 ![Article List View](images/article_list_view.png)
 
 ### 5.12 Creating components to clean up duplication in views
+
+Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact, 
+they both share the same code for displaying the form. 
+Let's remove this duplication by using a common component.
+
+Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with the following content:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.server.UserError
+import com.vaadin.ui.HasComponents
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+class ArticleEditor : VerticalLayout() {
+    private val binder = beanValidationBinder<Article>()
+    var article: Article? = null
+    set(value) {
+        field = value
+        if (value != null) {
+            binder.readBean(value)
+        }
+    }
+
+    init {
+        isMargin = false
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article", { event ->
+            val article = article!!
+            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                db { if (article.id == null) em.persist(article) else em.merge(article) }
+                ArticleView.navigateTo(article.id!!)
+            } else {
+                event.button.componentError = UserError("There are invalid fields")
+            }
+        })
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+}
+
+fun HasComponents.articleEditor(block: ArticleEditor.()->Unit = {}) = init(ArticleEditor(), block)
+```
+
+This is just an ordinary Vaadin component which you can insert anywhere into your View. Its API consists of a single public
+property named `article`. When you assign this property, the `ArticleEditor` will populate the fields and the user will be
+able toedit the article.
+When you press the "Save Article" button, the `ArticleEditor` component will either create a new article, or update an existing one.
+
+The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to build Vaadin UIs in a tree-like
+manner, using purely Kotlin code. This technique is called DSL (Domain Specific Language), which is true - in a way we have constructed
+a 'language' used to create Vaadin UIs. You can find more information about the Kotlin DSL at the [Kotlin Type-Safe Builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
+
+> **Note:** The [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library actually defines such builder functions for every Vaadin component.
+You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/vok/karibudsl/Basic.kt) file
+for the definitions of the sources for the `button` and `textField` builder methods.
+
+Now, let's update the `CreateArticleView.kt` view to use this new component, rewriting it completely:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.AutoView
+import com.github.vok.karibudsl.label
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class CreateArticleView: VerticalLayout(), View {
+    private val editor: ArticleEditor
+    init {
+        label("New Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        editor = articleEditor {
+            article = Article()
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    }
+}
+```
+
 
 
 
