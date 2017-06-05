@@ -39,7 +39,7 @@ class CrudView: VerticalLayout(), View {
 //    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
 
     init {
-        setSizeFull()
+        setSizeFull(); isMargin = false
         horizontalLayout {
             createButton = button("Create New Person (Ctrl+Alt+C)") {
                 onLeftClick { createOrEditPerson(Person(created = Date())) }
