@@ -544,7 +544,7 @@ class ArticlesView: VerticalLayout(), View {
         label("Listing Articles") {
             styleName = ValoTheme.LABEL_H1
         }
-        grid = grid(Article::class, "Listing articles", dataSource) {
+        grid = grid(Article::class, null, dataSource) {
             expandRatio = 1f; setSizeFull()
             showColumns(Article::id, Article::title, Article::text)
         }
@@ -728,11 +728,11 @@ when the view is entered (that is, navigated to), it looks up the article ID, lo
 it with the components.
 
 Finally, we want to show a link to the edit action in the list of all the articles, so let's add
-that now to `ArticlesView.kt` app/views/articles/index.html.erb to make it appear next to the "Show" link.
+that now to `ArticlesView.kt` to make it appear next to the "Show" link.
 Just change the `grid {}` block as follows:
 
 ```kotlin
-        grid = grid(Article::class, "Listing articles", dataSource) {
+        grid = grid(Article::class, null, dataSource) {
             expandRatio = 1f; setSizeFull()
             showColumns(Article::id, Article::title, Article::text)
             addColumn({ "Show" }, ButtonRenderer<Article>({ event -> ArticleView.navigateTo(event.item.id!!) }))
