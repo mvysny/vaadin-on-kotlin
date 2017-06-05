@@ -715,7 +715,7 @@ class EditArticleView: VerticalLayout(), View {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = navigateToView<UpdateArticleView>(articleId.toString())
+        fun navigateTo(articleId: Long) = navigateToView<EditArticleView>(articleId.toString())
     }
 }
 ```
