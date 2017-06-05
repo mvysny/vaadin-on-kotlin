@@ -541,9 +541,12 @@ class ArticlesView: VerticalLayout(), View {
     private val grid: Grid<Article>
     init {
         setSizeFull()
+        label("Listing Articles") {
+            styleName = ValoTheme.LABEL_H1
+        }
         grid = grid(Article::class, "Listing articles", dataSource) {
-            expandRatio = 1f
-            setSizeFull()
+            expandRatio = 1f; setSizeFull()
+            showColumns(Article::id, Article::title, Article::text)
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
@@ -730,11 +733,63 @@ Just change the `grid {}` block as follows:
 
 ```kotlin
         grid = grid(Article::class, "Listing articles", dataSource) {
-            expandRatio = 1f
-            setSizeFull()
+            expandRatio = 1f; setSizeFull()
+            showColumns(Article::id, Article::title, Article::text)
             addColumn({ "Show" }, ButtonRenderer<Article>({ event -> ArticleView.navigateTo(event.item.id!!) }))
             addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> EditArticleView.navigateTo(event.item.id!!) }))
         }
 ```
+
+And we'll also add one to the `ArticleView.kt` template as well, so that there's also an "Edit" link on an article's page. Modify the class to look as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.FormLayout
+import com.vaadin.ui.Label
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class ArticleView: FormLayout(), View {
+    private lateinit var article: Article
+    private val title: Label
+    private val text: Label
+    init {
+        title = label {
+            caption = "Title:"
+        }
+        text = label {
+            caption = "Text:"
+        }
+        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
+        article = Article.find(articleId)!!
+        title.value = article.title
+        text.value = article.text
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
+    }
+}
+```
+
+And here's how our app looks so far:
+
+![Article List View](images/article_list_view.png)
+
+### 5.12 Creating components to clean up duplication in views
+
+
 
 @todo more to come
