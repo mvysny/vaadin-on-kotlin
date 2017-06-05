@@ -664,7 +664,7 @@ VOK will send you back to the form, with the invalid fields marked red; also the
 
 We've covered the "CR" part of CRUD. Now let's focus on the "U" part, updating articles.
 
-The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/EditArticleView`:
+The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/EditArticleView.kt`:
 
 ```kotlin
 package com.example.vok
@@ -678,7 +678,7 @@ import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class UpdateArticleView: VerticalLayout(), View {
+class EditArticleView: VerticalLayout(), View {
     private val binder = beanValidationBinder<Article>()
     private var article: Article? = null
     init {
@@ -733,7 +733,7 @@ Just change the `grid {}` block as follows:
             expandRatio = 1f
             setSizeFull()
             addColumn({ "Show" }, ButtonRenderer<Article>({ event -> ArticleView.navigateTo(event.item.id!!) }))
-            addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> UpdateArticleView.navigateTo(event.item.id!!) }))
+            addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> EditArticleView.navigateTo(event.item.id!!) }))
         }
 ```
 
