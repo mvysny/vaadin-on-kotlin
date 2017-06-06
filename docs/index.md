@@ -22,7 +22,7 @@ cd vaadin-on-kotlin
 ./gradlew vok-example-crud:appRun
 ```
 
-The web app will be running at [http://localhost:8080/vok-example-crud](http://localhost:8080/vok-example-crud)
+The web app will be running at [http://localhost:8080](http://localhost:8080)
 
 To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html).
 

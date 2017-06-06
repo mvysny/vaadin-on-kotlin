@@ -64,7 +64,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
     }
 
     private fun okPressed() {
-        if (!binder.writeBeanIfValid(person)) {
+        if (!binder.validate().isOk || !binder.writeBeanIfValid(person)) {
             persistButton.componentError = UserError("Please fix the errors on the form")
             return
         }

@@ -11,10 +11,10 @@ dependencies {
     testCompile 'javax.validation:validation-api:1.0.0.GA'
 
     // db
-    compile('org.hibernate:hibernate-core:5.2.6.Final') {
+    compile('org.hibernate:hibernate-core:5.2.10.Final') {
         exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
     }
-    testCompile 'com.h2database:h2:1.4.193'
+    testCompile 'com.h2database:h2:1.4.195'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
