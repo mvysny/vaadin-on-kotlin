@@ -9,14 +9,12 @@ import com.github.vok.karibudsl.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
+import com.vaadin.annotations.Viewport
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewDisplay
-import com.vaadin.server.ClassResource
-import com.vaadin.server.FontAwesome
-import com.vaadin.server.Resource
-import com.vaadin.server.VaadinRequest
+import com.vaadin.server.*
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -30,12 +28,14 @@ import java.util.concurrent.atomic.AtomicInteger
 @Theme("valo")
 @Title("VaadinOnKotlin Demo")
 @Push(transport = Transport.WEBSOCKET_XHR)
+@Viewport("width=device-width, initial-scale=1.0")
 class MyUI : UI() {
 
     private val content = ValoMenuLayout()
 
     override fun init(request: VaadinRequest?) {
         setContent(content)
+        Responsive.makeResponsive(this)
         navigator = Navigator(this, content as ViewDisplay)
         navigator.addProvider(autoViewProvider)
     }
@@ -55,10 +55,14 @@ private class ValoMenuLayout: HorizontalLayout(), ViewDisplay {
     private lateinit var viewPlaceholder: CssLayout
     private lateinit var statusTicker: Label
     init {
-        setSizeFull();isSpacing = false
+        setSizeFull(); isSpacing = false; styleName = "valo-menu-responsive"
+        Responsive.makeResponsive(this)
 
         menuArea = cssLayout {
             primaryStyleName = ValoTheme.MENU_ROOT
+            addStyleNames("sidebar", "valo-menu-part", "no-vertical-drag-hints", "no-horizontal-drag-hints")
+            w = wrapContent; h = fillParent
+
             menu = cssLayout { // menu
                 horizontalLayout {
                     w = fillParent; isSpacing = false; defaultComponentAlignment = Alignment.MIDDLE_LEFT
