@@ -24,7 +24,7 @@ import java.util.*
 @AutoView
 class CrudView: VerticalLayout(), View {
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-        refreshGrid()
+        personGrid.refresh()
     }
 
     companion object {
@@ -85,22 +85,18 @@ class CrudView: VerticalLayout(), View {
                         alive = true, created = Date()))
             }
         }
-        refreshGrid()
+        personGrid.refresh()
     }
 
     private fun deletePerson(id: Long) {
         db { em.deleteById<Person>(id) }
-        refreshGrid()
+        personGrid.refresh()
     }
 
     private fun createOrEditPerson(person: Person) {
         CreateEditPerson(person).apply {
-            addCloseListener { refreshGrid() }
+            addCloseListener { personGrid.refresh() }
             UI.getCurrent().addWindow(this)
         }
-    }
-
-    private fun refreshGrid() {
-        personGridDS.refreshAll()
     }
 }
