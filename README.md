@@ -39,7 +39,8 @@ For a Getting Started guide please see the official documentation at [http://www
 
     * [Getting Started](http://www.vaadinonkotlin.eu/gettingstarted.html)
 
-5. For easy development, we encourage you to edit the project sources in [Intellij IDEA](https://www.jetbrains.com/idea/). 
+5. For easy development, we encourage you to edit the project sources in [Intellij IDEA](https://www.jetbrains.com/idea/);
+  the Community Edition is enough.
 
 ## Example project
 
@@ -53,14 +54,15 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
-## Run the example application from Intellij IDEA
+## Run the example application from Intellij IDEA Community
 
 1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
 2. To run the application from IDEA, just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
    The web app will be running at [http://localhost:8080](http://localhost:8080). Please make sure that the launch/current working directory directory is set to 
    the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
 
-If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat for development:
+If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat for development, since it offers
+better code hot-redeployment:
 
 1. Open the project in IDEA
 2. Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
