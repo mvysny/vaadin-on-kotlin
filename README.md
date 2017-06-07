@@ -65,6 +65,14 @@ If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat f
 1. Open the project in IDEA
 2. Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
 
+## Contributing
+
+We encourage you to contribute to Vaadin-on-Kotlin! Join us and discuss at [Vaadin Forums: Miscellaneous](https://vaadin.com/forum#!/category/11562).
+
+Trying to report a possible security vulnerability in Vaadin-on-Kotlin? Please use [Vaadin Bug Tracker](https://github.com/vaadin/framework/issues).
+
+For general Vaadin-on-Kotlin bugs, please use the [Vaadin-on-Kotlin Github Issue Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues).
+
 ## Code Examples
 
 ### Easy database transactions:
