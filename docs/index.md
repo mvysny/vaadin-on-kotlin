@@ -11,7 +11,7 @@ button("Create") {
 ```
 
 No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
-starting point for newcomer programmers.
+starting point for beginner programmers.
 
 ## QuickStart
 

@@ -17,7 +17,7 @@ JPA allows you to present the data from database rows as objects and embellish t
 Of course, you may decide not to use JPA and integrate with NoSQL instead.
 
 Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
-programming language, which makes Vaadin-on-Kotlin a perfect starting point for newcomer programmers.
+programming language, which makes Vaadin-on-Kotlin a perfect starting point for beginner programmers.
 And Kotlin is statically-typed, so you can always Ctrl+Click on a code and learn how it works under the hood! 
 
 For a Getting Started guide please see the official documentation at [http://www.vaadinonkotlin.eu/](http://www.vaadinonkotlin.eu/).
