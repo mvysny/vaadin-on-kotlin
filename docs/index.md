@@ -2,13 +2,14 @@
 
 # Vaadin-on-Kotlin
 
-A framework which allows you to design your UI and access your database in the following fashion
+A framework which allows you to design your UI and access your database from a Servlet container:
 ```kotlin
 button("Create") {
   onLeftClick { db { em.persist(person) } }
 }
 ```
-without any need for JavaEE or Spring.
+No JavaEE or Spring needed. We at Vaadin fight for
+simplicity and invite everyone to join this fight.
 
 ## QuickStart
 
