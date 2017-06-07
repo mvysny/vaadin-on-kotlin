@@ -7,8 +7,7 @@ apply plugin: 'kotlin'
 dependencies {
     compile 'com.github.vok.karibudsl:karibu-dsl-v8:0.2.1'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'org.jetbrains.kotlinx:kotlinx-support-jdk8:0.3'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
