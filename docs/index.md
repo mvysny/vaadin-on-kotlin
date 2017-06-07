@@ -2,15 +2,16 @@
 
 # Vaadin-on-Kotlin
 
-A framework which allows you to design your UI and access your database from a Servlet container:
+Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications:
+
 ```kotlin
 button("Create") {
   onLeftClick { db { em.persist(person) } }
 }
 ```
-No JavaEE nor Spring needed. We at Vaadin fight for
-simplicity and invite everyone to join this fight.
-For the sake of newbies which are just embracing the JVM world.
+
+No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
+starting point for newcomer programmers.
 
 ## QuickStart
 
