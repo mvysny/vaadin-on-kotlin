@@ -1,25 +1,49 @@
 [![Build Status](https://travis-ci.org/mvysny/vaadin-on-kotlin.svg?branch=master)](https://travis-ci.org/mvysny/vaadin-on-kotlin)
 
-NOTE: Current version only supports Vaadin 8 (with v7 compatibility extensions). For Vaadin 7 version please
- see the [vaadin7 branch](https://github.com/mvysny/vaadin-on-kotlin/tree/vaadin7).
+# Welcome to Vaadin-On-Kotlin
 
-# Vaadin On Kotlin
+Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications.
 
-A new way of writing simple full-stack Vaadin-based web apps in Kotlin. Only requires Servlet container such as Jetty or Tomcat to run.
-Features:
+Vaadin-on-Kotlin does not enforce you to use [Model-View-Controller (MVC)](http://en.wikipedia.org/wiki/Model-view-controller),
+Dependency Injection (DI) nor [Service-Oriented Architecture (SOA)](https://en.wikipedia.org/wiki/Service_(systems_architecture)).
+It by default does not use Spring nor JavaEE. Instead, Vaadin-on-Kotlin focuses on simplicity.
+ 
+The View layer leverages component-oriented
+programming as offered by the [Vaadin](https://vaadin.com) framework. Vaadin offers powerful components which are built on AJAX;
+programming in Vaadin resembles programming in a traditional client-side framework such as JavaFX or Swing.
 
-* Full database stack, from automatic database migrations to O/R mapping
-* Simple DSL-like UI definition
-* Provides a simple JPA DataProvider for easy integration of JPA beans with Grid
-* No Spring nor JavaEE EJBs nor CDI necessary!
+The database access layer is covered by [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and [Hibernate](http://hibernate.org/orm/).
+JPA allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
+Of course, you may decide not to use JPA and integrate with NoSQL instead.
 
-For a Getting Started guide please see the official documentation at http://www.vaadinonkotlin.eu/ .
+Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
+programming language, which makes Vaadin-on-Kotlin a perfect starting point for newcomer programmers.
 
-## QuickStart
+For a Getting Started guide please see the official documentation at [http://www.vaadinonkotlin.eu/](http://www.vaadinonkotlin.eu/).
 
-#### Run the example application from the command-line
+## Getting Started
 
-You will only need Java 8 JDK installed. Just type this into your terminal:
+1. Please install Java 8 JDK and git client if you haven't yet.
+
+2. Then, at the command prompt, just type in:
+
+    ```bash
+    git clone https://github.com/mvysny/vok-helloword-app
+    cd vok-helloworld-app
+    ./gradlew clean build web:appRun
+    ```
+
+3. Using a browser, go to [http://localhost:8080](http://localhost:8080) and you'll see: "Yay! You're on Vaadin-on-Kotlin!"
+
+4. Follow the guidelines to start developing your application. You may find the following resources handy:
+
+    * [Getting Started](http://www.vaadinonkotlin.eu/gettingstarted.html)
+
+5. For easy development, we encourage you to edit the project sources in [Intellij IDEA](https://www.jetbrains.com/idea/). 
+
+## Example project
+
+A more polished example application which you can inspire from. Just type this into your terminal:
 
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
@@ -27,31 +51,19 @@ cd vaadin-on-kotlin
 ./gradlew vok-example-crud:appRun
 ```
 
-The web app will be running at [http://localhost:8080](http://localhost:8080)
+The web app will be running at [http://localhost:8080](http://localhost:8080).
 
-#### Run the example application from your IDE:
+## Run the example application from Intellij IDEA
 
-1. Clone this git repository and import it into your IDE, simply by opening the `build.gradle` file.
-2. To run it from your IDE, just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
-   The web app will be running at http://localhost:8080 . Please make sure that the launch/current working directory directory is set to 
+1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
+2. To run the application from IDEA, just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
+   The web app will be running at [http://localhost:8080](http://localhost:8080). Please make sure that the launch/current working directory directory is set to 
    the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
 
-For other launch options please see below.
+If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat for development:
 
-### Create your own project
-
-You should start off the very simple [Vaadin-on-Kotlin Hello World example application](https://github.com/mvysny/vok-helloword-app) as a template.
-Feel free to add your functionality to the sample app. The full Getting Started guide can be found at http://www.vaadinonkotlin.eu/ .
-
-Just type this into your terminal:
- 
-```bash
-git clone https://github.com/mvysny/vok-helloword-app
-cd vok-helloworld-app
-./gradlew clean build web:appRun
-```
-
-The web app will be running at http://localhost:8080/
+1. Open the project in IDEA
+2. Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
 
 ## Code Examples
 
@@ -211,73 +223,3 @@ This project is an (opiniated) attempt to simplify such projects:
 * Allow them to run in a pure servlet environment (such as Jetty, Tomcat)
 * Remove complex stuff such as injections, SLSBs, SFSBs
 * Allow any object to be bound to a session (e.g. caches) in a simple manner
-
-
-## Status
-
-There is [Aedict Online](https://aedict-online.eu) running on top of VoK, so there are no obvious bugs in VoK. Yet, more projects are needed to battle-prove VoK's API.
-
-Todo:
-
-* Improve documentation!
-  * Introduce a nice web page with getting started. Probably hosted on github pages. Nobody is interested in techno-babble. Rip off Ruby-on-Rails site.
-  * Introduce a Maven or Gradle archetype! For a simple Vaadin+JPA app.
-    * Make the sample app use some really nice theme; Material theme? Rip off the Ruby-on-Rails tutorial.
-    * Make the sample app not depend on any IDE; yet include tutorial for Intellij
-  * Explain the motivation properly. Something along these lines:
-    * A Java newbie tries out Vaadin and loves it. Then he tries to save stuff into the database,
-      only to discover that in the Java world one needs to use Spring or JavaEE, needs to learn how to write @Transactional services, dependency injection, then configure CDI or SpringServlet or whatnot.
-      That is a lot of stuff which is a) simply too overwhelming and b) totally unnecessary to do a stupid database insert. So the feeling is generally "screw that I'm moving to Ruby on Rails/Django/Grails".
-      And I believe that a documentation, no matter how greatly it is written, can not hide the complexity of JavaEE and Spring. Java world is basically repulsing new developers.
-    * It is amazing how many (all) web frameworks miss a simple database support: Ktor, Kara, Sparkjava, nobody offers a braindead-simple solution for simple PWAs which want to store shit into the database.
-      Developers want http://loopback.io but for Java. But LoopBack is just a bloody web framework with a database support, REST and Oauth, nothing more!
-    * Vaadin-on-Kotlin changes that. It allows you to write simple SQL-based apps which run on Kotlin; it is modular so you can ditch the SQL module and include a NoSQL module instead, etc etc.
-  * Coordinate with the Vaadin guys to write tutorials on writing Vaadin JavaScript component in kotlin2js
-* Port to Karibu-DSL
-* NoSQL support?
-
-Done:
-
-* JPA (via Hibernate) and transactions (via `db {}`); Extended EntityManager is also supported.
-* Migrations (Flyway) - the migrations are run automatically when the WAR is started.
-* Vaadin with JPAContainer and Extended EntityManager, including a filter generator which auto-generates filter Fields for your Grid
-* Async tasks & Vaadin Push
-* Drop-in replacements for SFSBs bound to session: see `LastAddedPersonCache.kt` for details.
-* REST+JSON (via RESTEasy); see `PersonRest.kt` for details.
-* Vaadin DSL builder - see `MyUI.kt` for details.
-* JDBC connection pooling (HikariCP)
-
-Ignored:
-
-* Messaging
-* Security
-* Injections
-
-## To run the WAR outside of any IDE:
-
-Run it with Jetty Runner:
-
-* Download Jetty Runner here: http://www.eclipse.org/jetty/documentation/current/runner.html
-* Run `./gradlew`
-* Locate the WAR in `vok-example-crud/build/libs/`
-* Run the WAR via the Runner: `java -jar jetty-runner*.jar *.war`
-* Open [http://localhost:8080](http://localhost:8080)
-
-## To develop in IDEA:
-
-### Embedded Jetty
-
-* The easiest option: just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) and launch it.
-
-### Jetty
-
-* Open the project in IDEA
-* Download the Jetty Distribution zip file from here: http://download.eclipse.org/jetty/stable-9/dist/
-* Unpack the Jetty Distribution
-* In IDEA, add Jetty Server Local launcher, specify the path to the Jetty Distribution directory and attach the `vok-example-crud` WAR-exploded artifact to the runner
-* Run or Debug the launcher
-
-### Tomcat
-
-* Open the project in IDEA
-* Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
