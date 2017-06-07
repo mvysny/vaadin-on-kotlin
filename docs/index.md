@@ -8,8 +8,9 @@ button("Create") {
   onLeftClick { db { em.persist(person) } }
 }
 ```
-No JavaEE or Spring needed. We at Vaadin fight for
+No JavaEE nor Spring needed. We at Vaadin fight for
 simplicity and invite everyone to join this fight.
+For the sake of newbies which are just embracing the JVM world.
 
 ## QuickStart
 
