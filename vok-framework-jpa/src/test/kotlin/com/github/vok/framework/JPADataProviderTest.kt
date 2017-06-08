@@ -13,8 +13,8 @@ class JPADataProviderTest {
 
     companion object {
         @BeforeClass @JvmStatic
-        fun initPlugin() {
-            JPAVOKPlugin().init()
+        fun initVOK() {
+            DBTest.initVOK()
         }
     }
 

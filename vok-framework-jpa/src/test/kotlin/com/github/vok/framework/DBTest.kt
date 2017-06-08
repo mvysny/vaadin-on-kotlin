@@ -1,5 +1,6 @@
 package com.github.vok.framework
 
+import org.flywaydb.core.Flyway
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -12,8 +13,11 @@ class DBTest {
 
     companion object {
         @BeforeClass @JvmStatic
-        fun initPlugin() {
+        fun initVOK() {
             JPAVOKPlugin().init()
+            val flyway = Flyway()
+            flyway.dataSource = VaadinOnKotlin.getDataSource()
+            flyway.migrate()
         }
     }
 

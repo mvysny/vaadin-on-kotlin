@@ -1,10 +1,7 @@
 package com.github.vok.framework
 
 import java.io.Serializable
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
@@ -24,4 +21,23 @@ data class TestPerson(
         @field:Min(15)
         @field:Max(100)
         var age: Int? = null
-) : Serializable
+
+) : Serializable {
+        @field:OneToMany(mappedBy = "person", cascade = arrayOf(CascadeType.REMOVE))
+        var hobbies: List<TestHobby> = mutableListOf()
+}
+
+@Entity
+data class TestHobby(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Size(min = 1, max = 200)
+        var text: String? = null
+) : Serializable {
+        @field:ManyToOne
+        @field:JoinColumn(name = "person_id")
+        var person: TestPerson? = null
+}

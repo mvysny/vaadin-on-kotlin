@@ -16,6 +16,7 @@ dependencies {
     compile('org.hibernate:hibernate-core:5.2.10.Final') {
         exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
     }
+    testCompile 'org.flywaydb:flyway-core:4.2.0'
     testCompile 'com.h2database:h2:1.4.195'
 }
 
