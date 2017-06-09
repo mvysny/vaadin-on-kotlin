@@ -38,6 +38,8 @@ class JpaProviderTest {
         db {
             // doesn't help and throws LazyInitializationException
 //            Hibernate.initialize(p.hobbies)
+
+            // the only thing that works here is to set enable_lazy_load_no_trans to true in persistence.xml
             println(p.hobbies)
         }
     }
@@ -60,6 +62,34 @@ class JpaProviderTest {
             expectList(NameAndHobby("Hardy", "Drinking beer"), NameAndHobby("Laurel", "Hiking"), NameAndHobby("Laurel", "Playing piano")) {
                 em.createQuery("select new com.github.vok.framework.NameAndHobby(p.name, h.text) from TestPerson p, TestHobby h where h.person = p", NameAndHobby::class.java).resultList.sorted()
             }
+        }
+    }
+
+    @Test
+    fun deletingPersonWillDeleteHobbies() {
+        var p = db {
+            TestPerson(name = "Zaphod", age = 42).apply {
+                em.persist(this)
+                withHobbies("Traveling through the galaxy")
+            }
+        }
+        db {
+            // this will not cascade the delete to hobbies and will thus fail on constraint violation when removing the person
+            // p = em.merge(p)
+
+            // this will fail because the entity is detached
+            // em.refresh(p)
+
+            // there is no call in em to make an entity "attached", so that the bloody remove() stops complaining about detached entity
+            // https://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate
+
+            // this is the only way I have found, to delete the detached entity. Good job JPA, you managed to make things
+            // unintuitively fail, while making them complicated </sarcasm>
+
+            p = em.find(TestPerson::class.java, p.id)
+            em.remove(p)
+            expectList { em.findAll<TestPerson>()  }
+            expectList { em.findAll<TestHobby>()  }
         }
     }
 }
