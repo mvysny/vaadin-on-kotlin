@@ -74,20 +74,7 @@ class JpaProviderTest {
             }
         }
         db {
-            // this will not cascade the delete to hobbies and will thus fail on constraint violation when removing the person
-            // p = em.merge(p)
-
-            // this will fail because the entity is detached
-            // em.refresh(p)
-
-            // there is no call in em to make an entity "attached", so that the bloody remove() stops complaining about detached entity
-            // https://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate
-
-            // this is the only way I have found, to delete the detached entity. Good job JPA, you managed to make things
-            // unintuitively fail, while making them complicated </sarcasm>
-
-            p = em.find(TestPerson::class.java, p.id)
-            em.remove(p)
+            em.delete(p)
             expectList { em.findAll<TestPerson>()  }
             expectList { em.findAll<TestHobby>()  }
         }

@@ -182,12 +182,42 @@ inline fun <reified T: Any> EntityManager.get(id: Any): T =
         find(T::class.java, id) ?: throw IllegalArgumentException("Parameter id: invalid value $id: no such ${T::class.java.simpleName}")
 
 /**
- * Deletes given entity.
+ * Deletes given entity. Triggers the [CascadeType.REMOVE] properly.
  * @param id entity id
  * @return true if the entity was deleted, false if there is no such entity.
  */
 inline fun <reified T: Any> EntityManager.deleteById(id: Any): Boolean {
-    return createQuery("delete from ${T::class.java.simpleName} b where b.id=:id").setParameter("id", id).executeUpdate() != 0
+    // this doesn't trigger the REMOVE cascade
+//    return createQuery("delete from ${T::class.java.simpleName} b where b.id=:id").setParameter("id", id).executeUpdate() != 0
+    return delete(find(T::class.java, id) ?: return false)
+}
+
+/**
+ * Deletes given [entity], regardless of whether it is detached or attached. If the entity was detached and meanwhile
+ * deleted from the database, does nothing and return false.
+ *
+ *  Triggers the [CascadeType.REMOVE] properly.
+ * @return true if the entity was deleted, false if the underlying database was meanwhile modified and the entity is already deleted from the database.
+ */
+inline fun EntityManager.delete(entity: Any): Boolean {
+    val e = if (contains(entity)) entity else {
+        // this will not cascade the delete and will thus fail on constraint violation when removing the person
+        // em.merge(entity)
+
+        // this will fail because the entity is detached
+        // em.refresh(entity)
+
+        // there is no call in em to make an entity "attached", so that the bloody remove() stops complaining about detached entity
+        // https://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate
+
+        // this is the only way I have found, to delete the detached entity. Good job JPA, you managed to make things
+        // unintuitively fail, while making them complicated </sarcasm>
+
+        val id = entityManagerFactory.persistenceUnitUtil.getIdentifier(entity)
+        find(entity.javaClass, id) ?: return false
+    }
+    remove(e)
+    return true
 }
 
 /**
