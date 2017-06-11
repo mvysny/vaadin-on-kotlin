@@ -1412,9 +1412,9 @@ class NewCommentForm : FormLayout() {
 fun HasComponents.newCommentForm(block: NewCommentForm.()->Unit = {}) = init(NewCommentForm(), block)
 ```
 
-The component handles the comment creation now. It needs to be set the article for which the comment is to be created.
-Also, when the comment is created, it needs to notify the `ArticleView` about this fact. This is done via the means of the
-`commentCreatedListener` which the `NewCommentForm` will call. Now, let's refactor the `ArticleView.kt` to make use of this
+The component handles the comment creation now. In order for the component to work properly, the article for which the comment is to be created must be set.
+Also, when the component creates the comment, it needs to notify the `ArticleView` about this fact. This is done by the means of the
+`commentCreatedListener` listener which the component calls upon comment creation. Now, let's refactor the `ArticleView.kt` to make use of this
 component and register itself to it as a listener:
 
 ```kotlin
