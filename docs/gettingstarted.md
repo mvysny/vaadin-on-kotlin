@@ -1194,7 +1194,7 @@ class ArticleView: VerticalLayout(), View {
                 caption = "Text:"
             }
         }
-        comments = label { caption = "Comments"; isMargin = false }
+        comments = label { caption = "Comments" }
         formLayout {
             caption = "Add a comment:"
             textField("Commenter:") {
@@ -1264,5 +1264,274 @@ we would simply display an empty list over and over again, since the `comments` 
 Now that we have articles and comments working, take a look at the `web/src/main/kotlin/com/example/vok/ArticleView.kt` view.
 It is getting long and awkward. We can create reusable components to clean it up.
 
+### 7.1 The Comments Component
+
+First, we will extract a component which will show comments for given article. Since this component will not be used anywhere
+else but in the `ArticleView.kt`, we will make this component for private use by the `ArticleView.kt` class. The new component
+will still be a label and thus it will simply extend the `Label` class. It will have a handy function `show(articleId)` which will
+populate itself with comments for that particular article.
+
+We also need to introduce means to include the `CommentsComponent` component into the DSL, and thus we will introduce
+the DSL extension method as well. Here is the full listing of the new view class:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.server.UserError
+import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class ArticleView: VerticalLayout(), View {
+    private lateinit var article: Article
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private val comments: CommentsComponent
+    private val commentBinder = beanValidationBinder<Comment>()
+    private lateinit var createComment: Button
+    init {
+        formLayout {
+            title = label {
+                caption = "Title:"
+            }
+            text = label {
+                caption = "Text:"
+            }
+        }
+        comments = commentsComponent()
+        formLayout {
+            caption = "Add a comment:"
+            textField("Commenter:") {
+                bind(commentBinder).bind(Comment::commenter)
+            }
+            textField("Body:") {
+                bind(commentBinder).bind(Comment::body)
+            }
+            createComment = button("Create", { createComment() })
+        }
+        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
+        article = Article.find(articleId)!!
+        title.value = article.title
+        text.value = article.text
+        comments.show(article.id!!)
+    }
+    private fun createComment() {
+        val comment = Comment()
+        if (!commentBinder.validate().isOk || !commentBinder.writeBeanIfValid(comment)) {
+            createComment.componentError = UserError("There are invalid fields")
+        } else {
+            createComment.componentError = null
+            comment.article = article
+            db { em.persist(comment) }
+            comments.show(article.id!!)
+            commentBinder.readBean(Comment())  // this clears the comment fields
+        }
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
+    }
+}
+
+private class CommentsComponent : Label() {
+    init {
+        caption = "Comments"
+    }
+    fun show(articleId: Long) {
+        html(db {
+            // force-update the comments list.
+            Article.find(articleId)!!.comments.joinToString("") { comment ->
+                "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
+            }
+        })
+    }
+}
+// the extension function which will allow us to use CommentsComponent inside a DSL
+private fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+```
+
+The extension function simply calls the `init()` function, which performs the following things:
+* Inserts the newly created component (in this case, the `CommentsComponent`) into the parent layout;
+* Calls `block` to optionally allow us to configure the component further.
+
+You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin Part 4](http://mavi.logdown.com/posts/1493730) tutorial.
+
+### 7.2 Converting the Comments Form to a component
+
+Let us also move that new comment section out to its own component. This time, to a public component. Create the file named
+`web/src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.server.UserError
+import com.vaadin.ui.*
+
+class NewCommentForm : FormLayout() {
+    var commentCreatedListener: ()->Unit = {}
+    lateinit var article: Article
+    private val commentBinder = beanValidationBinder<Comment>()
+    private val createComment: Button
+    init {
+        caption = "Add a comment:"
+        textField("Commenter:") {
+            bind(commentBinder).bind(Comment::commenter)
+        }
+        textField("Body:") {
+            bind(commentBinder).bind(Comment::body)
+        }
+        createComment = button("Create", { createComment() })
+    }
+
+    private fun createComment() {
+        val comment = Comment()
+        if (!commentBinder.validate().isOk || !commentBinder.writeBeanIfValid(comment)) {
+            createComment.componentError = UserError("There are invalid fields")
+        } else {
+            createComment.componentError = null
+            comment.article = article
+            db { em.persist(comment) }
+            commentBinder.readBean(Comment())  // this clears the comment fields
+            commentCreatedListener()
+        }
+    }
+}
+fun HasComponents.newCommentForm(block: NewCommentForm.()->Unit = {}) = init(NewCommentForm(), block)
+```
+
+The component handles the comment creation now. It needs to be set the article for which the comment is to be created.
+Also, when the comment is created, it needs to notify the `ArticleView` about this fact. This is done via the means of the
+`commentCreatedListener` which the `NewCommentForm` will call. Now, let's refactor the `ArticleView.kt` to make use of this
+component and register itself to it as a listener:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class ArticleView: VerticalLayout(), View {
+    private lateinit var article: Article
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private val comments: CommentsComponent
+    private val newComment: NewCommentForm
+    init {
+        formLayout {
+            title = label {
+                caption = "Title:"
+            }
+            text = label {
+                caption = "Text:"
+            }
+        }
+        comments = commentsComponent()
+        newComment = newCommentForm {
+            commentCreatedListener = { comments.show(article.id!!) }
+        }
+        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
+        article = Article.find(articleId)!!
+        title.value = article.title
+        text.value = article.text
+        comments.show(article.id!!)
+        newComment.article = article
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
+    }
+}
+
+private class CommentsComponent : Label() {
+    init {
+        caption = "Comments"
+    }
+    fun show(articleId: Long) {
+        html(db {
+            // force-update the comments list.
+            Article.find(articleId)!!.comments.joinToString("") { comment ->
+                "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
+            }
+        })
+    }
+}
+// the extension function which will allow us to use CommentsComponent inside a DSL
+private fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+```
+
+## 8 Deleting Comments
+
+@todo
+
+### 8.1 Deleting Associated Objects
+
+If you delete an article, its associated comments will also need to be deleted, otherwise they would simply occupy space in the database. 
+Or even worse, since we have the foreign constraint set up, the database would fail to delete the article. JPA allows you to use the dependent option of an association to achieve this.
+Modify the `Article.kt` file as follows:
+
+```kotlin
+package com.example.vok
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.github.vok.framework.db
+import org.hibernate.annotations.Cascade
+import org.hibernate.validator.constraints.Length
+import java.io.Serializable
+import javax.persistence.*
+import javax.validation.constraints.NotNull
+
+@Entity
+data class Article(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 5)
+        var title: String? = null,
+
+        var text: String? = null
+) : Serializable {
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "article", cascade = arrayOf(CascadeType.REMOVE))
+    var comments: List<Comment> = mutableListOf()
+
+    companion object {
+        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
+    }
+}
+```
+
+## 9 Security
+
+If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
+
+The Java Servlets and Tomcat provides a very simple HTTP authentication system that will work nicely in this situation.
 
 @todo more to come
