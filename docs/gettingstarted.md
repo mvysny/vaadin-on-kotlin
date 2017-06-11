@@ -1160,6 +1160,109 @@ $ curl localhost:8080/rest/articles/1/comments
 
 ### 6.4 Writing a View
 
+Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
+
+So first, we'll wire up the `ArticleView.kt`view to let us make a new comment:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.db
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.server.UserError
+import com.vaadin.ui.Button
+import com.vaadin.ui.Label
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class ArticleView: VerticalLayout(), View {
+    private lateinit var article: Article
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private val comments: Label
+    private val commentBinder = beanValidationBinder<Comment>()
+    private lateinit var createComment: Button
+    init {
+        formLayout {
+            title = label {
+                caption = "Title:"
+            }
+            text = label {
+                caption = "Text:"
+            }
+        }
+        comments = label { caption = "Comments"; isMargin = false }
+        formLayout {
+            caption = "Add a comment:"
+            textField("Commenter:") {
+                bind(commentBinder).bind(Comment::commenter)
+            }
+            textField("Body:") {
+                bind(commentBinder).bind(Comment::body)
+            }
+            createComment = button("Create", { createComment() })
+        }
+        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+        button("Back", { navigateToView<ArticlesView>() }) {
+            styleName = ValoTheme.BUTTON_LINK
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
+        article = Article.find(articleId)!!
+        title.value = article.title
+        text.value = article.text
+        refreshComments()
+    }
+    private fun createComment() {
+        val comment = Comment()
+        if (!commentBinder.validate().isOk || !commentBinder.writeBeanIfValid(comment)) {
+            createComment.componentError = UserError("There are invalid fields")
+        } else {
+            createComment.componentError = null
+            comment.article = article
+            db { em.persist(comment) }
+            refreshComments()
+            commentBinder.readBean(Comment())  // this clears the comment fields
+        }
+    }
+    private fun refreshComments() {
+        comments.html(db {
+            // force-update the comments list.
+            Article.find(article.id!!)!!.comments.joinToString("") { comment ->
+                "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
+            }
+        })
+    }
+    companion object {
+        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
+    }
+}
+```
+
+This adds a form on the `Article` show page that creates a new comment, by calling the `db { em.persist(comment) }` code.
+
+Once we have made the new comment, we need to stay on the page of the original article. That's why there is no
+`navigate` call in the `createComment()` function. However, since the page does not reload (remember we use the single-page-framework),
+we need to do that ourselves. See the `comments` label? We will populate this label with a html-formatted list of all comments.
+This exactly is done by the `refreshComments()` function.
+
+Now you can add articles and comments to your blog and have them show up in the right places.
+
+![Create and List Comments](images/comments_create_list.png)
+
+> **Note:** in the `refreshComments()` we need to re-fetch the article, in order to get the fresh list of `comments`. Otherwise,
+we would simply display an empty list over and over again, since the `comments` field is lazily loaded and cached afterwards.
+
+## 7 Refactoring
+
+Now that we have articles and comments working, take a look at the `web/src/main/kotlin/com/example/vok/ArticleView.kt` view.
+It is getting long and awkward. We can create reusable components to clean it up.
 
 
 @todo more to come
