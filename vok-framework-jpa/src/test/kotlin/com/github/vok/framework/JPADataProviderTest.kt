@@ -2,11 +2,11 @@ package com.github.vok.framework
 
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
-import kotlinx.support.jdk8.streams.toList
 import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import kotlin.streams.toList
 import kotlin.test.expect
 
 class JPADataProviderTest {

@@ -1,15 +1,9 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'org.akhikhl.gretty:gretty:+'
-    }
+plugins {
+    id "org.akhikhl.gretty" version "1.4.2"
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
 
 // don't update Jetty carelessly, it tends to break Atmosphere and Push support!
 // test before commit :-)

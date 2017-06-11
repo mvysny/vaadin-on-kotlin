@@ -10,7 +10,6 @@ import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
 import com.vaadin.ui.components.grid.HeaderRow
-import kotlinx.support.jdk8.streams.toList
 import java.io.Serializable
 import java.sql.Timestamp
 import java.time.LocalDate
@@ -21,6 +20,7 @@ import java.time.format.FormatStyle
 import java.time.temporal.Temporal
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.streams.toList
 
 data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
     fun toFilter(field: String): JPAFilter? {
