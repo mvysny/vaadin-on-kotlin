@@ -986,4 +986,167 @@ It's time to add a second database table to the application. The second database
 
 We'll create a `Comment` entity to hold reference to an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
+```kotlin
+package com.example.vok
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.hibernate.validator.constraints.Length
+import java.io.Serializable
+import javax.persistence.*
+import javax.validation.constraints.NotNull
+
+@Entity
+data class Comment(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 3)
+        var commenter: String? = null,
+
+        @field:NotNull
+        @field:Length(min = 3)
+        var body: String? = null
+) : Serializable {
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "article_id")
+    var article: Article? = null
+}
+```
+
+This is very similar to the `Article` entity that you saw earlier. The difference is the property `article`
+which sets up an association. You'll learn a little about associations in the next section of this guide.
+
+Note the `@JoinColumn` annotation - it tells which column on your `Comment` database table (usually of integer type) references to the parent `Article`.
+You can get a better understanding after analyzing the appropriate migration script. Just create
+`web/src/main/resources/db/migration/V02__CreateComment.sql` file with the following contents:
+
+```sql
+create TABLE Comment(
+  id bigint auto_increment PRIMARY KEY,
+  commenter varchar(200) NOT NULL,
+  body VARCHAR(4000) NOT NULL,
+  article_id bigint not null REFERENCES Article(id)
+);
+```
+
+The `article_id` line creates an integer column called `article_id`, an index for it, and a
+foreign key constraint that points to the `id` column of the articles table. Go ahead and run
+the project.
+
+Since we are running an embedded database which starts in a clear state, all migrations will run. However,
+if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not already been run against the current database.
+
+### 6.2 Associating Models
+
+JPA associations let you easily declare the relationship between two entities. In the case of
+comments and articles, you could write out the relationships this way:
+
+* Each comment belongs to one article.
+* One article can have many comments.
+
+You've already seen the line of code inside the `Comment` entity (`Comment.kt`) that makes each
+comment belong to an `Article`:
+
+```kotlin
+        @ManyToOne
+        @JoinColumn(name = "article_id")
+        var article: Article? = null
+```
+
+You'll need to edit `Article.kt` to add the other side of the association:
+
+```kotlin
+package com.example.vok
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.github.vok.framework.db
+import org.hibernate.annotations.Cascade
+import org.hibernate.validator.constraints.Length
+import java.io.Serializable
+import javax.persistence.*
+import javax.validation.constraints.NotNull
+
+@Entity
+data class Article(
+        @field:Id
+        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
+        var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 5)
+        var title: String? = null,
+
+        var text: String? = null
+) : Serializable {
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "article", cascade = arrayOf(CascadeType.REMOVE))
+    var comments: List<Comment> = mutableListOf()
+
+    companion object {
+        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
+    }
+}
+```
+
+These two declarations enable a good bit of automatic behavior. For example, if you have an instance
+variable @article containing an article, you can retrieve all the comments belonging to that article
+as an array using `article.comments`.
+
+> **Note:** Note that the `comments` field is outside of the `data class` constructor. This is intentional,
+so that the `comments` field does not participate in `hashCode()`, `equals()` and `toString()`. `comments` is lazy -
+it is evaluated first time it is read; reading it causes a database `select` to be run. This may not be wanted,
+e.g. when we want to log a newly created article only. This is also why the `@JsonIgnore` annotation is used -
+to prevent polluting of the REST JSON article output with all comments.
+
+> **Note:** JPA is a tough beast. It may be intuitively perceived as a handy object wrapping of database tables, however
+in fact it is a full object-relational mapping framework. As such, it has some pitfalls which needs to be navigated
+around (detached/attached entities, etc). We recommend to use only the basic properties of JPA - basic table
+mappings, basic relations. You can read more at @todo
+
+### 6.3 Exposing Comments via REST
+
+You can expose the comments via the REST interface. This is completely optional and is not used by Vaadin in any way,
+it may just be handy to check your database status via curl. Edit `ArticleRest.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+
+@Path("/articles")
+class ArticleRest {
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun get(@PathParam("id") id: Long): Article = Article.find(id) ?: throw NotFoundException("No article with id $id")
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getAll(): List<Article> = db { em.findAll<Article>() }
+
+    @GET
+    @Path("/{id}/comments")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments
+}
+```
+
+Now, you can run curl in your terminal:
+```bash
+$ curl localhost:8080/rest/articles/1/comments
+[{"id":1,"commenter":"A buddy programmer","body":"I like Vaadin-on-Kotlin, too!"}]
+```
+
+### 6.4 Writing a View
+
+
+
 @todo more to come
