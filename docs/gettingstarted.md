@@ -1294,10 +1294,6 @@ class CommentsComponent : VerticalLayout() {
             }
         }
     }
-    private fun delete(comment: Comment) {
-        db { em.delete(comment) }
-        refresh()
-    }
 }
 // the extension function which will allow us to use CommentsComponent inside a DSL
 fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
@@ -1315,7 +1311,7 @@ You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin 
 
 ### 7.2 Converting the Comments Form to a component
 
-Let us also move that new comment section out to its own component. This time, to a public component. Create the file named
+Let us also move that new comment section out to its own component. Create the file named
 `web/src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
 
 ```kotlin
@@ -1360,8 +1356,8 @@ fun HasComponents.newCommentForm(block: NewCommentForm.()->Unit = {}) = init(New
 
 The component handles the comment creation now. In order for the component to work properly, the article for which the comment is to be created must be set.
 Also, when the component creates the comment, it needs to notify the `ArticleView` about this fact. This is done by the means of the
-`commentCreatedListener` listener which the component calls upon comment creation. Now, let's refactor the `ArticleView.kt` to make use of this
-component and register itself to it as a listener:
+`commentCreatedListener` listener which the component calls upon comment creation. Now, let's refactor the `ArticleView.kt`
+to make use of the `NewCommentForm` component, and register itself to `NewCommentForm` as a listener:
 
 ```kotlin
 package com.example.vok
