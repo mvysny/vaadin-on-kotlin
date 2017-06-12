@@ -1510,5 +1510,29 @@ we'll do the verification ourselves.
 
 @todo more to come
 
+## 10 What's Next?
+
+Now that you've seen your first VOK application, you should feel free to update it and experiment on your own.
+
+Remember you don't have to do everything without help. As you need assistance getting up and running with VOK, feel free to consult these support resources:
+
+* The [Vaadin-on-Kotlin Guides](todo)
+* The [Vaadin Tutorial](https://vaadin.com/docs/-/part/framework/introduction/intro-walkthrough.html) for documentation on pure Vaadin and Java
+* The [Vaadin Forums](https://vaadin.com/forum) for anything Vaadin-on-Kotlin-related
+* The [Kotlin Forums](https://discuss.kotlinlang.org/) for Kotlin-related questions
+
+## Feedback
+
+You're encouraged to help improve the quality of this guide.
+
+Please contribute if you see any typos or factual errors. To get started, you can read our 
+[documentation contributions](todo) section.
+
+You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
+Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.
+
+If for whatever reason you spot something to fix but cannot patch it yourself, please [open an issue](https://github.com/mvysny/vaadin-on-kotlin/issues).
+
+And last but not least, any kind of discussion regarding Vaadin on Kotlin documentation is very welcome in the [Vaadin Forums](https://vaadin.com/forum).
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
