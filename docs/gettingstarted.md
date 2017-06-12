@@ -10,7 +10,7 @@ After reading this guide, you will know:
 
 * How to create a new VOK application, and connect your application to a database.
 * The general layout of a VOK application.
-* How to quickly generate the starting pieces of a VOK application.
+* How to quickly write the starting pieces of a VOK application.
 
 ## 1 Guide Assumptions
 
