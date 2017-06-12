@@ -15,9 +15,7 @@ starting point for beginner programmers.
 
 ## QuickStart
 
-#### Run the example application from the command-line
-
-You will only need Java 8 JDK installed. Just type this into your terminal:
+You will only need Java 8 JDK and git installed to run the example application from the command-line. Just type this into your terminal:
 
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
