@@ -1597,7 +1597,9 @@ edit `MyUI.kt` and change the `init()` method as follows:
             return
         }
         setContent(content)
-        ...
+        navigator = Navigator(this, content as ViewDisplay)
+        navigator.addProvider(autoViewProvider)
+        ...  // etc, the rest of the init() method
     }
 
 ```
