@@ -1266,105 +1266,51 @@ It is getting long and awkward. We can create reusable components to clean it up
 
 ### 7.1 The Comments Component
 
-First, we will extract a component which will show comments for given article. Since this component will not be used anywhere
-else but in the `ArticleView.kt`, we will make this component for private use by the `ArticleView.kt` class. The new component
-will still be a label and thus it will simply extend the `Label` class. It will have a handy function `show(articleId)` which will
-populate itself with comments for that particular article.
-
-We also need to introduce means to include the `CommentsComponent` component into the DSL, and thus we will introduce
-the DSL extension method as well. Here is the full listing of the new view class:
-
+First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
+in the future, the `Label` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
+import com.github.vok.framework.*
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.*
-import com.vaadin.server.UserError
-import com.vaadin.ui.*
+import com.vaadin.ui.HasComponents
+import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
-@AutoView
-class ArticleView: VerticalLayout(), View {
-    private lateinit var article: Article
-    private lateinit var title: Label
-    private lateinit var text: Label
-    private val comments: CommentsComponent
-    private val commentBinder = beanValidationBinder<Comment>()
-    private lateinit var createComment: Button
+class CommentsComponent : VerticalLayout() {
+    var articleId: Long = 0L
+    set(value) { field = value; refresh() }
     init {
-        formLayout {
-            title = label {
-                caption = "Title:"
-            }
-            text = label {
-                caption = "Text:"
-            }
-        }
-        comments = commentsComponent()
-        formLayout {
-            caption = "Add a comment:"
-            textField("Commenter:") {
-                bind(commentBinder).bind(Comment::commenter)
-            }
-            textField("Body:") {
-                bind(commentBinder).bind(Comment::body)
-            }
-            createComment = button("Create", { createComment() })
-        }
-        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
-            styleName = ValoTheme.BUTTON_LINK
-        }
-        button("Back", { navigateToView<ArticlesView>() }) {
-            styleName = ValoTheme.BUTTON_LINK
-        }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-        val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article.find(articleId)!!
-        title.value = article.title
-        text.value = article.text
-        comments.show(article.id!!)
-    }
-    private fun createComment() {
-        val comment = Comment()
-        if (!commentBinder.validate().isOk || !commentBinder.writeBeanIfValid(comment)) {
-            createComment.componentError = UserError("There are invalid fields")
-        } else {
-            createComment.componentError = null
-            comment.article = article
-            db { em.persist(comment) }
-            comments.show(article.id!!)
-            commentBinder.readBean(Comment())  // this clears the comment fields
-        }
+        caption = "Comments"; isMargin = false
     }
 
-    companion object {
-        fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
-    }
-}
-
-private class CommentsComponent : Label() {
-    init {
-        caption = "Comments"
-    }
-    fun show(articleId: Long) {
-        html(db {
-            // force-update the comments list.
-            Article.find(articleId)!!.comments.joinToString("") { comment ->
-                "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
+    fun refresh() {
+        removeAllComponents()
+        db {
+            Article.find(articleId)!!.comments.forEach { comment ->
+                label {
+                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+                }
             }
-        })
+        }
+    }
+    private fun delete(comment: Comment) {
+        db { em.delete(comment) }
+        refresh()
     }
 }
 // the extension function which will allow us to use CommentsComponent inside a DSL
-private fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
 ```
 
-The extension function simply calls the `init()` function, which performs the following things:
+The component has a handy property `articleId` which, upon setting, will populate itself with comments
+for that particular article.
+
+We also need the means to include the `CommentsComponent` component into the DSL, and thus we have also introduced
+the DSL extension method as well. The extension function simply calls the `init()` function, which performs the following things:
 * Inserts the newly created component (in this case, the `CommentsComponent`) into the parent layout;
 * Calls `block` to optionally allow us to configure the component further.
-
+                                  
 You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin Part 4](http://mavi.logdown.com/posts/1493730) tutorial.
 
 ### 7.2 Converting the Comments Form to a component
@@ -1420,7 +1366,6 @@ component and register itself to it as a listener:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
 import com.github.vok.karibudsl.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -1444,7 +1389,7 @@ class ArticleView: VerticalLayout(), View {
         }
         comments = commentsComponent()
         newComment = newCommentForm {
-            commentCreatedListener = { comments.show(article.id!!) }
+            commentCreatedListener = { comments.refresh() }
         }
         button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
             styleName = ValoTheme.BUTTON_LINK
@@ -1458,7 +1403,7 @@ class ArticleView: VerticalLayout(), View {
         article = Article.find(articleId)!!
         title.value = article.title
         text.value = article.text
-        comments.show(article.id!!)
+        comments.articleId = article.id!!
         newComment.article = article
     }
 
@@ -1466,27 +1411,54 @@ class ArticleView: VerticalLayout(), View {
         fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
     }
 }
-
-private class CommentsComponent : Label() {
-    init {
-        caption = "Comments"
-    }
-    fun show(articleId: Long) {
-        html(db {
-            // force-update the comments list.
-            Article.find(articleId)!!.comments.joinToString("") { comment ->
-                "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
-            }
-        })
-    }
-}
-// the extension function which will allow us to use CommentsComponent inside a DSL
-private fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
 ```
 
 ## 8 Deleting Comments
 
-@todo
+Another important feature of a blog is being able to delete spam comments. To do this, we need to implement a link of some sort in the `CommentsComponent`.
+
+Let's add a link button to the `CommentsComponent.kt` file:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.*
+import com.github.vok.karibudsl.*
+import com.vaadin.ui.HasComponents
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+class CommentsComponent : VerticalLayout() {
+    var articleId: Long = 0L
+    set(value) { field = value; refresh() }
+    init {
+        caption = "Comments"; isMargin = false
+    }
+
+    fun refresh() {
+        removeAllComponents()
+        db {
+            Article.find(articleId)!!.comments.forEach { comment ->
+                label {
+                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+                }
+                button("Delete comment") {
+                    styleName = ValoTheme.BUTTON_LINK
+                    onLeftClick { delete(comment) }
+                }
+            }
+        }
+    }
+    private fun delete(comment: Comment) {
+        db { em.delete(comment) }
+        refresh()
+    }
+}
+// the extension function which will allow us to use CommentsComponent inside a DSL
+fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+```
+
+Clicking the "Delete comment" button will delete the comment and refresh the component, to show the rest of the comments.
 
 ### 8.1 Deleting Associated Objects
 
