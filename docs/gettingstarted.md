@@ -1504,6 +1504,11 @@ Modify the `Article.kt` file and change the `comments` field definition as follo
 
 If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
 
-The Java Servlets and Tomcat provides a very simple HTTP authentication system that will work nicely in this situation.
+Adding security to Java WAR apps is usually done by letting the web server (e.g. Tomcat) handle the username/password storage
+and verification, while our web app provides the login dialog.  However, to keep this guide web server agnostic,
+we'll do the verification ourselves.
 
 @todo more to come
+
+
+<sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
