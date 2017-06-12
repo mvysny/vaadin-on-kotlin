@@ -1504,11 +1504,109 @@ Modify the `Article.kt` file and change the `comments` field definition as follo
 
 If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
 
+## 9.1 The Login Dialog
+
 Adding security to Java WAR apps is usually done by letting the web server (e.g. Tomcat) handle the username/password storage
-and verification, while our web app provides the login dialog.  However, to keep this guide web server agnostic,
+and verification, while our web app provides the login dialog. To keep this guide web server agnostic,
 we'll do the verification ourselves.
 
-@todo more to come
+We will implement a login service and a login form. Just create the `web/src/main/kotlin/com/example/vok/LoginService.kt` file:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.Session
+import com.github.vok.karibudsl.*
+import com.vaadin.icons.VaadinIcons
+import com.vaadin.server.*
+import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
+import java.io.Serializable
+
+data class User(val name: String) : Serializable
+
+object LoginService {
+    fun login(user: User) {
+        Session[User::class] = user
+        Page.getCurrent().reload()
+    }
+    val currentUser: User? get() = Session[User::class]
+    fun logout() {
+        VaadinSession.getCurrent().close()
+        Page.getCurrent().reload()
+    }
+}
+
+class LoginForm : VerticalLayout() {
+    private lateinit var username: TextField
+    private lateinit var password: TextField
+    init {
+        setSizeFull()
+        panel {
+            w = 500.px; alignment = Alignment.MIDDLE_CENTER
+            verticalLayout {
+                w = fillParent
+                horizontalLayout {
+                    w = fillParent
+                    label("Welcome") {
+                        alignment = Alignment.BOTTOM_LEFT
+                        addStyleNames(ValoTheme.LABEL_H4, ValoTheme.LABEL_COLORED)
+                    }
+                    label("Vaadin-on-Kotlin Sample App") {
+                        alignment = Alignment.BOTTOM_RIGHT; styleName = ValoTheme.LABEL_H3; expandRatio = 1f
+                    }
+                }
+                horizontalLayout {
+                    w = fillParent
+                    username = textField("Username") {
+                        expandRatio = 1f; w = fillParent
+                        icon = VaadinIcons.USER; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+                    }
+                    password = passwordField("Password") {
+                        expandRatio = 1f; w = fillParent
+                        icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+                    }
+                    button("Sign In") {
+                        alignment = Alignment.BOTTOM_RIGHT; setPrimary()
+                        onLeftClick { login() }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun login() {
+        LoginService.login(User(username.value))
+    }
+}
+```
+
+The code is a bit longer, but the result is worth it. This is how the `LoginForm` component looks like:
+
+![Login Form](images/login_form.png)
+
+The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
+user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
+will reinstantiate the `MyUI`. We will now configure `MyUI` to show a login form if there's nobody logged in yet. Just
+edit `MyUI.kt` and change the `init()` method as follows:
+
+```kotlin
+    override fun init(request: VaadinRequest?) {
+        if (LoginService.currentUser == null) {
+            setContent(LoginForm())
+            return
+        }
+        setContent(content)
+        ...
+    }
+
+```
+
+## 9.2 Other Security Considerations
+
+Security, especially in web applications, is a broad and detailed area. You can decide not to use the login dialog at all,
+and instead use the HTTP Basic Auth, thus letting the web server handle the security completely. You can also employ
+other security options. This is however out of scope of this tutorial.
 
 ## 10 What's Next?
 
