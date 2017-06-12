@@ -27,6 +27,6 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080)
 
-To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html).
+## Tutorial
 
-TODO more documentation coming, for now please visit the [https://github.com/mvysny/vaadin-on-kotlin](https://github.com/mvysny/vaadin-on-kotlin) GitHub pages.
+To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).

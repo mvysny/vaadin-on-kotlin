@@ -208,29 +208,3 @@ Please find the very simple sample application here: [vok-example-crud](vok-exam
 * Logging: uses SLF4j with Logback, configured as follows: [logback.xml](vok-example-crud/src/main/resources/logback.xml)
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud/src/main/kotlin/com/github/vok/example/crud/LastAddedPersonCache.kt).
 * Running: [vok-example-crud](vok-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
-
-## Motivation
-
-In the past I have implemented a Vaadin-based JavaEE project. During the implementation I was constantly plagued with the following JavaEE issues:
-
-* Crashes when accessing @SessionScoped beans from websocket xhr code - https://vaadin.com/forum#!/thread/11474306 ; @NormalUIScoped produces
-org.apache.openejb.core.stateful.StatefulContainer$StatefulCacheListener timedOut and javax.ejb.NoSuchEJBException - you need to add
-@StatefulTimeout(-1) everywhere and use @PreserveOnRefresh on your UI - stupid.
-* Moronic async API: when async method is called directly from another method in that very SLSB, the method is actually silently
-called synchronously. To call async, you need to inject self and call the method as `self.method()`
-* You can only inject stuff into UI and View - you cannot inject stuff into arbitrary Vaadin components. Well, you can if 
-you make every Vaadin component a managed bean, but that's just plain weird. How about
-having a global val with a getter which produces the correct bean instance on demand?
-* Imagine that you wish to store a class, which is able to access a database, to a session. Some sort of cache, perhaps. In order to do this
-JavaEE-way, you need to use CDI, annotate the class with @SessionScoped, @Inject some SLSB to it (cause managed beans do not yet have support for
-transactions), manually store it into the session and then run into above-mentioned issues with websocket xhr. What the heck? I want to focus on coding,
-not @configuring the world until JavaEE is satisfied.
-
-Lots of projects actually do not use all capabilities of JavaEE, just a subset of JavaEE features: mostly the database access of course,
-the Async, the REST webservices, and that's it.
-
-This project is an (opiniated) attempt to simplify such projects:
-
-* Allow them to run in a pure servlet environment (such as Jetty, Tomcat)
-* Remove complex stuff such as injections, SLSBs, SFSBs
-* Allow any object to be bound to a session (e.g. caches) in a simple manner
