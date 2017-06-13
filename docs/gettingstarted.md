@@ -12,6 +12,8 @@ After reading this guide, you will know:
 * The general layout of a VOK application.
 * How to quickly write the starting pieces of a VOK application.
 
+> **Note:** To skip the introduction and dive straight into the code, just skip to [Chapter 3.2](#3_2)
+
 ## 1 Guide Assumptions
 
 This guide is designed for beginners who want to get started with a VOK application from scratch.
@@ -102,7 +104,7 @@ Kotlin support including auto-completion. You can use IDEA Community edition, wh
 gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
 servers, and also offers awesome database integration tools.
 
-### 3.2 Creating the Blog Application
+### 3.2 Creating the Blog Application<a name="3_2"></a>
 
 Getting the example application is really easy. If you have Git installed, just open a command line and run the
 following command:
@@ -139,9 +141,9 @@ folders:
 | `src/test/kotlin` | Unit tests, fixtures, and other test apparatus. These are covered in @todo |
 | .gitignore        | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files. |
 
-## 4 Hello, Vaadin-on-Kotlin!
+## 4 Hello, Vaadin-on-Kotlin!<a name="4"></a>
 
-To begin with, let's get some text up on screen quickly. To do this, you need to get an application server running.
+To begin with, let's get some text up on screen quickly. To do this, you need to get a web server running.
 
 ### 4.1 Starting up the Web Server
 
