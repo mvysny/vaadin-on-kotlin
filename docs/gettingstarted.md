@@ -55,7 +55,7 @@ We believe that Kotlin can replace the traditional approach of using the Depende
 VOK is opinionated software. It makes the assumption that there is a "best" way to do things,
 and it's designed to encourage that way - and in some cases to discourage alternatives.
 
-The VOK philosophy includes two major guiding principles:
+The VOK philosophy includes three major guiding principles:
 
 * Simplicity - things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
   and MVC are deliberately left out.
@@ -64,6 +64,8 @@ The VOK philosophy includes two major guiding principles:
   Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
   VOK promotes code/UI reuse by means of reusing components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates.
+* No magic - No proxies, interceptors, reflection. VOK introduces explicit functions which you can easily
+  browse for sources in your Intellij IDEA.
 
 While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
 * The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services is a desirable

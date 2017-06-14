@@ -2,13 +2,16 @@
 
 # Vaadin-on-Kotlin
 
-Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications:
+Vaadin-on-Kotlin is a web application framework that includes everything needed to create database-backed web applications:
 
 ```kotlin
 button("Create") {
   onLeftClick { db { em.persist(person) } }
 }
 ```
+
+Offers a [wide palette of powerful components](https://demo.vaadin.com/valo-theme/) offered by [Vaadin](https://vaadin.com), including paged tables, menu components, color pickers, etc.
+All components are fully controlled by your server-side Kotlin code.
 
 No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
 starting point for beginner programmers.
