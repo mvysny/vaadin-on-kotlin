@@ -3,6 +3,7 @@
 # Welcome to Vaadin-On-Kotlin
 
 Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications.
+Please see the official documentation at [www.vaadinonkotlin.eu](http://www.vaadinonkotlin.eu).
 
 Vaadin-on-Kotlin does not enforce you to use [Model-View-Controller (MVC)](http://en.wikipedia.org/wiki/Model-view-controller),
 Dependency Injection (DI) nor [Service-Oriented Architecture (SOA)](https://en.wikipedia.org/wiki/Service_(systems_architecture)).
