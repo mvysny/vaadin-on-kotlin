@@ -10,17 +10,14 @@ button("Create") {
 }
 ```
 
-Offers a [wide palette of powerful components](https://demo.vaadin.com/valo-theme/) offered by [Vaadin](https://vaadin.com), including paged tables, menu components, color pickers, etc.
-All components are fully controlled by your server-side Kotlin code.
-
 No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
 starting point for beginner programmers.
 
 With VOK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
 to style up your application and/or write your own custom rich component. 
 
-VOK is not yet another HTTP route mapping library, on the contrary: it provides you with a wide palette of built-in
-powerful Vaadin components: lazy paged tables, color pickers, sliders; allows drag'n'drop between those components. All components have their
+VOK is not yet another HTTP route mapping library, on the contrary: it provides you with a 
+[wide palette of built-in powerful components](https://demo.vaadin.com/valo-theme/): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components. All components have their
 JavaScript counterpart which makes them rich in functionality; Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component, so that you can focus on your server-side Kotlin code only.
 
