@@ -2,7 +2,7 @@
 
 # Vaadin-on-Kotlin
 
-Vaadin-on-Kotlin is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
+Vaadin-on-Kotlin (or VoK in short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
 
 ```kotlin
 button("Create") {
@@ -13,15 +13,15 @@ button("Create") {
 No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
 starting point for beginner programmers.
 
-With VOK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
+With VoK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
 to style up your application and/or write your own custom rich component. 
 
-VOK is not yet another HTTP route mapping library. On the contrary: it provides you with a 
+VoK is not yet another HTTP route mapping library. On the contrary: it provides you with a 
 [wide palette of built-in powerful components](https://martin.app.fi/karibudsl): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components.
 All components have rich JavaScript facade which provides rich functionality. Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component which allows you to focus on wiring the components in pure server-side Kotlin code.
 
-Because of that, VOK feels more of a client widget library (such as JavaFX) than a web page-based framework.
+Because of that, VoK feels more of a client widget library (such as JavaFX) than a web page-based framework.
 
 ## QuickStart
 

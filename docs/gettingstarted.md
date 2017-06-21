@@ -2,29 +2,29 @@
 
 # Getting started with Vaadin-on-Kotlin
 
-This guide covers getting up and running with Vaadin On Kotlin (VOK).
+This guide covers getting up and running with Vaadin On Kotlin (VoK).
 
 > **Note:** This tutorial is heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html). 
 
 After reading this guide, you will know:
 
-* How to create a new VOK application, and connect your application to a database.
-* The general layout of a VOK application.
-* How to quickly write the starting pieces of a VOK application.
+* How to create a new VoK application, and connect your application to a database.
+* The general layout of a VoK application.
+* How to quickly write the starting pieces of a VoK application.
 
 > **Note:** To skip the introduction and dive straight into the code, just skip to [Chapter 3.2](#3_2)
 
 ## 1 Guide Assumptions
 
-This guide is designed for beginners who want to get started with a VOK application from scratch.
+This guide is designed for beginners who want to get started with a VoK application from scratch.
 It does not assume that you have any prior experience with Vaadin. However, to get the most out of it,
 you need to have some prerequisites installed:
    
 * Java 8 JDK or newer.
 
-VOK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
+VoK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
 prior experience with Kotlin, you will find a very steep learning curve diving straight 
-into VOK. There are several curated lists of online resources for learning Kotlin:
+into VoK. There are several curated lists of online resources for learning Kotlin:
    
 * [Official Kotlin Programming Language website](https://kotlinlang.org/)
 * [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
@@ -37,12 +37,12 @@ To learn Vaadin:
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
 the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
 Feel free to experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
-VOK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
-be applicable in the VOK-based apps later on.
+VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
+be applicable in the VoK-based apps later on.
 
 ## 2 What is Vaadin-on-Kotlin?
 
-VOK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
+VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
 It is designed to make the art of programming of web applications easier by making assumptions about what 
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
@@ -52,19 +52,19 @@ But, with the advent of the Kotlin programming language,
 we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
 We believe that Kotlin can replace the traditional approach of using the Dependency Injection to glue stuff together.
 
-VOK is opinionated software. It makes the assumption that there is a "best" way to do things,
+VoK is opinionated software. It makes the assumption that there is a "best" way to do things,
 and it's designed to encourage that way - and in some cases to discourage alternatives.
 
-The VOK philosophy includes three major guiding principles:
+The VoK philosophy includes three major guiding principles:
 
 * Simplicity - things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
   and MVC are deliberately left out.
 * Components as basic building blocks - Vaadin is a single-page web component framework as opposed to
   the traditional multiple page frameworks. As such, it resembles the traditional fat client
   Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
-  VOK promotes code/UI reuse by means of reusing components (your components will range from basic ones
+  VoK promotes code/UI reuse by means of reusing components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates.
-* No magic - No proxies, interceptors, reflection. VOK introduces explicit functions which you can easily
+* No magic - No proxies, interceptors, reflection. VoK introduces explicit functions which you can easily
   browse for sources in your Intellij IDEA.
 
 While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
@@ -74,7 +74,7 @@ practice in larger project, it is overkill for simple projects.
   new for a seasoned Java developer, this is overwhelming for a newbie which is just starting with the web app development.
 * It quickly tends to get very complex as the DI configuration grows.
 
-Therefore, VOK itself is not using DI; you can of course use Spring or JavaEE in your project alongside VOK if necessary.
+Therefore, VoK itself is not using DI; you can of course use Spring or JavaEE in your project alongside VoK if necessary.
 
 > **Note on MVC**: The [Model-View-Controller](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) pattern
 is very popular with page-oriented frameworks such as Ruby on Rails, Groovy on Grails and Python Django. There is typically
@@ -85,17 +85,17 @@ more easily digestable packages.
 does not make that much sense: for example it will usually leave you with nearly empty Views. We thus believe that using MVC does 
 more harm than good since it adds unnecessary complexity. Therefore this tutorial will not use MVC.
 
-## 3 Creating a New VOK Project
+## 3 Creating a New VoK Project
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
 
-By following along with this guide, you'll create a VOK project called blog, a (very) simple weblog.
+By following along with this guide, you'll create a VoK project called blog, a (very) simple weblog.
 Before you can start building the application, you need to make sure that you have Java 8 JDK installed.
 
 ### 3.1 Prerequisites
 
 Vaadin-on-Kotlin only requires Java 8 JDK to be installed. The example application has Gradle bundled in;
 Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
-This makes VOK applications really portable
+This makes VoK applications really portable
 since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
 
 The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
@@ -129,7 +129,7 @@ This will download everything necessary and will compile the example application
 can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
 
 The `vok-helloworld-app` directory has a number of files and folders that make up the
-structure of a VOK application. Most of the work in this tutorial will happen in the
+structure of a VoK application. Most of the work in this tutorial will happen in the
 `src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and 
 folders:
 
@@ -149,7 +149,7 @@ To begin with, let's get some text up on screen quickly. To do this, you need to
 
 ### 4.1 Starting up the Web Server
 
-You actually have a functional VOK application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
+You actually have a functional VoK application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
 
 ```bash
 $ ./gradlew clean web:appRun
@@ -158,7 +158,7 @@ $ ./gradlew clean web:appRun
 This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
  to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
-![Welcome VOK](images/welcome_vok.png)
+![Welcome VoK](images/welcome_vok.png)
 
 > **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped 
 you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $. 
@@ -170,18 +170,18 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 > Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
  running `./gradlew build`.
  
-The "Welcome aboard" page is the smoke test for a new VOK application: it makes sure that you
+The "Welcome aboard" page is the smoke test for a new VoK application: it makes sure that you
 have your software configured correctly enough to serve a page.
 
 ### 4.2 Say "Hello", Vaadin
 
-To get VOK saying "Hello", you need to create a View.
+To get VoK saying "Hello", you need to create a View.
 
 A View's purpose is to provide a Vaadin Component (usually a Layout containing other components), which then interacts with the user.
 The Navigator decides which View receives which requests. Usually there is exactly one route to a View. You can collect the data
 to be displayed right in the View itself (for small applications), or you can define so-called Service layer
 (a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
-VOK however does not enforce this, and we will not use this pattern in the tutorial.
+VoK however does not enforce this, and we will not use this pattern in the tutorial.
 
 All Vaadin Components have three parts:
 
@@ -222,7 +222,7 @@ class MyWelcomeView: VerticalLayout(), View {
 ```
 
 ### 4.3 Setting the Application Home Page
-Now that we have made the view, we need to tell VOK when we want "Hello, Vaadin-on-Kotlin!" 
+Now that we have made the view, we need to tell VoK when we want "Hello, Vaadin-on-Kotlin!" 
 to show up. In our case, we want it to show up when we navigate to the root URL of our site, 
 [http://localhost:8080](http://localhost:8080). At the moment, "Welcome aboard" is occupying that spot.
 
@@ -230,7 +230,7 @@ Open up the `WelcomeView.kt` file and change the `@AutoView("")` annotation to t
 `@AutoView("old-welcome")`. This will map the original "Welcome aboard" page to
 [http://localhost:8080#!old-welcome](http://localhost:8080#!old-welcome) , making space for our new Hello page.
 
-Having the `@AutoView("")` on `MyWelcomeView` will tell the VOK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
+Having the `@AutoView("")` on `MyWelcomeView` will tell the VoK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
 
 Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
@@ -245,7 +245,7 @@ for a collection of similar objects, such as articles, people or animals. You ca
 read, update and destroy items for a resource and these operations are referred to as 
 CRUD operations.
 
-VOK provides a resources method which can be used to declare a standard REST resource. But first, let us define the article.
+VoK provides a resources method which can be used to declare a standard REST resource. But first, let us define the article.
 Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the following contents:
 
 ```kotlin
@@ -369,7 +369,7 @@ class CreateArticleView: VerticalLayout(), View {
 }
 ```
 If you restart the server refresh the page now, you'll see the exact same form from our example above.
-Building forms in VOK is really just that easy!
+Building forms in VoK is really just that easy!
 
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
 Currently, the click listener is empty, we will need to add the database code to save the article.
@@ -471,7 +471,7 @@ Class names in Kotlin must begin with a capital letter.
 
 ### 5.7 Showing Articles
 
-If you submit the form again now, VOK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
+If you submit the form again now, VoK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
 
 Vaadin Navigator supports adding parameters after the view name. This way, we can pass the Article ID to the `ArticleView` as follows:
 [http://localhost:8080/#!article/12](http://localhost:8080/#!article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
@@ -641,7 +641,7 @@ data class Article(
 ```
 
 These changes will ensure that all articles have a title that is at least five characters long.
-VOK can validate a variety of conditions in a JPA entity, including the presence or uniqueness
+VoK can validate a variety of conditions in a JPA entity, including the presence or uniqueness
 of columns, their format, and the existence of associated objects. The [Hibernate Validator](http://hibernate.org/validator/) is used
 to provide validation support; validations are covered
 in detail in the Hibernate Validator documentation.
@@ -665,7 +665,7 @@ and mark all invalid fields. To do this, change the button definition as follows
 ```
 
 If you reload [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and try to save an article without a title,
-VOK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
+VoK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
 
 ### 5.11 Updating Articles
 
@@ -1584,9 +1584,9 @@ other security options. This is however out of scope of this tutorial.
 
 ## 10 What's Next?
 
-Now that you've seen your first VOK application, you should feel free to update it and experiment on your own.
+Now that you've seen your first VoK application, you should feel free to update it and experiment on your own.
 
-Remember you don't have to do everything without help. As you need assistance getting up and running with VOK, feel free to consult these support resources:
+Remember you don't have to do everything without help. As you need assistance getting up and running with VoK, feel free to consult these support resources:
 
 * The [Vaadin-on-Kotlin Guides](todo)
 * The [Vaadin Tutorial](https://vaadin.com/docs/-/part/framework/introduction/intro-walkthrough.html) for documentation on pure Vaadin and Java
