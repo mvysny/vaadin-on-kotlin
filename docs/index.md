@@ -2,7 +2,7 @@
 
 # Vaadin-on-Kotlin
 
-Vaadin-on-Kotlin (or VoK in short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
+Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
 
 ```kotlin
 button("Create") {
