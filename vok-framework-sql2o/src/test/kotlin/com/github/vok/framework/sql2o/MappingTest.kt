@@ -32,7 +32,7 @@ abstract class AbstractDbTest {
 
     @Before
     fun clearDb() {
-        db { con.deleteAll<Person>() }
+        db { Person.deleteAll() }
     }
 }
 
@@ -56,12 +56,12 @@ class MappingTest : AbstractDbTest() {
     fun testSave() {
         val p = Person(name = "Albedo", age = 130)
         p.save()
-        expect(listOf("Albedo")) { db { con.findAll<Person>().map { it.name } } }
+        expect(listOf("Albedo")) { Person.findAll().map { it.name } }
         p.name = "Rubedo"
         p.save()
-        expect(listOf("Rubedo")) { db { con.findAll<Person>().map { it.name } } }
+        expect(listOf("Rubedo")) { Person.findAll().map { it.name } }
         Person(name = "Nigredo", age = 130).save()
-        expect(listOf("Rubedo", "Nigredo")) { db { con.findAll<Person>().map { it.name } } }
+        expect(listOf("Rubedo", "Nigredo")) { Person.findAll().map { it.name } }
     }
 
     @Test
