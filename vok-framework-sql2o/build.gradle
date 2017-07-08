@@ -10,14 +10,11 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
-    testCompile 'javax.validation:validation-api:1.0.0.GA'
-
     // db
-    compile('org.hibernate:hibernate-core:5.2.10.Final') {
-        exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
-    }
-    testCompile 'org.flywaydb:flyway-core:4.2.0'
-    testCompile 'com.h2database:h2:1.4.196'
+    compile 'org.sql2o:sql2o:1.5.4'
+    compile 'com.zaxxer:HikariCP:2.6.3'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+    testCompile 'com.h2database:h2:1.4.195'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
@@ -31,7 +28,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework-jpa'
+            artifactId 'vok-framework-sql2o'
             version project.version
             pom.withXml {
                 def root = asNode()
