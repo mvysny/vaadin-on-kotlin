@@ -28,6 +28,7 @@ class JPAVOKPlugin : VOKPlugin {
     }
 
     override fun destroy() {
+        entityManagerFactory2?.close()
         entityManagerFactory2 = null
     }
 
