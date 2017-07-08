@@ -7,7 +7,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.expect
 
-class MappingTest {
+abstract class AbstractDbTest {
     companion object {
         @JvmStatic @BeforeClass
         fun initdb() {
@@ -20,7 +20,7 @@ class MappingTest {
             }
             Sql2oVOKPlugin().init()
             db {
-                con.createQuery("create table Test ( id bigint primary key auto_increment, name varchar not null, age integer not null )").executeUpdate()
+                con.createQuery("create table if not exists Test ( id bigint primary key auto_increment, name varchar not null, age integer not null )").executeUpdate()
             }
         }
 
@@ -34,17 +34,41 @@ class MappingTest {
     fun clearDb() {
         db { con.deleteAll<Person>() }
     }
+}
 
+@Table("Test")
+data class Person(override var id: Long? = null, var name: String, var age: Int, @Ignore var ignored: String? = null, @Transient var ignored2: Any? = null) : Entity<Long> {
+    companion object : Dao<Person>
+}
+
+class MappingTest : AbstractDbTest() {
     @Test
     fun testFindAll() {
-        expect(listOf()) { db { con.findAll<Person>() } }
+        expect(listOf()) { Person.findAll() }
         val p = Person(name = "Zaphod", age = 42, ignored2 = Object())
         p.save()
         expect(true) { p.id != null }
         p.ignored2 = null
-        expect(listOf(p)) { db { con.findAll<Person>() } }
+        expect(listOf(p)) { Person.findAll() }
+    }
+
+    @Test
+    fun testSave() {
+        val p = Person(name = "Albedo", age = 130)
+        p.save()
+        expect(listOf("Albedo")) { db { con.findAll<Person>().map { it.name } } }
+        p.name = "Rubedo"
+        p.save()
+        expect(listOf("Rubedo")) { db { con.findAll<Person>().map { it.name } } }
+        Person(name = "Nigredo", age = 130).save()
+        expect(listOf("Rubedo", "Nigredo")) { db { con.findAll<Person>().map { it.name } } }
+    }
+
+    @Test
+    fun testDelete() {
+        val p = Person(name = "Albedo", age = 130)
+        p.save()
+        p.delete()
+        expect(listOf()) { Person.findAll() }
     }
 }
-
-@Table("Test")
-data class Person(override var id: Long? = null, var name: String, var age: Int, @Ignore var ignored: String? = null, @Transient var ignored2: Any? = null) : Entity<Long>

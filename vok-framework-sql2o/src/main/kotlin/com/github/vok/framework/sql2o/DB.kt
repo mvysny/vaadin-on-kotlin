@@ -90,21 +90,3 @@ fun <R> db(block: PersistenceContext.()->R): R {
         }
     }
 }
-
-/**
- * Finds all instances of given entity. Fails if there is no table in the database with the name of [databaseTableName]. The list is eager
- * and thus it's useful for smallish tables only.
- */
-inline fun <reified T : Any> Connection.findAll(): List<T> = createQuery("select * from ${T::class.java.databaseTableName}").executeAndFetch(T::class.java)
-
-inline fun <reified T : Entity<*>> Connection.findById(id: Any): T? =
-        createQuery("select * from ${T::class.java.databaseTableName} where id = :id")
-                .addParameter("id", id)
-                .executeAndFetchFirst(T::class.java)
-
-/**
- * Deletes all rows from given database table.
- */
-inline fun <reified T: Any> Connection.deleteAll() {
-    createQuery("delete from ${T::class.java.databaseTableName}").executeUpdate()
-}
