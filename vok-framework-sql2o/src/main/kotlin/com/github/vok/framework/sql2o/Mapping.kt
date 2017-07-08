@@ -30,7 +30,7 @@ annotation class Ignore
  * key or there is other reason you don't want to use this interface, you can still use your class with [db], you'll only
  * lose those utility methods.
  */
-interface Entity<ID> : Serializable {
+interface Entity<ID: Any> : Serializable {
     /**
      * The ID primary key. You can use the [Column] annotation to change the actual db column name.
      */

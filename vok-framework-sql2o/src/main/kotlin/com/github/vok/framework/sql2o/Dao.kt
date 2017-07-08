@@ -60,12 +60,12 @@ inline fun <reified T: Any> Dao<T>.findAll(): List<T> = db { con.findAll<T>() }
 /**
  * Retrieves entity with given [id]. Fails if there is no such entity. See [Dao] on how to add this to your entities.
  */
-inline operator fun <reified T: Entity<*>> Dao<T>.get(id: Any): T = db { con.getById(id) }
+inline operator fun <ID: Any, reified T: Entity<ID>> Dao<T>.get(id: ID): T = db { con.getById(id) }
 
 /**
  * Retrieves entity with given [id]. Returns null if there is no such entity.
  */
-inline fun <reified T : Entity<*>> Dao<T>.findById(id: Any): T? = db { con.findById(id) }
+inline fun <ID: Any, reified T : Entity<ID>> Dao<T>.findById(id: ID): T? = db { con.findById(id) }
 
 /**
  * Deletes all rows from given database table.
