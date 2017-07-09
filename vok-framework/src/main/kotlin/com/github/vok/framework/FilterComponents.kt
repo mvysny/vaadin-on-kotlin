@@ -23,8 +23,8 @@ import java.util.*
  * These filters will be stuffed into the [com.vaadin.data.provider.DataProvider].
  */
 interface FilterFactory<F> : Serializable {
-    fun and(filters: Set<F>): F
-    fun or(filters: Set<F>): F
+    fun and(filters: Set<F>): F?
+    fun or(filters: Set<F>): F?
     fun eq(propertyName: String, value: Any): F
     fun le(propertyName: String, value: Any): F
     fun ge(propertyName: String, value: Any): F
@@ -63,7 +63,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = "All"
+            w = fillParent; minimizedValueAsHTML = "All"; isHideOnMouseOut = false
             gridLayout(2, 4) {
                 isSpacing = true
                 setMargin(true)
@@ -281,7 +281,7 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
 
     fun <F: Any> toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>): F? {
         val filters = listOf(from?.toFilter(propertyName, filterFactory, fieldType, false), to?.toFilter(propertyName, filterFactory, fieldType, true)).filterNotNull()
-        return if (filters.isEmpty()) null else filterFactory.and(filters.toSet())
+        return filterFactory.and(filters.toSet())
     }
 }
 
@@ -351,7 +351,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = "All"
+            w = fillParent; minimizedValueAsHTML = "All"; isHideOnMouseOut = false
             verticalLayout {
                 styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
                 horizontalLayout {

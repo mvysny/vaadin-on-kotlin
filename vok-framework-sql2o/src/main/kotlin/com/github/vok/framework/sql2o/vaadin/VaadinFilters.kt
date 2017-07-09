@@ -16,8 +16,8 @@ import kotlin.reflect.KClass
 import kotlin.streams.toList
 
 class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
-    override fun and(filters: Set<Filter<T>>) = filters.and()!!
-    override fun or(filters: Set<Filter<T>>) = filters.or()!!
+    override fun and(filters: Set<Filter<T>>) = filters.and()
+    override fun or(filters: Set<Filter<T>>) = filters.or()
     override fun eq(propertyName: String, value: Any) = EqFilter<T>(propertyName, value)
     override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.le)
     override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.ge)
