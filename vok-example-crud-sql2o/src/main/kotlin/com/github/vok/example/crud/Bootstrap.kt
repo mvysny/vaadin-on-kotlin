@@ -6,6 +6,7 @@ import com.github.vok.framework.sql2o.dataSourceConfig
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
+import org.h2.Driver
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
@@ -29,6 +30,7 @@ class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
         VaadinOnKotlin.dataSourceConfig.apply {
+            driverClassName = Driver::class.java.name
             jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
             username = "sa"
             password = ""
