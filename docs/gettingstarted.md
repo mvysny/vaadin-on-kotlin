@@ -682,10 +682,9 @@ The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/Edi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.navigator.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -707,7 +706,7 @@ class EditArticleView: VerticalLayout(), View {
         button("Save Article", { event ->
             val article = Article()
             if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                db { em.merge(article) }
+                article.save()
                 ArticleView.navigateTo(article.id!!)
             } else {
                 event.button.componentError = UserError("There are invalid fields")
@@ -719,7 +718,7 @@ class EditArticleView: VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]!!.toLong()
-        edit(Article.find(articleId)!!)
+        edit(Article[articleId])
     }
 
     private fun edit(article: Article) {
@@ -750,16 +749,18 @@ Just change the `grid {}` block as follows:
         }
 ```
 
+> **Note**: The `ButtonRenderer` will be marked red; you will need to import the class. You can do that simply by pressing `Alt+Enter`
+and choosing *Import* from the menu.
+
 And we'll also add one to the `ArticleView.kt` template as well, so that there's also an "Edit" link on an article's page. Modify the class to look as follows:
 
 ```kotlin
 package com.example.vok
 
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.ui.FormLayout
-import com.vaadin.ui.Label
+import com.vaadin.navigator.*
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
@@ -783,7 +784,7 @@ class ArticleView: FormLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article.find(articleId)!!
+        article = Article[articleId]
         title.value = article.title
         text.value = article.text
     }
