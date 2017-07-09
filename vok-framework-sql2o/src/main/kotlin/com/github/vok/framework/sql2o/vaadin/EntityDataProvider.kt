@@ -118,7 +118,9 @@ fun <T: Any> Set<Filter<T>>.or(): Filter<T>? = when (size) {
  * Running block with this class as its receiver will allow you to write expressions like this:
  * `Person::age lt 25`. Does not support joins - just use the plain old SQL 92 where syntax for that ;)
  *
- * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe?
+ * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe.
+ *
+ * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic where creation only ;)
  */
 class SqlWhereBuilder<T: Any> {
     infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): Filter<T> = EqFilter(name, value)
