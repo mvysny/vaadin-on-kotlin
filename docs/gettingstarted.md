@@ -604,7 +604,7 @@ Now, add another link in `CreateArticleView`, underneath the form's "Save Articl
         }
 ```
 
-Finally, add a link to the `ArticleView` view to go back to the index action as well, so that people who are viewing a single article can go back and view the whole list again:
+Finally, add a link to the `ArticleView` view to go back to the index action as well (into the `init{}` block under those labels), so that people who are viewing a single article can go back and view the whole list again:
 
 ```kotlin
         button("Back", { navigateToView<ArticlesView>() }) {
@@ -617,40 +617,41 @@ or you'll need to run `./gradlew build` in another terminal, to actually see the
 
 ### 5.10 Adding Some Validation
 
-The JPA entity file, `Article.kt` is about as simple as it can get.
+The entity file, `Article.kt` is about as simple as it can get.
 
-There isn't much to this file - but Hibernate supplies a great deal of functionality to your JPA entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
+There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of functionality to your entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
 
 Vaadin-on-Kotlin includes methods to help you validate the data that you send to models.
 Open the `Article.kt` file and edit it:
 
 ```kotlin
-@Entity
+package com.example.vok
+
+import com.github.vok.framework.sql2o.*
+import org.hibernate.validator.constraints.Length
+import javax.validation.constraints.NotNull
+
 data class Article(
-        @field:Id
-        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Long? = null,
+        override var id: Long? = null,
 
         @field:NotNull
         @field:Length(min = 5)
         var title: String? = null,
 
         var text: String? = null
-) : Serializable {
-    companion object {
-        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
-    }
+) : Entity<Long> {
+    companion object : Dao<Article>
 }
 ```
 
 These changes will ensure that all articles have a title that is at least five characters long.
-VoK can validate a variety of conditions in a JPA entity, including the presence or uniqueness
+VoK can validate a variety of conditions in an entity, including the presence or uniqueness
 of columns, their format, and the existence of associated objects. The [Hibernate Validator](http://hibernate.org/validator/) is used
 to provide validation support; validations are covered
 in detail in the Hibernate Validator documentation.
 
 With the validation now in place, when you call `binder.writeBeanIfValid(article)` on an invalid
-article, it will return false. If you open `CreateArticleView.kt`
+article, it will return `false`. If you open `CreateArticleView.kt`
 again, you'll notice that we actually check the result of calling `binder.writeBeanIfValid(article)`
 inside the create action. However, if `writeBeanIfValid()` fails, we need to show the form back to the user,
 and mark all invalid fields. To do this, change the button definition as follows:
@@ -668,7 +669,9 @@ and mark all invalid fields. To do this, change the button definition as follows
 ```
 
 If you reload [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and try to save an article without a title,
-VoK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red.
+VoK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red. 
+The `binder.validate().isOk` call will mark invalid fields, while `binder.writeBeanIfValid(article)` will write the values to
+the `article` entity, but only if everything is valid.
 
 ### 5.11 Updating Articles
 
