@@ -68,7 +68,7 @@ interface Entity<ID: Any> : Serializable {
     }
 
     /**
-     * Deletes this entity from the database. Fails if [id] is null, since it is expected that the entity is not yet in the database.
+     * Deletes this entity from the database. Fails if [id] is null, since it is expected that the entity is already in the database.
      */
     fun delete() {
         check(id != null) { "The id is null, the entity is not yet in the database" }
