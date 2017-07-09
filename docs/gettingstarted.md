@@ -469,10 +469,9 @@ Vaadin Navigator supports adding parameters after the view name. This way, we ca
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.navigator.*
 import com.vaadin.ui.FormLayout
 import com.vaadin.ui.Label
 
@@ -490,7 +489,7 @@ class ArticleView: FormLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        val article = Article.find(articleId)!!
+        val article = Article[articleId]
         title.value = article.title
         text.value = article.text
     }
@@ -500,7 +499,7 @@ class ArticleView: FormLayout(), View {
     }
 }
 ```
-A couple of things to note. We use `Article.find()` to find the article we're interested in,
+A couple of things to note. We use `Article[id]` (or `Article.get(id)`) to find the article we're interested in,
 passing in `event.parameterList[0]` to get the first parameter from the request. In Vaadin,
 parameters are slash-separated and are not named. The parameter is passed to the `navigateToView<>()` function
 which takes the view class and a list of string parameters as its input, constructs the target URL
@@ -508,6 +507,21 @@ and redirects the browser to the URL. In this case, [http://localhost:8080/#!art
 
 The Navigator then detects that the URL has been changed, it parses the view name out of the URL and
 invokes the `view.enter()` method. You can retrieve the parameter list using `event.parameterList` map. 
+
+To navigate to the Article View, just add `ArticleView.navigateTo(article.id!!)` to your `CreateArticleView.kt` file,
+right below the `article.save()` call as follows:
+
+```kotlin
+...
+        button("Save Article", {
+            val article = Article()
+            if (binder.writeBeanIfValid(article)) {
+                article.save()
+                ArticleView.navigateTo(article.id!!)
+            }
+        })
+...
+```
 
 With this change, you should finally be able to create new articles. Visit
 [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and give it a try!
@@ -522,17 +536,15 @@ following contents:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.jpaDataProvider
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.grid
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.ui.Grid
-import com.vaadin.ui.VerticalLayout
+import com.github.vok.framework.sql2o.vaadin.dataProvider
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
 class ArticlesView: VerticalLayout(), View {
-    private val dataSource = jpaDataProvider<Article>()
+    private val dataSource = Article.dataProvider
     private val grid: Grid<Article>
     init {
         setSizeFull()
