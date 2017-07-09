@@ -39,4 +39,6 @@ The web app will be running at [http://localhost:8080](http://localhost:8080)
 
 To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
+To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
+
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>

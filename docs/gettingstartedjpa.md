@@ -2,7 +2,8 @@
 
 # Getting started with Vaadin-on-Kotlin
 
-This guide covers getting up and running with Vaadin On Kotlin (VoK).
+This guide covers getting up and running with Vaadin On Kotlin (VoK) with JPA. It is recommended
+to start with the [Getting Started Sql2o](gettingstarted.html) version since it's way simpler
 
 > **Note:** This tutorial is heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html). 
 
@@ -68,7 +69,7 @@ The VoK philosophy includes three major guiding principles:
   browse for sources in your Intellij IDEA.
 
 While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
-* The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services may be a desirable
+* The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services is a desirable
 practice in larger project, it is overkill for simple projects.
 * The DI requires you to run on a DI container, such as a JavaEE server, or tons of Spring libraries. While that's nothing
   new for a seasoned Java developer, this is overwhelming for a newbie which is just starting with the web app development.
@@ -112,14 +113,14 @@ Getting the example application is really easy. If you have Git installed, just 
 following command:
 
 ```bash
-$ git clone https://github.com/mvysny/vok-helloworld-app
+$ git clone https://github.com/mvysny/vok-helloworld-app-jpa
 ```
-If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app/archive/master.zip](https://github.com/mvysny/vok-helloworld-app/archive/master.zip).
+If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app-jpa/archive/master.zip](https://github.com/mvysny/vok-helloworld-app-jpa/archive/master.zip).
 
 After you create the blog application, switch to its folder:
 
 ```bash
-$ cd vok-helloworld-app
+$ cd vok-helloworld-app-jpa
 $ ./gradlew
 ```
 
@@ -128,7 +129,7 @@ This will download everything necessary and will compile the example application
 > **Note:** WAR (Web ARchive) is Java standard for packaging web applications. WAR file is a zip file which
 can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
 
-The `vok-helloworld-app` directory has a number of files and folders that make up the
+The `vok-helloworld-app-jpa` directory has a number of files and folders that make up the
 structure of a VoK application. Most of the work in this tutorial will happen in the
 `src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and 
 folders:
