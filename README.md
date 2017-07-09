@@ -59,15 +59,15 @@ The web app will be running at [http://localhost:8080](http://localhost:8080).
 ## Run the example application from Intellij IDEA Community
 
 1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
-2. To run the application from IDEA, just open the [Server.kt](vok-example-crud/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
+2. To run the application from IDEA, just open the [Server.kt](vok-example-crud-sql2o/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
    The web app will be running at [http://localhost:8080](http://localhost:8080). Please make sure that the launch/current working directory directory is set to 
-   the `vok-example-crud` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
+   the `vok-example-crud-sql2o` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
 
 If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat for development, since it offers
 better code hot-redeployment:
 
 1. Open the project in IDEA
-2. Launch the `vok-example-crud` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
+2. Launch the `vok-example-crud-sql2o` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
 
 ## Contributing
 
@@ -203,9 +203,9 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
 * Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
   The migration is safe on cluster as well as a database lock is obtained.
   Please see [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
-  You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud/src/main/resources/db/migration) for details. More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
+  You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud-sql2o/src/main/resources/db/migration) for details. More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
 * Accessing the database: just create your pojo beans [(example Person)](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
-  `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/kotlin/com/github/vok/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
+  `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework-sql2o/src/main/kotlin/com/github/vok/framework/sql2o/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
 * Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud-sql2o/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
   [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
   the `@ApplicationPath("/rest")` stanza. After that, just define your REST-accessing classes, for example
@@ -219,7 +219,7 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
 
 ### Sample application which uses JPA
 
-Please find the very simple sample application here: [vok-example-crud](vok-example-crud). The application demonstrates the following things:
+If you prefer the evil you are accustomed to, then find the very simple sample JPA-based application here: [vok-example-crud](vok-example-crud). The application demonstrates the following things:
 
 * Linking to a database. VaadinOnKotlin uses Hibernate for JPA O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](vok-example-crud/build.gradle) the db section for more details.
