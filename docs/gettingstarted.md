@@ -926,14 +926,14 @@ class EditArticleView : VerticalLayout(), View {
 ### 5.13 Deleting Articles
 
 We're now ready to cover the "D" part of CRUD, deleting articles from the database. To delete the article, all that's
-needed is to call `Article.deleteById(id)` from appropriate place. 
+needed is to call `delete()` in the article from appropriate place. 
 
 We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything together:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.*
+import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.karibudsl.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -942,7 +942,7 @@ import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
 class ArticlesView: VerticalLayout(), View {
-    private val dataSource = jpaDataProvider<Article>()
+    private val dataSource = Article.dataProvider
     private val grid: Grid<Article>
     init {
         setSizeFull()
@@ -959,7 +959,7 @@ class ArticlesView: VerticalLayout(), View {
             addColumn({ "Edit" }, ButtonRenderer<Article>({ event -> EditArticleView.navigateTo(event.item.id!!) }))
             addColumn({ "Destroy" }, ButtonRenderer<Article>({ event ->
                 confirmDialog {
-                    db { em.deleteById<Article>(event.item.id!!) }
+                    event.item.delete()
                     this@grid.dataProvider.refreshAll()
                 }
             }))
@@ -976,7 +976,7 @@ it will call the follow-up block when the "Yes" button is clicked. The block wil
 and refresh the Grid, to display the new data. To get rid of the confirmation dialog, just delete the `confirmDialog` line:
 ```kotlin
             addColumn({ "Destroy" }, ButtonRenderer<Article>({ event ->
-                db { em.deleteById<Article>(event.item.id!!) }
+                event.item.delete()
                 this@grid.dataProvider.refreshAll()
             }))
 ```
@@ -988,7 +988,7 @@ just open up Intellij IDEA and click your mouse on the `confirmDialog` function 
 
 Congratulations, you can now create, show, list, update and destroy articles.
 
-## 6 Adding a Second Database Entity
+## 6 Adding a Second Database Entity - TODO convert from JPA to Sql2o
 
 It's time to add a second database table to the application. The second database table will handle comments on articles.
 
