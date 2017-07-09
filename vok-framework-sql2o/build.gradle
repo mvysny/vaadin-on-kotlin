@@ -14,7 +14,7 @@ dependencies {
     compile 'org.sql2o:sql2o:1.5.4'
     compile 'com.zaxxer:HikariCP:2.6.3'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
-    testCompile 'com.h2database:h2:1.4.195'
+    testCompile 'com.h2database:h2:1.4.196'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
