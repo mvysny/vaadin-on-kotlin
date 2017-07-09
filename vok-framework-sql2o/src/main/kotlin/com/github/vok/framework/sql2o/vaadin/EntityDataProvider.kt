@@ -15,11 +15,11 @@ import kotlin.reflect.KProperty1
 
 /**
  * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering
- * and sorting.
+ * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [SqlDataProvider].
  */
-class SqlDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+class EntityDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = item.id!!
-    override fun toString() = "SqlDataProvider($clazz)"
+    override fun toString() = "EntityDataProvider($clazz)"
 
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = db {
         val count = con.createQuery("select count(*) ${query.toSQLFromClause(false)}")
@@ -58,9 +58,9 @@ class SqlDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDataP
 }
 
 /**
- * Utility method to create [SqlDataProvider] like this: `sqlDataProvider<Person>()` instead of `SqlDataProvider(Person::class)`
+ * Utility method to create [EntityDataProvider] like this: `entityDataProvider<Person>()` instead of `EntityDataProvider(Person::class)`
  */
-inline fun <reified T: Entity<*>> sqlDataProvider() = SqlDataProvider(T::class.java)
+inline fun <reified T: Entity<*>> entityDataProvider() = EntityDataProvider(T::class.java)
 
 /**
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
@@ -155,7 +155,7 @@ class SqlWhereBuilder<T: Any> {
 /**
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`
  */
-inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = SqlDataProvider(T::class.java)
+inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java)
 
 /**
  * Just write any native SQL into [where], e.g. `age > 25 and name like :name`; don't forget to properly fill in the [params] map.

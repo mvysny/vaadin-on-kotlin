@@ -9,7 +9,7 @@ import org.junit.Test
 import kotlin.streams.toList
 import kotlin.test.expect
 
-class JPADataProviderTest : AbstractDbTest() {
+class EntityDataProviderTest : AbstractDbTest() {
 
     @Test
     fun noEntitiesTest() {
