@@ -58,11 +58,6 @@ class EntityDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDa
 }
 
 /**
- * Utility method to create [EntityDataProvider] like this: `entityDataProvider<Person>()` instead of `EntityDataProvider(Person::class)`
- */
-inline fun <reified T: Entity<*>> entityDataProvider() = EntityDataProvider(T::class.java)
-
-/**
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
  * @return data provider which can be configured to always apply given filter.
  */
@@ -153,7 +148,8 @@ class SqlWhereBuilder<T: Any> {
 }
 
 /**
- * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`
+ * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
+ * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java)
 
