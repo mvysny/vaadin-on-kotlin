@@ -1,5 +1,6 @@
 package com.github.vok.framework.sql2o
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -39,6 +40,7 @@ interface Entity<ID: Any> : Serializable {
     /**
      * The meta-data about this entity.
      */
+    @get:JsonIgnore
     val meta get() = EntityMeta(javaClass)
 
     /**

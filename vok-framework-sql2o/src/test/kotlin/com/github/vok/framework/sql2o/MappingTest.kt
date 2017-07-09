@@ -1,5 +1,6 @@
 package com.github.vok.framework.sql2o
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.Test
 import java.time.LocalDate
 import kotlin.test.expect
@@ -49,5 +50,10 @@ class MappingTest : AbstractDbTest() {
         val p = Person(name = "Zaphod", age = 42, dateOfBirth = LocalDate.of(1990, 1, 14))
         p.save()
         expect(LocalDate.of(1990, 1, 14)) { db { Person.findAll()[0].dateOfBirth!! }}
+    }
+
+    @Test
+    fun testJsonSerializationIgnoresMeta() {
+        expect("""{"id":null,"name":"Zaphod","age":42,"ignored":null,"ignored2":null,"dateOfBirth":null,"created":null,"alive":null,"maritalStatus":null}""") { ObjectMapper().writeValueAsString(Person(name = "Zaphod", age = 42)) }
     }
 }
