@@ -128,19 +128,13 @@ fun <T: Any> Set<Filter<T>>.or(): Filter<T>? = when (size) {
 class SqlWhereBuilder<T: Any> {
     infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): Filter<T> = EqFilter(name, value)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R: Number> KProperty1<T, R?>.le(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.le)
+    infix fun <R> KProperty1<T, R?>.le(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.le)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R: Comparable<R>> KProperty1<T, R?>.le(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.le)
+    infix fun <R> KProperty1<T, R?>.lt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R> KProperty1<T, R?>.lt(value: R): Filter<T> where R: Number, R: Comparable<R> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
+    infix fun <R> KProperty1<T, R?>.ge(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.ge)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R: Number> KProperty1<T, R?>.ge(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.ge)
-    @Suppress("UNCHECKED_CAST")
-    infix fun <R: Comparable<R>> KProperty1<T, R?>.ge(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.ge)
-    @Suppress("UNCHECKED_CAST")
-    infix fun <R: Number> KProperty1<T, R?>.gt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.gt)
-    @Suppress("UNCHECKED_CAST")
-    infix fun <R: Comparable<R>> KProperty1<T, R?>.gt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.gt)
+    infix fun <R> KProperty1<T, R?>.gt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.gt)
     infix fun KProperty1<T, String?>.like(value: String): Filter<T> = LikeFilter(name, value)
     /**
      * Matches only values contained in given range.
