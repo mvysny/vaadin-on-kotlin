@@ -66,7 +66,7 @@ inline fun <reified T: Entity<*>> sqlDataProvider() = SqlDataProvider(T::class.j
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
  * @return data provider which can be configured to always apply given filter.
  */
-fun <T: Any> DataProvider<T, Filter<T>?>.configurableFilter() : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.configurableFilter() : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
         withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOf(f1, f2).filterNotNull().toSet().and() })
 
 /**
@@ -75,7 +75,7 @@ fun <T: Any> DataProvider<T, Filter<T>?>.configurableFilter() : ConfigurableFilt
  * Invoking this method multiple times will restrict the rows further.
  * @param other applies this filter
  */
-fun <T: Any> DataProvider<T, Filter<T>?>.and(other: Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
+fun <T: Any> DataProvider<T, in Filter<T>?>.and(other: Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
     setFilter(other)
 }
 
@@ -87,7 +87,7 @@ fun <T: Any> DataProvider<T, Filter<T>?>.and(other: Filter<T>) : DataProvider<T,
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> DataProvider<T, Filter<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
+fun <T: Any> DataProvider<T, in Filter<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
     setFilter(block)
 }
 

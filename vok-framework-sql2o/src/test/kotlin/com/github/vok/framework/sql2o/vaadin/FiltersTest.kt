@@ -18,8 +18,7 @@ class FiltersTest {
     @Test
     fun testInMemoryFilters() {
         val list = (15..90).map { Person(name = "test$it", age = it) }
-        val ds = ListDataProvider<Person>(list)
-        ds.addFilter(filter { Person::age between 30..60 })
+        val ds = ListDataProvider<Person>(list).and { Person::age between 30..60 }
         expect(31) { ds.size(Query()) }
         expect((30..60).toList()) { ds.fetch(Query(0, 100, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
