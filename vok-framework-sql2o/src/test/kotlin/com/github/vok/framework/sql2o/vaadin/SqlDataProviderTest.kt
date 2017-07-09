@@ -51,6 +51,13 @@ class JPADataProviderTest : AbstractDbTest() {
         expect((30..39).toList()) { ds.fetch(Query(0, 10, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
         expect((40..49).toList()) { ds.fetch(Query(10, 10, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
+
+    @Test
+    fun nativeQueryTest() {
+        db { for (i in 15..90) Person(name = "test$i", age = i).save() }
+        val ds = Person.dataProvider.and { Person::age lt 60 and "age > :age"("age" to 29)}
+        expect((30..59).toList()) { ds.fetch(Query()).toList().map { it.age } }
+    }
 }
 
 /**

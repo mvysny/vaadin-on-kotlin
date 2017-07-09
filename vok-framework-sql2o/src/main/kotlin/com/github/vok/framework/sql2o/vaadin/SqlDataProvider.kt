@@ -81,8 +81,8 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.and(other: Filter<T>) : DataProvider
 
 /**
  * Produces a new data provider which restricts rows returned by the original data provider to given filter. Allows you to write
- * expressions like this: `jpaDataProvider<Person>().and { Person::age lt 25 }`
- * See [JPAWhereBuilder] for a complete list of applicable operators.
+ * expressions like this: `sqlDataProvider<Person>().and { Person::age lt 25 }`
+ * See [SqlWhereBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
@@ -98,8 +98,8 @@ fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block
 
 /**
  * Removes the original filter and sets the new filter. Allows you to write
- * expressions like this: `jpaDataProvider<Person>().and { Person::age lt 25 }`.
- * See [JPAWhereBuilder] for a complete list of applicable operators.
+ * expressions like this: `sqlDataProvider<Person>().and { Person::age lt 25 }`.
+ * See [SqlWhereBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
@@ -132,9 +132,7 @@ class SqlWhereBuilder<T: Any> {
     @Suppress("UNCHECKED_CAST")
     infix fun <R: Comparable<R>> KProperty1<T, R?>.le(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.le)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R: Number> KProperty1<T, R?>.lt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
-    @Suppress("UNCHECKED_CAST")
-    infix fun <R: Comparable<R>> KProperty1<T, R?>.lt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
+    infix fun <R> KProperty1<T, R?>.lt(value: R): Filter<T> where R: Number, R: Comparable<R> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
     @Suppress("UNCHECKED_CAST")
     infix fun <R: Number> KProperty1<T, R?>.ge(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.ge)
     @Suppress("UNCHECKED_CAST")
@@ -154,9 +152,24 @@ class SqlWhereBuilder<T: Any> {
     val KProperty1<T, *>.isNotNull: Filter<T> get() = IsNotNullFilter(name)
     val KProperty1<T, Boolean?>.isTrue: Filter<T> get() = EqFilter(name, true)
     val KProperty1<T, Boolean?>.isFalse: Filter<T> get() = EqFilter(name, false)
+    /**
+     * Allows for a native query: `"age < :age_p"("age_p" to 60)`
+     */
+    operator fun String.invoke(vararg params: Pair<String, Any?>) = NativeSqlFilter<T>(this, mapOf(*params))
 }
 
 /**
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = SqlDataProvider(T::class.java)
+
+/**
+ * Just write any native SQL into [where], e.g. `age > 25 and name like :name`; don't forget to properly fill in the [params] map.
+ *
+ * Does not support in-memory filtering and will throw an exception.
+ */
+data class NativeSqlFilter<T: Any>(val where: String, val params: Map<String, Any?>) : Filter<T> {
+    override fun test(t: T) = throw IllegalStateException("Native sql filter does not support in-memory filtering")
+    override fun toSQL92() = where
+    override fun getSQL92Parameters(): Map<String, Any?> = params
+}
