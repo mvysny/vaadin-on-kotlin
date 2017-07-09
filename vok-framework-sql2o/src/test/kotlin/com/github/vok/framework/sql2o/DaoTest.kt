@@ -37,4 +37,12 @@ class DaoTest : AbstractDbTest() {
         Person.deleteAll()
         expect(0) { Person.count() }
     }
+
+    @Test
+    fun testDeleteById() {
+        listOf("Albedo", "Nigredo", "Rubedo").forEach { Person(name = it, age = 130).save() }
+        expect(3) { Person.count() }
+        Person.deleteById(Person.findAll().filter { it.name == "Albedo" } .first().id!!)
+        expect(listOf("Nigredo", "Rubedo")) { Person.findAll().map { it.name } }
+    }
 }
