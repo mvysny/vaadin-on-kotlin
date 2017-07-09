@@ -1,10 +1,7 @@
 package com.github.vok.framework.sql2o
 
 import com.github.vok.framework.VaadinOnKotlin
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.*
 import java.time.LocalDate
 import java.util.*
 import javax.validation.constraints.NotNull
@@ -33,7 +30,7 @@ abstract class AbstractDbTest {
         }
     }
 
-    @Before
+    @Before @After
     fun clearDb() {
         db { Person.deleteAll() }
     }
