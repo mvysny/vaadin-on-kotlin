@@ -215,7 +215,7 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
 * Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor) on how to write the CRUD UI yourself very easily.
 * Logging: uses SLF4j with Logback, configured as follows: [logback.xml](vok-example-crud-sql2o/src/main/resources/logback.xml)
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/LastAddedPersonCache.kt).
-* Running: [vok-example-crud](vok-example-crud-sql2o) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
+* Running: [vok-example-crud-sql2o](vok-example-crud-sql2o) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
 ### Sample application which uses JPA
 
