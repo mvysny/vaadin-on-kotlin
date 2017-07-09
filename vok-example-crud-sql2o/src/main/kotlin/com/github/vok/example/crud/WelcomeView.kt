@@ -34,10 +34,12 @@ To learn more, please visit <a href="http://www.vaadinonkotlin.eu/">Vaadin-on-Ko
         }
         label {
             w = fillParent
-            html("<strong>Vaadin version:</strong> ${Version.getFullVersion()}<br/><strong>Kotlin version:</strong> ${KotlinVersion.CURRENT}")
+            html("<strong>Vaadin version:</strong> ${Version.getFullVersion()}<br/><strong>Kotlin version:</strong> ${KotlinVersion.CURRENT}<br/><strong>JVM version:</strong> $jvmVersion")
         }
     }
 
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
 }
+
+val jvmVersion: String get() = System.getProperty("java.version")
