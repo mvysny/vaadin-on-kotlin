@@ -45,4 +45,14 @@ class DaoTest : AbstractDbTest() {
         Person.deleteById(Person.findAll().filter { it.name == "Albedo" } .first().id!!)
         expect(listOf("Nigredo", "Rubedo")) { Person.findAll().map { it.name } }
     }
+
+
+    @Test
+    fun testDeleteBy() {
+        listOf("Albedo", "Nigredo", "Rubedo").forEach { Person(name = it, age = 130).save() }
+        Person.deleteBy { "name = :name"("name" to "Albedo") }  // raw sql where
+        expect(listOf("Nigredo", "Rubedo")) { Person.findAll().map { it.name } }
+        Person.deleteBy { Person::name eq "Rubedo" }  // fancy type-safe criteria
+        expect(listOf("Nigredo")) { Person.findAll().map { it.name } }
+    }
 }
