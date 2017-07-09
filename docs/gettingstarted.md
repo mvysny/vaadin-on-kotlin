@@ -137,7 +137,7 @@ folders:
 |-------------------|-----------------------------------------|
 | `src/main/kotlin` | Contains the source files of all of your Views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
 | `src/main/webapp` | Contains the Vaadin Theme (a SCSS-based theme which gets compiled to CSS). All Themes inherit from the [Valo Theme](https://vaadin.com/valo). JavaScript files, additional CSS files and images are also placed here.  |
-| `src/main/resources` | Contains the logger configuration file (`logback.xml`) and the database configuration file (`persistence.xml`) |
+| `src/main/resources` | Contains the logger configuration file (`logback.xml`) |
 | `build.gradle`    | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
 | `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
 | `src/test/kotlin` | Unit tests, fixtures, and other test apparatus. These are covered in @todo |
@@ -251,27 +251,21 @@ Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the follow
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
-import java.io.Serializable
-import javax.persistence.*
+import com.github.vok.framework.sql2o.Dao
+import com.github.vok.framework.sql2o.Entity
 
-@Entity
 data class Article(
-        @field:Id
-        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Long? = null,
+        override var id: Long? = null,
 
         var title: String? = null,
 
         var text: String? = null
-) : Serializable {
-    companion object {
-        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
-    }
+) : Entity<Long> {
+    companion object : Dao<Article>
 }
 ```
 
-This will define a so-called JPA entity, which basically represents a row in the "Article" database table.
+This will define a so-called entity class, which basically represents a row in the "Article" database table.
 
 We can now implement the REST endpoint for REST clients to access the article resource.
 > **Note:** This step is completely optional and is actually not used by Vaadin, since
@@ -279,12 +273,12 @@ Vaadin connectors use its internal JSON protocol (called UIDL) to communicate wi
 Having REST may come handy though, since we can use it to examine the state of the database
 (using curl or wget).
 
-Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest` which will look as follows:
+Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which will look as follows:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.*
+import com.github.vok.framework.sql2o.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -294,11 +288,11 @@ class ArticleRest {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article? = Article.find(id) ?: throw NotFoundException("No article with id $id")
+    fun get(@PathParam("id") id: Long): Article? = Article.findById(id) ?: throw NotFoundException("No article with id $id")
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = db { em.findAll<Article>() }
+    fun getAll(): List<Article> = Article.findAll()
 }
 ```
 
@@ -312,7 +306,7 @@ You will get 500 internal server error; the server log will show a long stacktra
 part being
 ```
 Caused by: org.h2.jdbc.JdbcSQLException: Table "ARTICLE" not found; SQL statement:
-select article0_.id as id1_0_0_, article0_.text as text2_0_0_, article0_.title as title3_0_0_ from Article article0_ where article0_.id=? [42102-193]
+select * from Article [42102-196]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
 	at org.h2.message.DbException.get(DbException.java:179)
 	at org.h2.message.DbException.get(DbException.java:155)
@@ -337,7 +331,7 @@ This happens because there is no View yet, mapped to the `create-article` route.
 ### 5.2 The first form
 
 The solution to this particular problem is simple:
-create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleView` as follows:
+create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleView.kt` as follows:
 
 ```kotlin
 package com.example.vok
