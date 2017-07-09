@@ -1,7 +1,11 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.sql2o.Person
+import com.vaadin.data.provider.ListDataProvider
+import com.vaadin.data.provider.Query
+import com.vaadin.data.provider.QuerySortOrder
 import org.junit.Test
+import kotlin.streams.toList
 import kotlin.test.expect
 
 class FiltersTest {
@@ -9,6 +13,15 @@ class FiltersTest {
     fun testToSQL92() {
         expect("age = :25") { sql { Person::age eq 25 } }
         expect("(age >= :25 and age <= :50)") { sql { Person::age between 25..50 } }
+    }
+
+    @Test
+    fun testInMemoryFilters() {
+        val list = (15..90).map { Person(name = "test$it", age = it) }
+        val ds = ListDataProvider<Person>(list)
+        ds.addFilter(filter { Person::age between 30..60 })
+        expect(31) { ds.size(Query()) }
+        expect((30..60).toList()) { ds.fetch(Query(0, 100, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
 
     private fun sql(block: SqlWhereBuilder<Person>.()->Filter<Person>): String {
