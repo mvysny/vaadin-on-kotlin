@@ -204,7 +204,7 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
   The migration is safe on cluster as well as a database lock is obtained.
   Please see [Bootstrap.kt](vok-example-crud/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
   You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud/src/main/resources/db/migration) for details. More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
-* Accessing the database: just create your JPA beans [(example Person)](vok-example-crud/src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
+* Accessing the database: just create your pojo beans [(example Person)](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
   `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework/src/main/kotlin/com/github/vok/framework/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
 * Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
   [Bootstrap.kt](vok-example-crud/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
@@ -217,7 +217,9 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud/src/main/kotlin/com/github/vok/example/crud/LastAddedPersonCache.kt).
 * Running: [vok-example-crud](vok-example-crud) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
-Please find the very simple sample application here: [vok-example-crud-sql2o](vok-example-crud-sql2o). The application demonstrates the following things:
+### Sample application which uses JPA
+
+Please find the very simple sample application here: [vok-example-crud](vok-example-crud). The application demonstrates the following things:
 
 * Linking to a database. VaadinOnKotlin uses Hibernate for JPA O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](vok-example-crud/build.gradle) the db section for more details.
