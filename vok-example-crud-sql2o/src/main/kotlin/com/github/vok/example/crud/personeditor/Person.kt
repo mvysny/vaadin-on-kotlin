@@ -38,6 +38,7 @@ data class Person(
         var alive: Boolean? = null
 
 ) : Entity<Long> {
+    // this brings in tons of useful static methods such as findAll(), findById() etc.
     companion object : Dao<Person>
 }
 
