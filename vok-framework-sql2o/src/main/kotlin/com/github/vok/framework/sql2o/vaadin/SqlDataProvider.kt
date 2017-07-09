@@ -11,28 +11,30 @@ import java.util.stream.Stream
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
  * It should support any SQL select, but should allow for adding custom filters and orderings (since this is plugged into Grid after all).
  *
- * The provider is bound to a *holder class* which holds the values (any POJO). Sql2o is used to map the result set to the class.
- *
- * Something along these lines:
+ * The provider is bound to a *holder class* which holds the values (any POJO). Sql2o is used to map the result set to the class. For example:
  *
  * ```
  * data class CustomerAddress(val customerName: String, val address: String)
  *
  * val provider = SqlDataProvider("""select c.name as customerName, a.street || ' ' || a.city as address
- *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by 1{{ORDER}} {{PAGING}}""")
+ *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by null{{ORDER}} {{PAGING}}""")
  * ```
  *
  * (Note how select column names must correspond to field names in the `CustomerAddress` class)
  *
- * Now SqlDataProvider can hot-patch the `where` clause computed from Grid's filters into {0} (as a simple string replacement),
- * and the `order by` and `offset`/`limit` into the {1}, as follows:
+ * Now SqlDataProvider can hot-patch the `where` clause computed from Grid's filters into `{{WHERE}}` (as a simple string replacement),
+ * and the `order by` and `offset`/`limit` into the `{{ORDER}}` and `{{PAGING}}`, as follows:
  *
  * * `{{WHERE}}` will be replaced by something like this: `"and name=:pqw5as and age>:p123a"` - note the auto-generated parameter
- *   names starting with `p`. Or an empty string if there are no filters.
- * * `{{ORDER}}` will be replaced by `", customerName ASC, street ASC"` or by empty string if there is no ordering requirement.
- * * `{{PAGING}}` will be replaced by `"offset 0 limit 100"` or by an empty string.
+ *   names starting with `p`. If there are no filters, will be replaced by an empty string.
+ * * `{{ORDER}}` will be replaced by `", customerName ASC, street ASC"` or by an empty string if there is no ordering requirement.
+ * * `{{PAGING}}` will be replaced by `"offset 0 limit 100"` or by an empty string if there are no limitations.
  *
- * No bloody annotations! Work in progress.
+ * Note that the Grid will display fields present in the `CustomerAddress` holder class and will also auto-generate filters
+ * for them, based on the type of the field.
+ *
+ * No bloody annotations! Work in progress. It is expected that a holder class is written for every select, tailored to show the outcome
+ * of that particular select.
  *
  * @param clazz the type of the holder class which will hold the result
  * @param sql the select which can map into the holder class (that is, it selects columns whose names match the holder class fields). It should contain
