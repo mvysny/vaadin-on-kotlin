@@ -7,13 +7,21 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.sql2o.Connection
 import org.sql2o.Sql2o
+import org.sql2o.converters.Convert
+import org.sql2o.converters.Converter
+import org.sql2o.converters.ConverterException
 import org.sql2o.quirks.QuirksDetector
 import java.io.Closeable
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
 import javax.sql.DataSource
 
 class Sql2oVOKPlugin : VOKPlugin {
 
     override fun init() {
+        // register missing converters to sql2o. workaround until https://github.com/aaberg/sql2o/issues/282 is fixed
+        Convert.registerConverter(LocalDate::class.java, LocalDateConverter())
         require(!hikariConfig.jdbcUrl.isNullOrBlank()) { "Please set your database JDBC url, username and password into the VaadinOnKotlin.dataSourceConfig field prior initializing VoK. " }
         dataSource = HikariDataSource(hikariConfig)
     }
@@ -88,5 +96,16 @@ fun <R> db(block: PersistenceContext.()->R): R {
         } finally {
             contexts.set(null)
         }
+    }
+}
+
+private class LocalDateConverter : Converter<LocalDate> {
+    override fun toDatabaseParam(`val`: LocalDate?): Any? = `val`  // jdbc 4.2 supports LocalDate fully
+    override fun convert(value: Any?): LocalDate? = when (value) {
+        null -> null
+        is LocalDate -> value
+        is java.sql.Date -> value.toLocalDate()
+        is java.util.Date -> value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        else -> throw ConverterException("Failed to convert $value of type ${value.javaClass} to LocalDate")
     }
 }

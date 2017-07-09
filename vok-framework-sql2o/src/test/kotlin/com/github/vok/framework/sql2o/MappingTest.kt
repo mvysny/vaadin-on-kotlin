@@ -1,63 +1,8 @@
 package com.github.vok.framework.sql2o
 
-import com.github.vok.framework.VaadinOnKotlin
-import org.junit.*
+import org.junit.Test
 import java.time.LocalDate
-import java.util.*
-import javax.validation.constraints.NotNull
 import kotlin.test.expect
-
-abstract class AbstractDbTest {
-    companion object {
-        @JvmStatic @BeforeClass
-        fun initdb() {
-            VaadinOnKotlin.dataSourceConfig.apply {
-                minimumIdle = 0
-                maximumPoolSize = 30
-                this.jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-                this.username = "sa"
-                this.password = ""
-            }
-            Sql2oVOKPlugin().init()
-            db {
-                con.createQuery("create table if not exists Test ( id bigint primary key auto_increment, name varchar not null, age integer not null, dateOfBirth date, created timestamp )").executeUpdate()
-            }
-        }
-
-        @JvmStatic @AfterClass
-        fun closedb() {
-            Sql2oVOKPlugin().destroy()
-        }
-    }
-
-    @Before @After
-    fun clearDb() {
-        db { Person.deleteAll() }
-    }
-}
-
-@Table("Test")
-data class Person(override var id: Long? = null,
-                  var name: String,
-                  var age: Int,
-                  @Ignore var ignored: String? = null,
-                  @Transient var ignored2: Any? = null,
-                  var dateOfBirth: LocalDate? = null,
-
-                  var created: Date? = null
-
-                  ) : Entity<Long> {
-    override fun save() {
-        if (id == null) {
-            // keeping null until https://github.com/aaberg/sql2o/issues/282 is fixed
-//            dateOfBirth = LocalDate.of(1990, 1, 12)
-            created = java.sql.Timestamp(System.currentTimeMillis())
-        }
-        super.save()
-    }
-
-    companion object : Dao<Person>
-}
 
 class MappingTest : AbstractDbTest() {
     @Test
@@ -88,5 +33,21 @@ class MappingTest : AbstractDbTest() {
         p.save()
         p.delete()
         expect(listOf()) { Person.findAll() }
+    }
+
+    @Test
+    fun testSaveEnum() {
+        val p = Person(name = "Zaphod", age = 42, maritalStatus = MaritalStatus.Divorced)
+        p.save()
+        class Foo(var maritalStatus: String? = null)
+        expect(listOf("Divorced")) { db { con.createQuery("select maritalStatus from Test").executeAndFetch(Foo::class.java).map { it.maritalStatus } } }
+        expect(p) { db { Person.findAll()[0] } }
+    }
+
+    @Test
+    fun testSaveLocalDate() {
+        val p = Person(name = "Zaphod", age = 42, dateOfBirth = LocalDate.of(1990, 1, 14))
+        p.save()
+        expect(LocalDate.of(1990, 1, 14)) { db { Person.findAll()[0].dateOfBirth!! }}
     }
 }
