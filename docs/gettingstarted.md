@@ -810,20 +810,18 @@ Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with th
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
 import com.github.vok.karibudsl.*
 import com.vaadin.server.UserError
-import com.vaadin.ui.HasComponents
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 class ArticleEditor : VerticalLayout() {
     private val binder = beanValidationBinder<Article>()
     var article: Article? = null
-    set(value) {
-        field = value
-        if (value != null) binder.readBean(value)
-    }
+        set(value) {
+            field = value
+            if (value != null) binder.readBean(value)
+        }
 
     init {
         isMargin = false
@@ -836,7 +834,7 @@ class ArticleEditor : VerticalLayout() {
         button("Save Article", { event ->
             val article = article!!
             if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                db { if (article.id == null) em.persist(article) else em.merge(article) }
+                article.save()
                 ArticleView.navigateTo(article.id!!)
             } else {
                 event.button.componentError = UserError("There are invalid fields")
@@ -899,6 +897,7 @@ Then do the same for the `EditArticleView.kt` view:
 ```kotlin
 package com.example.vok
 
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
@@ -915,7 +914,7 @@ class EditArticleView : VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]!!.toLong()
-        editor.article = Article.find(articleId)
+        editor.article = Article[articleId]
     }
 
     companion object {
