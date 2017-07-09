@@ -374,10 +374,8 @@ To make the "Save Article" button do something, just change the class as follows
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -397,7 +395,7 @@ class CreateArticleView: VerticalLayout(), View {
         button("Save Article", {
             val article = Article()
             if (binder.writeBeanIfValid(article)) {
-                db { em.persist(article) }
+                article.save()
             }
         })
     }
@@ -411,12 +409,11 @@ created the database table for Article yet.
 
 ### 5.4 Creating the Article model
 
-Luckily, we have already created the model - it's the `Article` JPA entity class. We will use so-called
-O/R mapper named [Hibernate](http://hibernate.org/orm/) which will map the Article object to a relational database. By default it will map to the "Article" table.
+Luckily, we have already created the model - it's the `Article` entity class. We will use [Sql2o](http://www.sql2o.org/) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
-> **Note:** Hibernate is smart enough to automatically map column names to the Article class properties,
-which means you don't have to provide the database name for every property inside JPA entities, as that will be done automatically by Hibernate.
+> **Note:** Sql2o is smart enough to automatically map column names to the Article class properties,
+which means you don't have to provide the database name for every property inside entities, as that will be done automatically by Sql2o.
 
 To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
 
