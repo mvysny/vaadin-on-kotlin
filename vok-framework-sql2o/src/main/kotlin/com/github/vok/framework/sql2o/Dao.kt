@@ -70,9 +70,15 @@ inline fun <ID: Any, reified T : Entity<ID>> Dao<T>.findById(id: ID): T? = db { 
 /**
  * Deletes all rows from given database table.
  */
-inline fun <reified T: Any> Dao<T>.deleteAll(): Unit = db { con.deleteAll<T>(T::class.java) }
+inline fun <reified T: Any> Dao<T>.deleteAll(): Unit = db { con.deleteAll(T::class.java) }
 
 /**
  * Counts all rows in given table.
  */
-inline fun <reified T: Any> Dao<T>.count(): Long = db { con.getCount<T>(T::class.java) }
+inline fun <reified T: Any> Dao<T>.count(): Long = db { con.getCount(T::class.java) }
+
+fun <T: Any> Connection.deleteById(clazz: Class<T>, id: Any) = createQuery("delete from ${clazz.databaseTableName} where id=:id")
+        .addParameter("id", id)
+        .executeUpdate()
+
+inline fun <reified T: Any> Dao<T>.deleteById(id: Any): Unit = db { con.deleteById(T::class.java, id) }
