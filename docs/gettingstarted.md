@@ -926,7 +926,7 @@ class EditArticleView : VerticalLayout(), View {
 ### 5.13 Deleting Articles
 
 We're now ready to cover the "D" part of CRUD, deleting articles from the database. To delete the article, all that's
-needed is to call `db { em.deleteById<Article>(id) }` from appropriate place. 
+needed is to call `Article.deleteById(id)` from appropriate place. 
 
 We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything together:
 
