@@ -288,7 +288,7 @@ class ArticleRest {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article? = Article.findById(id) ?: throw NotFoundException("No article with id $id")
+    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -988,28 +988,26 @@ just open up Intellij IDEA and click your mouse on the `confirmDialog` function 
 
 Congratulations, you can now create, show, list, update and destroy articles.
 
-## 6 Adding a Second Database Entity - TODO convert from JPA to Sql2o
+## 6 Adding a Second Database Entity
 
 It's time to add a second database table to the application. The second database table will handle comments on articles.
 
 ### 6.1 Creating the 'Comments' JPA Entity
 
-We'll create a `Comment` entity to hold reference to an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
+We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
 ```kotlin
 package com.example.vok
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.github.vok.framework.sql2o.*
 import org.hibernate.validator.constraints.Length
-import java.io.Serializable
-import javax.persistence.*
 import javax.validation.constraints.NotNull
 
-@Entity
 data class Comment(
-        @field:Id
-        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Long? = null,
+        override var id: Long? = null,
+
+        var article_id: Long? = null,
 
         @field:NotNull
         @field:Length(min = 3)
@@ -1018,19 +1016,18 @@ data class Comment(
         @field:NotNull
         @field:Length(min = 3)
         var body: String? = null
-) : Serializable {
+) : Entity<Long> {
+    companion object : Dao<Comment>
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "article_id")
-    var article: Article? = null
+    @get:JsonIgnore
+    val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 }
 ```
 
 This is very similar to the `Article` entity that you saw earlier. The difference is the property `article`
 which sets up an association. You'll learn a little about associations in the next section of this guide.
 
-Note the `@JoinColumn` annotation - it tells which column on your `Comment` database table (usually of integer type) references to the parent `Article`.
+Note the `article_id` column - it tells which Article the comment belongs to.
 You can get a better understanding after analyzing the appropriate migration script. Just create
 `web/src/main/resources/db/migration/V02__CreateComment.sql` file with the following contents:
 
@@ -1065,7 +1062,7 @@ However, if we were to use a persistent database, FlyWay would be smart enough t
 
 ### 6.2 Associating Models
 
-JPA associations let you easily declare the relationship between two entities. In the case of
+Vaadin on Kotlin associations let you easily declare the relationship between two entities. In the case of
 comments and articles, you could write out the relationships this way:
 
 * Each comment belongs to one article.
@@ -1075,9 +1072,8 @@ You've already seen the line of code inside the `Comment` entity (`Comment.kt`) 
 comment belong to an `Article`:
 
 ```kotlin
-        @ManyToOne
-        @JoinColumn(name = "article_id")
-        var article: Article? = null
+    @get:JsonIgnore
+    val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 ```
 
 You'll need to edit `Article.kt` to add the other side of the association:
@@ -1086,50 +1082,37 @@ You'll need to edit `Article.kt` to add the other side of the association:
 package com.example.vok
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.vok.framework.db
-import org.hibernate.annotations.Cascade
+import com.github.vok.framework.sql2o.*
+import com.github.vok.framework.sql2o.vaadin.*
+import com.vaadin.data.provider.DataProvider
 import org.hibernate.validator.constraints.Length
-import java.io.Serializable
-import javax.persistence.*
 import javax.validation.constraints.NotNull
 
-@Entity
 data class Article(
-        @field:Id
-        @field:GeneratedValue(strategy = GenerationType.IDENTITY)
-        var id: Long? = null,
+        override var id: Long? = null,
 
         @field:NotNull
         @field:Length(min = 5)
         var title: String? = null,
 
         var text: String? = null
-) : Serializable {
+) : Entity<Long> {
+    companion object : Dao<Article>
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "article", cascade = arrayOf(CascadeType.REMOVE))
-    var comments: List<Comment> = mutableListOf()
-
-    companion object {
-        fun find(id: Long): Article? = db { em.find(Article::class.java, id) }
-    }
+    @get:JsonIgnore
+    val comments: DataProvider<Comment, Filter<Comment>?> get() = Comment.dataProvider.and { Comment::article_id eq id }
 }
 ```
 
-These two declarations enable a good bit of automatic behavior. For example, if you have an instance
-variable @article containing an article, you can retrieve all the comments belonging to that article
-as an array using `article.comments`.
+These two declarations enable a good bit of automatic behavior. For example, if you have a
+variable `article` containing an article, you can retrieve all the comments belonging to that article
+as an array using `article.comments.getAll()`.
 
 > **Note:** Note that the `comments` field is outside of the `data class` constructor. This is intentional,
 so that the `comments` field does not participate in `hashCode()`, `equals()` and `toString()`. `comments` is lazy -
-it is evaluated first time it is read; reading it causes a database `select` to be run. This may not be wanted,
+it is evaluated every time it is read; reading it causes a database `select` to be run. This may not be wanted,
 e.g. when we want to log a newly created article only. This is also why the `@JsonIgnore` annotation is used -
 to prevent polluting of the REST JSON article output with all comments.
-
-> **Note:** JPA is a tough beast. It may be intuitively perceived as a handy object wrapping of database tables, however
-in fact it is a full object-relational mapping framework. As such, it has some pitfalls which needs to be navigated
-around (detached/attached entities, etc). We recommend to use only the basic properties of JPA - basic table
-mappings, basic relations. You can read more at @todo
 
 ### 6.3 Exposing Comments via REST
 
