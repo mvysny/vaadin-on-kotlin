@@ -23,6 +23,11 @@ class FiltersTest {
         expect((30..60).toList()) { ds.fetch(Query(0, 100, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
 
+    @Test
+    fun testLikeFilterInMemory() {
+        expect(true) { LikeFilter<Person>("name", "a").test(Person(name = "kari", age = 35)) }
+    }
+
     private fun sql(block: SqlWhereBuilder<Person>.()->Filter<Person>): String {
         val filter: Filter<Person> = block(SqlWhereBuilder())
         return unmangleParameterNames(filter.toSQL92(), filter.getSQL92Parameters())
