@@ -12,6 +12,7 @@ import com.vaadin.shared.data.sort.SortDirection
 import java.io.Serializable
 import java.util.stream.Stream
 import kotlin.reflect.KProperty1
+import kotlin.streams.toList
 
 /**
  * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering
@@ -165,3 +166,8 @@ data class NativeSqlFilter<T: Any>(val where: String, val params: Map<String, An
     override fun toSQL92() = where
     override fun getSQL92Parameters(): Map<String, Any?> = params
 }
+
+/**
+ * Returns all items provided by this data provider as an eager list. Careful with larger data!
+ */
+fun <T: Any, F> DataProvider<T, F>.getAll(): List<T> = fetch(Query()).toList()
