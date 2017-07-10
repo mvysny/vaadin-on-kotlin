@@ -1117,12 +1117,13 @@ to prevent polluting of the REST JSON article output with all comments.
 ### 6.3 Exposing Comments via REST
 
 You can expose the comments via the REST interface. This is completely optional and is not used by Vaadin in any way,
-it may just be handy to check your database status via curl. Edit `ArticleRest.kt`:
+it may just be handy to check your database status via the `curl` tool. Edit `ArticleRest.kt`:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.*
+import com.github.vok.framework.sql2o.*
+import com.github.vok.framework.sql2o.vaadin.getAll
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -1132,16 +1133,16 @@ class ArticleRest {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.find(id) ?: throw NotFoundException("No article with id $id")
+    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = db { em.findAll<Article>() }
+    fun getAll(): List<Article> = Article.findAll()
 
     @GET
     @Path("/{id}/comments")
     @Produces(MediaType.APPLICATION_JSON)
-    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments
+    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments.getAll()
 }
 ```
 
@@ -1155,7 +1156,10 @@ $ curl localhost:8080/rest/articles/1/comments
 
 Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
 
-So first, we'll wire up the `ArticleView.kt`view to let us make a new comment:
+So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
+
+TODO
+
 
 ```kotlin
 package com.example.vok
