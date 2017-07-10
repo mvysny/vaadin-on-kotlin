@@ -992,7 +992,7 @@ Congratulations, you can now create, show, list, update and destroy articles.
 
 It's time to add a second database table to the application. The second database table will handle comments on articles.
 
-### 6.1 Creating the 'Comments' JPA Entity
+### 6.1 Creating the 'Comments' Entity
 
 We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
