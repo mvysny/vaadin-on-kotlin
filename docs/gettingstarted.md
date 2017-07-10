@@ -1261,26 +1261,23 @@ in the future, the `Label` component will no longer suffice. Create the `web/src
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.*
+import com.github.vok.framework.sql2o.get
+import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
-import com.vaadin.ui.HasComponents
-import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.themes.ValoTheme
+import com.vaadin.ui.*
 
 class CommentsComponent : VerticalLayout() {
     var articleId: Long = 0L
-    set(value) { field = value; refresh() }
+        set(value) { field = value; refresh() }
     init {
         caption = "Comments"; isMargin = false
     }
 
     fun refresh() {
         removeAllComponents()
-        db {
-            Article.find(articleId)!!.comments.forEach { comment ->
-                label {
-                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
-                }
+        Article[articleId].comments.getAll().forEach { comment ->
+            label {
+                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
             }
         }
     }
@@ -1307,7 +1304,6 @@ Let us also move that new comment section out to its own component. Create the f
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
 import com.github.vok.karibudsl.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
@@ -1334,8 +1330,8 @@ class NewCommentForm : FormLayout() {
             createComment.componentError = UserError("There are invalid fields")
         } else {
             createComment.componentError = null
-            comment.article = article
-            db { em.persist(comment) }
+            comment.article_id = article.id
+            comment.save()
             commentBinder.readBean(Comment())  // this clears the comment fields
             commentCreatedListener()
         }
@@ -1352,6 +1348,7 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 ```kotlin
 package com.example.vok
 
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -1386,7 +1383,7 @@ class ArticleView: VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article.find(articleId)!!
+        article = Article[articleId]
         title.value = article.title
         text.value = article.text
         comments.articleId = article.id!!
