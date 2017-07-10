@@ -1405,36 +1405,30 @@ Let's add a link button to the `CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.*
+import com.github.vok.framework.sql2o.get
+import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
-import com.vaadin.ui.HasComponents
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 class CommentsComponent : VerticalLayout() {
     var articleId: Long = 0L
-    set(value) { field = value; refresh() }
+        set(value) { field = value; refresh() }
     init {
         caption = "Comments"; isMargin = false
     }
 
     fun refresh() {
         removeAllComponents()
-        db {
-            Article.find(articleId)!!.comments.forEach { comment ->
-                label {
-                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
-                }
-                button("Delete comment") {
-                    styleName = ValoTheme.BUTTON_LINK
-                    onLeftClick { delete(comment) }
-                }
+        Article[articleId].comments.getAll().forEach { comment ->
+            label {
+                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+            }
+            button("Delete comment") {
+                styleName = ValoTheme.BUTTON_LINK
+                onLeftClick { comment.delete(); refresh() }
             }
         }
-    }
-    private fun delete(comment: Comment) {
-        db { em.delete(comment) }
-        refresh()
     }
 }
 // the extension function which will allow us to use CommentsComponent inside a DSL
@@ -1446,13 +1440,15 @@ Clicking the "Delete comment" button will delete the comment and refresh the com
 ### 8.1 Deleting Associated Objects
 
 If you delete an article, its associated comments will also need to be deleted, otherwise they would simply occupy space in the database. 
-Or even worse, since we have the foreign constraint set up, the database would fail to delete the article. JPA allows you to use the dependent option of an association to achieve this.
-Modify the `Article.kt` file and change the `comments` field definition as follows:
+Or even worse, since we have the foreign constraint set up, the database would fail to delete the article. We will need to modify the
+`Article.delete()` method to do that for us.
+Modify the `Article.kt` file and add the `delete` function right below the `comments` val, as follows:
 
 ```kotlin
-    @JsonIgnore
-    @OneToMany(mappedBy = "article", cascade = arrayOf(CascadeType.REMOVE))
-    var comments: List<Comment> = mutableListOf()
+    override fun delete() {
+        Comment.deleteBy { Comment::article_id eq id }
+        super.delete()
+    }
 ```
 
 ## 9 Security
