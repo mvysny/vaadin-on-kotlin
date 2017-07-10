@@ -660,7 +660,7 @@ and mark all invalid fields. To do this, change the button definition as follows
         button("Save Article", { event ->
             val article = Article()
             if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                db { em.persist(article) }
+                article.save()
                 ArticleView.navigateTo(article.id!!)
             } else {
                 event.button.componentError = UserError("There are invalid fields")
