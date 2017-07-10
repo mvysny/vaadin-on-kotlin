@@ -91,7 +91,8 @@ data class IsNotNullFilter<T: Any>(override val propertyName: String) : BeanFilt
  * A LIKE filter. Since it does substring matching, it performs quite badly in the databases. You should use full text search
  * capabilities of your database. For example [PostgreSQL full-text search](https://www.postgresql.org/docs/9.5/static/textsearch.html).
  */
-class LikeFilter<T: Any>(override val propertyName: String, private val substring: String) : BeanFilter<T>() {
+class LikeFilter<T: Any>(override val propertyName: String, substring: String) : BeanFilter<T>() {
+    private val substring = substring.trim()
     override val value = "%${substring.trim()}%"
     override fun test(t: T) = (getValue(t) as? String)?.contains(substring, ignoreCase = true) ?: false
     override fun toString() = """$propertyName LIKE "$value""""
