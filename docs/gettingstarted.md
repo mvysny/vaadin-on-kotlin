@@ -1158,38 +1158,31 @@ Like with any blog, our readers will create their comments directly after readin
 
 So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 
-TODO
-
-
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.db
+import com.github.vok.framework.sql2o.get
+import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.navigator.*
 import com.vaadin.server.UserError
-import com.vaadin.ui.Button
-import com.vaadin.ui.Label
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class ArticleView: VerticalLayout(), View {
+class ArticleView: FormLayout(), View {
     private lateinit var article: Article
-    private lateinit var title: Label
-    private lateinit var text: Label
+    private val title: Label
+    private val text: Label
     private val comments: Label
     private val commentBinder = beanValidationBinder<Comment>()
     private lateinit var createComment: Button
     init {
-        formLayout {
-            title = label {
-                caption = "Title:"
-            }
-            text = label {
-                caption = "Text:"
-            }
+        title = label {
+            caption = "Title:"
+        }
+        text = label {
+            caption = "Text:"
         }
         comments = label { caption = "Comments" }
         formLayout {
@@ -1211,10 +1204,9 @@ class ArticleView: VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article.find(articleId)!!
+        article = Article[articleId]
         title.value = article.title
         text.value = article.text
-        refreshComments()
     }
     private fun createComment() {
         val comment = Comment()
@@ -1222,19 +1214,19 @@ class ArticleView: VerticalLayout(), View {
             createComment.componentError = UserError("There are invalid fields")
         } else {
             createComment.componentError = null
-            comment.article = article
-            db { em.persist(comment) }
+            comment.article_id = article.id
+            comment.save()
             refreshComments()
             commentBinder.readBean(Comment())  // this clears the comment fields
         }
     }
     private fun refreshComments() {
-        comments.html(db {
+        comments.html(
             // force-update the comments list.
-            Article.find(article.id!!)!!.comments.joinToString("") { comment ->
+            article.comments.getAll().joinToString("") { comment ->
                 "<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>"
             }
-        })
+        )
     }
     companion object {
         fun navigateTo(articleId: Long) = navigateToView<ArticleView>(articleId.toString())
@@ -1242,19 +1234,20 @@ class ArticleView: VerticalLayout(), View {
 }
 ```
 
-This adds a form on the `Article` show page that creates a new comment, by calling the `db { em.persist(comment) }` code.
+This adds a form on the `Article` show page that creates a new comment, by calling the `comment.save()` code.
 
 Once we have made the new comment, we need to stay on the page of the original article. That's why there is no
 `navigate` call in the `createComment()` function. However, since the page does not reload (remember we use the single-page-framework),
-we need to do that ourselves. See the `comments` label? We will populate this label with a html-formatted list of all comments.
+we need to refresh the comments ourselves. See the `comments` label? We will populate this label with a html-formatted list of all comments.
 This exactly is done by the `refreshComments()` function.
 
 Now you can add articles and comments to your blog and have them show up in the right places.
 
 ![Create and List Comments](images/comments_create_list.png)
 
-> **Note:** in the `refreshComments()` we need to re-fetch the article, in order to get the fresh list of `comments`. Otherwise,
-we would simply display an empty list over and over again, since the `comments` field is lazily loaded and cached afterwards.
+> **Note:** in the `refreshComments()` the `getAll()` function will re-fetch the fresh list of `comments`; the comments are not cached
+in the `Article.comments` field. If you need to access the comment list multiple times, it is best to store the list of comments
+into a variable.
 
 ## 7 Refactoring
 
