@@ -83,7 +83,7 @@ For general Vaadin-on-Kotlin bugs, please use the [Vaadin-on-Kotlin Github Issue
 
 Sql2o:
 ```kotlin
-button("Save", { db { Person.save() } })
+button("Save", { db { person.save() } })
 ```
 
 JPA:
@@ -96,7 +96,7 @@ button("Save", { db { em.persist(person) } })
 
 Simply use [Flyway](http://flywaydb.org): write Flyway scripts, add a Gradle dependency:
 ```groovy
-compile 'org.flywaydb:flyway-core:4.0.3'
+compile 'org.flywaydb:flyway-core:4.2.0'
 ```
 and introduce a context listener, to auto-update your database to the newest version before your app starts:
 ```kotlin
@@ -145,12 +145,12 @@ popupView("Details") {
 }
 ```
 
-### JPA-based grid is a breeze
+### Sql2o-based grid is a breeze
 
 Support for sorting and filtering out-of-the-box:
 
 ```kotlin
-grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFilter()) {
+grid(Person::class, dataProvider = Person.dataProvider.withConfigurableFilter()) {
   setSizeFull()
   cols {
     column(Person::id) {
@@ -163,6 +163,14 @@ grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFil
   }
   // automatically create filters, based on the types of values present in particular columns.
   appendHeaderRow().generateFilterComponents(this)
+}
+```
+
+JPA version: 
+
+```kotlin
+grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFilter()) {
+  ...
 }
 ```
 
