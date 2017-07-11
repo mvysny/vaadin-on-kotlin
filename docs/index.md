@@ -6,7 +6,7 @@ Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes
 
 ```kotlin
 button("Create") {
-  onLeftClick { db { em.persist(person) } }
+  onLeftClick { db { person.save() } }
 }
 ```
 
@@ -30,7 +30,7 @@ You will only need Java 8 JDK and git installed to run the example application f
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
-./gradlew vok-example-crud:appRun
+./gradlew vok-example-crud-sql2o:appRun
 ```
 
 The web app will be running at [http://localhost:8080](http://localhost:8080)
