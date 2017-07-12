@@ -149,7 +149,8 @@ To begin with, let's get some text up on screen quickly. To do this, you need to
 
 ### 4.1 Starting up the Web Server
 
-You actually have a functional VoK application already. To see it, you need to start a web server on your development machine. You can do this by running the following in the blog directory:
+You actually have a functional VoK application already. To see it, you need to start a web server on your development machine.
+You can do this by running the following in the `vok-helloworld-app` directory:
 
 ```bash
 $ ./gradlew clean web:appRun
