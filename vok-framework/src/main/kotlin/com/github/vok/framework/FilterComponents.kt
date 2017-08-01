@@ -286,7 +286,7 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
 }
 
 class DateFilterPopup: CustomField<DateInterval?>() {
-    private val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale ?: Locale.getDefault())
+    private val formatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale ?: Locale.getDefault())
     private lateinit var fromField: InlineDateTimeField
     private lateinit var toField: InlineDateTimeField
     private lateinit var set: Button
