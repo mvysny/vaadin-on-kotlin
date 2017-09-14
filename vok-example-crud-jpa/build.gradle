@@ -42,9 +42,10 @@ dependencies {
 
     // db
     compile 'org.flywaydb:flyway-core:4.2.0'
-    compile('org.hibernate:hibernate-hikaricp:5.2.10.Final') {
+    compile('org.hibernate:hibernate-hikaricp:5.2.11.Final') {
         exclude group: 'javax.enterprise'
     }
+    compile 'com.zaxxer:HikariCP:2.7.1'
     compile 'com.h2database:h2:1.4.196'
 
     // REST

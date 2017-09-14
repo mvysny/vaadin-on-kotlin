@@ -200,7 +200,7 @@ inline fun <reified T: Any> EntityManager.deleteById(id: Any): Boolean {
  *  Triggers the [CascadeType.REMOVE] properly.
  * @return true if the entity was deleted, false if the underlying database was meanwhile modified and the entity is already deleted from the database.
  */
-inline fun EntityManager.delete(entity: Any): Boolean {
+fun EntityManager.delete(entity: Any): Boolean {
     val e = if (contains(entity)) entity else {
         // this will not cascade the delete and will thus fail on constraint violation when removing the person
         // em.merge(entity)
