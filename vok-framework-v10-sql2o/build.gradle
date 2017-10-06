@@ -7,7 +7,7 @@ apply plugin: 'kotlin'
 dependencies {
     compile(project(':vok-framework'))
     compile(project(':vok-db'))
-    compile(project(':vok-util-vaadin8'))
+    compile(project(':vok-util-vaadin10'))
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
@@ -27,11 +27,11 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework-sql2o'
+            artifactId 'vok-framework-v10-sql2o'
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'Vaadin-On-Kotlin, a simple way to build webapp with Kotlin and Vaadin')
+                root.appendNode('description', 'VOK: Vaadin 10 Flow with VOK-DB persistence')
                 root.appendNode('name', 'Vaadin-On-Kotlin')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }
