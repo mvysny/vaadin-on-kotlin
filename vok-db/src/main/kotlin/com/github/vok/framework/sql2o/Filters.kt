@@ -157,6 +157,17 @@ class OrFilter<T: Any>(children: Set<Filter<in T>>) : Filter<T> {
     }
 }
 
+fun <T: Any> Set<Filter<T>>.and(): Filter<T>? = when (size) {
+    0 -> null
+    1 -> first()
+    else -> AndFilter(this)
+}
+fun <T: Any> Set<Filter<T>>.or(): Filter<T>? = when (size) {
+    0 -> null
+    1 -> first()
+    else -> OrFilter(this)
+}
+
 /**
  * Running block with this class as its receiver will allow you to write expressions like this:
  * `Person::age lt 25`. Does not support joins - just use the plain old SQL 92 where syntax for that ;)

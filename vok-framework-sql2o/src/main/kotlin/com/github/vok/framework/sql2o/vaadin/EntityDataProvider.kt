@@ -109,17 +109,6 @@ fun <T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter
     setFilter(block(SqlWhereBuilder()))
 }
 
-fun <T: Any> Set<Filter<T>>.and(): Filter<T>? = when (size) {
-    0 -> null
-    1 -> iterator().next()
-    else -> AndFilter(this)
-}
-fun <T: Any> Set<Filter<T>>.or(): Filter<T>? = when (size) {
-    0 -> null
-    1 -> iterator().next()
-    else -> OrFilter(this)
-}
-
 /**
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
