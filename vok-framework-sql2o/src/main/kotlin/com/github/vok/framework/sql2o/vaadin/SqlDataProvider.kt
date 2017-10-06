@@ -1,5 +1,6 @@
 package com.github.vok.framework.sql2o.vaadin
 
+import com.github.vok.framework.sql2o.Filter
 import com.github.vok.framework.sql2o.db
 import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query

@@ -1,9 +1,13 @@
-package com.github.vok.framework.sql2o.vaadin
+package com.github.vok.framework.sql2o
 
-import com.vaadin.server.SerializablePredicate
 import java.beans.Introspector
+import java.io.Serializable
 import java.lang.reflect.Method
 import java.util.function.BiPredicate
+import java.util.function.Predicate
+import kotlin.reflect.KProperty1
+
+interface SerializablePredicate<T> : Predicate<T>, Serializable
 
 /**
  * A generic filter which filters items of type [T]. Implementors must define how exactly the items are filtered. The filter is retrofitted as a serializable
@@ -151,4 +155,50 @@ class OrFilter<T: Any>(children: Set<Filter<in T>>) : Filter<T> {
         children.forEach { map.putAll(it.getSQL92Parameters()) }
         return map
     }
+}
+
+/**
+ * Running block with this class as its receiver will allow you to write expressions like this:
+ * `Person::age lt 25`. Does not support joins - just use the plain old SQL 92 where syntax for that ;)
+ *
+ * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe.
+ *
+ * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic where creation only ;)
+ */
+class SqlWhereBuilder<T: Any> {
+    infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): Filter<T> = EqFilter(name, value)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.le(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.le)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.lt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.lt)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.ge(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.ge)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.gt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.gt)
+    infix fun KProperty1<T, String?>.like(value: String): Filter<T> = LikeFilter(name, value)
+    /**
+     * Matches only values contained in given range.
+     * @param range the range
+     */
+    infix fun <R> KProperty1<T, R?>.between(range: ClosedRange<R>): Filter<T> where R: Number, R: Comparable<R> =
+            this.ge(range.start as Number) and this.le(range.endInclusive as Number)
+    val KProperty1<T, *>.isNull: Filter<T> get() = IsNullFilter(name)
+    val KProperty1<T, *>.isNotNull: Filter<T> get() = IsNotNullFilter(name)
+    val KProperty1<T, Boolean?>.isTrue: Filter<T> get() = EqFilter(name, true)
+    val KProperty1<T, Boolean?>.isFalse: Filter<T> get() = EqFilter(name, false)
+    /**
+     * Allows for a native query: `"age < :age_p"("age_p" to 60)`
+     */
+    operator fun String.invoke(vararg params: Pair<String, Any?>) = NativeSqlFilter<T>(this, mapOf(*params))
+}
+
+/**
+ * Just write any native SQL into [where], e.g. `age > 25 and name like :name`; don't forget to properly fill in the [params] map.
+ *
+ * Does not support in-memory filtering and will throw an exception.
+ */
+data class NativeSqlFilter<T: Any>(val where: String, val params: Map<String, Any?>) : Filter<T> {
+    override fun test(t: T) = throw IllegalStateException("Native sql filter does not support in-memory filtering")
+    override fun toSQL92() = where
+    override fun getSQL92Parameters(): Map<String, Any?> = params
 }

@@ -5,6 +5,7 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.vok.framework.DefaultFilterFieldFactory
 import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.FilterFieldFactory
+import com.github.vok.framework.sql2o.*
 import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
