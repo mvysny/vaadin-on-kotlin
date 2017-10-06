@@ -39,7 +39,8 @@ class Sql2oVOKPlugin : VOKPlugin {
 private val hikariConfig = HikariConfig()
 
 /**
- * Configure this before initializing VoK.
+ * Configure this before initializing VoK. At minimum you need to set [HikariConfig.dataSource], or
+ * [HikariConfig.driverClassName], [HikariConfig.jdbcUrl], [HikariConfig.username] and [HikariConfig.password].
  */
 val VaadinOnKotlin.dataSourceConfig: HikariConfig get() = hikariConfig
 
