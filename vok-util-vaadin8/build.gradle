@@ -6,19 +6,18 @@ apply plugin: 'kotlin'
 
 dependencies {
     compile(project(':vok-framework'))
-    compile(project(':vok-util-vaadin8'))
+
+    // Vaadin
+    compile "com.github.vok.karibudsl:karibu-dsl-v8:$karibudsl_version"
+    compile "com.vaadin:vaadin-server:$vaadin8_version"
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+
+    // IDEA language injections
+    compile 'com.intellij:annotations:12.0'
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-
-    testCompile 'javax.validation:validation-api:2.0.0.GA'
-
-    // db
-    compile('org.hibernate:hibernate-core:5.2.11.Final') {
-        exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
-    }
-    testCompile 'org.flywaydb:flyway-core:4.2.0'
-    testCompile 'com.h2database:h2:1.4.196'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
@@ -32,11 +31,11 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework-jpa'
+            artifactId 'vok-util-vaadin8'
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'Vaadin-On-Kotlin, a simple way to build webapp with Kotlin and Vaadin')
+                root.appendNode('description', 'VOK: Basic utility classes for Vaadin 8')
                 root.appendNode('name', 'Vaadin-On-Kotlin')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }

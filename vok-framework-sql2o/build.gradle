@@ -6,17 +6,14 @@ apply plugin: 'kotlin'
 
 dependencies {
     compile(project(':vok-framework'))
+    compile(project(':vok-db'))
+    compile(project(':vok-util-vaadin8'))
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
-    // jackson - mark the Entity.meta property as ignored so that it won't get serialized into JSON
-    compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
-    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
+//    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
 
-    // db
-    compile 'org.sql2o:sql2o:1.5.4'
-    compile 'com.zaxxer:HikariCP:2.7.1'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.h2database:h2:1.4.196'
 }

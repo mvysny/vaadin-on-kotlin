@@ -9,6 +9,7 @@ import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.shared.data.sort.SortDirection
+import org.sql2o.Connection
 import java.io.Serializable
 import java.util.stream.Stream
 import kotlin.reflect.KProperty1
@@ -171,3 +172,30 @@ data class NativeSqlFilter<T: Any>(val where: String, val params: Map<String, An
  * Returns all items provided by this data provider as an eager list. Careful with larger data!
  */
 fun <T: Any, F> DataProvider<T, F>.getAll(): List<T> = fetch(Query()).toList()
+
+fun <T: Any> Connection.deleteBy(clazz: Class<T>, block: SqlWhereBuilder<T>.()->Filter<T>) {
+    val filter = block(SqlWhereBuilder())
+    val query = createQuery("delete from ${clazz.databaseTableName} where ${filter.toSQL92()}")
+    filter.getSQL92Parameters().entries.forEach { (name, value) -> query.addParameter(name, value) }
+    query.executeUpdate()
+}
+
+/**
+ * Allows you to delete rows by given where clause:
+ *
+ * ```
+ * Person.deleteBy { "name = :name"("name" to "Albedo") }  // raw sql where clause with parameters
+ * Person.deleteBy { Person::name eq "Rubedo" }  // fancy type-safe criteria
+ * ```
+ *
+ * I'm not sure whether this is actually any good - it's too fancy, too smart, too bloody complex. Only useful when
+ * you need to construct queries programatically. But if you want more complex stuff or even joins, fall back and just write
+ * SQL:
+ *
+ * ```
+ * db { con.createQuery("delete from Foo where name = :name").addParameter("name", name).executeUpdate() }
+ * ```
+ *
+ * Way easier to understand.
+ */
+inline fun <reified T: Any> Dao<T>.deleteBy(noinline block: SqlWhereBuilder<T>.()->Filter<T>): Unit = db { con.deleteBy(T::class.java, block) }

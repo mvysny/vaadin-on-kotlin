@@ -6,7 +6,7 @@ apply plugin: 'kotlin'
 
 dependencies {
     compile(project(':vok-framework-jpa'))
-    compile "com.vaadin:vaadin-compatibility-server:$vaadin_version"
+    compile "com.vaadin:vaadin-compatibility-server:$vaadin8_version"
 
     compile 'com.vaadin.addon:jpacontainer:4.0.0'
 }

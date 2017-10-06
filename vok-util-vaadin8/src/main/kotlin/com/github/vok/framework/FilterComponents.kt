@@ -8,7 +8,6 @@ import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
-import com.vaadin.ui.components.grid.HeaderRow
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime

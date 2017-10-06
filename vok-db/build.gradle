@@ -6,18 +6,18 @@ apply plugin: 'kotlin'
 
 dependencies {
     compile(project(':vok-framework'))
-    compile(project(':vok-util-vaadin8'))
 
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 
-    testCompile 'javax.validation:validation-api:2.0.0.GA'
+    // jackson - mark the Entity.meta property as ignored so that it won't get serialized into JSON
+    compileOnly 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
+    testCompile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
 
     // db
-    compile('org.hibernate:hibernate-core:5.2.11.Final') {
-        exclude group: 'javax.enterprise'  // there is no need for CDI-API nor @Inject stuff
-    }
-    testCompile 'org.flywaydb:flyway-core:4.2.0'
+    compile 'org.sql2o:sql2o:1.5.4'
+    compile 'com.zaxxer:HikariCP:2.7.1'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.h2database:h2:1.4.196'
 }
 
@@ -32,11 +32,11 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-framework-jpa'
+            artifactId 'vok-db'
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'Vaadin-On-Kotlin, a simple way to build webapp with Kotlin and Vaadin')
+                root.appendNode('description', 'A very simple persistence framework, built on top of Sql2o')
                 root.appendNode('name', 'Vaadin-On-Kotlin')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }

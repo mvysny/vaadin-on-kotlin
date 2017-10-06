@@ -1,7 +1,5 @@
 package com.github.vok.framework.sql2o
 
-import com.github.vok.framework.sql2o.vaadin.Filter
-import com.github.vok.framework.sql2o.vaadin.SqlWhereBuilder
 import org.sql2o.Connection
 
 /**
@@ -87,30 +85,3 @@ fun <T: Any> Connection.deleteById(clazz: Class<T>, id: Any) = createQuery("dele
  * Deletes row with given ID. Does nothing if there is no such row.
  */
 inline fun <reified T: Any> Dao<T>.deleteById(id: Any): Unit = db { con.deleteById(T::class.java, id) }
-
-fun <T: Any> Connection.deleteBy(clazz: Class<T>, block: SqlWhereBuilder<T>.()->Filter<T>) {
-    val filter = block(SqlWhereBuilder())
-    val query = createQuery("delete from ${clazz.databaseTableName} where ${filter.toSQL92()}")
-    filter.getSQL92Parameters().entries.forEach { (name, value) -> query.addParameter(name, value) }
-    query.executeUpdate()
-}
-
-/**
- * Allows you to delete rows by given where clause:
- *
- * ```
- * Person.deleteBy { "name = :name"("name" to "Albedo") }  // raw sql where clause with parameters
- * Person.deleteBy { Person::name eq "Rubedo" }  // fancy type-safe criteria
- * ```
- *
- * I'm not sure whether this is actually any good - it's too fancy, too smart, too bloody complex. Only useful when
- * you need to construct queries programatically. But if you want more complex stuff or even joins, fall back and just write
- * SQL:
- *
- * ```
- * db { con.createQuery("delete from Foo where name = :name").addParameter("name", name).executeUpdate() }
- * ```
- *
- * Way easier to understand.
- */
-inline fun <reified T: Any> Dao<T>.deleteBy(noinline block: SqlWhereBuilder<T>.()->Filter<T>): Unit = db { con.deleteBy(T::class.java, block) }
