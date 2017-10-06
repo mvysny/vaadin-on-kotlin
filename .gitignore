@@ -5,4 +5,4 @@ build
 .gradle
 classes
 local.properties
-
+bower_components
