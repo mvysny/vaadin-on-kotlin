@@ -23,11 +23,11 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId project.group
-            artifactId 'vok-util-vaadin8'
+            artifactId 'vok-util-vaadin10'
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'VOK: Basic utility classes for Vaadin 8')
+                root.appendNode('description', 'VOK: Basic utility classes for Vaadin 10')
                 root.appendNode('name', 'Vaadin-On-Kotlin')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }
