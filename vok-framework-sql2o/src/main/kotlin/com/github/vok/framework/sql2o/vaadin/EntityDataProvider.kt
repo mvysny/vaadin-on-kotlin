@@ -70,6 +70,8 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.configurableFilter() : ConfigurableF
 fun <T: Any> DataProvider<T, in Filter<T>?>.and(other: Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
     setFilter(other)
 }
+// since SerializablePredicate is Vaadin-built-in interface which our Filters do not use, since Vaadin 8 has different SerializablePredicate class
+// than Vaadin 10 and we would have to duplicate filters just because a dumb interface.
 private fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.adaptToVOKFilters() : DataProvider<T, Filter<T>?> = withConvertedFilter<Filter<T>?> {
     f -> if (f == null) null else SerializablePredicate { f.test(it) }
 }
