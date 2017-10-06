@@ -14,10 +14,6 @@ dependencies {
 
     // IDEA language injections
     compile 'com.intellij:annotations:12.0'
-
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testCompile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
