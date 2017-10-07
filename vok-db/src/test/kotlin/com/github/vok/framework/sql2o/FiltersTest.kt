@@ -12,8 +12,9 @@ class FiltersTest {
 
     @Test
     fun testLikeFilterInMemory() {
-        expect(true) { LikeFilter<Person>("name", "A").test(Person(name = "kari", age = 35)) }
+        expect(false) { LikeFilter<Person>("name", "A").test(Person(name = "kari", age = 35)) }
         expect(true) { LikeFilter<Person>("name", " a ").test(Person(name = "kari", age = 35)) }
+        expect(true) { ILikeFilter<Person>("name", "A").test(Person(name = "kari", age = 35)) }
     }
 
     private fun sql(block: SqlWhereBuilder<Person>.()->Filter<Person>): String {
