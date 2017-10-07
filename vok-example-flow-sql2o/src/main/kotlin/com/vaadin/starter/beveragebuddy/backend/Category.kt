@@ -16,6 +16,7 @@ open class Category(override var id: Long? = null, var name: String = "") : LEnt
         val UNDEFINED = Category(name = "(undefined)")
         fun findByName(name: String): Category? = findBy(1) { Category::name eq name } .firstOrNull()
         fun findByNameOrThrow(name: String): Category = findByName(name) ?: throw IllegalArgumentException("No category named $name")
+        fun existsWithName(name: String): Boolean = findByName(name) != null
     }
 
     override fun toString() = "Category(id=$id, name='$name')"

@@ -72,6 +72,8 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
      */
     protected var currentItem: T? = null
         private set
+    protected var currentOperation: Operation? = null
+        private set
 
     private val confirmationDialog = ConfirmationDialog<T>()
     private lateinit var notification: PaperToast
@@ -130,6 +132,7 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
      */
     fun open(item: T, operation: Operation) {
         currentItem = item
+        currentOperation = operation
         titleField.text = operation.nameInTitle + " " + itemType
         if (registrationForSave != null) {
             registrationForSave!!.remove()

@@ -16,18 +16,13 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.karibudsl.flow.*
-import java.time.LocalDate
-
-import com.vaadin.data.validator.DateRangeValidator
-import com.vaadin.data.validator.IntegerRangeValidator
-import com.vaadin.data.validator.StringLengthValidator
 import com.vaadin.starter.beveragebuddy.backend.Category
-import com.vaadin.starter.beveragebuddy.backend.CategoryService
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.dataProvider
 import com.vaadin.ui.combobox.ComboBox
 import com.vaadin.ui.datepicker.DatePicker
 import com.vaadin.ui.textfield.TextField
+import java.time.LocalDate
 
 /**
  * A dialog for editing [Review] objects.

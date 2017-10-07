@@ -21,12 +21,8 @@ import com.github.vok.karibudsl.flow.textField
 import com.github.vok.karibudsl.flow.trimmingConverter
 import com.vaadin.data.validator.StringLengthValidator
 import com.vaadin.starter.beveragebuddy.backend.Category
-import com.vaadin.starter.beveragebuddy.backend.CategoryService
 import com.vaadin.starter.beveragebuddy.backend.ReviewService
 import com.vaadin.ui.textfield.TextField
-
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 
 /**
  * A dialog for editing [Category] objects.
@@ -44,14 +40,18 @@ class CategoryEditorDialog(itemSaver: (Category, AbstractEditorDialog.Operation)
                         .withValidator(StringLengthValidator(
                                 "Category name must contain at least 3 printable characters",
                                 3, null))
-                        .withValidator(
-                                { name -> CategoryService.findCategories(name ?: "").isEmpty() },
-                                "Category name must be unique")
+                        .withValidator({ name -> isNameUnique(name) }, "Category name must be unique")
                         .bindN(Category::name)
             }
         }
         // Due to a bug, not currently focusing vaadin/flow#2548
         categoryNameField.focus()
+    }
+
+    private fun isNameUnique(name: String?): Boolean {
+        if (name == null || name.isBlank()) return true
+        if (currentItem?.name == name && currentOperation == Operation.EDIT) return true
+        return !Category.existsWithName(name)
     }
 
     override fun confirmDelete() {
