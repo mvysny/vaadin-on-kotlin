@@ -56,4 +56,13 @@ class MappingTest : AbstractDbTest() {
     fun testJsonSerializationIgnoresMeta() {
         expect("""{"id":null,"name":"Zaphod","age":42,"ignored":null,"ignored2":null,"dateOfBirth":null,"created":null,"alive":null,"maritalStatus":null}""") { ObjectMapper().writeValueAsString(Person(name = "Zaphod", age = 42)) }
     }
+
+    @Test
+    fun testMeta() {
+        val meta = Person.meta
+        expect("Test") { meta.databaseTableName }  // sicen Person is annotated with @Entity("Test")
+        expect("id") { meta.idDbname }
+        expect(Person::class.java) { meta.entity }
+        expect(setOf("id", "name", "age", "dateOfBirth", "created", "alive", "maritalStatus")) { meta.persistedFieldDbNames }
+    }
 }

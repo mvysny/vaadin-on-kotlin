@@ -119,8 +119,9 @@ val Class<*>.databaseTableName: String get() {
 }
 
 private inline val Field.isTransient get() = Modifier.isTransient(modifiers)
+private inline val Field.isStatic get() = Modifier.isStatic(modifiers)
 
-private val Field.isPersisted get() = !isTransient && !isSynthetic && !isAnnotationPresent(Ignore::class.java) && name != "Companion"
+private val Field.isPersisted get() = !isTransient && !isSynthetic && !isStatic && !isAnnotationPresent(Ignore::class.java) && name != "Companion"
 
 /**
  * Lists all persisted fields

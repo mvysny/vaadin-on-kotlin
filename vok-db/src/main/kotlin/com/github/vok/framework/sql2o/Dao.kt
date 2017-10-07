@@ -112,3 +112,5 @@ fun <T: Any> Connection.deleteBy(clazz: Class<T>, block: SqlWhereBuilder<T>.()->
  * Way easier to understand.
  */
 inline fun <reified T: Any> Dao<T>.deleteBy(noinline block: SqlWhereBuilder<T>.()->Filter<T>): Unit = db { con.deleteBy(T::class.java, block) }
+
+inline val <reified T: Entity<*>> Dao<T>.meta: EntityMeta get() = EntityMeta(T::class.java)

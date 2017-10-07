@@ -67,7 +67,9 @@ data class Person(override var id: Long? = null,
         super.save()
     }
 
-    companion object : Dao<Person>
+    companion object : Dao<Person> {
+        val IGNORE_THIS_FIELD: Int = 0
+    }
 }
 
 enum class MaritalStatus {
