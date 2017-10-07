@@ -2,6 +2,7 @@ package com.vaadin.starter.beveragebuddy.backend
 
 import com.github.vok.framework.sql2o.Dao
 import com.github.vok.framework.sql2o.Entity
+import com.vaadin.starter.beveragebuddy.LEntity
 
 /**
  * Represents a beverage category.
@@ -9,7 +10,7 @@ import com.github.vok.framework.sql2o.Entity
  * @property name the category name
  */
 // must be open - Flow requires it to create ModelProxy
-open class Category(override var id: Long? = null, var name: String = "") : Entity<Long> {
+open class Category(override var id: Long? = null, var name: String = "") : LEntity {
 
     companion object : Dao<Category> {
         val UNDEFINED = Category(name = "(undefined)")

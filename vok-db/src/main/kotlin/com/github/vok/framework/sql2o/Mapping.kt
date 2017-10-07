@@ -78,7 +78,7 @@ interface Entity<ID: Any> : Serializable {
     }
 }
 
-data class EntityMeta(val entity: Class<out Entity<*>>) : Serializable {
+data class EntityMeta(val entity: Class<out Any>) : Serializable {
     /**
      * The name of the database table backed by this entity. Defaults to [Class.getSimpleName]
      * (no conversion from `camelCase` to `hyphen_separated`) but you can annotate your class with [Table.dbname] to override
@@ -139,6 +139,6 @@ private val Field.dbname: String get() = name
 /**
  * Returns the list of database column names in an entity.
  */
-val <T : Entity<*>> Class<T>.persistedFieldNames: Set<String> get()
+val <T : Any> Class<T>.persistedFieldNames: Set<String> get()
 // thread-safety: this may compute the same value multiple times during high contention, this is OK
 = persistedFieldNamesCache.getOrPut(this) { (persistedFields.map { it.dbname }).toSet() }

@@ -1,5 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
+import com.vaadin.starter.beveragebuddy.LEntity
 import java.io.Serializable
 import java.time.LocalDate
 import javax.validation.constraints.*
@@ -8,7 +9,7 @@ import javax.validation.constraints.*
  * Represents a beverage review.
  */
 // must be open - Flow requires it to create ModelProxy
-open class Review(open var id: Long? = null,
+open class Review(override var id: Long? = null,
                   
                   @field:NotNull
                   @field:Min(1)
@@ -29,7 +30,7 @@ open class Review(open var id: Long? = null,
                   @field:NotNull
                   @field:Min(1)
                   @field:Max(99)
-                  var count: Int = 1) : Serializable {
+                  var count: Int = 1) : LEntity {
     override fun toString() = "Review(id=$id, score=$score, name='$name', date=$date, category=$category, count=$count)"
 
     fun copy() = Review(id, score, name, date, category.copy(), count)
