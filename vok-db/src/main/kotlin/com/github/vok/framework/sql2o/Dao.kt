@@ -50,7 +50,6 @@ fun <T: Any> Connection.getCount(clazz: Class<T>): Long {
  */
 interface Dao<T: Any>
 
-
 /**
  * Finds all instances of given entity. Fails if there is no table in the database with the name of [databaseTableName]. The list is eager
  * and thus it's useful for smallish tables only.
@@ -87,9 +86,11 @@ inline fun <reified T: Any> Dao<T>.deleteAll(): Unit = db { con.deleteAll(T::cla
  */
 inline fun <reified T: Any> Dao<T>.count(): Long = db { con.getCount(T::class.java) }
 
-fun <T: Any> Connection.deleteById(clazz: Class<T>, id: Any) = createQuery("delete from ${clazz.databaseTableName} where id=:id")
-        .addParameter("id", id)
-        .executeUpdate()
+fun <T: Any> Connection.deleteById(clazz: Class<T>, id: Any) {
+    createQuery("delete from ${clazz.databaseTableName} where id=:id")
+            .addParameter("id", id)
+            .executeUpdate()
+}
 
 /**
  * Deletes row with given ID. Does nothing if there is no such row.

@@ -98,7 +98,7 @@ data class IsNotNullFilter<T: Any>(override val propertyName: String) : BeanFilt
 class LikeFilter<T: Any>(override val propertyName: String, substring: String) : BeanFilter<T>() {
     private val substring = substring.trim()
     override val value = "%${substring.trim()}%"
-    override fun test(t: T) = (getValue(t) as? String)?.contains(substring, ignoreCase = true) ?: false
+    override fun test(t: T) = (getValue(t) as? String)?.contains(substring) ?: false
     override fun toString() = """$propertyName LIKE "$value""""
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -114,6 +114,31 @@ class LikeFilter<T: Any>(override val propertyName: String, substring: String) :
         return result
     }
     override fun toSQL92() = "$propertyName LIKE :$parameterName"
+}
+
+/**
+ * A ILIKE (case-insensitive) filter. Since it does substring matching, it performs quite badly in the databases. You should use full text search
+ * capabilities of your database. For example [PostgreSQL full-text search](https://www.postgresql.org/docs/9.5/static/textsearch.html).
+ */
+class ILikeFilter<T: Any>(override val propertyName: String, substring: String) : BeanFilter<T>() {
+    private val substring = substring.trim()
+    override val value = "%${substring.trim()}%"
+    override fun test(t: T) = (getValue(t) as? String)?.contains(substring, ignoreCase = true) ?: false
+    override fun toString() = """$propertyName ILIKE "$value""""
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+        other as LikeFilter<*>
+        if (propertyName != other.propertyName) return false
+        if (value != other.value) return false
+        return true
+    }
+    override fun hashCode(): Int {
+        var result = value.hashCode()
+        result = 31 * result + value.hashCode()
+        return result
+    }
+    override fun toSQL92() = "$propertyName ILIKE :$parameterName"
 }
 
 class AndFilter<T: Any>(children: Set<Filter<in T>>) : Filter<T> {
@@ -187,6 +212,7 @@ class SqlWhereBuilder<T: Any> {
     @Suppress("UNCHECKED_CAST")
     infix fun <R> KProperty1<T, R?>.gt(value: R): Filter<T> = OpFilter(name, value as Comparable<Any>, CompareOperator.gt)
     infix fun KProperty1<T, String?>.like(value: String): Filter<T> = LikeFilter(name, value)
+    infix fun KProperty1<T, String?>.ilike(value: String): Filter<T> = ILikeFilter(name, value)
     /**
      * Matches only values contained in given range.
      * @param range the range
