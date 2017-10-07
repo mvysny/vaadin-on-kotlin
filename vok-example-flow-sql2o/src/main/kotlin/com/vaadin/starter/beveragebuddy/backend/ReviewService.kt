@@ -16,6 +16,7 @@ object ReviewService {
     private val nextId = AtomicLong(0)
 
     init {
+/*
         val r = Random()
         val reviewCount = 20 + r.nextInt(30)
         val beverages = StaticData.BEVERAGES.entries.toList()
@@ -33,6 +34,7 @@ object ReviewService {
             review.count = 1 + r.nextInt(15)
             saveReview(review)
         }
+*/
     }
 
     /**

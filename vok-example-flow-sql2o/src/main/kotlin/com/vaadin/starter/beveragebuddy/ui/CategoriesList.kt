@@ -16,13 +16,14 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.framework.sql2o.get
+import com.github.vok.framework.sql2o.vaadin.and
 import com.github.vok.karibudsl.flow.*
 import com.vaadin.router.Route
 import com.vaadin.router.Title
 import com.vaadin.starter.beveragebuddy.backend.Category
-import com.vaadin.starter.beveragebuddy.backend.CategoryService
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewService
+import com.vaadin.starter.beveragebuddy.dataProvider
 import com.vaadin.ui.grid.Grid
 import com.vaadin.ui.html.Div
 import com.vaadin.ui.icon.Icon
@@ -93,8 +94,11 @@ class CategoriesList : Div() {
     }
 
     private fun updateView() {
-        val categories: List<Category> = CategoryService.findCategories(searchField.value)
-        grid.setItems(categories)
+        var dp = Category.dataProvider
+        if (searchField.value.isNotBlank()) {
+            dp = dp.and { Category::name ilike "%${searchField.value.trim()}%" }
+        }
+        grid.setDataProvider(dp)
     }
 
     private fun saveCategory(category: Category, operation: AbstractEditorDialog.Operation) {
