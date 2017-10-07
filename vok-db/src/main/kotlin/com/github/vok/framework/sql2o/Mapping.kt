@@ -37,11 +37,9 @@ interface Entity<ID: Any> : Serializable {
      */
     var id: ID?
 
-    /**
-     * The meta-data about this entity.
-     */
+    // private since we don't want this to be exposed via e.g. Vaadin Flow.
     @get:JsonIgnore
-    val meta get() = EntityMeta(javaClass)
+    private val meta get() = EntityMeta(javaClass)
 
     /**
      * Creates a new row in a database (if [id] is null) or updates the row in a database (if [id] is not null).

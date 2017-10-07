@@ -5,6 +5,7 @@ import com.github.vok.framework.sql2o.dataSource
 import com.github.vok.framework.sql2o.dataSourceConfig
 import com.vaadin.server.ServiceInitEvent
 import com.vaadin.server.VaadinServiceInitListener
+import com.vaadin.starter.beveragebuddy.backend.StaticData
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.jsoup.nodes.Element
@@ -41,6 +42,8 @@ class Bootstrap: ServletContextListener {
         val flyway = Flyway()
         flyway.dataSource = VaadinOnKotlin.dataSource
         flyway.migrate()
+        log.info("Populating database with testing data")
+        StaticData.createTestingData()
         log.info("Initialization complete")
     }
 

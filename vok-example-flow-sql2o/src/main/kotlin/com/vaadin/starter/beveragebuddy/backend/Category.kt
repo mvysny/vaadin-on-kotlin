@@ -1,6 +1,7 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import java.io.Serializable
+import com.github.vok.framework.sql2o.Dao
+import com.github.vok.framework.sql2o.Entity
 
 /**
  * Represents a beverage category.
@@ -8,14 +9,13 @@ import java.io.Serializable
  * @property name the category name
  */
 // must be open - Flow requires it to create ModelProxy
-open class Category(open var id: Long? = null, var name: String = "") : Serializable {
+open class Category(override var id: Long? = null, var name: String = "") : Entity<Long> {
 
-    companion object {
+    companion object : Dao<Category> {
         val UNDEFINED = Category(name = "(undefined)")
     }
 
     override fun toString() = "Category(id=$id, name='$name')"
-
 
     fun copy() = Category(id, name)
 

@@ -1,5 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
+import com.github.vok.framework.sql2o.db
 import java.util.LinkedHashMap
 
 internal object StaticData {
@@ -100,5 +101,9 @@ internal object StaticData {
                 "Mead",
                 "Soma")
                 .forEach { name -> BEVERAGES.put(name, OTHER) }
+    }
+
+    fun createTestingData() = db {
+        BEVERAGES.values.distinct().forEach { name -> Category(name = name).save() }
     }
 }
