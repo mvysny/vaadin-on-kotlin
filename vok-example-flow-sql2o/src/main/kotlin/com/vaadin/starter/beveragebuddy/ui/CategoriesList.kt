@@ -22,7 +22,6 @@ import com.vaadin.router.Route
 import com.vaadin.router.Title
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
-import com.vaadin.starter.beveragebuddy.backend.ReviewService
 import com.vaadin.starter.beveragebuddy.dataProvider
 import com.vaadin.ui.grid.Grid
 import com.vaadin.ui.html.Div
@@ -88,9 +87,7 @@ class CategoriesList : Div() {
     }
 
     private fun Category.getReviewCount(): String {
-        val reviewsInCategory: List<Review> = ReviewService.findReviews(name)
-        val totalCount: Int = reviewsInCategory.sumBy { it.count }
-        return totalCount.toString()
+        return Review.getTotalCountForReviewsInCategory(id).toString()
     }
 
     private fun updateView() {
@@ -108,11 +105,6 @@ class CategoriesList : Div() {
     }
 
     private fun deleteCategory(category: Category) {
-        val reviewsInCategory = ReviewService.findReviews(category.name)
-        reviewsInCategory.forEach { review ->
-            review.category = Category.UNDEFINED
-            ReviewService.saveReview(review)
-        }
         category.delete()
         notification.show("Category successfully deleted.")
         updateView()

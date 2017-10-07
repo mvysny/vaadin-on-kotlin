@@ -12,18 +12,12 @@ import com.vaadin.flow.model.ModelConverter
 
 class LocalDateToStringConverter : ModelConverter<LocalDate, String> {
 
-    override fun toModel(presentationValue: String): LocalDate {
-        return LocalDate.parse(presentationValue, DATE_FORMAT)
-    }
+    override fun toModel(presentationValue: String) = LocalDate.parse(presentationValue, DATE_FORMAT)
 
-    override fun toPresentation(modelValue: LocalDate?): String? {
-        return modelValue?.format(DATE_FORMAT)
-    }
+    override fun toPresentation(modelValue: LocalDate?): String? = modelValue?.format(DATE_FORMAT)
 
     companion object {
-
         private val DATE_FORMAT = DateTimeFormatter
                 .ofPattern("MM/dd/yyyy")
     }
-
 }

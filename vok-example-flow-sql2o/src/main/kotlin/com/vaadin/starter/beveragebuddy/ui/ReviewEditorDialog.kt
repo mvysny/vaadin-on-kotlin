@@ -19,6 +19,7 @@ import com.github.vok.karibudsl.flow.*
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.dataProvider
+import com.vaadin.starter.beveragebuddy.ui.converters.toId
 import com.vaadin.ui.combobox.ComboBox
 import com.vaadin.ui.datepicker.DatePicker
 import com.vaadin.ui.textfield.TextField
@@ -51,7 +52,7 @@ class ReviewEditorDialog(saveHandler: (Review, AbstractEditorDialog.Operation) -
                 setItemLabelGenerator { it.name }
                 isAllowCustomValue = false
                 dataProvider = Category.dataProvider
-                bind(binder).bindN(Review::category)
+                bind(binder).toId().bindN(Review::category)
             }
             lastTasted = datePicker("Choose the date") {
                 max = LocalDate.now()

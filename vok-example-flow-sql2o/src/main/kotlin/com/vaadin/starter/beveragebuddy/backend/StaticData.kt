@@ -1,7 +1,8 @@
 package com.vaadin.starter.beveragebuddy.backend
 
 import com.github.vok.framework.sql2o.db
-import java.util.LinkedHashMap
+import java.time.LocalDate
+import java.util.*
 
 internal object StaticData {
 
@@ -104,6 +105,26 @@ internal object StaticData {
     }
 
     fun createTestingData() = db {
+        // generate categories
         BEVERAGES.values.distinct().forEach { name -> Category(name = name).save() }
+
+        /// generate reviews
+        val r = Random()
+        val reviewCount = 20 + r.nextInt(30)
+        val beverages = StaticData.BEVERAGES.entries.toList()
+
+        for (i in 0 until reviewCount) {
+            val review = Review()
+            val beverage = beverages[r.nextInt(StaticData.BEVERAGES.size)]
+            val category = Category.findByNameOrThrow(beverage.value)
+            review.name = beverage.key
+            val testDay = LocalDate.of(1930 + r.nextInt(88),
+                    1 + r.nextInt(12), 1 + r.nextInt(28))
+            review.date = testDay
+            review.score = 1 + r.nextInt(5)
+            review.category = category.id
+            review.count = 1 + r.nextInt(15)
+            review.save()
+        }
     }
 }

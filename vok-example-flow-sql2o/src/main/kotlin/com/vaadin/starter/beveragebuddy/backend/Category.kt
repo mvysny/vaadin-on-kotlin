@@ -1,6 +1,7 @@
 package com.vaadin.starter.beveragebuddy.backend
 
 import com.github.vok.framework.sql2o.Dao
+import com.github.vok.framework.sql2o.db
 import com.github.vok.framework.sql2o.findBy
 import com.vaadin.starter.beveragebuddy.LEntity
 
@@ -13,7 +14,6 @@ import com.vaadin.starter.beveragebuddy.LEntity
 open class Category(override var id: Long? = null, var name: String = "") : LEntity {
 
     companion object : Dao<Category> {
-        val UNDEFINED = Category(name = "(undefined)")
         fun findByName(name: String): Category? = findBy(1) { Category::name eq name } .firstOrNull()
         fun findByNameOrThrow(name: String): Category = findByName(name) ?: throw IllegalArgumentException("No category named $name")
         fun existsWithName(name: String): Boolean = findByName(name) != null
@@ -32,4 +32,15 @@ open class Category(override var id: Long? = null, var name: String = "") : LEnt
     }
 
     override fun hashCode(): Int = id?.hashCode() ?: 0
+
+    override fun delete() {
+        db {
+            if (id != null) {
+                con.createQuery("update Review set category = NULL where category=:catId")
+                        .addParameter("catId", id!!)
+                        .executeUpdate()
+            }
+            super.delete()
+        }
+    }
 }

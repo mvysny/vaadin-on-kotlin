@@ -24,12 +24,7 @@ import com.vaadin.flow.model.ModelConverter
 
 class LongToStringConverter : ModelConverter<Long, String> {
 
-    override fun toPresentation(modelValue: Long?): String? {
-        return modelValue?.toString()
-    }
+    override fun toPresentation(modelValue: Long?): String? = modelValue?.toString()
 
-    override fun toModel(presentationValue: String?): Long? {
-        return if (presentationValue == null) null else java.lang.Long.parseLong(presentationValue)
-    }
-
+    override fun toModel(presentationValue: String?): Long? = presentationValue?.toLong()
 }

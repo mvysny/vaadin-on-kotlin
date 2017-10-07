@@ -22,6 +22,7 @@ import com.vaadin.router.Route
 import com.vaadin.router.Title
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewService
+import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
 import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
@@ -66,10 +67,10 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
         @InternalContainerAnnotationForConvert(
         Convert(value = LongToStringConverter::class, path = "id"),
         Convert(value = LocalDateToStringConverter::class, path = "date"),
-        Convert(value = LongToStringConverter::class, path = "category.id")
+        Convert(value = LongToStringConverter::class, path = "category")
         )
         // suppress wildcards: Kotlin generates List<? extends Review> which Flow doesn't like much and will fail with an exception.
-        fun setReviews(reviews: @JvmSuppressWildcards List<Review>)
+        fun setReviews(reviews: @JvmSuppressWildcards List<ReviewWithCategory>)
     }
 
     init {
@@ -106,7 +107,7 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
     }
 
     @EventHandler
-    private fun edit(@ModelItem review: Review) {
+    private fun edit(@ModelItem review: ReviewWithCategory) {
         openForm(ReviewService.get(review.id!!), AbstractEditorDialog.Operation.EDIT)
     }
 
