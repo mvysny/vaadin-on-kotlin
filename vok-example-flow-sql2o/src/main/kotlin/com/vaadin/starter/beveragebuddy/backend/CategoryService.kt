@@ -12,10 +12,6 @@ object CategoryService {
     private val categories = ConcurrentHashMap<Long, Category>()
     private val nextId = AtomicLong(0)
 
-    init {
-        StaticData.BEVERAGES.values.distinct().forEach { name -> saveCategory(Category(name = name)) }
-    }
-
     /**
      * Fetches the categories whose name matches the given filter text.
      *
@@ -66,14 +62,6 @@ object CategoryService {
      * @return      the category
      */
     fun findCategoryById(id: Long): Category? = categories[id]
-    fun getById(id: Long): Category = categories[id] ?: throw IllegalStateException("Category with id $id does not exist")
-
-    /**
-     * Deletes the given category from the category store.
-     * @param category  the category to delete
-     * @return  true if the operation was successful, otherwise false
-     */
-    fun deleteCategory(category: Category): Boolean = categories.remove(category.id) != null
 
     /**
      * Persists the given category into the category store.

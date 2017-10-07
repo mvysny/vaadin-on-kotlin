@@ -1,5 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
+import com.github.vok.framework.sql2o.findById
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
 import java.time.LocalDate
 import java.util.*
@@ -85,7 +86,7 @@ object ReviewService {
             // has null id) is not handled here, because it can't currently
             // occur via the UI.
             // Note that Category.UNDEFINED also gets mapped to null.
-        category = (if (category.id == null) null else CategoryService.findCategoryById(category.id!!)) ?: Category.UNDEFINED
+        category = (if (category.id == null) null else Category.findById(category.id!!)) ?: Category.UNDEFINED
         if (entity == null) {
             // Make a copy to keep entities and DTOs separated
             entity = dto.copy()

@@ -15,6 +15,7 @@
  */
 package com.vaadin.starter.beveragebuddy.ui
 
+import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.flow.*
 import com.vaadin.router.Route
 import com.vaadin.router.Title
@@ -82,7 +83,7 @@ class CategoriesList : Div() {
     }
 
     private fun selectionChanged(categoryId: Long) {
-        form.open(CategoryService.getById(categoryId), AbstractEditorDialog.Operation.EDIT)
+        form.open(Category[categoryId], AbstractEditorDialog.Operation.EDIT)
     }
 
     private fun Category.getReviewCount(): String {
@@ -97,7 +98,7 @@ class CategoriesList : Div() {
     }
 
     private fun saveCategory(category: Category, operation: AbstractEditorDialog.Operation) {
-        CategoryService.saveCategory(category)
+        category.save()
         notification.show("Category successfully ${operation.nameInText}ed.")
         updateView()
     }
@@ -108,7 +109,7 @@ class CategoriesList : Div() {
             review.category = Category.UNDEFINED
             ReviewService.saveReview(review)
         }
-        CategoryService.deleteCategory(category)
+        category.delete()
         notification.show("Category successfully deleted.")
         updateView()
     }
