@@ -1,8 +1,10 @@
 package com.vaadin.starter.beveragebuddy
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.vok.framework.sql2o.EntityMeta
-import com.github.vok.framework.sql2o.db
+import com.github.vok.framework.sql2o.*
+import com.github.vok.framework.sql2o.vaadin.EntityDataProvider
+import com.github.vok.framework.sql2o.vaadin.SqlDataProvider
+import com.vaadin.data.provider.DataProvider
 import java.io.Serializable
 
 /**
@@ -54,3 +56,9 @@ interface LEntity : Serializable {
         }
     }
 }
+
+/**
+ * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
+ * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
+ */
+inline val <reified T: LEntity> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })

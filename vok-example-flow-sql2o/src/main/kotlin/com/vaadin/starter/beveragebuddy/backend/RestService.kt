@@ -16,4 +16,9 @@ class RestService {
     @Path("/categories")
     @Produces(MediaType.APPLICATION_JSON)
     fun getAllCategories(): List<Category> = Category.findAll()
+
+    @GET
+    @Path("/reviews")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getAllReviews(): List<Review> = Review.findAll()
 }

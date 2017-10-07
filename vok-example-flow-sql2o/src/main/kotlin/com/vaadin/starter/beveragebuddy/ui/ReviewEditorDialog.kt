@@ -24,6 +24,7 @@ import com.vaadin.data.validator.StringLengthValidator
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.CategoryService
 import com.vaadin.starter.beveragebuddy.backend.Review
+import com.vaadin.starter.beveragebuddy.dataProvider
 import com.vaadin.ui.combobox.ComboBox
 import com.vaadin.ui.datepicker.DatePicker
 import com.vaadin.ui.textfield.TextField
@@ -54,7 +55,7 @@ class ReviewEditorDialog(saveHandler: (Review, AbstractEditorDialog.Operation) -
             categoryBox = comboBox("Choose a category") {
                 setItemLabelGenerator { it.name }
                 isAllowCustomValue = false
-                setItems(CategoryService.findAll())
+                dataProvider = Category.dataProvider
                 bind(binder).bindN(Review::category)
             }
             lastTasted = datePicker("Choose the date") {

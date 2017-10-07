@@ -1,7 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
 import com.github.vok.framework.sql2o.Dao
-import com.github.vok.framework.sql2o.Entity
 import com.vaadin.starter.beveragebuddy.LEntity
 
 /**

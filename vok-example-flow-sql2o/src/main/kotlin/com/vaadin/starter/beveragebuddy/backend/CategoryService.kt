@@ -99,6 +99,4 @@ object CategoryService {
             entity.name = dto.name
         }
     }
-
-    fun findAll() = findCategories("")
 }

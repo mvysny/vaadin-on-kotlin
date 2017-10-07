@@ -9,9 +9,10 @@ import kotlin.streams.toList
 /**
  * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering
  * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [SqlDataProvider].
+ * @param idMapper returns the primary key of the entity.
  */
-class EntityDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDataProvider<T, Filter<T>?>() {
-    override fun getId(item: T): Any = item.id!!
+class EntityDataProvider<T : Any>(val clazz: Class<T>, val idMapper: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+    override fun getId(item: T): Any = idMapper(item)
     override fun toString() = "EntityDataProvider($clazz)"
 
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = db {
@@ -109,7 +110,7 @@ fun <T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
-inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java)
+inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })
 
 /**
  * Returns all items provided by this data provider as an eager list. Careful with larger data!

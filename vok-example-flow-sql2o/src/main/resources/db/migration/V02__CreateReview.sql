@@ -1,5 +1,6 @@
 create TABLE REVIEW (
   id bigint auto_increment PRIMARY KEY,
+  name VARCHAR(200) not null,
   score TINYINT NOT NULL,
   date DATE not NULL,
   category BIGINT,
