@@ -16,7 +16,6 @@ object ReviewService {
     private val nextId = AtomicLong(0)
 
     init {
-/*
         val r = Random()
         val reviewCount = 20 + r.nextInt(30)
         val beverages = StaticData.BEVERAGES.entries.toList()
@@ -24,7 +23,7 @@ object ReviewService {
         for (i in 0 until reviewCount) {
             val review = Review()
             val beverage = beverages[r.nextInt(StaticData.BEVERAGES.size)]
-            val category = CategoryService.findCategoryOrThrow(beverage.value)
+            val category = Category.findByNameOrThrow(beverage.value)
             review.name = beverage.key
             val testDay = LocalDate.of(1930 + r.nextInt(88),
                     1 + r.nextInt(12), 1 + r.nextInt(28))
@@ -34,7 +33,6 @@ object ReviewService {
             review.count = 1 + r.nextInt(15)
             saveReview(review)
         }
-*/
     }
 
     /**

@@ -128,3 +128,30 @@ inline fun <reified T: Any> Dao<T>.deleteBy(noinline block: SqlWhereBuilder<T>.(
  * Returns the metadata for this entity.
  */
 inline val <reified T: Entity<*>> Dao<T>.meta: EntityMeta get() = EntityMeta(T::class.java)
+
+fun <T: Any> Connection.findBy(clazz: Class<T>, limit: Int, block: SqlWhereBuilder<T>.()->Filter<T>): List<T> {
+    val filter = block(SqlWhereBuilder())
+    val query = createQuery("select * from ${clazz.databaseTableName} where ${filter.toSQL92()} limit $limit")
+    filter.getSQL92Parameters().entries.forEach { (name, value) -> query.addParameter(name, value) }
+    return query.executeAndFetch(clazz)
+}
+
+/**
+ * Allows you to find rows by given where clause:
+ *
+ * ```
+ * Person.findBy { "name = :name"("name" to "Albedo") }  // raw sql where clause with parameters
+ * Person.findBy { Person::name eq "Rubedo" }  // fancy type-safe criteria
+ * ```
+ *
+ * I'm not sure whether this is actually any good - it's too fancy, too smart, too bloody complex. Only useful when
+ * you need to construct queries programatically. But if you want more complex stuff or even joins, fall back and just write
+ * SQL:
+ *
+ * ```
+ * db { con.createQuery("select * from Foo where name = :name").addParameter("name", name).executeAndFetch(Person::class.java) }
+ * ```
+ *
+ * Way easier to understand.
+ */
+inline fun <reified T: Any> Dao<T>.findBy(limit: Int, noinline block: SqlWhereBuilder<T>.()->Filter<T>): List<T> = db { con.findBy(T::class.java, limit, block) }
