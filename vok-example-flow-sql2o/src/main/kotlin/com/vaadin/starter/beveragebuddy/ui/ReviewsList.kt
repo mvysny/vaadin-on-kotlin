@@ -15,13 +15,13 @@
  */
 package com.vaadin.starter.beveragebuddy.ui
 
+import com.github.vok.framework.sql2o.get
 import com.vaadin.annotations.InternalContainerAnnotationForConvert
 import com.vaadin.flow.model.Convert
 import com.vaadin.flow.model.TemplateModel
 import com.vaadin.router.Route
 import com.vaadin.router.Title
 import com.vaadin.starter.beveragebuddy.backend.Review
-import com.vaadin.starter.beveragebuddy.backend.ReviewService
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
@@ -81,19 +81,19 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
     }
 
     private fun save(review: Review, operation: AbstractEditorDialog.Operation) {
-        ReviewService.saveReview(review)
+        review.save()
         updateList()
         notification.show("Beverage successfully ${operation.nameInText}ed.")
     }
 
     private fun delete(review: Review) {
-        ReviewService.deleteReview(review)
+        review.delete()
         updateList()
         notification.show("Beverage successfully deleted.")
     }
 
     private fun updateList() {
-        val reviews = ReviewService.findReviews(search.value)
+        val reviews = ReviewWithCategory.findReviews(search.value)
         if (search.isEmpty) {
             header.text = "Reviews"
             header.add(Span("${reviews.size} in total"))
@@ -108,7 +108,7 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
 
     @EventHandler
     private fun edit(@ModelItem review: ReviewWithCategory) {
-        openForm(ReviewService.get(review.id!!), AbstractEditorDialog.Operation.EDIT)
+        openForm(Review[review.id!!], AbstractEditorDialog.Operation.EDIT)
     }
 
     private fun openForm(review: Review,
