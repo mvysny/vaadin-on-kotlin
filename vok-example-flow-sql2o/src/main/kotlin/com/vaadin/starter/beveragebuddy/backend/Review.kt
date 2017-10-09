@@ -64,7 +64,7 @@ open class Review(override var id: Long? = null,
         fun findReviews(filter: String): List<ReviewWithCategory> {
             val normalizedFilter = filter.trim().toLowerCase() + "%"
             return db {
-                con.createQuery("""select r.id, r.score, r.name, r.date, r.count, r.category, IFNULL(c.name, 'Undefined') as categoryName
+                con.createQuery("""select r.*, IFNULL(c.name, 'Undefined') as categoryName
                     FROM Review r left join Category c on r.category = c.id
                     WHERE r.name ILIKE :filter or IFNULL(c.name, 'Undefined') ILIKE :filter or
                      CAST(r.score as VARCHAR) ILIKE :filter or
