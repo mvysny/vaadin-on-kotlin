@@ -67,6 +67,7 @@ class CategoriesList : Div() {
         }
         grid = grid {
             addColumn("Category", { it.name })
+            // @todo mavi this is N+1 queries (a query run for every row). A performance bottleneck. I need to do some smart join here instead.
             addColumn("Beverages", { it.getReviewCount() })
             // Grid does not yet implement HasStyle
             element.classList.add("categories")

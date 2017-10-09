@@ -78,7 +78,7 @@ open class Review(override var id: Long? = null,
 }
 
 /**
- * Fetches a join of Review and its Category.
+ * Holds the join of Review and its Category.
  * @property categoryName the [Category.name]
  */
 // must be open - Flow requires non-final classes for ModelProxy
