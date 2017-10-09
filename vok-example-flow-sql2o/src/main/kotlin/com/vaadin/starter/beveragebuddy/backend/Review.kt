@@ -8,6 +8,11 @@ import javax.validation.constraints.*
 
 /**
  * Represents a beverage review.
+ * @property name the beverage name
+ * @property score the score, 1..5, 1 being worst, 5 being best
+ * @property date when the review was done
+ * @property category the beverage category [Category.id]
+ * @property count times tasted, 1..99
  */
 // must be open - Flow requires it to create ModelProxy
 open class Review(override var id: Long? = null,
@@ -36,43 +41,45 @@ open class Review(override var id: Long? = null,
     fun copy() = Review(id, score, name, date, category, count)
 
     companion object : Dao<Review> {
+        /**
+         * Computes the total sum of [count] for all reviews belonging to given [categoryId].
+         * @return the total sum, 0 or greater.
+         */
         fun getTotalCountForReviewsInCategory(categoryId: Long?): Long = db {
             val scalar = con.createQuery("select sum(r.count) from Review r where r.category = :catId")
                     .addParameter("catId", categoryId)
                     .executeScalar()
             (scalar as Number?)?.toLong() ?: 0L
         }
-    }
-}
 
-/**
- * Fetches a join of Review and its Category.
- */
-// must be open - Flow requires non-final classes for ModelProxy
-open class ReviewWithCategory(open var id: Long? = null, var score: Int = 0, var name: String = "", var date: LocalDate = LocalDate.now(),
-                              var count: Int = 1, var category: Long? = null, var categoryName: String? = null) {
-    companion object {
         /**
          * Fetches the reviews matching the given filter text.
          *
          * The matching is case insensitive. When passed an empty filter text,
          * the method returns all categories. The returned list is ordered
          * by name.
-         *
-         * @param filter    the filter text
-         * @return          the list of matching reviews
+         * @param filter the filter text
+         * @return the list of matching reviews, may be empty.
          */
         fun findReviews(filter: String): List<ReviewWithCategory> {
             val normalizedFilter = filter.trim().toLowerCase() + "%"
             return db {
                 con.createQuery("""select r.id, r.score, r.name, r.date, r.count, r.category, IFNULL(c.name, 'Undefined') as categoryName
-                    from Review r left join Category c on r.category = c.id
-                    where r.name ILIKE :filter or IFNULL(c.name, 'Undefined') ILIKE :filter or
+                    FROM Review r left join Category c on r.category = c.id
+                    WHERE r.name ILIKE :filter or IFNULL(c.name, 'Undefined') ILIKE :filter or
                      CAST(r.score as VARCHAR) ILIKE :filter or
-                     CAST(r.count as VARCHAR) ILIKE :filter""")
+                     CAST(r.count as VARCHAR) ILIKE :filter
+                     ORDER BY r.name""")
                         .addParameter("filter", normalizedFilter)
                         .executeAndFetch(ReviewWithCategory::class.java)
             }
         }
     }
 }
+
+/**
+ * Fetches a join of Review and its Category.
+ * @property categoryName the [Category.name]
+ */
+// must be open - Flow requires non-final classes for ModelProxy
+open class ReviewWithCategory(var categoryName: String? = null) : Review()

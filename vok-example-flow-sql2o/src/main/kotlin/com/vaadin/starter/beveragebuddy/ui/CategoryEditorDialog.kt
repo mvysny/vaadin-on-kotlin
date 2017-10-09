@@ -21,6 +21,7 @@ import com.github.vok.karibudsl.flow.textField
 import com.github.vok.karibudsl.flow.trimmingConverter
 import com.vaadin.data.validator.StringLengthValidator
 import com.vaadin.starter.beveragebuddy.backend.Category
+import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 import com.vaadin.ui.textfield.TextField
 
@@ -55,7 +56,7 @@ class CategoryEditorDialog(itemSaver: (Category, AbstractEditorDialog.Operation)
     }
 
     override fun confirmDelete() {
-        val reviewCount = ReviewWithCategory.findReviews(currentItem!!.name).size
+        val reviewCount = Review.findReviews(currentItem!!.name).size
         val additionalMessage = if (reviewCount == 0)
             ""
         else
