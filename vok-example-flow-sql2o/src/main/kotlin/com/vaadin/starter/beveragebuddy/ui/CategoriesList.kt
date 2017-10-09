@@ -48,9 +48,7 @@ class CategoriesList : Div() {
 
     init {
         addClassName("categories-list")
-        notification = paperToast {
-            addClassName("notification")
-        }
+        notification = paperToast()
         add(form)
         div { // view toolbar
             addClassName("view-toolbar")

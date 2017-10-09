@@ -118,9 +118,7 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
                     addClickListener { deleteClicked() }
                 }
             }
-            notification = paperToast {
-                addClassName("notification")
-            }
+            notification = paperToast()
         }
     }
 

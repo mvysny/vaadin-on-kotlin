@@ -158,7 +158,10 @@ class PaperToast : Component(), HasStyle {
     }
 }
 
-fun (@VaadinDsl HasComponents).paperToast(block: (@VaadinDsl PaperToast).() -> Unit = {}) = init(PaperToast(), block)
+fun (@VaadinDsl HasComponents).paperToast(block: (@VaadinDsl PaperToast).() -> Unit = {}) = init(PaperToast()) {
+    addClassName("notification")
+    block()
+}
 
 @DomEvent("iron-announce")
 class IronAnnounceEvent(source: PaperToast, fromClient: Boolean) : ComponentEvent<PaperToast>(source, fromClient)
