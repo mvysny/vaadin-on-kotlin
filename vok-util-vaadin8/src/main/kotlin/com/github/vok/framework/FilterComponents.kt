@@ -34,7 +34,7 @@ interface FilterFactory<F> : Serializable {
 data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?, var equalsValue: T?) : Serializable {
     fun <F> toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? {
         if (equalsValue != null) return filterFactory.eq(propertyName, equalsValue!!)
-        if (lessThanValue != null && greaterThanValue != null) return filterFactory.between(propertyName, lessThanValue!!, greaterThanValue!!)
+        if (lessThanValue != null && greaterThanValue != null) return filterFactory.between(propertyName, greaterThanValue!!, lessThanValue!!)
         if (lessThanValue != null) return filterFactory.le(propertyName, lessThanValue!!)
         if (greaterThanValue != null) return filterFactory.ge(propertyName, greaterThanValue!!)
         return null
