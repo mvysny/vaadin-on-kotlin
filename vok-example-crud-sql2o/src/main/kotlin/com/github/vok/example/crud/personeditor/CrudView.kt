@@ -2,6 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.sql2o.db
 import com.github.vok.framework.sql2o.deleteById
+import com.github.vok.framework.sql2o.vaadin.configurableFilter
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.karibudsl.*
@@ -33,10 +34,6 @@ class CrudView: VerticalLayout(), View {
 
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
-    private val personGridDS = Person.dataProvider.withConfigurableFilter()
-
-    // you can restrict the values by writing the following expression:
-//    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
 
     init {
         setSizeFull(); isMargin = false
@@ -47,8 +44,10 @@ class CrudView: VerticalLayout(), View {
             }
             button("Generate testing data", { generateTestingData() })
         }
-        // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
-        personGrid = grid(Person::class, dataProvider = personGridDS) {
+        // the SQL2O list demo - shows all instances of a particular database table, allows sorting and filtering.
+        // you can restrict the values by writing the following expression:
+        // dataProvider = Person.dataProvider.and { Person::age between 20..60 }
+        personGrid = grid(Person::class, dataProvider = Person.dataProvider.configurableFilter()) {
             expandRatio = 1f; setSizeFull()
 
             // example of a custom renderer which converts value to a displayable string.
