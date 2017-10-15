@@ -10,9 +10,15 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 /**
- * A very simple JPA entity. Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
+ * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by SQL2O.
+ * Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
  * @property id person ID
  * @property name person name
+ * @property age the person age, 15..100
+ * @property dateOfBirth date of birth, optional.
+ * @property created when the record was created
+ * @property maritalStatus the marital status
+ * @property alive whether the person is alive (true) or deceased (false).
  */
 data class Person(
         override var id: Long? = null,
