@@ -28,7 +28,8 @@ interface FilterFactory<F> : Serializable {
     fun eq(propertyName: String, value: Any): F
     fun le(propertyName: String, value: Any): F
     fun ge(propertyName: String, value: Any): F
-    fun like(propertyName: String, value: String): F
+    // case-insensitive like
+    fun ilike(propertyName: String, value: String): F
     fun between(propertyName: String, min: Any, max: Any) = and(setOf(ge(propertyName, min), le(propertyName, max)))
 }
 
@@ -480,7 +481,7 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvid
         if (field is ComboBox) {
             return filterFactory.eq(property.name, value)
         } else {
-            return filterFactory.like(property.name, value.toString())
+            return filterFactory.ilike(property.name, value.toString())
         }
     }
 }

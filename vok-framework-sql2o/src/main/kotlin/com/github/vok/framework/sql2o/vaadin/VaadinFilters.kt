@@ -22,7 +22,7 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
     override fun eq(propertyName: String, value: Any) = EqFilter<T>(propertyName, value)
     override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.le)
     override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.ge)
-    override fun like(propertyName: String, value: String) = ILikeFilter<T>(propertyName, value)
+    override fun ilike(propertyName: String, value: String) = ILikeFilter<T>(propertyName, value)
 }
 
 /**

@@ -5,6 +5,7 @@ import com.vaadin.shared.data.sort.SortDirection
 import java.io.Serializable
 import java.util.stream.Stream
 import javax.persistence.criteria.*
+import javax.persistence.metamodel.EntityType
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
@@ -199,6 +200,10 @@ data class IsTrueFilter(val field: String) : JPAFilter {
 }
 data class LikeFilter(val field: String, val value: String) : JPAFilter {
     override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.like(root.get<String>(field), value)
+    override fun toString() = "$field like $value"
+}
+data class ILikeFilter(val field: String, val value: String) : JPAFilter {
+    override fun toPredicate(cb: CriteriaBuilder, root: Root<*>): Predicate = cb.like(cb.lower(root.get<String>(field)), value.toLowerCase())
     override fun toString() = "$field like $value"
 }
 

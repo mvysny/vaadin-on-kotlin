@@ -29,7 +29,7 @@ class JPAFilterFactory : FilterFactory<JPAFilter> {
     override fun eq(propertyName: String, value: Any) = EqFilter(propertyName, value as Serializable?)
     override fun le(propertyName: String, value: Any) = Le2Filter(propertyName, value as Comparable<Any>)
     override fun ge(propertyName: String, value: Any) = Ge2Filter(propertyName, value as Comparable<Any>)
-    override fun like(propertyName: String, value: String) = LikeFilter(propertyName, "%$value%")
+    override fun ilike(propertyName: String, value: String) = ILikeFilter(propertyName, "%$value%")
 }
 
 /**
