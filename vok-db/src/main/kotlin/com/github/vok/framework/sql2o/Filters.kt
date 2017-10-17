@@ -128,7 +128,7 @@ class ILikeFilter<T: Any>(override val propertyName: String, substring: String) 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
-        other as LikeFilter<*>
+        other as ILikeFilter<*>
         if (propertyName != other.propertyName) return false
         if (value != other.value) return false
         return true

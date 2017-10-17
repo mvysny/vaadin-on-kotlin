@@ -8,6 +8,7 @@ import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -431,14 +432,15 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvid
 
     protected fun getEnumFilterIcon(property: PropertyDefinition<T, *>, constant: Enum<*>): Resource? = null
 
-    private fun <V> createEnumField(type: Class<V?>, property: PropertyDefinition<T, V?>): HasValue<V?> {
-        val enumSelect = ComboBox<V?>()
-        enumSelect.setItems(*type.enumConstants)
-        enumSelect.itemCaptionGenerator = ItemCaptionGenerator { e -> getEnumFilterDisplayName(property, e as Enum<*>) ?: e.name }
-        return enumSelect
+    private fun <V> createEnumField(type: Class<V?>, property: PropertyDefinition<T, V?>): HasValue<V?> = ComboBox<V?>().apply {
+        setItems(*type.enumConstants)
+        itemCaptionGenerator = ItemCaptionGenerator { e -> getEnumFilterDisplayName(property, e as Enum<*>) ?: e.name }
+        addStyleName(ValoTheme.COMBOBOX_TINY)
     }
 
-    protected fun createTextField(property: PropertyDefinition<T, *>): HasValue<*> = TextField()
+    protected fun createTextField(property: PropertyDefinition<T, *>): HasValue<*> = TextField().apply {
+        addStyleName(ValoTheme.TEXTFIELD_TINY)
+    }
 
     protected fun createDateField(property: PropertyDefinition<T, *>): DateFilterPopup {
         val popup = DateFilterPopup()
@@ -453,12 +455,11 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvid
     /**
      * Don't forget that the returned field must be tri-state - true, false, null (to disable filtering).
      */
-    protected fun createBooleanField(property: PropertyDefinition<T, Boolean?>): HasValue<Boolean?> {
-        val booleanSelect = ComboBox<Boolean?>()
-        booleanSelect.setItems(listOf(true, false))
-        booleanSelect.itemCaptionGenerator = ItemCaptionGenerator { b -> getBooleanFilterDisplayName(property, b!!) ?: b.toString() }
-        booleanSelect.itemIconGenerator = IconGenerator { b -> getBooleanFilterIcon(property, b!!) }
-        return booleanSelect
+    protected fun createBooleanField(property: PropertyDefinition<T, Boolean?>): HasValue<Boolean?> = ComboBox<Boolean?>().apply {
+        setItems(listOf(true, false))
+        itemCaptionGenerator = ItemCaptionGenerator { b -> getBooleanFilterDisplayName(property, b!!) ?: b.toString() }
+        itemIconGenerator = IconGenerator { b -> getBooleanFilterIcon(property, b!!) }
+        addStyleName(ValoTheme.COMBOBOX_TINY)
     }
 
     protected fun getBooleanFilterIcon(property: PropertyDefinition<T, Boolean?>, value: Boolean): Resource? = null

@@ -17,6 +17,12 @@ class FiltersTest {
         expect(true) { ILikeFilter<Person>("name", "A").test(Person(name = "kari", age = 35)) }
     }
 
+    @Test
+    fun testEquals() {
+        expect(ILikeFilter("name", "A")) { ILikeFilter<Person>("name", "A") }
+        expect(false) { ILikeFilter<Person>("name", "A").equals(LikeFilter<Person>("name", "A")) }
+    }
+
     private fun sql(block: SqlWhereBuilder<Person>.()->Filter<Person>): String {
         val filter: Filter<Person> = block(SqlWhereBuilder())
         return unmangleParameterNames(filter.toSQL92(), filter.getSQL92Parameters())
