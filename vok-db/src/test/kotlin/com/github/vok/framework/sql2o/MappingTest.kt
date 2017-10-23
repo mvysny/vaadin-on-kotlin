@@ -1,6 +1,6 @@
 package com.github.vok.framework.sql2o
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
 import org.junit.Test
 import java.time.LocalDate
 import kotlin.test.expect
@@ -54,7 +54,7 @@ class MappingTest : AbstractDbTest() {
 
     @Test
     fun testJsonSerializationIgnoresMeta() {
-        expect("""{"id":null,"name":"Zaphod","age":42,"ignored":null,"ignored2":null,"dateOfBirth":null,"created":null,"alive":null,"maritalStatus":null}""") { ObjectMapper().writeValueAsString(Person(name = "Zaphod", age = 42)) }
+        expect("""{"name":"Zaphod","age":42}""") { Gson().toJson(Person(name = "Zaphod", age = 42)) }
     }
 
     @Test

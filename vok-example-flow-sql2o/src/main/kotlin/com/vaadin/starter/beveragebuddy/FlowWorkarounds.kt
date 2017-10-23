@@ -1,6 +1,5 @@
 package com.vaadin.starter.beveragebuddy
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.github.vok.framework.sql2o.*
 import com.github.vok.framework.sql2o.vaadin.EntityDataProvider
 import com.github.vok.framework.sql2o.vaadin.SqlDataProvider
@@ -17,7 +16,6 @@ interface LEntity : Serializable {
     var id: Long?
 
     // private since we don't want this to be exposed via e.g. Vaadin Flow.
-    @get:JsonIgnore
     private val meta get() = EntityMeta(javaClass)
 
     /**

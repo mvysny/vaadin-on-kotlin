@@ -1,6 +1,5 @@
 package com.github.vok.framework.sql2o
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
@@ -38,7 +37,6 @@ interface Entity<ID: Any> : Serializable {
     var id: ID?
 
     // private since we don't want this to be exposed via e.g. Vaadin Flow.
-    @get:JsonIgnore
     private val meta get() = EntityMeta(javaClass)
 
     /**
