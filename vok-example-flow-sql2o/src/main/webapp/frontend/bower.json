@@ -14,9 +14,9 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "~2.0.2",
-    "paper-toast": "~2.0.0",
-    "paper-dialog": "~2.0.0",
+    "polymer": "2.1.1",
+    "paper-toast": "2.0.0",
+    "paper-dialog": "2.0.0",
     "vaadin-core": "2.0.0-alpha3"
   }
 }

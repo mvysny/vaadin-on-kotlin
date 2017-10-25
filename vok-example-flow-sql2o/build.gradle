@@ -28,9 +28,9 @@ webResource {
 
     bower {
         dependencies {
-            install name: "polymer", version: "~2.0.2"
-            install name: "paper-toast", version: "~2.0.0"
-            install name: "paper-dialog", version: "~2.0.0"
+            install name: "polymer", version: "2.1.1"
+            install name: "paper-toast", version: "2.0.0"
+            install name: "paper-dialog", version: "2.0.0"
             install name: "vaadin-core", version: "2.0.0-alpha3"
             copyAll true
         }

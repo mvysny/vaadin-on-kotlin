@@ -19,8 +19,8 @@ import com.github.vok.framework.sql2o.get
 import com.vaadin.annotations.InternalContainerAnnotationForConvert
 import com.vaadin.flow.model.Convert
 import com.vaadin.flow.model.TemplateModel
+import com.vaadin.router.PageTitle
 import com.vaadin.router.Route
-import com.vaadin.router.Title
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
@@ -44,7 +44,7 @@ import com.vaadin.ui.textfield.TextField
  * Implemented using a simple template.
  */
 @Route(value = "", layout = MainLayout::class)
-@Title("Review List")
+@PageTitle("Review List")
 @Tag("reviews-list")
 @HtmlImport("frontend://reviews-list.html")
 class ReviewsList : PolymerTemplate<ReviewsModel>() {
