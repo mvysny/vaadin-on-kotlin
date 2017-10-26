@@ -3,8 +3,17 @@ package com.vaadin.starter.beveragebuddy
 import com.github.vok.framework.sql2o.*
 import com.github.vok.framework.sql2o.vaadin.EntityDataProvider
 import com.github.vok.framework.sql2o.vaadin.SqlDataProvider
+import com.google.gson.*
 import com.vaadin.data.provider.DataProvider
+import com.vaadin.flow.dom.Element
+import elemental.json.Json
+import elemental.json.JsonValue
 import java.io.Serializable
+import java.lang.reflect.Type
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /**
  * See [Entity] for doc. Workaround for https://github.com/vaadin/flow/issues/2631
@@ -60,3 +69,59 @@ interface LEntity : Serializable {
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
 inline val <reified T: LEntity> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })
+
+// workaround to not to use Flow Json converter, but a standard one.
+class GsonJava8Support : JsonDeserializer<Any>, JsonSerializer<Any> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext?): Any {
+        return when(typeOfT) {
+            LocalDateTime::class.java -> ZonedDateTime.parse(json.asJsonPrimitive.asString).toLocalDateTime()
+            LocalDate::class.java -> LocalDate.parse(json.asJsonPrimitive.asString)
+            else -> throw RuntimeException("Unsupported $typeOfT: $json")
+        }
+    }
+
+    override fun serialize(src: Any?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+        return when(typeOfSrc) {
+            LocalDateTime::class.java -> JsonPrimitive((src as LocalDateTime).atZone(ZoneId.of("UTC")).toString())
+            LocalDate::class.java -> JsonPrimitive((src as LocalDate).toString())
+            else -> throw RuntimeException("Unsupported $typeOfSrc: $src")
+        }
+    }
+}
+
+fun Element.setPropertyGson(property: String, obj: Any) {
+    val gson = GsonBuilder()
+            .registerTypeAdapter(LocalDateTime::class.java, GsonJava8Support())
+            .registerTypeAdapter(LocalDate::class.java, GsonJava8Support())
+            .create()
+    val tree = gson.toJsonTree(obj)
+    val elementalTree: JsonValue = tree.toElementalJson()
+    println("SETTING TREE: ${elementalTree.toJson()}")
+    setPropertyJson(property, elementalTree)
+}
+
+private fun JsonPrimitive.toElementalJson(): JsonValue = when {
+    isNumber -> Json.create(asNumber.toDouble())
+    isBoolean -> Json.create(asBoolean)
+    isString -> Json.create(asString)
+    else -> throw RuntimeException("Unexpected value type $this")
+}
+
+private fun JsonArray.toElementalJson(): elemental.json.JsonArray {
+    val target = Json.createArray()
+    forEachIndexed({ index, e -> target.set(index, e.toElementalJson()) })
+    return target
+}
+
+fun JsonElement.toElementalJson(): JsonValue = when (this) {
+    is JsonArray -> this.toElementalJson()
+    is JsonNull -> Json.createNull()
+    is JsonPrimitive -> this.toElementalJson()
+    is JsonObject -> this.toElementalJson()
+    else -> throw RuntimeException("Unexpected json type $this")
+}
+private fun JsonObject.toElementalJson(): JsonValue {
+    val target = Json.createObject()
+    entrySet().forEach { (k, v) -> target.put(k, v.toElementalJson()) }
+    return target
+}

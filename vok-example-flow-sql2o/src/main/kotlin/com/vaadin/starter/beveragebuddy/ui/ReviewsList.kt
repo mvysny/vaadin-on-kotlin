@@ -16,14 +16,15 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.framework.sql2o.get
+import com.google.gson.*
 import com.vaadin.annotations.InternalContainerAnnotationForConvert
+import com.vaadin.flow.dom.Element
 import com.vaadin.flow.model.Convert
 import com.vaadin.flow.model.TemplateModel
 import com.vaadin.router.PageTitle
 import com.vaadin.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
-import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
 import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
 import com.vaadin.ui.Tag
@@ -36,6 +37,14 @@ import com.vaadin.ui.polymertemplate.Id
 import com.vaadin.ui.polymertemplate.ModelItem
 import com.vaadin.ui.polymertemplate.PolymerTemplate
 import com.vaadin.ui.textfield.TextField
+import elemental.json.Json
+import elemental.json.JsonValue
+import java.lang.reflect.Type
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+
 
 /**
  * Displays the list of available categories, with a search filter as well as
@@ -47,7 +56,7 @@ import com.vaadin.ui.textfield.TextField
 @PageTitle("Review List")
 @Tag("reviews-list")
 @HtmlImport("frontend://reviews-list.html")
-class ReviewsList : PolymerTemplate<ReviewsModel>() {
+class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
 
     @Id("search")
     private lateinit var search: TextField
@@ -103,7 +112,10 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
                 header.add(Span("${reviews.size} results"))
             }
         }
+        // this doesn't work: https://github.com/raphw/byte-buddy/issues/350
         model.setReviews(reviews)
+        // this doesn't work: https://github.com/vaadin/flow/issues/2782
+//        element.setPropertyGson("reviews", reviews)
     }
 
     @EventHandler
