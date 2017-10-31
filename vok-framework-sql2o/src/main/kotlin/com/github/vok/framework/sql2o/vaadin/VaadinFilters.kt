@@ -42,7 +42,7 @@ fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass
         val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
         val cell = getCell(propertyId)
         if (field == null) {
-            cell.text = null  // this also removes the cell from the row
+            cell.text = ""  // this also removes the cell from the row
         } else {
             filterFieldFactory.bind(field as HasValue<Any?>, property!! as PropertyDefinition<T, Any?>)
             cell.component = field as Component
