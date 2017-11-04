@@ -56,6 +56,19 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
+## Vaadin 10 Flow Example project
+
+The Beverage Buddy application ported to Vaadin-on-Kotlin. A full-stack app: uses Sql2o and H2 instead of a dummy service. Just type this into your terminal:
+
+```bash
+git clone https://github.com/mvysny/vaadin-on-kotlin
+cd vaadin-on-kotlin
+./gradlew build
+./gradlew vok-example-flow-sql2o:appRun
+```
+
+The web app will be running at [http://localhost:8080](http://localhost:8080).
+
 ## Run the example application from Intellij IDEA Community
 
 1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
