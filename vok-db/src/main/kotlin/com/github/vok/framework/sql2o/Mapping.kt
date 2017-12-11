@@ -53,6 +53,7 @@ interface Entity<ID: Any> : Serializable {
                 con.createQuery("insert into ${meta.databaseTableName} (${fields.joinToString()}) values (${fields.map { ":$it" }.joinToString()})")
                         .bind(this@Entity)
                         .executeUpdate()
+                @Suppress("UNCHECKED_CAST")
                 id = con.key as ID
             } else {
                 val fields = meta.persistedFieldDbNames - meta.idDbname

@@ -1,6 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.1.51'
-    ext.vaadin8_version = '8.1.6'
+    ext.kotlin_version = '1.2.0'
+    ext.vaadin8_version = '8.2.0.beta1'
     ext.karibudsl_version = '0.2.14'
     ext.local = new Properties()
     if (project.rootProject.file('local.properties').exists()) {
@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.1.51"
+    id "org.jetbrains.kotlin.jvm" version "1.2.0"
     id "org.akhikhl.gretty" version "2.0.0"
 }
 
@@ -32,6 +32,18 @@ subprojects {
         maven { url 'https://maven.vaadin.com/vaadin-prereleases' }
         maven { url "https://dl.bintray.com/mvysny/vaadin-on-kotlin" }
         maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
+    }
+
+    apply plugin: 'kotlin'
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
     }
 
     // for Travis to record failures: http://stackoverflow.com/questions/28614865/how-to-read-test-result-reports-on-travis-ci/28617954#28617954
