@@ -1,48 +1,36 @@
+// The Beverage Buddy sample project ported to Kotlin.
+// Original project: https://github.com/vaadin/beverage-starter-flow
+
 plugins {
-    id "com.github.ksoichiro.web.resource" version "1.7.3"
+    id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'war'
 apply plugin: "org.akhikhl.gretty"
 
-def frontendWorkingDirectory = "src/main/webapp/frontend"
-
-clean.doFirst {
-    ['bower_components', 'build', 'node', 'node_modules', 'etc'].each {
-        delete frontendWorkingDirectory + '/' + it
-    }
-}
-
-processResources.dependsOn webResourceCompile
-
-webResource {
-    base {
-        src "src/main/webapp"
-        dest frontendWorkingDirectory
-    }
-
-    lib {
-        dest "bower_components"
-    }
-
-    bower {
-        dependencies {
-            install name: "polymer", version: "2.1.1"
-            install name: "paper-toast", version: "2.0.0"
-            install name: "paper-dialog", version: "2.0.0"
-            install name: "vaadin-core", version: "2.0.0-alpha3"
-            copyAll true
-        }
-    }
+repositories {
+    maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
+    maven { url 'https://dl.bintray.com/webjars/maven' }
 }
 
 gretty {
     contextPath = ''
 }
 
+dependencyManagement {
+    imports { mavenBom "com.vaadin:vaadin-webjars-bom:$flow_version" }
+    dependencies {
+        dependency "org.webjars.bower:vaadin-ordered-layout:1.0.0-alpha4"
+    }
+}
+
 dependencies {
     compile(project(":vok-framework-v10-sql2o"))
+    compile "org.webjars.bower:vaadin-valo-theme"
+    compile "org.webjars.bower:polymer"
+    compile "org.webjars.bower:paper-toast:2.0.0"
+    compile "org.webjars.bower:paper-dialog:2.0.0"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // logging

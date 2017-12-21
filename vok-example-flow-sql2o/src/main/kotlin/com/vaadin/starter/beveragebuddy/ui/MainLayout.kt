@@ -21,12 +21,9 @@ import com.github.vok.karibudsl.flow.routerLink
 import com.vaadin.router.RouterLayout
 import com.vaadin.router.RouterLink
 import com.vaadin.router.event.AfterNavigationEvent
-import com.vaadin.router.event.AfterNavigationListener
-import com.vaadin.ui.Text
+import com.vaadin.router.event.AfterNavigationObserver
 import com.vaadin.ui.common.HtmlImport
 import com.vaadin.ui.html.Div
-import com.vaadin.ui.html.H2
-import com.vaadin.ui.icon.Icon
 import com.vaadin.ui.icon.VaadinIcons
 
 /**
@@ -34,7 +31,7 @@ import com.vaadin.ui.icon.VaadinIcons
  * child views below that.
  */
 @HtmlImport("frontend://styles.html")
-class MainLayout : Div(), RouterLayout, AfterNavigationListener {
+class MainLayout : Div(), RouterLayout, AfterNavigationObserver {
     private lateinit var categories: RouterLink
     private lateinit var reviews: RouterLink
 

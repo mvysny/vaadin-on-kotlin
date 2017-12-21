@@ -16,10 +16,8 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.framework.sql2o.get
-import com.google.gson.*
-import com.vaadin.annotations.InternalContainerAnnotationForConvert
-import com.vaadin.flow.dom.Element
 import com.vaadin.flow.model.Convert
+import com.vaadin.flow.model.InternalContainerAnnotationForConvert
 import com.vaadin.flow.model.TemplateModel
 import com.vaadin.router.PageTitle
 import com.vaadin.router.Route
@@ -37,14 +35,6 @@ import com.vaadin.ui.polymertemplate.Id
 import com.vaadin.ui.polymertemplate.ModelItem
 import com.vaadin.ui.polymertemplate.PolymerTemplate
 import com.vaadin.ui.textfield.TextField
-import elemental.json.Json
-import elemental.json.JsonValue
-import java.lang.reflect.Type
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-
 
 /**
  * Displays the list of available categories, with a search filter as well as
@@ -102,8 +92,8 @@ class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
     }
 
     private fun updateList() {
-        val reviews = Review.findReviews(search.value)
-        if (search.isEmpty) {
+        val reviews = Review.findReviews(search.value ?: "")
+        if (search.value.isNullOrBlank()) {
             header.text = "Reviews"
             header.add(Span("${reviews.size} in total"))
         } else {

@@ -1,8 +1,18 @@
 plugins {
     id "com.jfrog.bintray" version "1.7.3"
+    id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
 
 apply plugin: 'kotlin'
+
+repositories {
+    maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
+    maven { url 'https://dl.bintray.com/webjars/maven' }
+}
+
+dependencyManagement {
+    imports { mavenBom "com.vaadin:vaadin-webjars-bom:$flow_version" }
+}
 
 dependencies {
     compile(project(':vok-framework'))
