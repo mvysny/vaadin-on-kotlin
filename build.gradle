@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.2.10'
-    ext.vaadin8_version = '8.2.0.rc1'
+    ext.vaadin8_version = '8.2.0'
     ext.karibudsl_version = '0.2.15'
     ext.flow_version = '1.0.0.alpha12'
     ext.local = new Properties()
