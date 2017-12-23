@@ -229,7 +229,7 @@ to show up. In our case, we want it to show up when we navigate to the root URL 
 
 Open up the `WelcomeView.kt` file and change the `@AutoView("")` annotation to the following:
 `@AutoView("old-welcome")`. This will map the original "Welcome aboard" page to
-[http://localhost:8080#!old-welcome](http://localhost:8080#!old-welcome) , making space for our new Hello page.
+[http://localhost:8080/old-welcome](http://localhost:8080/old-welcome) , making space for our new Hello page.
 
 Having the `@AutoView("")` on `MyWelcomeView` will tell the VoK Navigator to map requests to the root of the application to the `MyWelcomeView` view.
 
@@ -323,7 +323,7 @@ It will look a little basic for now, but that's ok. We'll look at improving the 
 ### 5.1 Laying down the groundwork
 
 Firstly, you need a place within the application to create a new article. A great place for that 
-would be at `create-article`. Navigate to [http://localhost:8080#!create-article](http://localhost:8080#!create-article) and you'll see a general error:
+would be at `create-article`. Navigate to [http://localhost:8080/create-article](http://localhost:8080/create-article) and you'll see a general error:
 
 ![Navigator Error](images/navigator_error.png)
 
@@ -466,7 +466,7 @@ Class names in Kotlin must begin with a capital letter.
 If you submit the form again now, VoK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
 
 Vaadin Navigator supports adding parameters after the view name. This way, we can pass the Article ID to the `ArticleView` as follows:
-[http://localhost:8080/#!article/12](http://localhost:8080/#!article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
+[http://localhost:8080/article/12](http://localhost:8080/article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
 ```kotlin
 package com.example.vok
 
@@ -504,7 +504,7 @@ A couple of things to note. We use `Article[id]` (or `Article.get(id)`) to find 
 passing in `event.parameterList[0]` to get the first parameter from the request. In Vaadin,
 parameters are slash-separated and are not named. The parameter is passed to the `navigateToView<>()` function
 which takes the view class and a list of string parameters as its input, constructs the target URL
-and redirects the browser to the URL. In this case, [http://localhost:8080/#!article/12](http://localhost:8080/#!article/12).
+and redirects the browser to the URL. In this case, [http://localhost:8080/article/12](http://localhost:8080/article/12).
 
 The Navigator then detects that the URL has been changed, it parses the view name out of the URL and
 invokes the `view.enter()` method. You can retrieve the parameter list using `event.parameterList` map. 
@@ -525,7 +525,7 @@ right below the `article.save()` call as follows:
 ```
 
 With this change, you should finally be able to create new articles. Visit
-[http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and give it a try!
+[http://localhost:8080/create-article](http://localhost:8080/create-article) and give it a try!
 
 ![Show Article](images/show_article.png)
 
@@ -563,9 +563,9 @@ class ArticlesView: VerticalLayout(), View {
 }
 ```
 
-Now if you go to [http://localhost:8080/#!articles](http://localhost:8080/#!articles) you will see a list of all the articles that you have created.
+Now if you go to [http://localhost:8080/articles](http://localhost:8080/articles) you will see a list of all the articles that you have created.
 Note that we have used the Grid component. Grid is a powerful tabular component which supports paging and lazy-loading of the data,
-sorting and filtering as well.
+including sorting and filtering.
 
 ### 5.9 Adding links
 You can now create, show, and list articles. Now let's add some links to navigate through pages.
@@ -669,7 +669,7 @@ and mark all invalid fields. To do this, change the button definition as follows
         })
 ```
 
-If you reload [http://localhost:8080/#!create-article](http://localhost:8080/#!create-article) and try to save an article without a title,
+If you reload [http://localhost:8080/create-article](http://localhost:8080/create-article) and try to save an article without a title,
 VoK will send you back to the form, with the invalid fields marked red; also the "Save Article" button will be marked red. 
 The `binder.validate().isOk` call will mark invalid fields, while `binder.writeBeanIfValid(article)` will write the values to
 the `article` entity, but only if everything is valid.
