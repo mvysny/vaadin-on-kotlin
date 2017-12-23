@@ -8,6 +8,7 @@ import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title
 import com.vaadin.annotations.Widgetset
 import com.vaadin.navigator.Navigator
+import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.VaadinRequest
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Title("VaadinOnKotlin Demo")
 @Widgetset("com.vaadin.v7.Vaadin7WidgetSet")
 @Push(transport = Transport.WEBSOCKET_XHR)
+@PushStateNavigation
 class MyUI : UI() {
 
     private val content = Content()

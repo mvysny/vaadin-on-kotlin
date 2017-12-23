@@ -12,6 +12,7 @@ import com.vaadin.annotations.Title
 import com.vaadin.annotations.Viewport
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
+import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.ClassResource
 import com.vaadin.server.VaadinRequest
