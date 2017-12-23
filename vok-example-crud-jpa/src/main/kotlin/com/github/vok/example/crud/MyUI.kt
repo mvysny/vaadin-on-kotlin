@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger
 @Title("VaadinOnKotlin Demo")
 @Push(transport = Transport.WEBSOCKET_XHR)
 @Viewport("width=device-width, initial-scale=1.0")
+@PushStateNavigation
 class MyUI : UI() {
 
     private lateinit var statusTicker: Label
