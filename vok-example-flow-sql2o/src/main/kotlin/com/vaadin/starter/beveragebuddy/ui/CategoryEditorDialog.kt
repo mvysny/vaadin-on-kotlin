@@ -19,11 +19,11 @@ import com.github.vok.karibudsl.flow.bind
 import com.github.vok.karibudsl.flow.bindN
 import com.github.vok.karibudsl.flow.textField
 import com.github.vok.karibudsl.flow.trimmingConverter
-import com.vaadin.data.validator.StringLengthValidator
+import com.vaadin.flow.data.validator.StringLengthValidator
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
-import com.vaadin.ui.textfield.TextField
+import com.vaadin.flow.component.textfield.TextField
 
 /**
  * A dialog for editing [Category] objects.

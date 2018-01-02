@@ -19,10 +19,7 @@ gretty {
 }
 
 dependencyManagement {
-    imports { mavenBom "com.vaadin:vaadin-webjars-bom:$flow_version" }
-    dependencies {
-        dependency "org.webjars.bower:vaadin-ordered-layout:1.0.0-alpha4"
-    }
+    imports { mavenBom "com.vaadin:vaadin-bom:$vaadin10_version" }
 }
 
 dependencies {

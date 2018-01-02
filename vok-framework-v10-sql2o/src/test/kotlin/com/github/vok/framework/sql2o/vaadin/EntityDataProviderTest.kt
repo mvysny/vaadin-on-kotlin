@@ -3,8 +3,8 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.vok.framework.sql2o.AbstractDbTest
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.db
-import com.vaadin.data.provider.Query
-import com.vaadin.data.provider.QuerySortOrder
+import com.vaadin.flow.data.provider.QuerySortOrder
+import com.vaadin.flow.data.provider.Query
 import org.junit.Test
 import kotlin.streams.toList
 import kotlin.test.expect

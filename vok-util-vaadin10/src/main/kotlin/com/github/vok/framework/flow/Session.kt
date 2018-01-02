@@ -1,10 +1,10 @@
 package com.github.vok.framework.flow
 
-import com.vaadin.server.VaadinRequest
-import com.vaadin.server.VaadinResponse
-import com.vaadin.server.VaadinService
-import com.vaadin.server.VaadinSession
-import com.vaadin.ui.UI
+import com.vaadin.flow.server.VaadinRequest
+import com.vaadin.flow.server.VaadinResponse
+import com.vaadin.flow.server.VaadinService
+import com.vaadin.flow.server.VaadinSession
+import com.vaadin.flow.component.UI
 import java.io.Serializable
 import javax.servlet.http.Cookie
 import kotlin.properties.ReadOnlyProperty

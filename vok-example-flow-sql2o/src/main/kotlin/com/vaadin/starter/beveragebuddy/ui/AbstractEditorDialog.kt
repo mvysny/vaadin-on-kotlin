@@ -16,15 +16,14 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.karibudsl.flow.*
-import com.vaadin.data.BeanValidationBinder
-import com.vaadin.data.Binder
-import com.vaadin.shared.Registration
-import com.vaadin.ui.Composite
-import com.vaadin.ui.button.Button
-import com.vaadin.ui.common.HtmlImport
-import com.vaadin.ui.formlayout.FormLayout
-import com.vaadin.ui.html.H2
-import com.vaadin.ui.paper.dialog.GeneratedPaperDialog
+import com.vaadin.flow.data.binder.BeanValidationBinder
+import com.vaadin.flow.data.binder.Binder
+import com.vaadin.flow.shared.Registration
+import com.vaadin.flow.component.Composite
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.component.html.H2
 
 import java.io.Serializable
 

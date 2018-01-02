@@ -10,8 +10,8 @@ import com.vaadin.starter.beveragebuddy.LEntity
  * @property id
  * @property name the category name
  */
-// must be open - Flow requires it to create ModelProxy
-open class Category(override var id: Long? = null, var name: String = "") : LEntity {
+// must be open: https://github.com/vaadin/flow/issues/2636
+open class Category(override var id: Long? = null, open var name: String = "") : LEntity {
 
     companion object : Dao<Category> {
         fun findByName(name: String): Category? = findBy(1) { Category::name eq name } .firstOrNull()

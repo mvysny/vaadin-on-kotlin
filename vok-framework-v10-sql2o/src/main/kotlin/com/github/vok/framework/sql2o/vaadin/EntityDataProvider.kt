@@ -1,8 +1,8 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.sql2o.*
-import com.vaadin.data.provider.*
-import com.vaadin.function.SerializablePredicate
+import com.vaadin.flow.data.provider.*
+import com.vaadin.flow.function.SerializablePredicate
 import java.util.stream.Stream
 import kotlin.streams.toList
 

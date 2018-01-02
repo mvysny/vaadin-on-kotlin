@@ -4,7 +4,7 @@ import com.github.vok.framework.sql2o.*
 import com.github.vok.framework.sql2o.vaadin.EntityDataProvider
 import com.github.vok.framework.sql2o.vaadin.SqlDataProvider
 import com.google.gson.*
-import com.vaadin.data.provider.DataProvider
+import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.dom.Element
 import elemental.json.Json
 import elemental.json.JsonValue

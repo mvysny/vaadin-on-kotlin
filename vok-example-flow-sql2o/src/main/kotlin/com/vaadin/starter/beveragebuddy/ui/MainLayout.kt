@@ -18,13 +18,13 @@ package com.vaadin.starter.beveragebuddy.ui
 import com.github.vok.karibudsl.flow.div
 import com.github.vok.karibudsl.flow.h2
 import com.github.vok.karibudsl.flow.routerLink
-import com.vaadin.router.RouterLayout
-import com.vaadin.router.RouterLink
-import com.vaadin.router.event.AfterNavigationEvent
-import com.vaadin.router.event.AfterNavigationObserver
-import com.vaadin.ui.common.HtmlImport
-import com.vaadin.ui.html.Div
-import com.vaadin.ui.icon.VaadinIcons
+import com.vaadin.flow.router.RouterLayout
+import com.vaadin.flow.router.RouterLink
+import com.vaadin.flow.router.AfterNavigationEvent
+import com.vaadin.flow.router.AfterNavigationObserver
+import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.icon.VaadinIcons
 
 /**
  * The main layout contains the header with the navigation buttons, and the

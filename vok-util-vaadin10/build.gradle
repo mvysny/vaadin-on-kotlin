@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencyManagement {
-    imports { mavenBom "com.vaadin:vaadin-webjars-bom:$flow_version" }
+    imports { mavenBom "com.vaadin:vaadin-bom:$vaadin10_version" }
 }
 
 dependencies {

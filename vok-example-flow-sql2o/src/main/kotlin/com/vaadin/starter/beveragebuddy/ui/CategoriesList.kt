@@ -18,16 +18,16 @@ package com.vaadin.starter.beveragebuddy.ui
 import com.github.vok.framework.sql2o.get
 import com.github.vok.framework.sql2o.vaadin.and
 import com.github.vok.karibudsl.flow.*
-import com.vaadin.router.PageTitle
-import com.vaadin.router.Route
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.dataProvider
-import com.vaadin.ui.grid.Grid
-import com.vaadin.ui.html.Div
-import com.vaadin.ui.icon.Icon
-import com.vaadin.ui.icon.VaadinIcons
-import com.vaadin.ui.textfield.TextField
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.icon.Icon
+import com.vaadin.flow.component.icon.VaadinIcons
+import com.vaadin.flow.component.textfield.TextField
 
 /**
  * Displays the list of available categories, with a search filter as well as

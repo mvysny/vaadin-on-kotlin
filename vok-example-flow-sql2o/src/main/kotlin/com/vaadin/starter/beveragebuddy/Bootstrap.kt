@@ -3,8 +3,8 @@ package com.vaadin.starter.beveragebuddy
 import com.github.vok.framework.VaadinOnKotlin
 import com.github.vok.framework.sql2o.dataSource
 import com.github.vok.framework.sql2o.dataSourceConfig
-import com.vaadin.server.ServiceInitEvent
-import com.vaadin.server.VaadinServiceInitListener
+import com.vaadin.flow.server.ServiceInitEvent
+import com.vaadin.flow.server.VaadinServiceInitListener
 import com.vaadin.starter.beveragebuddy.backend.StaticData
 import org.flywaydb.core.Flyway
 import org.h2.Driver

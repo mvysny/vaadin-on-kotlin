@@ -19,17 +19,15 @@ import com.github.vok.karibudsl.flow.button
 import com.github.vok.karibudsl.flow.div
 import com.github.vok.karibudsl.flow.h2
 import com.github.vok.karibudsl.flow.horizontalLayout
-import com.vaadin.shared.Registration
-import com.vaadin.ui.Composite
-import com.vaadin.ui.button.Button
-import com.vaadin.ui.common.HasStyle
-import com.vaadin.ui.common.HtmlImport
-import com.vaadin.ui.html.Div
-import com.vaadin.ui.html.H2
-import com.vaadin.ui.paper.dialog.GeneratedPaperDialog
+import com.vaadin.flow.shared.Registration
+import com.vaadin.flow.component.Composite
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.HasStyle
+import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.H2
 
 import java.io.Serializable
-import java.util.function.Consumer
 
 /**
  * A generic dialog for confirming or cancelling an action.

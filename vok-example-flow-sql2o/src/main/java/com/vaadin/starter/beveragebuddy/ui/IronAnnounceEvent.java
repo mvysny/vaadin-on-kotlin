@@ -13,18 +13,14 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vaadin.starter.beveragebuddy.ui.converters
+package com.vaadin.starter.beveragebuddy.ui;
 
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.DomEvent;
 
-import com.vaadin.flow.templatemodel.ModelConverter
-
-/**
- * @author Vaadin Ltd
- */
-
-class LongToStringConverter : ModelConverter<Long, String> {
-
-    override fun toPresentation(modelValue: Long?): String? = modelValue?.toString()
-
-    override fun toModel(presentationValue: String?): Long? = presentationValue?.toLong()
+@DomEvent("iron-announce")
+public class IronAnnounceEvent extends ComponentEvent<PaperToast> {
+    public IronAnnounceEvent(PaperToast source, boolean fromClient) {
+        super(source, fromClient);
+    }
 }

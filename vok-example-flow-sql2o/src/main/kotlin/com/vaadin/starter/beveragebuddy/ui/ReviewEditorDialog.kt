@@ -16,13 +16,14 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.HasComponents
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.dataProvider
 import com.vaadin.starter.beveragebuddy.ui.converters.toId
-import com.vaadin.ui.combobox.ComboBox
-import com.vaadin.ui.datepicker.DatePicker
-import com.vaadin.ui.textfield.TextField
+import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.datepicker.DatePicker
+import com.vaadin.flow.component.textfield.TextField
 import java.time.LocalDate
 
 /**
@@ -72,3 +73,5 @@ class ReviewEditorDialog(saveHandler: (Review, AbstractEditorDialog.Operation) -
         openConfirmationDialog("""Delete beverage "${currentItem!!.name}"?""")
     }
 }
+
+fun (@VaadinDsl HasComponents).paperToast(block: (@VaadinDsl PaperToast).() -> Unit = {}) = init(PaperToast(), block)

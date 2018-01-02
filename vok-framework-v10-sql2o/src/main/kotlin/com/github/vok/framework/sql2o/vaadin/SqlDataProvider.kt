@@ -2,9 +2,9 @@ package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.sql2o.Filter
 import com.github.vok.framework.sql2o.db
-import com.vaadin.data.provider.AbstractBackEndDataProvider
-import com.vaadin.data.provider.Query
-import com.vaadin.data.provider.SortDirection
+import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
+import com.vaadin.flow.data.provider.Query
+import com.vaadin.flow.data.provider.SortDirection
 import java.sql.ResultSet
 import java.util.stream.Stream
 

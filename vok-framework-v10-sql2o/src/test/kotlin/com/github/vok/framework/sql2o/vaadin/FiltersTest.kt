@@ -1,9 +1,9 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.sql2o.Person
-import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.data.provider.Query
-import com.vaadin.data.provider.QuerySortOrder
+import com.vaadin.flow.data.provider.ListDataProvider
+import com.vaadin.flow.data.provider.Query
+import com.vaadin.flow.data.provider.QuerySortOrder
 import org.junit.Test
 import kotlin.streams.toList
 import kotlin.test.expect

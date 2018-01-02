@@ -16,25 +16,24 @@
 package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.framework.sql2o.get
-import com.vaadin.flow.model.Convert
-import com.vaadin.flow.model.InternalContainerAnnotationForConvert
-import com.vaadin.flow.model.TemplateModel
-import com.vaadin.router.PageTitle
-import com.vaadin.router.Route
+import com.vaadin.flow.templatemodel.Convert
+import com.vaadin.flow.templatemodel.TemplateModel
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
 import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
-import com.vaadin.ui.Tag
-import com.vaadin.ui.button.Button
-import com.vaadin.ui.common.HtmlImport
-import com.vaadin.ui.html.H1
-import com.vaadin.ui.html.Span
-import com.vaadin.ui.polymertemplate.EventHandler
-import com.vaadin.ui.polymertemplate.Id
-import com.vaadin.ui.polymertemplate.ModelItem
-import com.vaadin.ui.polymertemplate.PolymerTemplate
-import com.vaadin.ui.textfield.TextField
+import com.vaadin.flow.component.Tag
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.html.H1
+import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.polymertemplate.EventHandler
+import com.vaadin.flow.component.polymertemplate.Id
+import com.vaadin.flow.component.polymertemplate.ModelItem
+import com.vaadin.flow.component.polymertemplate.PolymerTemplate
+import com.vaadin.flow.component.textfield.TextField
 
 /**
  * Displays the list of available categories, with a search filter as well as
@@ -63,7 +62,7 @@ class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
 
     interface ReviewsModel : TemplateModel {
         // remove this when https://youtrack.jetbrains.com/issue/KT-12794 is fixed
-        @InternalContainerAnnotationForConvert(
+        @Convert.Container(
         Convert(value = LongToStringConverter::class, path = "id"),
         Convert(value = LocalDateToStringConverter::class, path = "date"),
         Convert(value = LongToStringConverter::class, path = "category")
