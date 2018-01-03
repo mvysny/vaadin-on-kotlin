@@ -3,12 +3,9 @@ package com.vaadin.starter.beveragebuddy
 import com.github.vok.framework.VaadinOnKotlin
 import com.github.vok.framework.sql2o.dataSource
 import com.github.vok.framework.sql2o.dataSourceConfig
-import com.vaadin.flow.server.ServiceInitEvent
-import com.vaadin.flow.server.VaadinServiceInitListener
 import com.vaadin.starter.beveragebuddy.backend.StaticData
 import org.flywaydb.core.Flyway
 import org.h2.Driver
-import org.jsoup.nodes.Element
 import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
@@ -62,28 +59,6 @@ class Bootstrap: ServletContextListener {
             SLF4JBridgeHandler.removeHandlersForRootLogger()
             SLF4JBridgeHandler.install()
         }
-    }
-}
-
-class ApplicationServiceInitListener : VaadinServiceInitListener {
-
-    override fun serviceInit(event: ServiceInitEvent) {
-        event.addBootstrapListener { response ->
-            val document = response.document
-            document.head().apply {
-                meta("viewport", "width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
-                meta("apple-mobile-web-app-capable", "yes")
-                meta("apple-mobile-web-app-status-bar-style", "black")
-            }
-        }
-    }
-
-    private fun Element.meta(name: String, content: String) {
-        val meta = ownerDocument().createElement("meta").apply {
-            attr("name", name)
-            attr("content", content)
-        }
-        appendChild(meta)
     }
 }
 

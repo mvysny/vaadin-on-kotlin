@@ -25,13 +25,17 @@ import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcons
+import com.vaadin.flow.component.page.Viewport
+import com.vaadin.flow.server.InitialPageSettings
+import com.vaadin.flow.server.PageConfigurator
 
 /**
  * The main layout contains the header with the navigation buttons, and the
  * child views below that.
  */
 @HtmlImport("frontend://styles.html")
-class MainLayout : Div(), RouterLayout, AfterNavigationObserver {
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+class MainLayout : Div(), RouterLayout, AfterNavigationObserver, PageConfigurator {
     private lateinit var categories: RouterLink
     private lateinit var reviews: RouterLink
 
@@ -63,6 +67,11 @@ class MainLayout : Div(), RouterLayout, AfterNavigationObserver {
 
         reviews.setClassName(ACTIVE_ITEM_STYLE, reviewsActive)
         categories.setClassName(ACTIVE_ITEM_STYLE, categoriesActive)
+    }
+
+    override fun configurePage(settings: InitialPageSettings) {
+        settings.addMetaTag("apple-mobile-web-app-capable", "yes")
+        settings.addMetaTag("apple-mobile-web-app-status-bar-style", "black")
     }
 
     companion object {
