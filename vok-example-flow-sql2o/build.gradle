@@ -23,7 +23,9 @@ dependencyManagement {
 }
 
 dependencies {
-    compile(project(":vok-framework-v10-sql2o"))
+    compile(project(":vok-framework-v10-sql2o")) {
+        exclude group: 'org.webjars.bower', module: 'vaadin-valo-theme'   // fixes https://github.com/mvysny/vaadin-on-kotlin/issues/8
+    }
     compile "org.webjars.bower:vaadin-valo-theme"
     compile "org.webjars.bower:polymer"
     compile "org.webjars.bower:paper-toast:2.0.0"
