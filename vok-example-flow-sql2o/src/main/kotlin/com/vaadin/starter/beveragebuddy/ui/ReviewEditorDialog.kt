@@ -50,7 +50,7 @@ class ReviewEditorDialog(saveHandler: (Review, AbstractEditorDialog.Operation) -
                 bind(binder).toInt().bindN(Review::count)
             }
             categoryBox = comboBox("Choose a category") {
-                setItemLabelGenerator { it.name }
+                setItemLabelGenerator { it?.name ?: "" }
                 isAllowCustomValue = false
                 dataProvider = Category.dataProvider
                 bind(binder).toId().bindN(Review::category)
