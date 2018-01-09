@@ -25,6 +25,8 @@ import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcons
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.page.BodySize
 import com.vaadin.flow.component.page.Viewport
 import com.vaadin.flow.server.InitialPageSettings
 import com.vaadin.flow.server.PageConfigurator
@@ -33,14 +35,16 @@ import com.vaadin.flow.server.PageConfigurator
  * The main layout contains the header with the navigation buttons, and the
  * child views below that.
  */
+@BodySize(width = "100vw", height = "100vh")
 @HtmlImport("frontend://styles.html")
 @Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
-class MainLayout : Div(), RouterLayout, AfterNavigationObserver, PageConfigurator {
+class MainLayout : VerticalLayout(), RouterLayout, AfterNavigationObserver, PageConfigurator {
     private lateinit var categories: RouterLink
     private lateinit var reviews: RouterLink
 
     init {
         addClassName("main-layout")
+        defaultHorizontalComponentAlignment = Alignment.STRETCH
         div { // header
             addClassName("main-layout__header")
             h2("Beverage Buddy") {
