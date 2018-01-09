@@ -36,7 +36,7 @@ open class Review(override var id: Long? = null,
                   @field:Min(1)
                   @field:Max(99)
                   open var count: Int = 1) : LEntity {
-    override fun toString() = "Review(id=$id, score=$score, name='$name', date=$date, category=$category, count=$count)"
+    override fun toString() = "${javaClass.simpleName}(id=$id, score=$score, name='$name', date=$date, category=$category, count=$count)"
 
     fun copy() = Review(id, score, name, date, category, count)
 
@@ -63,7 +63,7 @@ open class Review(override var id: Long? = null,
          */
         fun findReviews(filter: String): List<ReviewWithCategory> {
             val normalizedFilter = filter.trim().toLowerCase() + "%"
-            return db {
+            val reviews = db {
                 con.createQuery("""select r.*, IFNULL(c.name, 'Undefined') as categoryName
                     FROM Review r left join Category c on r.category = c.id
                     WHERE r.name ILIKE :filter or IFNULL(c.name, 'Undefined') ILIKE :filter or
@@ -73,6 +73,7 @@ open class Review(override var id: Long? = null,
                         .addParameter("filter", normalizedFilter)
                         .executeAndFetch(ReviewWithCategory::class.java)
             }
+            return reviews
         }
     }
 }
@@ -82,4 +83,6 @@ open class Review(override var id: Long? = null,
  * @property categoryName the [Category.name]
  */
 // must be open - Flow requires non-final classes for ModelProxy
-open class ReviewWithCategory(var categoryName: String? = null) : Review()
+open class ReviewWithCategory(open var categoryName: String? = null) : Review() {
+    override fun toString() = super.toString() + "(categoryName=$categoryName)"
+}
