@@ -82,7 +82,8 @@ open class Review(override var id: Long? = null,
  * Holds the join of Review and its Category.
  * @property categoryName the [Category.name]
  */
-// must be open - Flow requires non-final classes for ModelProxy
-open class ReviewWithCategory(open var categoryName: String? = null) : Review() {
+// must be open - Flow requires non-final classes for ModelProxy. Also can't have constructors: https://github.com/mvysny/karibu-dsl/issues/3
+open class ReviewWithCategory : Review() {
+    open var categoryName: String? = null
     override fun toString() = super.toString() + "(categoryName=$categoryName)"
 }
