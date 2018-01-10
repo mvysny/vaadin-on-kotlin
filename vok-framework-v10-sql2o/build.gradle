@@ -1,9 +1,10 @@
 plugins {
-    id "com.jfrog.bintray" version "1.7.3"
     id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
 
+apply plugin: 'maven-publish'
 apply plugin: 'kotlin'
+apply plugin: "com.jfrog.bintray"
 
 repositories {
     maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
@@ -30,8 +31,6 @@ task sourceJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource
 }
-
-apply plugin: 'maven-publish'
 
 publishing {
     publications {
