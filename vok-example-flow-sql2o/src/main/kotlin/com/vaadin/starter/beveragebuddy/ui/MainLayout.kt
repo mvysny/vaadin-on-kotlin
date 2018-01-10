@@ -25,6 +25,7 @@ import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcons
+import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.page.BodySize
 import com.vaadin.flow.component.page.Viewport
@@ -44,7 +45,7 @@ class MainLayout : VerticalLayout(), RouterLayout, AfterNavigationObserver, Page
 
     init {
         addClassName("main-layout")
-        defaultHorizontalComponentAlignment = Alignment.STRETCH
+        defaultHorizontalComponentAlignment = FlexComponent.Alignment.STRETCH
         div { // header
             addClassName("main-layout__header")
             h2("Beverage Buddy") {

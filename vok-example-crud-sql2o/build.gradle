@@ -38,5 +38,5 @@ dependencies {
     // testing
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    compile "com.github.vok.karibudsl:karibu-testing-v8:$karibudsl_version"
+    testCompile "com.github.vok.karibudsl:karibu-testing-v8:$karibudsl_version"
 }

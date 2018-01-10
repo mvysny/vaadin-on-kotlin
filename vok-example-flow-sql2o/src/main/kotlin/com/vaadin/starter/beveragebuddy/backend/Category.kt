@@ -2,6 +2,7 @@ package com.vaadin.starter.beveragebuddy.backend
 
 import com.github.vok.framework.sql2o.Dao
 import com.github.vok.framework.sql2o.db
+import com.github.vok.framework.sql2o.deleteAll
 import com.github.vok.framework.sql2o.findBy
 import com.vaadin.starter.beveragebuddy.LEntity
 
@@ -17,6 +18,12 @@ open class Category(override var id: Long? = null, open var name: String = "") :
         fun findByName(name: String): Category? = findBy(1) { Category::name eq name } .firstOrNull()
         fun findByNameOrThrow(name: String): Category = findByName(name) ?: throw IllegalArgumentException("No category named $name")
         fun existsWithName(name: String): Boolean = findByName(name) != null
+        fun deleteAll() {
+            db {
+                con.createQuery("update Review set category = NULL").executeUpdate()
+                con.deleteAll(Category::class.java)
+            }
+        }
     }
 
     override fun toString() = "Category(id=$id, name='$name')"

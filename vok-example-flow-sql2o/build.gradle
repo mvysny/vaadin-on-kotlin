@@ -45,4 +45,9 @@ dependencies {
 
     // REST
     compile(project(":vok-rest"))
+
+    // testing
+    testCompile "com.github.vok.karibudsl:karibu-testing-v10:$karibudsl_version"
+    testCompile 'junit:junit:4.12'
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }

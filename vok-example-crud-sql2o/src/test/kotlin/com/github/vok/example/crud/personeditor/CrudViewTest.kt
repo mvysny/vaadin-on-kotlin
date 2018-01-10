@@ -31,7 +31,7 @@ class CrudViewTest {
 
     @Before
     fun mockVaadin() {
-        MockVaadin.setup({ -> MyUI() })
+        MockVaadin.setup({ MyUI() })
     }
 
     @Before @After
