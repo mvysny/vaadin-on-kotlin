@@ -1,9 +1,6 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.karibu.testing.MockVaadin
-import com.github.karibu.testing._click
-import com.github.karibu.testing._get
-import com.github.karibu.testing.autoDiscoverViews
+import com.github.karibu.testing.*
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
 import com.github.vok.framework.sql2o.deleteAll
