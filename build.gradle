@@ -23,7 +23,7 @@ defaultTasks 'clean', 'build'
 
 allprojects {
     group 'com.github.vok'
-    version '0.3.1'
+    version '0.3.2-SNAPSHOT'
 }
 
 subprojects {
