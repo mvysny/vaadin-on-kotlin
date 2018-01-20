@@ -42,7 +42,8 @@ class CrudViewTest {
         CrudView.navigateTo()
 
         val grid = _get<Grid<*>>()
-        expect(1) { grid.dataProvider._size() }
+        grid.expectRows(1)
+        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "null", "Show", "Edit", "Delete")
     }
 
     @Test
@@ -54,8 +55,8 @@ class CrudViewTest {
         grid._clickRenderer(0, "edit")
 
         // the CreateEditPerson dialog should pop up
-        _get<TextField>(caption = "Name:").value = "Duke Leto Atreides"
-        _get<Button>(caption = "Save")._click()
+        _get<TextField> { caption = "Name:" }.value = "Duke Leto Atreides"
+        _get<Button> { caption = "Save" }._click()
 
         // assert the updated person
         expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.name } }
