@@ -7,7 +7,6 @@ import com.vaadin.starter.beveragebuddy.backend.StaticData
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.slf4j.LoggerFactory
-import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
