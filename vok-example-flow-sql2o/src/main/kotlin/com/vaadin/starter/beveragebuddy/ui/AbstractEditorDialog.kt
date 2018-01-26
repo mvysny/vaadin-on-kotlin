@@ -17,13 +17,14 @@ package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.karibudsl.flow.*
 import com.vaadin.flow.data.binder.BeanValidationBinder
-import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.shared.Registration
 import com.vaadin.flow.component.Composite
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
+import com.vaadin.flow.component.notification.Notification
 
 import java.io.Serializable
 
@@ -43,12 +44,11 @@ import java.io.Serializable
  * @property itemDeleter Callback to delete the edited item
  * @param itemClass the class of item edited by this dialog
  */
-@HtmlImport("frontend://bower_components/paper-dialog/paper-dialog.html")
 abstract class AbstractEditorDialog<T : Serializable> protected constructor(private val itemType: String,
-                      private val itemSaver: (T, Operation)->Unit, private val itemDeleter: (T)->Unit,
-                      itemClass: Class<T>) : Composite<GeneratedPaperDialog<*>>() {
+                                                                            private val itemSaver: (T, Operation)->Unit, private val itemDeleter: (T)->Unit,
+                                                                            itemClass: Class<T>) : Dialog () {
 
-    private lateinit var titleField: H2
+    private val titleField: H2
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var deleteButton: Button
@@ -75,49 +75,52 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
         private set
 
     private val confirmationDialog = ConfirmationDialog<T>()
-    private lateinit var notification: PaperToast
 
     /**
      * The operations supported by this dialog. Delete is enabled when editing
      * an already existing item.
      */
     enum class Operation(val nameInTitle: String, val nameInText: String,
-                                             val isDeleteDisabled: Boolean) {
+                         val isDeleteDisabled: Boolean) {
         ADD("Add New", "add", true),
         EDIT("Edit", "edit", false)
     }
 
     init {
-        content.apply {
-            content.setModal(true)
-            // Enabling modality disables cancel-on-esc (and cancel-on-outside-click)
-            // We want to cancel on esc
-            content.setNoCancelOnEscKey(false)
+        isCloseOnEsc = true
+        isCloseOnOutsideClick = false
+        addOpenedChangeListener({
+            if (!isOpened) {
+                element.removeFromParent();
+            }
+        })
 
-            titleField = h2()
-            div { // form layout wrapper
-                addClassName("has-padding")
-                formLayout = formLayout {
-                    setResponsiveSteps(FormLayout.ResponsiveStep("0", 1),
-                            FormLayout.ResponsiveStep("50em", 2))
-                    addClassName("no-padding")
-                }
+        titleField = h2()
+        div {
+            // form layout wrapper
+            addClassName("has-padding")
+            formLayout = formLayout {
+                setResponsiveSteps(
+                    FormLayout.ResponsiveStep("0", 1),
+                    FormLayout.ResponsiveStep("50em", 2)
+                )
+                addClassName("no-padding")
             }
-            horizontalLayout { // button bar
-                className = "buttons"
-                saveButton = button("Save") {
-                    isAutofocus = true
-                    setPrimary()
-                }
-                cancelButton = button("Cancel") {
-                    element.setAttribute("dialog-dismiss", true)
-                }
-                deleteButton = button("Delete") {
-                    element.setAttribute("theme", "tertiary danger")
-                    addClickListener { deleteClicked() }
-                }
+        }
+        horizontalLayout {
+            // button bar
+            className = "buttons"
+            saveButton = button("Save") {
+                isAutofocus = true
+                setPrimary()
             }
-            notification = paperToast()
+            cancelButton = button("Cancel") {
+                addClickListener { close() }
+            }
+            deleteButton = button("Delete") {
+                element.setAttribute("theme", "tertiary danger")
+                addClickListener { deleteClicked() }
+            }
         }
     }
 
@@ -138,16 +141,16 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
         binder.readBean(currentItem)
 
         deleteButton.isDisabled = operation.isDeleteDisabled
-        content.open()
+        open()
     }
 
     private fun saveClicked(operation: Operation) {
         if (binder.writeBeanIfValid(currentItem!!)) {
             itemSaver(currentItem!!, operation)
-            content.close()
+            close()
         } else {
             val status = binder.validate()
-            notification.show(status.validationErrors.joinToString("; ") { it.errorMessage })
+            Notification.show(status.validationErrors.joinToString("; ") { it.errorMessage }, 3000, Notification.Position.BOTTOM_START)
         }
     }
 
@@ -172,13 +175,13 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
      */
     protected fun openConfirmationDialog(title: String, message: String = "",
                                          additionalMessage: String = "") {
-        content.close()
+        close()
         confirmationDialog.open(title, message, additionalMessage, "Delete",
-                true, { deleteConfirmed(currentItem!!) }, { content.open() })
+            true, { deleteConfirmed(currentItem!!) }, { open() })
     }
 
     private fun deleteConfirmed(item: T) {
         itemDeleter(item)
-        content.close()
+        close()
     }
 }

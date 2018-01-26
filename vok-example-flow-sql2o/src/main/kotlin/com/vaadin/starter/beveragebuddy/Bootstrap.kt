@@ -53,12 +53,6 @@ class Bootstrap: ServletContextListener {
 
     companion object {
         private val log = LoggerFactory.getLogger(Bootstrap::class.java)
-
-        init {
-            // let java.util.logging log to slf4j
-            SLF4JBridgeHandler.removeHandlersForRootLogger()
-            SLF4JBridgeHandler.install()
-        }
     }
 }
 

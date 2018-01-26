@@ -19,13 +19,14 @@ import com.github.vok.karibudsl.flow.button
 import com.github.vok.karibudsl.flow.div
 import com.github.vok.karibudsl.flow.h2
 import com.github.vok.karibudsl.flow.horizontalLayout
-import com.vaadin.flow.shared.Registration
 import com.vaadin.flow.component.Composite
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.HasStyle
 import com.vaadin.flow.component.dependency.HtmlImport
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.H2
+import com.vaadin.flow.shared.Registration
 
 import java.io.Serializable
 
@@ -34,10 +35,9 @@ import java.io.Serializable
  *
  * @param <T> The type of the action's subject
  */
-@HtmlImport("frontend://bower_components/paper-dialog/paper-dialog.html")
-internal class ConfirmationDialog<T : Serializable> : Composite<GeneratedPaperDialog<*>>(), HasStyle {
+internal class ConfirmationDialog<T : Serializable> : Dialog(), HasStyle {
 
-    private lateinit var titleField: H2
+    private val titleField: H2
     private lateinit var messageLabel: Div
     private lateinit var extraMessageLabel: Div
     private lateinit var confirmButton: Button
@@ -50,29 +50,34 @@ internal class ConfirmationDialog<T : Serializable> : Composite<GeneratedPaperDi
      */
     init {
         addClassName("confirm-dialog")
-        content.apply {
-            setModal(true)
-            // Enabling modality disables cancel-on-esc (and cancel-on-outside-click)
-            // We want to cancel on esc
-            setNoCancelOnEscKey(false)
-
-            titleField = h2()
-            div { // labels
-                className = "text"
-                messageLabel = div()
-                extraMessageLabel = div()
+        isCloseOnEsc = true
+        isCloseOnOutsideClick = false
+        addOpenedChangeListener({
+            if (!isOpened) {
+                element.removeFromParent();
             }
-            horizontalLayout { // button bar
-                className = "buttons"
-                confirmButton = button {
-                    element.setAttribute("dialog-confirm", true)
-                    element.setAttribute("theme", "tertiary")
-                    isAutofocus = true
-                }
-                cancelButton = button("Cancel") {
-                    element.setAttribute("dialog-dismiss", true)
-                    element.setAttribute("theme", "tertiary")
-                }
+        })
+
+        titleField = h2 {
+            className = "confirm-dialog-heading"
+        }
+        div {
+            // labels
+            className = "confirm-text"
+            messageLabel = div()
+            extraMessageLabel = div()
+        }
+        horizontalLayout {
+            // button bar
+            className = "confirm-dialog-buttons"
+            confirmButton = button {
+                addClickListener { close() }
+                element.setAttribute("theme", "tertiary")
+                isAutofocus = true
+            }
+            cancelButton = button("Cancel") {
+                addClickListener { close() }
+                element.setAttribute("theme", "tertiary")
             }
         }
     }
@@ -107,6 +112,6 @@ internal class ConfirmationDialog<T : Serializable> : Composite<GeneratedPaperDi
         if (isDisruptive) {
             confirmButton.element.setAttribute("theme", "tertiary danger")
         }
-        content.open()
+        open()
     }
 }

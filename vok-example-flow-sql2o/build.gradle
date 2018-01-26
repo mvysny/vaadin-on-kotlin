@@ -23,21 +23,15 @@ dependencyManagement {
 }
 
 dependencies {
-    compile(project(":vok-framework-v10-sql2o")) {
-        exclude group: 'org.webjars.bower', module: 'vaadin-valo-theme'   // fixes https://github.com/mvysny/vaadin-on-kotlin/issues/8
-    }
-    compile "org.webjars.bower:vaadin-valo-theme"
+    compile project(":vok-framework-v10-sql2o")
+    compile "com.vaadin:vaadin-lumo-theme"
     compile "org.webjars.bower:polymer"
-    compile "org.webjars.bower:paper-toast:2.0.0"
-    compile "org.webjars.bower:paper-dialog:2.0.0"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // logging
     // currently we are logging through the SLF4J API to LogBack. See src/main/resources/logback.xml file for the logger configuration
     compile 'ch.qos.logback:logback-classic:1.2.3'
     compile 'org.slf4j:slf4j-api:1.7.25'
-    // this will allow us to configure Vaadin to log to SLF4J
-    compile 'org.slf4j:jul-to-slf4j:1.7.25'
 
     // db
     compile 'org.flywaydb:flyway-core:4.2.0'

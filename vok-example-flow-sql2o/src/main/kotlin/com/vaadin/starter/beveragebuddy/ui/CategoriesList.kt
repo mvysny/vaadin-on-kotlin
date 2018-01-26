@@ -18,16 +18,18 @@ package com.vaadin.starter.beveragebuddy.ui
 import com.github.vok.framework.sql2o.get
 import com.github.vok.framework.sql2o.vaadin.and
 import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.icon.Icon
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.renderer.ComponentTemplateRenderer
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.dataProvider
-import com.vaadin.flow.component.grid.Grid
-import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.icon.Icon
-import com.vaadin.flow.component.icon.VaadinIcons
-import com.vaadin.flow.component.textfield.TextField
 
 /**
  * Displays the list of available categories, with a search filter as well as
@@ -41,23 +43,20 @@ class CategoriesList : Div() {
     private val grid: Grid<Category>
 
     private val form = CategoryEditorDialog(
-            { category, operation -> saveCategory(category, operation) },
-            { deleteCategory(it) })
-
-    private val notification: PaperToast
+        { category, operation -> saveCategory(category, operation) },
+        { deleteCategory(it) })
 
     init {
         addClassName("categories-list")
-        notification = paperToast()
-        add(form)
         div { // view toolbar
             addClassName("view-toolbar")
             searchField = textField {
+                addToPrefix(Icon("lumo", "magnifier"))
                 addClassName("view-toolbar__search-field")
                 placeholder = "Search"
                 addValueChangeListener { updateView() }
             }
-            button("New category", Icon(VaadinIcons.PLUS)) {
+            button("New category", Icon("lumo", "plus")) {
                 setPrimary()
                 addClassName("view-toolbar__button")
                 addClickListener { form.open(Category(null, ""), AbstractEditorDialog.Operation.ADD) }
@@ -65,8 +64,8 @@ class CategoriesList : Div() {
         }
         grid = grid {
             addColumn({ it.name }).setHeader("Category")
-            // @todo mavi this is N+1 queries (a query run for every row). A performance bottleneck. I need to do some smart join here instead.
             addColumn({ it.getReviewCount() }).setHeader("Beverages")
+            addColumn(ComponentTemplateRenderer<Button, Category>({ cat -> createEditButton(cat) })).flexGrow = 0
             // Grid does not yet implement HasStyle
             element.classList.add("categories")
             element.setAttribute("theme", "row-dividers")
@@ -81,6 +80,13 @@ class CategoriesList : Div() {
         updateView()
     }
 
+    private fun createEditButton(category: Category): Button =
+        Button("Edit") { event -> form.open(category, AbstractEditorDialog.Operation.EDIT) } .apply {
+            icon = Icon("lumo", "edit")
+            addClassName("review__edit")
+            element.setAttribute("theme", "tertiary")
+        }
+
     private fun selectionChanged(categoryId: Long) {
         form.open(Category[categoryId], AbstractEditorDialog.Operation.EDIT)
     }
@@ -94,18 +100,18 @@ class CategoriesList : Div() {
         if (!searchField.value.isNullOrBlank()) {
             dp = dp.and { Category::name ilike "%${searchField.value.trim()}%" }
         }
-        grid.setDataProvider(dp)
+        grid.dataProvider = dp
     }
 
     private fun saveCategory(category: Category, operation: AbstractEditorDialog.Operation) {
         category.save()
-        notification.show("Category successfully ${operation.nameInText}ed.")
+        Notification.show("Category successfully ${operation.nameInText}ed.", 3000, Notification.Position.BOTTOM_START)
         updateView()
     }
 
     private fun deleteCategory(category: Category) {
         category.delete()
-        notification.show("Category successfully deleted.")
+        Notification.show("Category successfully deleted.", 3000, Notification.Position.BOTTOM_START)
         updateView()
     }
 }

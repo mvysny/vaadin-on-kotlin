@@ -23,7 +23,6 @@ import com.vaadin.flow.router.RouterLink
 import com.vaadin.flow.router.AfterNavigationEvent
 import com.vaadin.flow.router.AfterNavigationObserver
 import com.vaadin.flow.component.dependency.HtmlImport
-import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.VaadinIcons
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -31,6 +30,8 @@ import com.vaadin.flow.component.page.BodySize
 import com.vaadin.flow.component.page.Viewport
 import com.vaadin.flow.server.InitialPageSettings
 import com.vaadin.flow.server.PageConfigurator
+import com.vaadin.flow.theme.Theme
+import com.vaadin.flow.theme.lumo.Lumo
 
 /**
  * The main layout contains the header with the navigation buttons, and the
@@ -39,6 +40,7 @@ import com.vaadin.flow.server.PageConfigurator
 @BodySize(width = "100vw", height = "100vh")
 @HtmlImport("frontend://styles.html")
 @Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+@Theme(Lumo::class)
 class MainLayout : VerticalLayout(), RouterLayout, AfterNavigationObserver, PageConfigurator {
     private lateinit var categories: RouterLink
     private lateinit var reviews: RouterLink

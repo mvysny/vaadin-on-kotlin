@@ -21,7 +21,7 @@ import com.vaadin.flow.templatemodel.TemplateModel
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Review
-import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
+import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
 import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
 import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
 import com.vaadin.flow.component.Tag
@@ -29,11 +29,13 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.H1
 import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.polymertemplate.EventHandler
 import com.vaadin.flow.component.polymertemplate.Id
 import com.vaadin.flow.component.polymertemplate.ModelItem
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 
 /**
  * Displays the list of available categories, with a search filter as well as
@@ -45,20 +47,18 @@ import com.vaadin.flow.component.textfield.TextField
 @PageTitle("Review List")
 @Tag("reviews-list")
 @HtmlImport("frontend://reviews-list.html")
-class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
+class ReviewsList : PolymerTemplate<ReviewsModel>() {
 
     @Id("search")
     private lateinit var search: TextField
     @Id("newReview")
     private lateinit var addReview: Button
-    @Id("notification")
-    private lateinit var notification: PaperToast
     @Id("header")
     private lateinit var header: H1
 
     private val reviewForm = ReviewEditorDialog(
-            { review, operation -> save(review, operation) },
-            { this.delete(it) })
+        { review, operation -> save(review, operation) },
+        { this.delete(it) })
 
     interface ReviewsModel : TemplateModel {
         // remove this when https://youtrack.jetbrains.com/issue/KT-12794 is fixed
@@ -81,13 +81,13 @@ class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
     private fun save(review: Review, operation: AbstractEditorDialog.Operation) {
         review.save()
         updateList()
-        notification.show("Beverage successfully ${operation.nameInText}ed.")
+        Notification.show("Beverage successfully ${operation.nameInText}ed.", 3000, Notification.Position.BOTTOM_START)
     }
 
     private fun delete(review: Review) {
         review.delete()
         updateList()
-        notification.show("Beverage successfully deleted.")
+        Notification.show("Beverage successfully deleted.", 3000, Notification.Position.BOTTOM_START)
     }
 
     private fun updateList() {
@@ -101,10 +101,7 @@ class ReviewsList : PolymerTemplate<ReviewsList.ReviewsModel>() {
                 header.add(Span("${reviews.size} results"))
             }
         }
-        // this doesn't work: https://github.com/raphw/byte-buddy/issues/350
         model.setReviews(reviews)
-        // this doesn't work: https://github.com/vaadin/flow/issues/2782
-//        element.setPropertyGson("reviews", reviews)
     }
 
     @EventHandler
