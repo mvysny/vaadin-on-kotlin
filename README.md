@@ -69,6 +69,8 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
+You can also see the [Online Beverage Buddy Demo](https://beverage-buddy-vok.herokuapp.com) running on Heroku.
+
 ## Run the example application from Intellij IDEA Community
 
 1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
