@@ -101,6 +101,8 @@ Sql2o:
 button("Save", { db { person.save() } })
 ```
 
+See [Back To Base - Make SQL Great Again](http://mavi.logdown.com/posts/5771422) for an explanation on how this works.
+
 JPA:
 
 ```kotlin
@@ -228,7 +230,7 @@ Please find the very simple sample application here: [vok-example-crud-sql2o](vo
   Please see [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
   You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud-sql2o/src/main/resources/db/migration) for details. More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
 * Accessing the database: just create your pojo beans [(example Person)](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
-  `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework-sql2o/src/main/kotlin/com/github/vok/framework/sql2o/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
+  `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework-sql2o/src/main/kotlin/com/github/vok/framework/sql2o/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary! See [Back To Base - Make SQL Great Again](http://mavi.logdown.com/posts/5771422) for an explanation on how this works.
 * Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud-sql2o/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
   [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
   the `@ApplicationPath("/rest")` stanza. After that, just define your REST-accessing classes, for example
