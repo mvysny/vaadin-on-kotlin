@@ -18,9 +18,7 @@ package com.vaadin.starter.beveragebuddy.ui
 import com.github.vok.karibudsl.flow.*
 import com.vaadin.flow.data.binder.BeanValidationBinder
 import com.vaadin.flow.shared.Registration
-import com.vaadin.flow.component.Composite
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
@@ -81,9 +79,9 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
      * an already existing item.
      */
     enum class Operation(val nameInTitle: String, val nameInText: String,
-                         val isDeleteDisabled: Boolean) {
-        ADD("Add New", "add", true),
-        EDIT("Edit", "edit", false)
+                         val isDeleteEnabled: Boolean) {
+        ADD("Add New", "add", false),
+        EDIT("Edit", "edit", true)
     }
 
     init {
@@ -140,7 +138,7 @@ abstract class AbstractEditorDialog<T : Serializable> protected constructor(priv
         registrationForSave = saveButton.addClickListener { saveClicked(operation) }
         binder.readBean(currentItem)
 
-        deleteButton.isDisabled = operation.isDeleteDisabled
+        deleteButton.isEnabled = operation.isDeleteEnabled
         open()
     }
 
