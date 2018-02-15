@@ -1,7 +1,7 @@
 buildscript {
     ext.kotlin_version = '1.2.21'
     ext.vaadin8_version = '8.3.0'
-    ext.karibudsl_version = '0.2.21'
+    ext.karibudsl_version = '0.2.22'
     ext.vaadin10_version = '10.0.0.alpha18'
     ext.local = new Properties()
     if (project.rootProject.file('local.properties').exists()) {
@@ -35,8 +35,8 @@ subprojects {
         jcenter()
         maven { url 'https://maven.vaadin.com/vaadin-addons' }
         maven { url 'https://maven.vaadin.com/vaadin-prereleases' }
-        maven { url "https://dl.bintray.com/mvysny/vaadin-on-kotlin" }
         maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
+        maven { url 'https://dl.bintray.com/mvysny/github' }
     }
 
     apply plugin: 'kotlin'
