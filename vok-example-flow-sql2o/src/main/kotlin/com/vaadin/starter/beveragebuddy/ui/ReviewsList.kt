@@ -35,6 +35,7 @@ import com.vaadin.flow.component.polymertemplate.Id
 import com.vaadin.flow.component.polymertemplate.ModelItem
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
 
 /**
@@ -74,6 +75,7 @@ class ReviewsList : PolymerTemplate<ReviewsModel>() {
     init {
         search.placeholder = "Search"
         search.addValueChangeListener { updateList() }
+        search.valueChangeMode = ValueChangeMode.EAGER
         addReview.addClickListener { openForm(Review(), AbstractEditorDialog.Operation.ADD) }
         updateList()
     }

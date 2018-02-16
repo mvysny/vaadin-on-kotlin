@@ -24,6 +24,7 @@ import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.renderer.ComponentTemplateRenderer
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
@@ -55,6 +56,7 @@ class CategoriesList : Div() {
                 addClassName("view-toolbar__search-field")
                 placeholder = "Search"
                 addValueChangeListener { updateView() }
+                valueChangeMode = ValueChangeMode.EAGER
             }
             button("New category", Icon("lumo", "plus")) {
                 setPrimary()
@@ -81,10 +83,11 @@ class CategoriesList : Div() {
     }
 
     private fun createEditButton(category: Category): Button =
-        Button("Edit") { event -> form.open(category, AbstractEditorDialog.Operation.EDIT) } .apply {
+        Button("Edit").apply {
             icon = Icon("lumo", "edit")
             addClassName("review__edit")
             element.setAttribute("theme", "tertiary")
+            addClickListener { event -> form.open(category, AbstractEditorDialog.Operation.EDIT) }
         }
 
     private fun selectionChanged(categoryId: Long) {
