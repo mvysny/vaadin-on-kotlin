@@ -24,7 +24,6 @@ dependencyManagement {
 
 dependencies {
     compile project(":vok-framework-v10-sql2o")
-    compile "com.vaadin:vaadin-lumo-theme"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // logging
