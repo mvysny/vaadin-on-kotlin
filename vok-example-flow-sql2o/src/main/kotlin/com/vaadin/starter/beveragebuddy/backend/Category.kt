@@ -1,9 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import com.github.vok.framework.sql2o.Dao
-import com.github.vok.framework.sql2o.db
-import com.github.vok.framework.sql2o.deleteAll
-import com.github.vok.framework.sql2o.findBy
+import com.github.vok.framework.sql2o.*
 import com.vaadin.starter.beveragebuddy.LEntity
 
 /**
@@ -12,7 +9,7 @@ import com.vaadin.starter.beveragebuddy.LEntity
  * @property name the category name
  */
 // must be open: https://github.com/vaadin/flow/issues/2636
-open class Category(override var id: Long? = null, open var name: String = "") : LEntity {
+open class Category(override var id: Long? = null, open var name: String = "") : Entity<Long> {
 
     companion object : Dao<Category> {
         fun findByName(name: String): Category? = findBy(1) { Category::name eq name } .firstOrNull()

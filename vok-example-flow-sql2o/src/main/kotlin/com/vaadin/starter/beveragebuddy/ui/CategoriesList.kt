@@ -17,6 +17,7 @@ package com.vaadin.starter.beveragebuddy.ui
 
 import com.github.vok.framework.sql2o.get
 import com.github.vok.framework.sql2o.vaadin.and
+import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.karibudsl.flow.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
@@ -30,7 +31,6 @@ import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.starter.beveragebuddy.backend.Category
 import com.vaadin.starter.beveragebuddy.backend.Review
-import com.vaadin.starter.beveragebuddy.dataProvider
 
 /**
  * Displays the list of available categories, with a search filter as well as
