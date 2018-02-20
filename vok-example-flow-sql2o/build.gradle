@@ -32,7 +32,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.25'
 
     // db
-    compile 'org.flywaydb:flyway-core:4.2.0'
+    compile "org.flywaydb:flyway-core:${flyway_version}"
     compile 'com.h2database:h2:1.4.196'
 
     // REST

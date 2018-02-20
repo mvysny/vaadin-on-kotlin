@@ -26,11 +26,11 @@ dependencies {
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // db
-    compile 'org.flywaydb:flyway-core:4.2.0'
+    compile "org.flywaydb:flyway-core:${flyway_version}"
     compile('org.hibernate:hibernate-hikaricp:5.2.11.Final') {
         exclude group: 'javax.enterprise'
     }
-    compile 'com.zaxxer:HikariCP:2.7.1'
+    compile "com.zaxxer:HikariCP:${hikaricp_version}"
     compile 'com.h2database:h2:1.4.196'
 
     // REST
