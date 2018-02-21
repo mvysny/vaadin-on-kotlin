@@ -17,8 +17,8 @@ import java.util.stream.Stream
  * ```
  * data class CustomerAddress(val customerName: String, val address: String)
  *
- * val provider = SqlDataProvider("""select c.name as customerName, a.street || ' ' || a.city as address
- *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by null{{ORDER}} {{PAGING}}""")
+ * val provider = SqlDataProvider(CustomerAddress::class.java, """select c.name as customerName, a.street || ' ' || a.city as address
+ *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by null{{ORDER}} {{PAGING}}""", idMapper = { it })
  * ```
  *
  * (Note how select column names must correspond to field names in the `CustomerAddress` class)
@@ -41,7 +41,7 @@ import java.util.stream.Stream
  * @param sql the select which can map into the holder class (that is, it selects columns whose names match the holder class fields). It should contain
  * {{WHERE}}, {{ORDER}} and {{PAGING}} strings which will be replaced by a simple substring replacement.
  * @param params the [sql] may be parametrized; this map holds all the parameters present in the sql itself.
- * @param idMapper returns the primary key. If the holder class is a data class and/or has proper equals/hashcode, the class itself may act as the key; in such case
+ * @param idMapper returns the primary key which must be unique for every row returned. If the holder class is a data class and/or has proper equals/hashcode, the class itself may act as the key; in such case
  * just pass in identity here: `{ it }`
  * @param T the type of the holder class.
  * @author mavi

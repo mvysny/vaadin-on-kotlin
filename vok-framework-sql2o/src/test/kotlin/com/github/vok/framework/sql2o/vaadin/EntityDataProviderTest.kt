@@ -5,6 +5,7 @@ import com.github.mvysny.dynatest.expectList
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.db
 import com.github.vok.framework.sql2o.usingDatabase
+import com.github.vok.karibudsl.getAll
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import kotlin.streams.toList
