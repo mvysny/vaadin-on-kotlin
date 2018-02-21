@@ -5,7 +5,7 @@ import com.github.vok.framework.VaadinOnKotlin
 import java.time.LocalDate
 import java.util.*
 
-fun DynaNodeGroup.withDatabase(block: DynaNodeGroup.()->Unit) {
+fun DynaNodeGroup.usingDatabase() {
 
     beforeGroup {
         VaadinOnKotlin.dataSourceConfig.apply {
@@ -36,8 +36,6 @@ fun DynaNodeGroup.withDatabase(block: DynaNodeGroup.()->Unit) {
     fun clearDatabase() = Person.deleteAll()
     beforeEach { clearDatabase() }
     afterEach { clearDatabase() }
-
-    block()
 }
 
 @Table("Test")
