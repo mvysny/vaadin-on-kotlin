@@ -31,11 +31,9 @@ import com.vaadin.flow.component.textfield.TextField
 class CategoryEditorDialog(itemSaver: (Category, AbstractEditorDialog.Operation)->Unit, itemDeleter: (Category)->Unit)
     : AbstractEditorDialog<Category>("Category", itemSaver, itemDeleter, Category::class.java) {
 
-    private lateinit var categoryNameField: TextField
-
     init {
         formLayout.apply {
-            categoryNameField = textField("Category Name") {
+            textField("Category Name") {
                 bind(binder)
                         .trimmingConverter()
                         .withValidator(StringLengthValidator(
