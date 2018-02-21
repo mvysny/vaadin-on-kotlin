@@ -1,33 +1,26 @@
 package com.github.vok.framework
 
-import org.junit.After
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
+import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectList
 
-class JpaProviderTest {
-    companion object {
-        @BeforeClass @JvmStatic
-        fun initVOK() {
-            DBTest.initVOK()
-        }
-    }
+class JpaProviderTest : DynaTest({
 
-    @Before
-    @After
+    beforeGroup { initVOK() }
+
     fun clearDb() {
         db {
             em.deleteAll<TestHobby>()
             em.deleteAll<TestPerson>()
         }
     }
+    beforeEach { clearDb() }
+    afterEach { clearDb() }
 
     /**
      * Hibernate fails with LazyInitializationException unless we do something. Reproduces
      * https://github.com/mvysny/vaadin-on-kotlin/issues/3
      */
-    @Test
-    fun lazyLoadingInAnotherTransaction() {
+    test("lazyLoadingInAnotherTransaction") {
         val person: TestPerson = db {
             val p = TestPerson(name = "Laurel", age = 50)
             em.persist(p)
@@ -48,8 +41,7 @@ class JpaProviderTest {
      * Test that we can create queries and stuff the result data into arbitrary POJOs. This way, we don't have to
      * model the relationships between the entities - the select will dictate the precise content of the result.
      */
-    @Test
-    fun canUseArbitraryPojoForCustomSelects() {
+    test("canUseArbitraryPojoForCustomSelects") {
         db {
             var p = TestPerson(name = "Laurel", age = 50)
             em.persist(p)
@@ -65,8 +57,7 @@ class JpaProviderTest {
         }
     }
 
-    @Test
-    fun deletingPersonWillDeleteHobbies() {
+    test("deletingPersonWillDeleteHobbies") {
         var p = db {
             TestPerson(name = "Zaphod", age = 42).apply {
                 em.persist(this)
@@ -79,7 +70,7 @@ class JpaProviderTest {
             expectList { em.findAll<TestHobby>()  }
         }
     }
-}
+})
 
 data class NameAndHobby(var name: String? = null, var hobby: String? = null) : Comparable<NameAndHobby> {
 

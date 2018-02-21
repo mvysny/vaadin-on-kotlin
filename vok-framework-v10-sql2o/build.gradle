@@ -5,6 +5,7 @@ plugins {
 apply plugin: 'maven-publish'
 apply plugin: 'kotlin'
 apply plugin: "com.jfrog.bintray"
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 repositories {
     maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
@@ -20,8 +21,7 @@ dependencies {
     compile(project(':vok-db'))
     compile(project(':vok-util-vaadin10'))
 
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
 
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.h2database:h2:1.4.196'

@@ -8,6 +8,7 @@ plugins {
 apply plugin: 'kotlin'
 apply plugin: 'war'
 apply plugin: "org.akhikhl.gretty"
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 repositories {
     maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
@@ -40,8 +41,7 @@ dependencies {
 
     // testing
     testCompile "com.github.vok.karibudsl:karibu-testing-v10:$karibudsl_version"
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
 
     // heroku app runner
     testRuntime 'com.github.jsimone:webapp-runner:8.5.11.3'

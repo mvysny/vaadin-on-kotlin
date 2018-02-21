@@ -1,44 +1,37 @@
 package com.github.vok.framework
 
+import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectThrows
 import org.flywaydb.core.Flyway
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Test
 import java.io.IOException
 import javax.persistence.EntityManager
 import kotlin.test.expect
 import kotlin.test.fail
 
-class DBTest {
+fun initVOK() {
+    JPAVOKPlugin().init()
+    val flyway = Flyway()
+    flyway.dataSource = VaadinOnKotlin.getDataSource()
+    flyway.migrate()
+}
 
-    companion object {
-        @BeforeClass @JvmStatic
-        fun initVOK() {
-            JPAVOKPlugin().init()
-            val flyway = Flyway()
-            flyway.dataSource = VaadinOnKotlin.getDataSource()
-            flyway.migrate()
+class DBTest : DynaTest({
+
+    beforeGroup { initVOK() }
+    beforeEach { db { em.deleteAll<TestPerson>() } }
+
+    test("CantControlTxFromDbFun") {
+        expectThrows(IllegalStateException::class) {
+            db { em.transaction }
         }
     }
 
-    @Before
-    fun removeAllPersons() {
-        db { em.deleteAll<TestPerson>() }
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun testCantControlTxFromDbFun() {
-        db { em.transaction }
-    }
-
-    @Test
-    fun verifyEntityManagerClosed() {
+    test("verifyEntityManagerClosed") {
         val em: EntityManager = db { em }
         expect(false) { em.isOpen }
     }
 
-    @Test
-    fun exceptionRollsBack() {
+    test("exceptionRollsBack") {
         try {
             db {
                 em.persist(TestPerson(name = "foo", age = 25))
@@ -52,16 +45,14 @@ class DBTest {
         }
     }
 
-    @Test
-    fun commitInNestedDbBlocks() {
+    test("commitInNestedDbBlocks") {
         val person = db { db { db {
             TestPerson(name = "foo", age = 25).apply { em.persist(this) }
         }}}
         expect(listOf(person)) { db { em.findAll<TestPerson>() }}
     }
 
-    @Test
-    fun exceptionRollsBackInNestedDbBlocks() {
+    test("exceptionRollsBackInNestedDbBlocks") {
         try {
             db { db { db {
                 em.persist(TestPerson(name = "foo", age = 25))
@@ -75,44 +66,40 @@ class DBTest {
         }
     }
 
-    @Test
-    fun singleOrNull() {
+    test("singleOrNull") {
         expect(null) { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }}
         db { em.persist(TestPerson(name = "Laurel", age = 50)) }
         expect("Laurel") { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull()!!.name }}
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun singleOrNullFailsOnTwoResults() {
+    test("singleOrNullFailsOnTwoResults") {
         db { em.persist(TestPerson(name = "Laurel", age = 50)) }
         db { em.persist(TestPerson(name = "Hardy", age = 55)) }
-        db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }
-        fail("Should have failed")
+        expectThrows(IllegalStateException::class) {
+            db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }
+        }
     }
 
-    @Test
-    fun testDeleteByIdDoesNothingOnUnknownId() {
+    test("DeleteByIdDoesNothingOnUnknownId") {
         db { em.deleteById<TestPerson>(25L) }
         expect(listOf()) { db { em.findAll<TestPerson>() } }
     }
 
-    @Test
-    fun testDeleteById() {
+    test("DeleteById") {
         val person = db { TestPerson(name = "Laurel", age = 50).apply { em.persist(this) } }
         expect(listOf(person)) { db { em.findAll<TestPerson>() }}
         db { em.deleteById<TestPerson>(person.id!!) }
         expect(listOf()) { db { em.findAll<TestPerson>() } }
     }
 
-    @Test
-    fun getById() {
+    test("getById") {
         val person = db { TestPerson(name = "Laurel", age = 50).apply { em.persist(this) } }
         expect(person) { db { em.get<TestPerson>(person.id!!) } }
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun getByIdFailsOnNonExistingEntity() {
-        db { em.get<TestPerson>(15L) }
-        fail("Should have failed")
+    test("getByIdFailsOnNonExistingEntity") {
+        expectThrows(IllegalArgumentException::class) {
+            db { em.get<TestPerson>(15L) }
+        }
     }
-}
+})

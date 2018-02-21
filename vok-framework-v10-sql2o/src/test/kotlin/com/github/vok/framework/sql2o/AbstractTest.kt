@@ -1,30 +1,23 @@
 package com.github.vok.framework.sql2o
 
+import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vok.framework.VaadinOnKotlin
-import org.junit.After
-import org.junit.AfterClass
-import org.junit.Before
-import org.junit.BeforeClass
 import java.time.LocalDate
 import java.util.*
 
-/**
- * @author mavi
- */
-abstract class AbstractDbTest {
-    companion object {
-        @JvmStatic @BeforeClass
-        fun initdb() {
-            VaadinOnKotlin.dataSourceConfig.apply {
-                minimumIdle = 0
-                maximumPoolSize = 30
-                this.jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-                this.username = "sa"
-                this.password = ""
-            }
-            Sql2oVOKPlugin().init()
-            db {
-                con.createQuery("""create table if not exists Test (
+fun DynaNodeGroup.withDatabase(block: DynaNodeGroup.()->Unit) {
+    // initialize the database
+    beforeGroup {
+        VaadinOnKotlin.dataSourceConfig.apply {
+            minimumIdle = 0
+            maximumPoolSize = 30
+            this.jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+            this.username = "sa"
+            this.password = ""
+        }
+        Sql2oVOKPlugin().init()
+        db {
+            con.createQuery("""create table if not exists Test (
                 id bigint primary key auto_increment,
                 name varchar not null,
                 age integer not null,
@@ -33,19 +26,20 @@ abstract class AbstractDbTest {
                 alive boolean,
                 maritalStatus varchar
                  )""").executeUpdate()
-            }
-        }
-
-        @JvmStatic @AfterClass
-        fun closedb() {
-            Sql2oVOKPlugin().destroy()
         }
     }
 
-    @Before @After
-    fun clearDb() {
-        db { Person.deleteAll() }
+    // close the database after all tests have ran
+    afterGroup {
+        Sql2oVOKPlugin().destroy()
     }
+
+    fun clearDatabase() { Person.deleteAll() }
+
+    beforeEach { clearDatabase() }
+    afterEach { clearDatabase() }
+
+    block()
 }
 
 @Table("Test")

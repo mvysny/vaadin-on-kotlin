@@ -1,6 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.karibu.testing.*
+import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
 import com.github.vok.framework.sql2o.deleteAll
@@ -8,36 +9,24 @@ import com.github.vok.framework.sql2o.findAll
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
-import org.junit.*
 import java.time.LocalDate
 import kotlin.test.expect
 
-class CrudViewTest {
-    companion object {
-        @JvmStatic @BeforeClass
-        fun bootstrapApp() {
-            autoDiscoverViews("com.github")
-            Bootstrap().contextInitialized(null)
-        }
-
-        @JvmStatic @AfterClass
-        fun teardownApp() {
-            Bootstrap().contextDestroyed(null)
-        }
+class CrudViewTest : DynaTest({
+    beforeGroup {
+        autoDiscoverViews("com.github")
+        Bootstrap().contextInitialized(null)
     }
+    afterGroup { Bootstrap().contextDestroyed(null) }
 
-    @Before
-    fun mockVaadin() {
-        MockVaadin.setup({ MyUI() })
-    }
-
-    @Before @After
+    beforeEach { MockVaadin.setup({ MyUI() }) }
     fun cleanupDb() {
         Person.deleteAll()
     }
+    beforeEach { cleanupDb() }
+    afterEach { cleanupDb() }
 
-    @Test
-    fun testGridListsAllPersons() {
+    test("GridListsAllPersons") {
         Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         CrudView.navigateTo()
 
@@ -46,8 +35,7 @@ class CrudViewTest {
         grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "null", "Show", "Edit", "Delete")
     }
 
-    @Test
-    fun testEdit() {
+    test("Edit") {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         CrudView.navigateTo()
 
@@ -61,4 +49,4 @@ class CrudViewTest {
         // assert the updated person
         expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.name } }
     }
-}
+})
