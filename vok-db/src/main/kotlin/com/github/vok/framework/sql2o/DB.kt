@@ -7,7 +7,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.sql2o.Connection
 import org.sql2o.Sql2o
-import org.sql2o.converters.Convert
 import org.sql2o.converters.Converter
 import org.sql2o.converters.ConverterException
 import org.sql2o.converters.ConvertersProvider
@@ -17,13 +16,12 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.*
 import javax.sql.DataSource
 
 class Sql2oVOKPlugin : VOKPlugin {
 
     override fun init() {
-        require(!hikariConfig.jdbcUrl.isNullOrBlank()) { "Please set your database JDBC url, username and password into the VaadinOnKotlin.dataSourceConfig field prior initializing VoK. " }
+        check(!hikariConfig.jdbcUrl.isNullOrBlank()) { "Please set your database JDBC url, username and password into the VaadinOnKotlin.dataSourceConfig field prior initializing VoK. " }
         dataSource = HikariDataSource(hikariConfig)
     }
 
