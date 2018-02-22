@@ -35,6 +35,7 @@ interface Filter<T: Any> : SerializablePredicate<T> {
 abstract class BeanFilter<T: Any> : Filter<T> {
     abstract val propertyName: String
     abstract val value: Any?
+    @Transient
     private var readMethod: Method? = null
     private fun getGetter(item: T): Method {
         if (readMethod == null) {
