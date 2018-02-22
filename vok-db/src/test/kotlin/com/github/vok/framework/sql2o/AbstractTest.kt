@@ -2,6 +2,7 @@ package com.github.vok.framework.sql2o
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vok.framework.VaadinOnKotlin
+import java.time.Instant
 import java.time.LocalDate
 import java.util.*
 
@@ -23,6 +24,7 @@ fun DynaNodeGroup.usingDatabase() {
                 age integer not null,
                 dateOfBirth date,
                 created timestamp,
+                modified timestamp,
                 alive boolean,
                 maritalStatus varchar
                  )"""
@@ -46,13 +48,15 @@ data class Person(
     @Transient var ignored2: Any? = null,
     var dateOfBirth: LocalDate? = null,
     var created: Date? = null,
+    var modified: Instant? = null,
     var alive: Boolean? = null,
     var maritalStatus: MaritalStatus? = null
 
 ) : Entity<Long> {
     override fun save() {
         if (id == null) {
-            created = java.sql.Timestamp(System.currentTimeMillis())
+            if (created == null) created = java.sql.Timestamp(System.currentTimeMillis())
+            if (modified == null) modified = Instant.now()
         }
         super.save()
     }

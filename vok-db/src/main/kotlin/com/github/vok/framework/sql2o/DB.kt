@@ -13,6 +13,8 @@ import org.sql2o.converters.ConverterException
 import org.sql2o.converters.ConvertersProvider
 import org.sql2o.quirks.QuirksDetector
 import java.io.Closeable
+import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
@@ -110,10 +112,24 @@ private class LocalDateConverter : Converter<LocalDate> {
     }
 }
 
+private class InstantConverter : Converter<Instant> {
+    override fun toDatabaseParam(`val`: Instant?): Any? = when (`val`) {
+        null -> null
+        else -> Timestamp(`val`.toEpochMilli())
+    }
+    override fun convert(value: Any?): Instant? = when (value) {
+        null -> null
+        is Instant -> value
+        is java.util.Date -> value.toInstant()
+        else -> throw ConverterException("Failed to convert $value of type ${value.javaClass} to Instant")
+    }
+}
+
 class VokConvertersProvider : ConvertersProvider {
     override fun fill(mapToFill: MutableMap<Class<*>, Converter<*>>) {
         mapToFill.apply {
             put(LocalDate::class.java, LocalDateConverter())
+            put(Instant::class.java, InstantConverter())
         }
     }
 }
