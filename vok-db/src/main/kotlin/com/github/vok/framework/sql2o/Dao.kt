@@ -18,6 +18,7 @@ fun <T : Any> Connection.findById(clazz: Class<T>, id: Any): T? =
 
 /**
  * Retrieves entity with given [id]. Fails if there is no such entity.
+ * @throws IllegalArgumentException if there is no entity with given id.
  */
 fun <T : Any> Connection.getById(clazz: Class<T>, id: Any): T =
     requireNotNull(findById<T>(clazz, id)) { "There is no $clazz for id $id" }
@@ -58,6 +59,7 @@ inline fun <reified T: Any> Dao<T>.findAll(): List<T> = db { con.findAll<T>(T::c
 
 /**
  * Retrieves entity with given [id]. Fails if there is no such entity. See [Dao] on how to add this to your entities.
+ * @throws IllegalArgumentException if there is no entity with given id.
  */
 inline operator fun <ID: Any, reified T: Entity<ID>> Dao<T>.get(id: ID): T = db { con.getById(T::class.java, id) }
 

@@ -1,6 +1,7 @@
 package com.github.vok.framework.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectThrows
 import kotlin.test.expect
 
 class DaoTest : DynaTest({
@@ -17,7 +18,11 @@ class DaoTest : DynaTest({
     test("GetById") {
         val p = Person(name = "Albedo", age = 130)
         p.save()
-        expect(p) { Person[p.id!!] }
+        expect(p) { Person.get(p.id!!) }
+    }
+
+    test("GetById fails if there is no such entity") {
+        expectThrows(IllegalArgumentException::class) { Person.get(25L) }
     }
 
     test("Count") {
@@ -36,8 +41,13 @@ class DaoTest : DynaTest({
     test("DeleteById") {
         listOf("Albedo", "Nigredo", "Rubedo").forEach { Person(name = it, age = 130).save() }
         expect(3) { Person.count() }
-        Person.deleteById(Person.findAll().filter { it.name == "Albedo" }.first().id!!)
+        Person.deleteById(Person.findAll().first { it.name == "Albedo" }.id!!)
         expect(listOf("Nigredo", "Rubedo")) { Person.findAll().map { it.name } }
+    }
+
+    test("DeleteByIdDoesNothingOnUnknownId") {
+        db { Person.deleteById(25L) }
+        expect(listOf()) { Person.findAll() }
     }
 
     test("DeleteBy") {

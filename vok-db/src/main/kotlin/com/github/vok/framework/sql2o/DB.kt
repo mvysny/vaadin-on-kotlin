@@ -76,28 +76,29 @@ private val contexts: ThreadLocal<PersistenceContext> = ThreadLocal()
  */
 fun <R> db(block: PersistenceContext.()->R): R {
     var context = contexts.get()
-    if (context != null) {
-        return context.block()
-    } else {
-        val sql2o = Sql2o(VaadinOnKotlin.dataSource, QuirksDetector.forURL(hikariConfig.jdbcUrl))
-        context = PersistenceContext(sql2o.beginTransaction())
-        try {
-            contexts.set(context)
-            return context.use {
-                var success = false
-                val result: R = try {
-                    it.block().also {
-                        context.con.commit()
-                        success = true
-                    }
-                } finally {
-                    if (!success) context.con.rollback()
-                }
+    // if we're already running in a transaction, just run the block right away.
+    if (context != null) return context.block()
+
+    val sql2o = Sql2o(VaadinOnKotlin.dataSource, QuirksDetector.forURL(hikariConfig.jdbcUrl))
+    context = PersistenceContext(sql2o.beginTransaction())
+    try {
+        contexts.set(context)
+        return context.use {
+            try {
+                val result: R = context.block()
+                context.con.commit()
                 result
+            } catch (t: Throwable) {
+                try {
+                    context.con.rollback()
+                } catch (rt: Throwable) {
+                    t.addSuppressed(rt)
+                }
+                throw t
             }
-        } finally {
-            contexts.set(null)
         }
+    } finally {
+        contexts.set(null)
     }
 }
 
