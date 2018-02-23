@@ -87,7 +87,7 @@ class CategoriesList : Div() {
             icon = Icon("lumo", "edit")
             addClassName("review__edit")
             element.setAttribute("theme", "tertiary")
-            addClickListener { event -> form.open(category, AbstractEditorDialog.Operation.EDIT) }
+            addClickListener { _ -> form.open(category, AbstractEditorDialog.Operation.EDIT) }
         }
 
     private fun selectionChanged(categoryId: Long) {
