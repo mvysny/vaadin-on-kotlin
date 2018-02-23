@@ -1,7 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import com.github.vok.framework.sql2o.*
-import com.vaadin.starter.beveragebuddy.LEntity
+import com.github.vokorm.*
 
 /**
  * Represents a beverage category.

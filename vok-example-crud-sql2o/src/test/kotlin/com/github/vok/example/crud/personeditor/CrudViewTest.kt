@@ -4,8 +4,8 @@ import com.github.karibu.testing.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
-import com.github.vok.framework.sql2o.deleteAll
-import com.github.vok.framework.sql2o.findAll
+import com.github.vokorm.deleteAll
+import com.github.vokorm.findAll
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField

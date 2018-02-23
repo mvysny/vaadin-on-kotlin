@@ -15,15 +15,7 @@
  */
 package com.vaadin.starter.beveragebuddy.ui
 
-import com.github.vok.framework.sql2o.get
-import com.vaadin.flow.templatemodel.Convert
-import com.vaadin.flow.templatemodel.TemplateModel
-import com.vaadin.flow.router.PageTitle
-import com.vaadin.flow.router.Route
-import com.vaadin.starter.beveragebuddy.backend.Review
-import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
-import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
-import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
+import com.github.vokorm.get
 import com.vaadin.flow.component.Tag
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dependency.HtmlImport
@@ -36,7 +28,15 @@ import com.vaadin.flow.component.polymertemplate.ModelItem
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
+import com.vaadin.flow.templatemodel.Convert
+import com.vaadin.flow.templatemodel.TemplateModel
+import com.vaadin.starter.beveragebuddy.backend.Review
 import com.vaadin.starter.beveragebuddy.backend.ReviewWithCategory
+import com.vaadin.starter.beveragebuddy.ui.ReviewsList.ReviewsModel
+import com.vaadin.starter.beveragebuddy.ui.converters.LocalDateToStringConverter
+import com.vaadin.starter.beveragebuddy.ui.converters.LongToStringConverter
 
 /**
  * Displays the list of available categories, with a search filter as well as

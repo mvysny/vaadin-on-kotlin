@@ -2,6 +2,7 @@ package com.github.vok.framework.sql2o
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vok.framework.VaadinOnKotlin
+import com.github.vokorm.*
 import java.time.LocalDate
 import java.util.*
 
@@ -15,7 +16,7 @@ fun DynaNodeGroup.usingDatabase() {
             this.username = "sa"
             this.password = ""
         }
-        Sql2oVOKPlugin().init()
+        VokOrmPlugin().init()
         db {
             con.createQuery("""create table if not exists Test (
                 id bigint primary key auto_increment,
@@ -30,7 +31,7 @@ fun DynaNodeGroup.usingDatabase() {
     }
 
     afterGroup {
-        Sql2oVOKPlugin().destroy()
+        VokOrmPlugin().destroy()
     }
 
     fun clearDatabase() = Person.deleteAll()

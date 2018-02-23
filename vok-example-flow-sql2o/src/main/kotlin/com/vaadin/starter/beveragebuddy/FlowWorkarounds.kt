@@ -3,6 +3,7 @@ package com.vaadin.starter.beveragebuddy
 import com.github.vok.framework.sql2o.*
 import com.github.vok.framework.sql2o.vaadin.EntityDataProvider
 import com.github.vok.framework.sql2o.vaadin.SqlDataProvider
+import com.github.vokorm.*
 import com.google.gson.*
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.dom.Element
@@ -68,7 +69,7 @@ interface LEntity : Serializable {
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
-inline val <reified T: LEntity> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })
+inline val <reified T: LEntity> DaoOfAny<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })
 
 // workaround to not to use Flow Json converter, but a standard one.
 class GsonJava8Support : JsonDeserializer<Any>, JsonSerializer<Any> {

@@ -1,10 +1,11 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.vok.framework.sql2o.*
-import com.vaadin.flow.data.provider.*
-import com.vaadin.flow.function.SerializablePredicate
+import com.github.vokorm.*
+import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
+import com.vaadin.flow.data.provider.DataProvider
+import com.vaadin.flow.data.provider.Query
+import com.vaadin.flow.data.provider.SortDirection
 import java.util.stream.Stream
-import kotlin.streams.toList
 
 /**
  * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering

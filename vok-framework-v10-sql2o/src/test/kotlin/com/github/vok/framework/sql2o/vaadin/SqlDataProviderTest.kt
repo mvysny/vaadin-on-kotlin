@@ -2,8 +2,8 @@ package com.github.vok.framework.sql2o.vaadin
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.framework.sql2o.Person
-import com.github.vok.framework.sql2o.databaseTableName
 import com.github.vok.framework.sql2o.usingDatabase
+import com.github.vokorm.databaseTableName
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.data.provider.SortDirection

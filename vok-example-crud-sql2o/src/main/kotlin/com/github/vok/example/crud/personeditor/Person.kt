@@ -1,7 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.sql2o.Dao
-import com.github.vok.framework.sql2o.Entity
+import com.github.vokorm.Dao
+import com.github.vokorm.Entity
 import java.time.LocalDate
 import java.util.*
 import javax.validation.constraints.Max
@@ -12,6 +12,8 @@ import javax.validation.constraints.Size
 /**
  * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by SQL2O.
  * Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
+ *
+ * See [vok-orm](https://github.com/mvysny/vok-orm) for more details.
  * @property id person ID
  * @property name person name
  * @property age the person age, 15..100

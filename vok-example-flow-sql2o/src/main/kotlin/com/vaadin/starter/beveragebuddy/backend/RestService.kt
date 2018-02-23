@@ -1,6 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import com.github.vok.framework.sql2o.findAll
+import com.github.vokorm.findAll
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces

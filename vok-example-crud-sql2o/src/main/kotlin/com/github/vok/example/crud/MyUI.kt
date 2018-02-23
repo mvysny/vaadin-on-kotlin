@@ -4,8 +4,8 @@ import com.github.vok.example.crud.personeditor.CrudView
 import com.github.vok.framework.Session
 import com.github.vok.framework.scheduleAtFixedRate
 import com.github.vok.framework.seconds
-import com.github.vok.framework.sql2o.db
 import com.github.vok.karibudsl.*
+import com.github.vokorm.db
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme
 import com.vaadin.annotations.Title

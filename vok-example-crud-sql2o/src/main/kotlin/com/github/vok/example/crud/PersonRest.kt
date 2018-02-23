@@ -1,7 +1,7 @@
 package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.Person
-import com.github.vok.framework.sql2o.findAll
+import com.github.vokorm.findAll
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.Produces

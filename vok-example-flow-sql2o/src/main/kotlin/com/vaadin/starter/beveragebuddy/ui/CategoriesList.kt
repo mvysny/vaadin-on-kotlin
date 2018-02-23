@@ -15,10 +15,10 @@
  */
 package com.vaadin.starter.beveragebuddy.ui
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.framework.sql2o.vaadin.and
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.get
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Div

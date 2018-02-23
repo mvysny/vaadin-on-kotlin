@@ -1,7 +1,7 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import com.github.vok.framework.sql2o.Dao
-import com.github.vok.framework.sql2o.db
+import com.github.vokorm.DaoOfAny
+import com.github.vokorm.db
 import com.vaadin.starter.beveragebuddy.LEntity
 import java.time.LocalDate
 import javax.validation.constraints.*
@@ -40,7 +40,7 @@ open class Review(override var id: Long? = null,
 
     fun copy() = Review(id, score, name, date, category, count)
 
-    companion object : Dao<Review> {
+    companion object : DaoOfAny<Review> {
         /**
          * Computes the total sum of [count] for all reviews belonging to given [categoryId].
          * @return the total sum, 0 or greater.

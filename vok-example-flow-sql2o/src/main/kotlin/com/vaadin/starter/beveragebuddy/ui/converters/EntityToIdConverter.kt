@@ -1,8 +1,8 @@
 package com.vaadin.starter.beveragebuddy.ui.converters
 
-import com.github.vok.framework.sql2o.Entity
-import com.github.vok.framework.sql2o.db
-import com.github.vok.framework.sql2o.findById
+import com.github.vokorm.Entity
+import com.github.vokorm.db
+import com.github.vokorm.findById
 import com.vaadin.flow.data.binder.Binder
 import com.vaadin.flow.data.converter.Converter
 import com.vaadin.flow.data.binder.Result

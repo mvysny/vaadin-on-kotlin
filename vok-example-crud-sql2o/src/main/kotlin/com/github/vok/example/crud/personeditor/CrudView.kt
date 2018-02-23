@@ -1,13 +1,13 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.sql2o.db
-import com.github.vok.framework.sql2o.deleteById
 import com.github.vok.framework.sql2o.vaadin.configurableFilter
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.karibudsl.*
 import com.github.vok.karibudsl.ModifierKey.Alt
 import com.github.vok.karibudsl.ModifierKey.Ctrl
+import com.github.vokorm.db
+import com.github.vokorm.deleteById
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

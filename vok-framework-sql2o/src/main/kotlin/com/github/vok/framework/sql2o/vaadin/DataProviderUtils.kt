@@ -1,8 +1,8 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.vok.framework.sql2o.Filter
-import com.github.vok.framework.sql2o.SqlWhereBuilder
-import com.github.vok.framework.sql2o.and
+import com.github.vokorm.Filter
+import com.github.vokorm.SqlWhereBuilder
+import com.github.vokorm.and
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.server.SerializablePredicate

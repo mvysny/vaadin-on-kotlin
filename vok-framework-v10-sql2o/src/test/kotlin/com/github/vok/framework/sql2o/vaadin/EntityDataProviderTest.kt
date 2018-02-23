@@ -3,9 +3,9 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.vok.framework.sql2o.Person
-import com.github.vok.framework.sql2o.db
 import com.github.vok.framework.sql2o.usingDatabase
 import com.github.vok.karibudsl.flow.getAll
+import com.github.vokorm.db
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
 import kotlin.streams.toList

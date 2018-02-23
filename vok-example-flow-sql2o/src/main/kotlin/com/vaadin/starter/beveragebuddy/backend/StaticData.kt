@@ -1,6 +1,6 @@
 package com.vaadin.starter.beveragebuddy.backend
 
-import com.github.vok.framework.sql2o.db
+import com.github.vokorm.db
 import java.time.LocalDate
 import java.util.*
 
