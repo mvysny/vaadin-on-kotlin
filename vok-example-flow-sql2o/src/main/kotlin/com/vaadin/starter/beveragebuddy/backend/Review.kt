@@ -45,8 +45,8 @@ open class Review(override var id: Long? = null,
          * Computes the total sum of [count] for all reviews belonging to given [categoryId].
          * @return the total sum, 0 or greater.
          */
-        fun getTotalCountForReviewsInCategory(categoryId: Long?): Long = db {
-            val scalar = con.createQuery("select sum(r.count) from Review r where r.category = :catId")
+        fun getTotalCountForReviewsInCategory(categoryId: Long): Long = db {
+            val scalar: Any? = con.createQuery("select sum(r.count) from Review r where r.category = :catId")
                     .addParameter("catId", categoryId)
                     .executeScalar()
             (scalar as Number?)?.toLong() ?: 0L

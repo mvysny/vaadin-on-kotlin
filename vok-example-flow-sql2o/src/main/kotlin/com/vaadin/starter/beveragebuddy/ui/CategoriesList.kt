@@ -94,9 +94,7 @@ class CategoriesList : Div() {
         form.open(Category[categoryId], AbstractEditorDialog.Operation.EDIT)
     }
 
-    private fun Category.getReviewCount(): String {
-        return Review.getTotalCountForReviewsInCategory(id).toString()
-    }
+    private fun Category.getReviewCount(): String = Review.getTotalCountForReviewsInCategory(id!!).toString()
 
     private fun updateView() {
         var dp = Category.dataProvider
