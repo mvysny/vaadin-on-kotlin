@@ -13,8 +13,8 @@ The View layer leverages component-oriented
 programming as offered by the [Vaadin](https://vaadin.com) framework. Vaadin offers powerful components which are built on AJAX;
 programming in Vaadin resembles programming in a traditional client-side framework such as JavaFX or Swing.
 
-The database access layer is covered by [Sql2o](http://www.sql2o.org/) with additional VoK helpers.
-Sql2o allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
+The database access layer is covered by [vok-orm](https://github.com/mvysny/vok-orm) which uses the Sql2o library with additional VoK helpers.
+`vok-orm` allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
 Of course, you may decide not to use Sql2o and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and [Hibernate](http://hibernate.org/orm/).
 
 Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
@@ -96,12 +96,12 @@ For general Vaadin-on-Kotlin bugs, please use the [Vaadin-on-Kotlin Github Issue
 
 ### Easy database transactions:
 
-Sql2o:
+vok-orm:
 ```kotlin
 button("Save", { db { person.save() } })
 ```
 
-See [Back To Base - Make SQL Great Again](http://mavi.logdown.com/posts/5771422) for an explanation on how this works.
+See [vok-orm](https://github.com/mvysny/vok-orm) for an explanation on how this works.
 
 JPA:
 
@@ -221,7 +221,7 @@ if (button.w.isFillParent) { ... }
 
 Please find the very simple sample application here: [vok-example-crud-sql2o](vok-example-crud-sql2o). The application demonstrates the following things:
 
-* Linking to a database. VaadinOnKotlin uses Sql2o for simple O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
+* Linking to a database. VaadinOnKotlin uses [vok-orm](https://github.com/mvysny/vok-orm) for simple O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](vok-example-crud-sql2o/build.gradle) the db section for more details.
   To link to the database, we configure Hikari database connection pooler in [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt). HikariCP provides production-grade performance.
   You can also use JPA if you so wish.  
