@@ -4,6 +4,7 @@ import com.github.karibu.testing.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
+import com.github.vok.karibudsl.autoDiscoverViews
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
 import com.vaadin.ui.Button
