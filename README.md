@@ -58,18 +58,7 @@ The web app will be running at [http://localhost:8080](http://localhost:8080).
 
 ## Vaadin 10 Flow Example project
 
-The Beverage Buddy application ported to Vaadin-on-Kotlin. A full-stack app: uses Sql2o and H2 instead of a dummy service. Just type this into your terminal:
-
-```bash
-git clone https://github.com/mvysny/vaadin-on-kotlin
-cd vaadin-on-kotlin
-./gradlew build
-./gradlew vok-example-flow-sql2o:appRun
-```
-
-The web app will be running at [http://localhost:8080](http://localhost:8080).
-
-You can also see the [Online Beverage Buddy Demo](https://beverage-buddy-vok.herokuapp.com) running on Heroku.
+Head to [Beverage Buddy VoK](https://github.com/mvysny/beverage-buddy-vok) for the standalone example project.
 
 ## Run the example application from Intellij IDEA Community
 
