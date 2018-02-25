@@ -56,6 +56,8 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
+You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running on Heroku. 
+
 ## Vaadin 10 Flow Example project
 
 Head to [Beverage Buddy VoK](https://github.com/mvysny/beverage-buddy-vok) for the standalone example project.
