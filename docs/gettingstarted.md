@@ -705,7 +705,7 @@ class EditArticleView: VerticalLayout(), View {
             bind(binder).bind(Article::text)
         }
         button("Save Article", { event ->
-            val article = Article()
+            val article = article!!
             if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
                 article.save()
                 ArticleView.navigateTo(article.id!!)
