@@ -13,6 +13,10 @@ import com.vaadin.ui.TextField
 import java.time.LocalDate
 import kotlin.test.expect
 
+/**
+ * Tests the [CrudView] class. Uses the serverless testing approach provided by the
+ * [Karibu Testing](https://github.com/mvysny/karibu-testing) library - check that link for more details.
+ */
 class CrudViewTest : DynaTest({
     beforeGroup {
         autoDiscoverViews("com.github")
@@ -27,7 +31,7 @@ class CrudViewTest : DynaTest({
     beforeEach { cleanupDb() }
     afterEach { cleanupDb() }
 
-    test("GridListsAllPersons") {
+    test("the grid lists all personnel properly") {
         Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         CrudView.navigateTo()
 
@@ -36,7 +40,7 @@ class CrudViewTest : DynaTest({
         grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "null", "Show", "Edit", "Delete")
     }
 
-    test("Edit") {
+    test("edit one person") {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         CrudView.navigateTo()
 
