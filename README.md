@@ -56,7 +56,9 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
-You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running on Heroku. 
+You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running on Heroku.
+
+For more information check out the [vok-example-crud-sql2o](vok-example-crud-sql2o) module.
 
 ## Vaadin 10 Flow Example project
 
@@ -207,31 +209,6 @@ button {
 }
 if (button.w.isFillParent) { ... }
 ```
-
-## How this is done / Sample application
-
-Please find the very simple sample application here: [vok-example-crud-sql2o](vok-example-crud-sql2o). The application demonstrates the following things:
-
-* Linking to a database. VaadinOnKotlin uses [vok-orm](https://github.com/mvysny/vok-orm) for simple O/R mapping when accessing the database. The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
-  [build.gradle](vok-example-crud-sql2o/build.gradle) the db section for more details.
-  To link to the database, we configure Hikari database connection pooler in [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt). HikariCP provides production-grade performance.
-  You can also use JPA if you so wish.  
-* Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
-  The migration is safe on cluster as well as a database lock is obtained.
-  Please see [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
-  You will need to write the database migration scripts yourself: see [sample migrations](vok-example-crud-sql2o/src/main/resources/db/migration) for details. More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
-* Accessing the database: just create your pojo beans [(example Person)](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
-  `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in [DB.kt](vok-framework-sql2o/src/main/kotlin/com/github/vok/framework/sql2o/DB.kt), you can call this from anywhere, be it Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary! See [Back To Base - Make SQL Great Again](http://mavi.logdown.com/posts/5771422) for an explanation on how this works.
-* Serving the data via REST: add RESTEasy to your project, see [build.gradle](vok-example-crud-sql2o/build.gradle). Then, declare REST Application to bind the REST to a particular URL endpoint, see
-  [Bootstrap.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
-  the `@ApplicationPath("/rest")` stanza. After that, just define your REST-accessing classes, for example
-  [PersonRest](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/PersonRest.kt)
-* Creating the UI: there are lots of great Vaadin tutorials, in general you declare UI and populate it with components. See
-  [MyUI](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/MyUI.kt)
-* Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the [crud example](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor) on how to write the CRUD UI yourself very easily.
-* Logging: uses SLF4j with Logback, configured as follows: [logback.xml](vok-example-crud-sql2o/src/main/resources/logback.xml)
-* Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/LastAddedPersonCache.kt).
-* Running: [vok-example-crud-sql2o](vok-example-crud-sql2o) is a standard WAR application which you can run from your IDE directly. Please see below for some tips on how to do that.
 
 ### Sample application which uses JPA
 
