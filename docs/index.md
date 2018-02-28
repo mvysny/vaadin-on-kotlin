@@ -43,7 +43,7 @@ To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
 
 ## About
 
-Vaadin-on-Kotlin is a puzzle which contains the following items:
+Vaadin-on-Kotlin is a jigsaw which contains the following items:
 
 <style>
 .box {
