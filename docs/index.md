@@ -70,6 +70,15 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 .md {
   background: rgb(255, 255, 255);
 }
+.go {
+  background: rgb(100, 181, 246);
+}
+.au {
+  background: rgb(255, 183, 77);
+}
+.pt {
+  background: rgb(207, 216, 220);
+}
 .box .caption {
   font-size: 22px;
   font-family: Arvo, Monaco, serif;
@@ -80,8 +89,15 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 }
 </style>
 
+<div style="display: flex">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
 <div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 <div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box md"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
+</div>
+<div style="display: flex">
+<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box go"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">PWA</div><div class="body">Write full-stack PWAs with server-side Kotlin code</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
+</div>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
