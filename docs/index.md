@@ -48,10 +48,10 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 <style>
 .box {
   border-radius: 4px;
-  padding: 12px 12px;
+  padding: 10px 10px;
   margin: 10px;
-  width: 160px;
-  height: 160px;
+  width: 130px;
+  height: 130px;
   transition: box-shadow 200ms;
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
   display: inline-block;
@@ -64,17 +64,14 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
   color: rgba(0, 0, 0, 0.6);
 }
 .box .caption {
-  font-size: 30px;
+  font-size: 24px;
 }
 .box .body {
-  padding-top: 10px;
-  font-size: 17px;
+  padding-top: 8px;
+  font-size: 14px;
 }
 </style>
 
-<a class="box app">
-  <div class="caption">Karibu-DSL</div>
-  <div class="body">Write your UI in structured Kotlin code</div>
-</a>
+<a class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></a>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
