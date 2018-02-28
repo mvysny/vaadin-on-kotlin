@@ -72,6 +72,6 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 }
 </style>
 
-<a class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></a>
+<div class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
