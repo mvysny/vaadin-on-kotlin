@@ -56,6 +56,7 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
   display: inline-block;
   color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
 }
 .box:hover {
   box-shadow: 0 5px 10px rgba(0,0,0,.15);
@@ -65,6 +66,9 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 }
 .fe {
   background: rgb(129, 199, 132);
+}
+.md {
+  background: rgb(255, 255, 255);
 }
 .box .caption {
   font-size: 22px;
@@ -78,5 +82,6 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
 <div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
+<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box md"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
