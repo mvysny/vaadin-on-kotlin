@@ -17,7 +17,7 @@ With VoK you only write server-side Kotlin code - no JavaScript and no CSS is ne
 to style up your application and/or write your own custom rich component. 
 
 VoK is not yet another HTTP route mapping library. On the contrary: it provides you with a 
-[wide palette of built-in powerful components](https://martin.app.fi/karibudsl): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components.
+[wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components.
 All components have rich JavaScript facade which provides rich functionality. Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component which allows you to focus on wiring the components in pure server-side Kotlin code.
 
@@ -40,5 +40,41 @@ The web app will be running at [http://localhost:8080](http://localhost:8080)
 To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
 To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
+
+## About
+
+Vaadin-on-Kotlin is a puzzle which contains the following items:
+
+<style>
+.box {
+  border-radius: 4px;
+  padding: 12px 12px;
+  margin: 10px;
+  width: 160px;
+  height: 160px;
+  transition: box-shadow 200ms;
+  transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  display: inline-block;
+}
+.box:hover {
+  box-shadow: 0 5px 10px rgba(0,0,0,.15);
+}
+.app {
+  background: rgb(221, 201, 230);
+  color: rgba(0, 0, 0, 0.6);
+}
+.box .caption {
+  font-size: 30px;
+}
+.box .body {
+  padding-top: 10px;
+  font-size: 17px;
+}
+</style>
+
+<a class="box app">
+  <div class="caption">Karibu-DSL</div>
+  <div class="body">Write your UI in structured Kotlin code</div>
+</a>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
