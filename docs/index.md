@@ -91,12 +91,12 @@ Vaadin-on-Kotlin is a jigsaw which contains the following items:
 
 <div style="display: flex">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
-<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 <div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box md"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 </div>
 <div style="display: flex">
-<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box go"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">PWA</div><div class="body">Write full-stack PWAs with server-side Kotlin code</div></div>
+<div onclick="location.href='https://vaadin.com/';" class="box go"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
+<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box au"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
 </div>
 
