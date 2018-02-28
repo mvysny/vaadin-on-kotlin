@@ -48,23 +48,27 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 <style>
 .box {
   border-radius: 4px;
-  padding: 10px 10px;
+  padding: 16px 10px;
   margin: 10px;
-  width: 130px;
-  height: 130px;
+  width: 170px;
+  height: 118px;
   transition: box-shadow 200ms;
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
   display: inline-block;
+  color: rgba(0, 0, 0, 0.6);
 }
 .box:hover {
   box-shadow: 0 5px 10px rgba(0,0,0,.15);
 }
 .app {
   background: rgb(221, 201, 230);
-  color: rgba(0, 0, 0, 0.6);
+}
+.fe {
+  background: rgb(129, 199, 132);
 }
 .box .caption {
-  font-size: 24px;
+  font-size: 22px;
+  font-family: Arvo, Monaco, serif;
 }
 .box .body {
   padding-top: 8px;
@@ -72,6 +76,7 @@ Vaadin-on-Kotlin is a puzzle which contains the following items:
 }
 </style>
 
-<div class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
