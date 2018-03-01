@@ -50,9 +50,9 @@ To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find
 
 To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
 
-## About
+## Further Reading
 
-Vaadin-on-Kotlin is a jigsaw which contains the following items:
+Vaadin-on-Kotlin is a jigsaw built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
 
 <style>
 .box {
