@@ -46,3 +46,4 @@ The application demonstrates the following things:
 * Logging: uses SLF4j with Logback, configured as follows: [logback.xml](src/main/resources/logback.xml)
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](src/main/kotlin/com/github/vok/example/crud/LastAddedPersonCache.kt).
 * Running: this app is a standard WAR application which you can run from your IDE directly.
+* Testing: uses the [Karibu-Testing](https://github.com/mvysny/karibu-testing) framework; please find the example test at [CrudViewTest.kt](src/test/kotlin/com/github/vok/example/crud/personeditor/CrudViewTest.kt).
