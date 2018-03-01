@@ -14,7 +14,7 @@ import java.time.LocalDate
 import kotlin.test.expect
 
 /**
- * Tests the [CrudView] class. Uses the serverless testing approach provided by the
+ * Tests the [CrudView] class. Uses the browserless testing approach provided by the
  * [Karibu Testing](https://github.com/mvysny/karibu-testing) library - check that link for more details.
  */
 class CrudViewTest : DynaTest({
