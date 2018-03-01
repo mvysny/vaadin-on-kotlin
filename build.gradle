@@ -12,13 +12,6 @@ buildscript {
     if (project.rootProject.file('local.properties').exists()) {
         ext.local.load(project.rootProject.file('local.properties').newDataInputStream())
     }
-
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
-    }
 }
 
 plugins {
@@ -63,11 +56,7 @@ subprojects {
         }
     }
 
-    // for Travis to record failures: http://stackoverflow.com/questions/28614865/how-to-read-test-result-reports-on-travis-ci/28617954#28617954
     test {
-        testLogging {
-            events "failed"
-            exceptionFormat "full"
-        }
+	useJUnitPlatform()
     }
 }
