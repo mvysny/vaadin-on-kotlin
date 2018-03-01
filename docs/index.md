@@ -25,8 +25,8 @@ Because of that, VoK feels more of a client widget library (such as JavaFX) than
 
 ## Starting Your Project From Scratch
 
-Since a typical VoK project has  of files (migrations, views, bootstrap etc), it makes sense to have an archetype app - one that you can
-download or git-clone and start from that. The most basic Vaadin 8-based VoK app is the [VoK Helloworld app](https://github.com/mvysny/vok-helloword-app).
+Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+have an archetype app with all of those files already provided. The most basic Vaadin 8-based VoK app is the [VoK Helloworld app](https://github.com/mvysny/vok-helloword-app).
 It's a github repo - just clone it and start experimenting! There is also a documentation there to get you started quickly.
 
 For Vaadin 10 we recommend to start with the [Beverage Buddy](https://github.com/mvysny/beverage-buddy-vok/) app - it contains all you need
