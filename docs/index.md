@@ -23,7 +23,16 @@ the server part of the component which allows you to focus on wiring the compone
 
 Because of that, VoK feels more of a client widget library (such as JavaFX) than a web page-based framework.
 
-## QuickStart
+## Starting Your Project From Scratch
+
+Since a typical VoK project has  of files (migrations, views, bootstrap etc), it makes sense to have an archetype app - one that you can
+download or git-clone and start from that. The most basic Vaadin 8-based VoK app is the [VoK Helloworld app](https://github.com/mvysny/vok-helloword-app).
+It's a github repo - just clone it and start experimenting! There is also a documentation there to get you started quickly.
+
+For Vaadin 10 we recommend to start with the [Beverage Buddy](https://github.com/mvysny/beverage-buddy-vok/) app - it contains all you need
+and it only has two views so it's easy enough to base your app on.
+
+### A more complete Vaadin 8 CRUD example
 
 You will only need Java 8 JDK and git installed to run the example application from the command-line. Just type this into your terminal:
 
@@ -33,7 +42,7 @@ cd vaadin-on-kotlin
 ./gradlew vok-example-crud-sql2o:appRun
 ```
 
-The web app will be running at [http://localhost:8080](http://localhost:8080)
+The web app will be running at [http://localhost:8080](http://localhost:8080). You can see the app [running live on Heroku](https://vok-crud.herokuapp.com/).
 
 ## Tutorial
 
