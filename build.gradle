@@ -2,7 +2,7 @@ buildscript {
     ext.kotlin_version = '1.2.30'
     ext.vaadin8_version = '8.3.1'
     ext.karibudsl_version = '0.3.4'
-    ext.kaributesting_version = '0.4.0'
+    ext.kaributesting_version = '0.4.1'
     ext.vaadin10_version = '10.0.0.beta1'
     ext.hikaricp_version = '2.7.8'
     ext.flyway_version = '5.0.7'
