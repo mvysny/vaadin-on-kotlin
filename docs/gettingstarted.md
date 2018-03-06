@@ -1103,9 +1103,9 @@ variable `article` containing an article, you can retrieve all the comments belo
 as an array using `article.comments.getAll()`.
 
 > **Note:** Note that the `comments` field is outside of the `data class` constructor. This is intentional,
-since the `comments` field is not really a field but a computed property. `comments` is lazy -
+since the `comments` field is not really a field but a computed property and thus can not stand as a constructor parameter. `comments` is hence lazy -
 it is evaluated every time it is read; reading it causes a database `select` to be run. That's why the `comments` property shouldn't
-appear in `Article.toString()`, so that logging a newly created article won't run a select.
+appear in `Article.toString()`, so that logging a newly created article (which calls `toString()`) won't run a select.
 Computed properties also do not appear in the JSON output as returned by the REST services - this way we can prevent polluting of the REST JSON
 article output with all comments.
 
