@@ -252,8 +252,7 @@ Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the follow
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.Dao
-import com.github.vok.framework.sql2o.Entity
+import com.github.vokorm.*
 
 data class Article(
         override var id: Long? = null,
@@ -279,7 +278,7 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which wi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.*
+import com.github.vokorm.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -338,8 +337,7 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 package com.example.vok
 
 import com.github.vok.karibudsl.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -410,7 +408,7 @@ created the database table for Article yet.
 
 ### 5.4 Creating the Article model
 
-Luckily, we have already created the model - it's the `Article` entity class. We will use [Sql2o](http://www.sql2o.org/) which will map the Article object to a relational database. By default it will map to the "Article" table.
+Luckily, we have already created the model - it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
 > **Note:** Sql2o is smart enough to automatically map column names to the Article class properties,
@@ -470,11 +468,10 @@ Vaadin Navigator supports adding parameters after the view name. This way, we ca
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
-import com.vaadin.ui.FormLayout
-import com.vaadin.ui.Label
+import com.vaadin.ui.*
 
 @AutoView
 class ArticleView: FormLayout(), View {
@@ -490,7 +487,7 @@ class ArticleView: FormLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        val article = Article[articleId]
+        val article = Article.getById(articleId)
         title.value = article.title
         text.value = article.text
     }
@@ -628,7 +625,8 @@ Open the `Article.kt` file and edit it:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.*
+import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vokorm.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -683,8 +681,8 @@ The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/Edi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.VerticalLayout
@@ -719,7 +717,7 @@ class EditArticleView: VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]!!.toLong()
-        edit(Article[articleId])
+        edit(Article.getById(articleId))
     }
 
     private fun edit(article: Article) {
@@ -758,8 +756,8 @@ And we'll also add one to the `ArticleView.kt` template as well, so that there's
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -785,7 +783,7 @@ class ArticleView: FormLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article[articleId]
+        article = Article.getById(articleId)
         title.value = article.title
         text.value = article.text
     }
@@ -898,8 +896,8 @@ Then do the same for the `EditArticleView.kt` view:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -915,7 +913,7 @@ class EditArticleView : VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]!!.toLong()
-        editor.article = Article[articleId]
+        editor.article = Article.getById(articleId)
     }
 
     companion object {
@@ -1000,8 +998,7 @@ We'll create a `Comment` entity to hold comments for an article. Create the foll
 ```kotlin
 package com.example.vok
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.vok.framework.sql2o.*
+import com.github.vokorm.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1020,7 +1017,6 @@ data class Comment(
 ) : Entity<Long> {
     companion object : Dao<Comment>
 
-    @get:JsonIgnore
     val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 }
 ```
@@ -1073,7 +1069,6 @@ You've already seen the line of code inside the `Comment` entity (`Comment.kt`) 
 comment belong to an `Article`:
 
 ```kotlin
-    @get:JsonIgnore
     val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 ```
 
@@ -1082,9 +1077,8 @@ You'll need to edit `Article.kt` to add the other side of the association:
 ```kotlin
 package com.example.vok
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.vok.framework.sql2o.*
 import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vokorm.*
 import com.vaadin.data.provider.DataProvider
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
@@ -1100,7 +1094,6 @@ data class Article(
 ) : Entity<Long> {
     companion object : Dao<Article>
 
-    @get:JsonIgnore
     val comments: DataProvider<Comment, Filter<Comment>?> get() = Comment.dataProvider.and { Comment::article_id eq id }
 }
 ```
@@ -1110,10 +1103,11 @@ variable `article` containing an article, you can retrieve all the comments belo
 as an array using `article.comments.getAll()`.
 
 > **Note:** Note that the `comments` field is outside of the `data class` constructor. This is intentional,
-so that the `comments` field does not participate in `hashCode()`, `equals()` and `toString()`. `comments` is lazy -
-it is evaluated every time it is read; reading it causes a database `select` to be run. This may not be wanted,
-e.g. when we want to log a newly created article only. This is also why the `@JsonIgnore` annotation is used -
-to prevent polluting of the REST JSON article output with all comments.
+since the `comments` field is not really a field but a computed property. `comments` is lazy -
+it is evaluated every time it is read; reading it causes a database `select` to be run. That's why the `comments` property shouldn't
+appear in `Article.toString()`, so that logging a newly created article won't run a select.
+Computed properties also do not appear in the JSON output as returned by the REST services - this way we can prevent polluting of the REST JSON
+article output with all comments.
 
 ### 6.3 Exposing Comments via REST
 
@@ -1123,8 +1117,8 @@ it may just be handy to check your database status via the `curl` tool. Edit `Ar
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.*
-import com.github.vok.framework.sql2o.vaadin.getAll
+import com.github.vok.karibudsl.getAll
+import com.github.vokorm.*
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
 
@@ -1162,9 +1156,8 @@ So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
-import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
@@ -1205,7 +1198,7 @@ class ArticleView: FormLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article[articleId]
+        article = Article.getById(articleId)
         title.value = article.title
         text.value = article.text
     }
@@ -1262,9 +1255,8 @@ in the future, the `Label` component will no longer suffice. Create the `web/src
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
-import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.ui.*
 
 class CommentsComponent : VerticalLayout() {
@@ -1276,7 +1268,7 @@ class CommentsComponent : VerticalLayout() {
 
     fun refresh() {
         removeAllComponents()
-        Article[articleId].comments.getAll().forEach { comment ->
+        Article.getById(articleId).comments.getAll().forEach { comment ->
             label {
                 html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
             }
@@ -1349,8 +1341,8 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -1384,7 +1376,7 @@ class ArticleView: VerticalLayout(), View {
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         val articleId = event.parameterList[0]?.toLong() ?: throw RuntimeException("Article ID is missing")
-        article = Article[articleId]
+        article = Article.getById(articleId)
         title.value = article.title
         text.value = article.text
         comments.articleId = article.id!!
@@ -1406,9 +1398,8 @@ Let's add a link button to the `CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.get
-import com.github.vok.framework.sql2o.vaadin.getAll
 import com.github.vok.karibudsl.*
+import com.github.vokorm.getById
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
@@ -1421,7 +1412,7 @@ class CommentsComponent : VerticalLayout() {
 
     fun refresh() {
         removeAllComponents()
-        Article[articleId].comments.getAll().forEach { comment ->
+        Article.getById(articleId).comments.getAll().forEach { comment ->
             label {
                 html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
             }
