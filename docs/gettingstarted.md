@@ -497,7 +497,7 @@ class ArticleView: FormLayout(), View {
     }
 }
 ```
-A couple of things to note. We use `Article[id]` (or `Article.get(id)`) to find the article we're interested in,
+A couple of things to note. We use `Article.getById(id)` to find the article we're interested in,
 passing in `event.parameterList[0]` to get the first parameter from the request. In Vaadin,
 parameters are slash-separated and are not named. The parameter is passed to the `navigateToView<>()` function
 which takes the view class and a list of string parameters as its input, constructs the target URL
