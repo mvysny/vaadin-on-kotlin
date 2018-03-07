@@ -1,33 +1,30 @@
-# VoK additional utilities for Vaadin 8
+# VoK additional utilities for Vaadin 10
 
-Provides utilities for creating UIs with Vaadin 8, but does not
-introduce support for any particular database type.  Includes the [Karibu-DSL](https://github.com/mvysny/karibu-dsl)
+Provides utilities for creating UIs with Vaadin 10, but does not
+introduce support for any particular database type. Includes the [Karibu-DSL](https://github.com/mvysny/karibu-dsl)
 library, depends on the [vok-framework core](../vok-framework) and
-provides additional Vaadin 8 Kotlin wrappers.
+provides additional Vaadin 10 Kotlin wrappers.
 
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile('com.github.vok:vok-util-vaadin8:0.4.1')
+    compile('com.github.vok:vok-util-vaadin10:0.4.1')
 }
 ```
 
 ## When to use this module
 
-Use this module when you want to use Vaadin 8 and you need to have additional support for Vaadin Grid
+Use this module when you want to use Vaadin 10 and you need to have additional support for Session.Vaadin Grid
 (namely, auto-generated filtering components). Since VoK includes built-in support for SQL
 databases you may also want to include additional modules - read below.
 
 When you want to also use the SQL database with the recommended approach ([vok-db](../vok-db)):
 
-* Depend on the [vok-framework-sql2o](../vok-framework-sql2o) module instead - it will include this
+* Depend on the [vok-framework-v10-sql2o](../vok-framework-v10-sql2o) module instead - it will include this
   module, the [vok-db](../vok-db) module which sports VoK-ORM,
   and will implement proper filters which work with SQL databases.
 
-When you want to also use the SQL database plus JPA:
-
-* Depend on the [vok-framework-jpa](../vok-framework-jpa) module instead - it will include this
-  module, JPA+Hibernate and will implement proper filters which work with the JPA Criterion API.
+VoK currently does not support usage of Vaadin 10 with JPA.
   
 When you want to also use the SQL database plus some other ORM library, or the JDBC directly:
 

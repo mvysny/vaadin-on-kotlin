@@ -1,54 +1,18 @@
 package com.github.vok.framework.flow
 
+import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest
 import com.vaadin.flow.server.VaadinResponse
 import com.vaadin.flow.server.VaadinService
 import com.vaadin.flow.server.VaadinSession
-import com.vaadin.flow.component.UI
 import java.io.Serializable
 import javax.servlet.http.Cookie
-import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 /**
- * Manages session-scoped objects. If the object is not yet present in the session, it is created (using the zero-arg
- * constructor), stored into the session and retrieved.
- *
- * To use this feature, simply define a global property returning desired object as follows:
- * `val Session.loggedInUser: LoggedInUser by lazySession()`
- * Then simply read this property from anywhere, to retrieve the instance. Note that your class needs to be [Serializable] (required when
- * storing stuff into session).
+ * A namespace object for attaching your session objects.
  *
  * WARNING: you can only read the property while holding the Vaadin UI lock (that is, there is current session available).
- */
-class SessionScoped<R>(private val clazz: Class<R>): ReadOnlyProperty<Any?, R> {
-    override fun getValue(thisRef: Any?, property: KProperty<*>): R = getOrCreate()
-
-    private fun getOrCreate(): R = checkUIThread().session.getOrCreate()
-
-    private fun VaadinSession.getOrCreate(): R {
-        var result: R? = getAttribute(clazz)
-        if (result == null) {
-            // look up the zero-arg constructor. the constructor should be private if the user follows our recommendations.
-            val constructor = clazz.declaredConstructors.first { it.parameterCount == 0 }
-            constructor.isAccessible = true
-            result = clazz.cast(constructor.newInstance())!!
-            setAttribute(clazz, result)
-        }
-        return result
-    }
-}
-
-/**
- * Gets a session-retriever for given object. The object is auto-created and bound to the session if missing from the session.
- * The object is bound under the string key of class full name.
- * @param R the object type
- */
-inline fun <reified R> lazySession() where R : Any, R : Serializable = SessionScoped(R::class.java)
-
-/**
- * Just a namespace object for attaching your [SessionScoped] objects.
  */
 object Session {
 
@@ -84,6 +48,32 @@ object Session {
      * @param value the value to store, may be null if
      */
     operator fun <T: Any> set(key: KClass<T>, value: T?) = current.setAttribute(key.java, value)
+
+    /**
+     * Retrieves the class stored under its class name from the session; if it's not yet there calls [defaultValue] block to create it.
+     *
+     * Use this function to create session-bound services such as:
+     * ```
+     * val Session.loggedInUser: LoggedInUser get() = getOrPut { LoggedInUser() }
+     * ```
+     * @return the session-bound instance
+     */
+    inline fun <reified T: Serializable> getOrPut(noinline defaultValue: () -> T): T = getOrPut(T::class, defaultValue)
+
+    /**
+     * Retrieves the class stored under its class name as the [key] from the session; if it's not yet there calls [defaultValue] block to create it.
+     * @return the session-bound instance
+     */
+    fun <T: Serializable> getOrPut(key: KClass<T>, defaultValue: ()->T): T {
+        val value = get(key)
+        return if (value == null) {
+            val answer = defaultValue()
+            set(key, answer)
+            answer
+        } else {
+            value
+        }
+    }
 }
 
 val currentRequest: VaadinRequest get() = VaadinService.getCurrentRequest() ?: throw IllegalStateException("No current request")
@@ -116,6 +106,11 @@ object Cookies {
             currentResponse.addCookie(cookie)
         }
     }
+
+    /**
+     * Deletes cookie with given [name]. Does nothing if there is no such cookie.
+     */
+    fun delete(name: String) = set(name, null)
 }
 
 infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
