@@ -85,6 +85,33 @@ Trying to report a possible security vulnerability in Vaadin-on-Kotlin? Please u
 
 For general Vaadin-on-Kotlin bugs, please use the [Vaadin-on-Kotlin Github Issue Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues).
 
+## Modules
+
+Vaadin-on-Kotlin consists of several modules which offer you with handy functionality. You include the modules
+into your project simply as a Gradle dependencies on simple jar artifacts, there is no magic.
+
+Every module contains a description of what exactly the module does, when you should use it and when
+it might be better to use something else.
+
+The list of modules:
+
+* [vok-framework](vok-framework) - the very core of Vaadin-on-Kotlin which contains machinery
+  for developing VoK plugins, and also the means to bootstrap/teardown the VoK runtime.
+  Always included in your project when you build your app with VoK.
+* [vok-util-vaadin8](vok-util-vaadin8) - when you want to have additional support for Vaadin 8.
+  You typically include this module when you build your Vaadin8-based app with VoK.
+* [vok-util-vaadin10](vok-util-vaadin10) - when you want to have additional support for Vaadin 10.
+  You typically include this module when you build your Vaadin10-based app with VoK.
+* [vok-framework-sql2o](vok-framework-sql2o) - when you want to have additional support for Vaadin 8 and
+  the support for the database using the recommended approach. Includes [vok-util-vaadin8](vok-util-vaadin8) and [vok-db](vok-db).
+* [vok-framework-jpa](vok-framework-jpa) - when you want to have additional support for Vaadin 8 and
+  the support for the database using the JPA access approach. Includes [vok-util-vaadin8](vok-util-vaadin8).
+* [vok-framework-v10-sql2o](vok-framework-v10-sql2o) - when you want to have additional support for Vaadin 10 and
+  the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 10.
+  Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
+* [vok-rest](vok-rest) - when you want to access your database or your app classes or via the REST interface.
+* [vok-db](vok-db) - Provides access to the database; uses [VoK-ORM](https://github.com/mvysny/vok-orm)
+
 ## Code Examples
 
 ### Easy database transactions:

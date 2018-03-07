@@ -3,7 +3,6 @@ package com.github.vok.framework
 import com.github.vok.karibudsl.*
 import com.vaadin.data.*
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.Page
 import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
@@ -20,35 +19,86 @@ import java.time.temporal.Temporal
 import java.util.*
 
 /**
- * Creates actual filters for the filter components. The filters are expected to have properly implemented equals, hashCode and toString.
- * These filters will be stuffed into the [com.vaadin.data.provider.DataProvider].
+ * Used by filter components (such as [NumberInterval]) to create actual filter objects. The filters are expected to have properly
+ * implemented [Any.equals], [Any.hashCode] and [Any.toString], to allow for filter expression simplification (e.g. to remove non-unique
+ * filters from AND or OR expressions).
+ *
+ * The filter objects produced by this factory will be passed into the [com.vaadin.data.provider.DataProvider] in the [com.vaadin.data.provider.Query] object.
+ *
+ * @param F the type of the filter objects. Every database access type may have different filters: for example VoK-ORM
  */
 interface FilterFactory<F> : Serializable {
+    /**
+     * ANDs given set of filters and returns a new filter.
+     * @param filters set of filters, may be empty.
+     * @return a filter which ANDs given filter set; returns `null` when the filter set is empty.
+     */
     fun and(filters: Set<F>): F?
+    /**
+     * ORs given set of filters and returns a new filter.
+     * @param filters set of filters, may be empty.
+     * @return a filter which ORs given filter set; returns `null` when the filter set is empty.
+     */
     fun or(filters: Set<F>): F?
+    /**
+     * Creates a filter which matches the value of given [propertyName] to given [value].
+     */
     fun eq(propertyName: String, value: Any): F
+    /**
+     * Creates a filter which accepts only such values of given [propertyName] which are less than or equal to given [value].
+     */
     fun le(propertyName: String, value: Any): F
+    /**
+     * Creates a filter which accepts only such values of given [propertyName] which are greater than or equal to given [value].
+     */
     fun ge(propertyName: String, value: Any): F
-    // case-insensitive like
+    /**
+     * Creates a filter which performs a case-insensitive substring matching of given [propertyName] to given [value].
+     * @param value not empty; matching rows must contain this string. To emit SQL LIKE statement you need to prepend and append '%' to this string.
+     */
     fun ilike(propertyName: String, value: String): F
-    fun between(propertyName: String, min: Any, max: Any) = and(setOf(ge(propertyName, min), le(propertyName, max)))
+
+    /**
+     * Creates a filter which accepts only such values of given [propertyName] which are greater than or equal to given [min] and less than or equal to given [max].
+     */
+    fun between(propertyName: String, min: Any, max: Any): F = when {
+        min == max -> eq(propertyName, min)
+        else -> and(setOf(ge(propertyName, min), le(propertyName, max)))!!
+    }
 }
 
-data class NumberInterval<T : Number>(var lessThanValue: T?, var greaterThanValue: T?) : Serializable {
+/**
+ * A potentially open numeric range. If both [min] and [max] are `null`, then the interval accepts any number.
+ * @property max the maximum accepted value, inclusive. If `null` then the numeric range has no upper limit.
+ * @property min the minimum accepted value, inclusive. If `null` then the numeric range has no lower limit.
+ */
+data class NumberInterval<T : Number>(var max: T?, var min: T?) : Serializable {
+
+    /**
+     * Creates a filter out of this interval, using given [filterFactory].
+     * @return a filter which matches the same set of numbers as this interval. Returns `null` for universal set interval.
+     */
     fun <F> toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? {
-        if (isEquals) return filterFactory.eq(propertyName, lessThanValue!!)
-        if (lessThanValue != null && greaterThanValue != null) {
-            return filterFactory.between(propertyName, greaterThanValue!!, lessThanValue!!)
+        if (isSingleItem) return filterFactory.eq(propertyName, max!!)
+        if (max != null && min != null) {
+            return filterFactory.between(propertyName, min!!, max!!)
         }
-        if (lessThanValue != null) return filterFactory.le(propertyName, lessThanValue!!)
-        if (greaterThanValue != null) return filterFactory.ge(propertyName, greaterThanValue!!)
+        if (max != null) return filterFactory.le(propertyName, max!!)
+        if (min != null) return filterFactory.ge(propertyName, min!!)
         return null
     }
 
-    val isEquals: Boolean
-        get() = lessThanValue != null && greaterThanValue != null && lessThanValue == greaterThanValue
-    val isEmpty: Boolean
-        get() = lessThanValue == null && greaterThanValue == null
+    /**
+     * True if the interval consists of single number only.
+     */
+    val isSingleItem: Boolean
+        get() = max != null && min != null && max == min
+
+    /**
+     * True if the interval includes all possible numbers (both [min] and [max] are `null`).
+     */
+    val isUniversalSet: Boolean
+        get() = max == null && min == null
 }
 
 /**
@@ -72,7 +122,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                     gtInput = textField {
                         placeholder = "at least"
                         w = 100.px
-                        bind(binder).toDouble().bind(NumberInterval<Double>::greaterThanValue)
+                        bind(binder).toDouble().bind(NumberInterval<Double>::min)
                     }
                     label("..") {
                         w = wrapContent
@@ -80,7 +130,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                     ltInput = textField {
                         placeholder = "at most"
                         w = 100.px
-                        bind(binder).toDouble().bind(NumberInterval<Double>::lessThanValue)
+                        bind(binder).toDouble().bind(NumberInterval<Double>::max)
                     }
                 }
                 horizontalLayout {
@@ -112,17 +162,17 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
     private fun updateCaption() {
         val content = content as PopupView
         val value = value
-        if (value == null || value.isEmpty) {
+        if (value == null || value.isUniversalSet) {
             content.minimizedValueAsHTML = "All"
         } else {
-            if (value.isEquals) {
-                content.minimizedValueAsHTML = "[x] = ${value.lessThanValue}"
-            } else if (value.greaterThanValue != null && value.lessThanValue != null) {
-                content.minimizedValueAsHTML = "${value.greaterThanValue} < [x] < ${value.lessThanValue}"
-            } else if (value.greaterThanValue != null) {
-                content.minimizedValueAsHTML = "[x] > ${value.greaterThanValue}"
-            } else if (value.lessThanValue != null) {
-                content.minimizedValueAsHTML = "[x] < ${value.lessThanValue}"
+            if (value.isSingleItem) {
+                content.minimizedValueAsHTML = "[x] = ${value.max}"
+            } else if (value.min != null && value.max != null) {
+                content.minimizedValueAsHTML = "${value.min} < [x] < ${value.max}"
+            } else if (value.min != null) {
+                content.minimizedValueAsHTML = "[x] >= ${value.min}"
+            } else if (value.max != null) {
+                content.minimizedValueAsHTML = "[x] <= ${value.max}"
             }
         }
     }
@@ -152,17 +202,18 @@ val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
 }
 
 /**
- * Produces filter fields and binds them to the [dataProvider], to automatically perform the filtering itself.
+ * Produces filter fields and binds them to the [dataProvider], to automatically perform the filtering when the field is changed.
  *
  * Currently, the filter fields have to be attached to the Grid manually: you will have to create a special HeaderRow in a Grid, create a field for each column,
- * add the field to the HeaderRow, and finally, [bind] the field to the container. [generateFilterComponents] can do that for you, just call
+ * add the field to the HeaderRow, and finally, [bind] the field to the container. The [generateFilterComponents] can do that for you (it's located in other module), just call
  * ```
  * grid.appendHeaderRow().generateFilterComponents(grid)
  * ```
  *
- * Currently, Vaadin does not support attaching of the filter fields to a vanilla Vaadin Table. Attaching filters to a Tepi FilteringTable
+ * Currently, only Vaadin Grid component is supported. Vaadin does not support attaching of the filter fields to a Vaadin Table.
+ * Attaching filters to a Tepi FilteringTable
  * is currently not supported directly, but it may be done manually.
- * @property clazz The bean on which the filtering will be performed, not null.
+ * @property itemClass The bean on which the filtering will be performed, not null.
  * @property filterFactory produces the actual filter objects accepted by the [dataProvider].
  * @param T the type of beans handled by the Grid.
  * @param F the type of the filter accepted by the [dataProvider]
@@ -179,11 +230,13 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
     protected val properties: PropertySet<T> = BeanPropertySet.get(itemClass)
 
     /**
-     * Creates the filtering component. The component may not necessarily produce values of given data types - for example,
-     * if the data type is a Double, the filtering component may produce a DoubleRange object which requires given value to be contained in a numeric range.
+     * Creates the filtering component for given bean property, or Grid column.
+     * The component may not necessarily produce values of given data types - for example,
+     * if the data type is a Double, the filtering component may produce a `NumberInterval<Double>`
+     * object which mandates given value to be contained in a numeric range.
      *
-     * [createFilter] is later used internally, to construct a filter for given field.
-     * @param property the [clazz] property.
+     * [createFilter] is later used internally when the field's value changes, to construct a filter for given field.
+     * @param property the [itemClass] property.
      * @return A field that can be assigned to the given fieldType and that is
      * *         capable of filtering given type of data. May return null if filtering of given data type with given field type is unsupported.
      */
@@ -251,8 +304,16 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
     }
 }
 
+/**
+ * A potentially open date range. If both [from] and [to] are `null`, then the interval accepts any date.
+ * @property to the maximum accepted value, inclusive. If `null` then the date range has no upper limit.
+ * @property from the minimum accepted value, inclusive. If `null` then the date range has no lower limit.
+ */
 data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Serializable {
-    val isEmpty: Boolean
+    /**
+     * True if the interval includes all possible numbers (both [from] and [to] are `null`).
+     */
+    val isUniversalSet: Boolean
         get() = from == null && to == null
 
     private fun <T: Comparable<T>, F> T.legeFilter(propertyName: String, filterFactory: FilterFactory<F>, isLe: Boolean): F =
@@ -275,6 +336,9 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
     }
 }
 
+/**
+ * A filter component which allows the user to specify a date range.
+ */
 class DateFilterPopup: CustomField<DateInterval?>() {
     private val formatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale ?: Locale.getDefault())
     private lateinit var fromField: InlineDateTimeField
@@ -313,7 +377,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     private fun updateCaption() {
         val content = content as PopupView
         val value = value
-        if (value == null || value.isEmpty) {
+        if (value == null || value.isUniversalSet) {
             content.minimizedValueAsHTML = "All"
         } else {
             content.minimizedValueAsHTML = "${format(fromField.value)} - ${format(toField.value)}"
@@ -383,6 +447,11 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 /**
  * Provides default implementation for [FilterFieldFactory].
  * Supports filter fields for dates, numbers and strings.
+ * @param T the type of beans produced by the [dataProvider]
+ * @param F the type of the filter objects accepted by the [dataProvider].
+ * @param clazz the class of the beans produced by the [dataProvider]
+ * @param dataProvider provides bean instances.
+ * @param filterFactory allows filter components to produce filters accepted by the [dataProvider].
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 @Suppress("UNUSED_PARAMETER")

@@ -16,7 +16,7 @@ starting point for beginner programmers.
 With VoK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
 to style up your application and/or write your own custom rich component. 
 
-VoK is not yet another HTTP route mapping library. On the contrary: it provides you with a 
+VoK is not just yet another HTTP route mapping library. On the contrary: it is built on Vaadin which provides you with a 
 [wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components.
 All components have rich JavaScript facade which provides rich functionality. Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component which allows you to focus on wiring the components in pure server-side Kotlin code.
@@ -29,7 +29,7 @@ To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find
 
 To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
 
-## Vaadin 8 Quick Starters
+## Vaadin 8-based Quick Starters
 
 <style>
 .box {
@@ -87,9 +87,9 @@ have an archetype app with all of those files already provided.
 <div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full Stack</div><div class="body">Full-stack with db and a db table editor</div></div>
 </div>
 
-## Vaadin 10 Quick Starters
+## Vaadin 10-based Quick Starters
 
-Vaadin 10 is based on Web Components and is themable more easily.
+Vaadin 10 components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
 
 Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
 have an archetype app with all of those files already provided.
@@ -102,7 +102,17 @@ have an archetype app with all of those files already provided.
 
 ## Further Reading
 
-Vaadin-on-Kotlin is built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
+For technical description of what Vaadin-on-Kotlin is, please feel free to read the [Vaadin-on-Kotlin Github page](https://github.com/mvysny/vaadin-on-kotlin).
+
+Vaadin-on-Kotlin apps are typically three-tiered:
+
+* The browser renders HTML and JavaScript constructed by the components orchestrated by the Vaadin framework. Vaadin offers the possibility to orchestrate
+  interactive components entirely server-side using a rich Java API. The Karibu-DSL library wraps Vaadin APIs to provide more pleasant Kotlin experience.
+* Server-side code is typically written using the Kotlin language. This is where your app logic resides and this is where you will add your code.
+* The database access is handled by the VoK-ORM library: a very simple and powerful layer over a SQL database. You can of course decide not to use
+  VoK-ORM and use JPA; you can even decide not to use SQL at all and use a NoSQL database.
+
+To learn more about a particular piece, just click the box below to learn more: 
 
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>

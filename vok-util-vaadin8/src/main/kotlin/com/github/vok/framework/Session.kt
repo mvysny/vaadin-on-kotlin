@@ -116,10 +116,21 @@ object Cookies {
             currentResponse.addCookie(cookie)
         }
     }
+
+    /**
+     * Deletes cookie with given [name]. Does nothing if there is no such cookie.
+     */
+    fun delete(name: String) = set(name, null)
 }
 
+/**
+ * Allows you to add a cookie: `Cookies += Cookie("autologin", "secret")`
+ */
 infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
 
+/**
+ * Allows you to remove a cookie: `Cookies -= Cookie("autologin", "secret")`
+ */
 infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
 
 /**
