@@ -23,36 +23,13 @@ the server part of the component which allows you to focus on wiring the compone
 
 Because of that, VoK feels more of a client widget library (such as JavaFX) than a web page-based framework.
 
-## Starting Your Project From Scratch
-
-Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
-have an archetype app with all of those files already provided. The most basic Vaadin 8-based VoK app is the [VoK Helloworld app](https://github.com/mvysny/vok-helloword-app).
-It's a github repo - just clone it and start experimenting! There is also a documentation there to get you started quickly.
-
-For Vaadin 10 we recommend to start with the [Beverage Buddy](https://github.com/mvysny/beverage-buddy-vok/) app - it contains all you need
-and it only has two views so it's easy enough to base your app on.
-
-### A more complete Vaadin 8 CRUD example
-
-You will only need Java 8 JDK and git installed to run the example application from the command-line. Just type this into your terminal:
-
-```bash
-git clone https://github.com/mvysny/vaadin-on-kotlin
-cd vaadin-on-kotlin
-./gradlew vok-example-crud-sql2o:appRun
-```
-
-The web app will be running at [http://localhost:8080](http://localhost:8080). You can see the app [running live on Heroku](https://vok-crud.herokuapp.com/).
-
 ## Tutorial
 
 To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
 To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
 
-## Further Reading
-
-Vaadin-on-Kotlin is a jigsaw built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
+## Vaadin 8 Quick Starters
 
 <style>
 .box {
@@ -98,12 +75,36 @@ Vaadin-on-Kotlin is a jigsaw built of several pieces. To learn more about a part
 }
 </style>
 
-<div style="display: flex">
-<div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box app"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
-<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box md"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
-<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
+Vaadin 8 is a mature and proven web framework. If you need production-grade stability, start here.
+
+Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+have an archetype app with all of those files already provided.
+
+<div style="display: flex; flex-wrap: wrap">
+<div onclick="location.href='https://github.com/mvysny/karibu-helloworld-application';" class="box md"><div class="caption">Project Base</div><div class="body">One-view UI and no db; perfect for UI experiments</div></div>
+<div onclick="location.href='https://github.com/mvysny/https://github.com/mvysny/karibu-dsl#quickstart';" class="box fe"><div class="caption">Component Palette</div><div class="body">No db; demoes navigator and all Vaadin components</div></div>
+<div onclick="location.href='https://github.com/mvysny/vok-helloword-app';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Full-stack with db; start building your app here</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full-stack</div><div class="body">Full-stack with db and a CRUD</div></div>
 </div>
-<div style="display: flex">
+
+## Vaadin 10 Quick Starters
+
+Vaadin 10 is based on Web Components and is themable more easily.
+
+<div style="display: flex; flex-wrap: wrap">
+<div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">Project Base</div><div class="body">One-view UI and no db; perfect for UI experiments</div></div>
+<div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box app"><div class="caption">Full Stack App</div><div class="body">Beverage Buddy backed by db; demoes two tables</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box app"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app for desktop and mobile browsers</div></div>
+</div>
+
+## Further Reading
+
+Vaadin-on-Kotlin is a jigsaw built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
+
+<div style="display: flex; flex-wrap: wrap">
+<div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
+<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box app"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 <div onclick="location.href='https://vaadin.com/';" class="box go"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
 <div onclick="location.href='https://github.com/mvysny/dynatest';" class="box au"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
