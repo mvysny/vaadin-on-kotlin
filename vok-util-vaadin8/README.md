@@ -129,7 +129,6 @@ login module of your app can attach the `LoggedInUser` service which contains bo
 and the means to log in and log out:
 
 ```kotlin
-// must have a zero-arg constructor so that the lazySession() function can instantiate this class lazily
 class LoggedInUser : Serializable {
   val user: User? = null
     private set
@@ -150,7 +149,7 @@ class LoggedInUser : Serializable {
     Session.current.close()
   }
 }
-val Session.loggedInUser: LoggedInUser by lazySession()
+val Session.loggedInUser: LoggedInUser get() = getOrPut { LoggedInUser() }
 ```
 
 By using the above code, you will now be able to access the `LoggedInUser` from anywhere, simply by calling
