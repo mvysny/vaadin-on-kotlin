@@ -82,9 +82,9 @@ have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu-helloworld-application';" class="box md"><div class="caption">Project Base</div><div class="body">One-view UI and no db; perfect for UI experiments</div></div>
-<div onclick="location.href='https://github.com/mvysny/https://github.com/mvysny/karibu-dsl#quickstart';" class="box fe"><div class="caption">Component Palette</div><div class="body">No db; demoes navigator and all Vaadin components</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-dsl#quickstart';" class="box fe"><div class="caption">Component Palette</div><div class="body">No db; demoes navigator and Vaadin components</div></div>
 <div onclick="location.href='https://github.com/mvysny/vok-helloword-app';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Full-stack with db; start building your app here</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full-stack</div><div class="body">Full-stack with db and a CRUD</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full Stack</div><div class="body">Full-stack with db and a db table editor</div></div>
 </div>
 
 ## Vaadin 10 Quick Starters
@@ -94,7 +94,7 @@ Vaadin 10 is based on Web Components and is themable more easily.
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">Project Base</div><div class="body">One-view UI and no db; perfect for UI experiments</div></div>
 <div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box app"><div class="caption">Full Stack App</div><div class="body">Beverage Buddy backed by db; demoes two tables</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box app"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app for desktop and mobile browsers</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app for desktop and mobile browsers</div></div>
 </div>
 
 ## Further Reading
