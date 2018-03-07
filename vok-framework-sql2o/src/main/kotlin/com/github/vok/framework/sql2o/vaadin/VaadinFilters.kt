@@ -16,6 +16,10 @@ import com.vaadin.ui.components.grid.HeaderRow
 import kotlin.reflect.KClass
 import kotlin.streams.toList
 
+/**
+ * Produces filters defined by the `VoK-ORM` library. This will allow us to piggyback on the ability of `VoK-ORM` filters to produce
+ * SQL92 WHERE clause. See [SqlDataProvider] and [EntityDataProvider] for more details.
+ */
 class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
     override fun and(filters: Set<Filter<T>>) = filters.and()
     override fun or(filters: Set<Filter<T>>) = filters.or()
@@ -37,7 +41,7 @@ fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass
                                                         grid.dataProvider as ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>,
                                                         SqlFilterFactory<T>())) {
     val properties: Map<String, PropertyDefinition<T, *>> = BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
-    for (propertyId in grid.columns.map { it.id }.filterNotNull()) {
+    for (propertyId in grid.columns.mapNotNull { it.id }) {
         val property = properties[propertyId]
         val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
         val cell = getCell(propertyId)

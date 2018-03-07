@@ -112,7 +112,7 @@ Vaadin-on-Kotlin apps are typically three-tiered:
 * The database access is handled by the VoK-ORM library: a very simple and powerful layer over a SQL database. You can of course decide not to use
   VoK-ORM and use JPA; you can even decide not to use SQL at all and use a NoSQL database.
 
-To learn more about a particular piece, just click the box below to learn more: 
+Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a particular piece, just click the box below: 
 
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>

@@ -12,7 +12,7 @@ import com.vaadin.server.SerializablePredicate
  * @return data provider which can be configured to always apply given filter.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.configurableFilter() : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
-    withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOf(f1, f2).filterNotNull().toSet().and() })
+    withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() })
 
 /**
  * Produces a new data provider which restricts rows returned by the original data provider to given filter.
@@ -46,7 +46,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.and(block: SqlWhereBuilder<T>.()-> F
 fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : DataProvider<T, Filter<T>?> = adaptToVOKFilters().and(block)
 
 /**
- * Creates a filter programatically: `filter { Person::age lt 25 }`
+ * Creates a filter programmatically: `filter { Person::age lt 25 }`
  */
 fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block(SqlWhereBuilder())
 
