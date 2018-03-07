@@ -21,7 +21,7 @@ VoK is not yet another HTTP route mapping library. On the contrary: it provides 
 All components have rich JavaScript facade which provides rich functionality. Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component which allows you to focus on wiring the components in pure server-side Kotlin code.
 
-Because of that, VoK feels more of a client widget library (such as JavaFX) than a web page-based framework.
+Because of that, VoK feels more of a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
 
 ## Tutorial
 
@@ -91,6 +91,9 @@ have an archetype app with all of those files already provided.
 
 Vaadin 10 is based on Web Components and is themable more easily.
 
+Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+have an archetype app with all of those files already provided.
+
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">Project Base</div><div class="body">One-view UI and no db; perfect for UI experiments</div></div>
 <div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box app"><div class="caption">Full Stack App</div><div class="body">Beverage Buddy backed by db; demoes two tables</div></div>
@@ -99,7 +102,7 @@ Vaadin 10 is based on Web Components and is themable more easily.
 
 ## Further Reading
 
-Vaadin-on-Kotlin is a jigsaw built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
+Vaadin-on-Kotlin is built of several pieces. To learn more about a particular piece, just click the boxes below to learn more: 
 
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
