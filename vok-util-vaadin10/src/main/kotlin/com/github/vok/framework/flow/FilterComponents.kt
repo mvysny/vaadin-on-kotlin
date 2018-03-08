@@ -1,11 +1,14 @@
 package com.github.vok.framework.flow
 
 import com.github.vok.framework.toDate
-import com.github.vok.karibudsl.flow.DateInterval
-import com.github.vok.karibudsl.flow.browserTimeZone
+import com.github.vok.karibudsl.flow.*
 import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.ColumnGroup
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.binder.Binder
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -109,6 +112,111 @@ data class NumberInterval<T : Number>(var max: T?, var min: T?) : Serializable {
      */
     val isUniversalSet: Boolean
         get() = max == null && min == null
+}
+
+/**
+ * Only shows a single button as its contents. When the button is clicked, it opens a dialog and allows the user to specify a range
+ * of numbers. When the user sets the values, the dialog is
+ * hidden and the number range is set as the value of the popup.
+ *
+ * The current numeric range is also displayed as the caption of the button.
+ */
+class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>() {
+    private lateinit var ltInput: TextField
+    private lateinit var gtInput: TextField
+    private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = NumberInterval(null, null) }
+    private lateinit var set: Button
+    private lateinit var clear: Button
+    private val dialog = Dialog()
+    private val content = Button()
+
+    init {
+        dialog.apply {
+            isCloseOnEsc = true
+            isCloseOnOutsideClick = true
+            addOpenedChangeListener({
+                if (!isOpened) {
+                    element.removeFromParent();
+                }
+            })
+            verticalLayout {
+                horizontalLayout {
+                    gtInput = textField {
+                        placeholder = "at least"
+                        bind(binder).toDouble().bind(NumberInterval<Double>::min)
+                    }
+                    text("..")
+                    ltInput = textField {
+                        placeholder = "at most"
+                        bind(binder).toDouble().bind(NumberInterval<Double>::max)
+                    }
+                }
+                horizontalLayout {
+                    set = button("Set") {
+                        onLeftClick {
+                            propagateValueOutwards(binder.bean.copy())
+                            updateCaption()
+                            dialog.close()
+                        }
+                    }
+                    clear = button("Clear") {
+                        onLeftClick {
+                            binder.fields.forEach { it.clear() }
+                            propagateValueOutwards(null)
+                            updateCaption()
+                            dialog.close()
+                        }
+                    }
+                }
+            }
+        }
+        content.apply {
+            onLeftClick {
+                dialog.isOpened = !dialog.isOpened
+            }
+        }
+        updateCaption()
+    }
+
+    override fun propagateValueInwards(value: NumberInterval<Double>?) {
+        binder.bean = value?.copy() ?: NumberInterval<Double>(null, null)
+        updateCaption()
+    }
+
+    private fun updateCaption() {
+        val value = value
+        if (value == null || value.isUniversalSet) {
+            content.text = "All"
+        } else {
+            if (value.isSingleItem) {
+                content.text = "[x] = ${value.max}"
+            } else if (value.min != null && value.max != null) {
+                content.text = "${value.min} < [x] < ${value.max}"
+            } else if (value.min != null) {
+                content.text = "[x] >= ${value.min}"
+            } else if (value.max != null) {
+                content.text = "[x] <= ${value.max}"
+            }
+        }
+    }
+
+    override fun setReadOnly(readOnly: Boolean) {
+        set.isEnabled = !readOnly
+        clear.isEnabled = !readOnly
+        ltInput.isEnabled = !readOnly
+        gtInput.isEnabled = !readOnly
+    }
+
+    override fun initContent(): Component = content
+
+    override fun isReadOnly(): Boolean = !ltInput.isEnabled
+
+    override fun setRequiredIndicatorVisible(requiredIndicatorVisible: Boolean) {
+        ltInput.isRequiredIndicatorVisible = requiredIndicatorVisible
+        gtInput.isRequiredIndicatorVisible = requiredIndicatorVisible
+    }
+
+    override fun isRequiredIndicatorVisible(): Boolean = ltInput.isRequiredIndicatorVisible
 }
 
 /**
