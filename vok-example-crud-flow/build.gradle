@@ -1,0 +1,38 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.4.RELEASE"  // remove when https://github.com/gradle/gradle/issues/4417 is fixed
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'war'
+apply plugin: "org.akhikhl.gretty"
+
+gretty {
+    contextPath = '/'
+}
+
+dependencyManagement {
+    imports { mavenBom "com.vaadin:vaadin-bom:$vaadin10_version" }
+}
+
+dependencies {
+    compile(project(":vok-framework-v10-sql2o"))
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+
+    // logging
+    // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    // this will configure Vaadin to log to SLF4J
+    compile 'org.slf4j:jul-to-slf4j:1.7.25'
+
+    // db
+    compile "org.flywaydb:flyway-core:${flyway_version}"
+    compile 'com.h2database:h2:1.4.196'
+
+    // REST
+    compile(project(":vok-rest"))
+
+    // testing
+    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile "com.github.kaributesting:karibu-testing-v10:$kaributesting_version"
+}
