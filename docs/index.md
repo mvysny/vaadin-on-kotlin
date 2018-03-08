@@ -81,10 +81,10 @@ Every VoK project tend to have several files (database migrations, Gradle build 
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
-<div onclick="location.href='https://github.com/mvysny/karibu-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for UI experiments</div></div>
-<div onclick="location.href='https://github.com/mvysny/karibu-dsl#quickstart';" class="box fe"><div class="caption">Component Palette</div><div class="body">No db; demoes navigator and Vaadin components</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for your UI experiments</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-dsl#quickstart';" class="box fe"><div class="caption">Component Palette</div><div class="body">App which demoes all Vaadin components and the Navigator; no db</div></div>
 <div onclick="location.href='https://github.com/mvysny/vok-helloword-app';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Skeletal app with support for SQL db; start building your app here</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full Stack</div><div class="body">Full-stack with db and a db table editor</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full Stack</div><div class="body">Full-stack with db and a db table editor; a good source of code examples</div></div>
 </div>
 
 ## Vaadin 10-based Quick Starters
@@ -95,7 +95,7 @@ Every VoK project tend to have several files (database migrations, Gradle build 
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
-<div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for UI experiments</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for your UI experiments</div></div>
 <div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box app"><div class="caption">Full Stack App</div><div class="body">The "Beverage Buddy" app backed by SQL db; demoes two tables</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app backed by SQL db; for desktop and mobile browsers</div></div>
 </div>
