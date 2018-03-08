@@ -53,7 +53,7 @@ perform filtering of the data shown in the Grid:
   * Numbers such as Int, Short, Long, Byte - shows a `NumberFilterPopup`
   * Boolean - shows a `ComboBox` with `true`, `false` and `null` (to disable the filter)
   * Enum - shows a `ComboBox` with all possible Enum values.
-  * Date - uses the `DateFilterPopup`
+  * Date, LocalDate, LocalDateTime, Instant - uses the `DateFilterPopup`
   * Strings - uses in-place `TextField` which performs substring matches
 
 Note that the filter components need an implementation of the `FilterFactory` to properly

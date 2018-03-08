@@ -43,21 +43,20 @@ perform filtering of the data shown in the Grid:
 
 * A `NumberFilterPopup` which allows the user to specify a numeric range of accepted values, which may be
   potentially open.
-* A `DateFilterPopup` which allows the user to specify a date range of accepted values.
+* A `DateRangePopup` which allows the user to specify a date range of accepted values.
 * A `FilterFieldFactory` which allows for automatic filter creation for beans, based on reflection and
   bean property type;
 * The `DefaultFilterFieldFactory` implementation which is able to provide filter components for the following types:
   * Numbers such as Int, Short, Long, Byte - shows a `NumberFilterPopup`
   * Boolean - shows a `ComboBox` with `true`, `false` and `null` (to disable the filter)
   * Enum - shows a `ComboBox` with all possible Enum values.
-  * Date - uses the `DateFilterPopup`
+  * Date, LocalDate, LocalDateTime, Instant - uses the `DateRangePopup`
   * Strings - uses in-place `TextField` which performs substring matches
 
 Note that the filter components need an implementation of the `FilterFactory` to properly
-generate filter objects for a particular database backend. The [vok-framework-sql2o](../vok-framework-sql2o) module
-provides such implementation for filtering with the VoK-ORM framework (recommended);
-The [vok-framework-jpa](../vok-framework-jpa) module
-provides such implementation for filtering with the JPA framework.
+generate filter objects for a particular database backend. The [vok-framework-v10-sql2o](../vok-framework-v10-sql2o) module
+provides such implementation for filtering with the VoK-ORM framework (recommended). At the moment
+there is no JPA support.
 
 ### Wiring filters to custom database backend
 
@@ -111,7 +110,14 @@ programmer can generate filter components simply by calling
 grid.appendHeaderRow().generateFilterComponents(grid)
 ```
 
-For more details please see the `VaadinFilters.kt` file in the `vok-framework-sql2o` module.
+However Vaadin10 Grid has yet no support for additional headers so it's currently implemented in a hackish way,
+as an extension method on Grid. You can call it as follows:
+
+```kotlin
+grid.generateFilterComponents(grid)
+```
+
+For more details please see the `VaadinFilters.kt` file in the `vok-framework-v10-sql2o` module.
 
 ## Support for Session
 
