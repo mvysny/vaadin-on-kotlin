@@ -1,6 +1,7 @@
 package com.github.vok.example.crudflow.person
 
 import com.github.karibu.testing.*
+import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crudflow.Bootstrap
 import com.github.vokorm.deleteAll
@@ -9,18 +10,24 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import kotlin.test.expect
 
-class PersonListViewTest : DynaTest({
-    beforeGroup {
-        Bootstrap().contextInitialized(null)
-    }
+/**
+ * When called from a dyna test, it configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.
+ *
+ * A demo of reusable test lifecycle; see https://github.com/mvysny/dynatest#patterns for details.
+ */
+fun DynaNodeGroup.usingApp() {
+    beforeGroup { Bootstrap().contextInitialized(null) }
     afterGroup { Bootstrap().contextDestroyed(null) }
 
-    beforeEach { MockVaadin.setup(            autoDiscoverViews("com.github")) }
-    fun cleanupDb() {
-        Person.deleteAll()
-    }
+    beforeEach { MockVaadin.setup(autoDiscoverViews("com.github")) }
+    fun cleanupDb() { Person.deleteAll() }
     beforeEach { cleanupDb() }
     afterEach { cleanupDb() }
+}
+
+class PersonListViewTest : DynaTest({
+
+    usingApp()
 
     test("Smoke test") {
         UI.getCurrent().navigate("")

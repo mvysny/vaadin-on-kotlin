@@ -1,6 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.karibu.testing.*
+import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
@@ -14,10 +15,11 @@ import java.time.LocalDate
 import kotlin.test.expect
 
 /**
- * Tests the [CrudView] class. Uses the browserless testing approach provided by the
- * [Karibu Testing](https://github.com/mvysny/karibu-testing) library - check that link for more details.
+ * When called from a dyna test, it configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.
+ *
+ * A demo of reusable test lifecycle; see https://github.com/mvysny/dynatest#patterns for details.
  */
-class CrudViewTest : DynaTest({
+fun DynaNodeGroup.usingApp() {
     beforeGroup {
         autoDiscoverViews("com.github")
         Bootstrap().contextInitialized(null)
@@ -30,6 +32,15 @@ class CrudViewTest : DynaTest({
     }
     beforeEach { cleanupDb() }
     afterEach { cleanupDb() }
+}
+
+/**
+ * Tests the [CrudView] class. Uses the browserless testing approach provided by the
+ * [Karibu Testing](https://github.com/mvysny/karibu-testing) library - check that link for more details.
+ */
+class CrudViewTest : DynaTest({
+
+    usingApp()
 
     test("the grid lists all personnel properly") {
         Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
