@@ -37,7 +37,7 @@ To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
   padding: 16px 10px;
   margin: 10px;
   width: 170px;
-  height: 118px;
+  height: 130px;
   transition: box-shadow 200ms;
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
   display: inline-block;

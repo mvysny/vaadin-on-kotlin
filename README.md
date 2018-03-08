@@ -87,8 +87,8 @@ For general Vaadin-on-Kotlin bugs, please use the [Vaadin-on-Kotlin Github Issue
 
 ## Modules
 
-Vaadin-on-Kotlin consists of several modules which offer you with handy functionality. You include the modules
-into your project simply as a Gradle dependencies on simple jar artifacts, there is no magic.
+Vaadin-on-Kotlin consists of several modules which provides you with handy functionality. To include the modules
+into your project, you simply add appropriate Gradle jar dependencies to your `build.gradle`.
 
 Every module contains a description of what exactly the module does, when you should use it and when
 it might be better to use something else.

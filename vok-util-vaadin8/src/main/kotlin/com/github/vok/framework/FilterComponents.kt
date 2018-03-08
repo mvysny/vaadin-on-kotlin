@@ -3,7 +3,6 @@ package com.github.vok.framework
 import com.github.vok.karibudsl.*
 import com.vaadin.data.*
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
-import com.vaadin.server.Page
 import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
@@ -12,7 +11,6 @@ import com.vaadin.ui.themes.ValoTheme
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.time.temporal.Temporal
@@ -324,8 +322,7 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
             LocalDateTime::class.java -> legeFilter(propertyName, filterFactory, isLe)
             LocalDate::class.java -> toLocalDate().legeFilter(propertyName, filterFactory, isLe)
             else -> {
-                val zoneOffset = ZoneOffset.ofTotalSeconds(Page.getCurrent().webBrowser.timezoneOffset / 1000)
-                toInstant(zoneOffset).toDate.legeFilter(propertyName, filterFactory, isLe)
+                atZone(browserTimeZone).toInstant().toDate.legeFilter(propertyName, filterFactory, isLe)
             }
         }
     }
