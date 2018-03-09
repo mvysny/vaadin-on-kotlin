@@ -40,7 +40,6 @@ To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
   height: 130px;
   transition: box-shadow 200ms;
   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
-  display: inline-block;
   color: rgba(0, 0, 0, 0.6);
   cursor: pointer;
 }
