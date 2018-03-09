@@ -8,9 +8,11 @@ provides additional Vaadin 10 Kotlin wrappers.
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile('com.github.vok:vok-util-vaadin10:0.4.1')
+    compile('com.github.vok:vok-util-vaadin10:x.y.z')
 }
 ```
+
+> Note: obtain the newest version from the release name, and the tag name as well: [https://github.com/mvysny/vaadin-on-kotlin/releases](https://github.com/mvysny/vaadin-on-kotlin/releases)
 
 ## When to use this module
 

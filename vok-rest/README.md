@@ -10,9 +10,11 @@ Include dependency on this module to your app; just add the following Gradle dep
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-rest:0.4.1"
+    compile "com.github.vok:vok-rest:x.y.z"
 }
 ```
+
+> Note: obtain the newest version from the release name, and the tag name as well: [https://github.com/mvysny/vaadin-on-kotlin/releases](https://github.com/mvysny/vaadin-on-kotlin/releases)
 
 To activate the REST service you will need to create the following class:
 

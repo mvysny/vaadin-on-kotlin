@@ -13,9 +13,11 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-framework-v10-sql2o:0.4.1"
+    compile "com.github.vok:vok-framework-v10-sql2o:x.y.z"
 }
 ```
+
+> Note: obtain the newest version from the release name, and the tag name as well: [https://github.com/mvysny/vaadin-on-kotlin/releases](https://github.com/mvysny/vaadin-on-kotlin/releases)
 
 This module provides:
 
