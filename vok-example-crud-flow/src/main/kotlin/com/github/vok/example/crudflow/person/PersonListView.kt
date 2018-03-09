@@ -13,7 +13,6 @@ import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.Theme
 import com.vaadin.flow.theme.lumo.Lumo
 import java.time.LocalDate
-import kotlin.reflect.KProperty1
 
 /**
  * The main view contains a button and a template element.
@@ -58,24 +57,3 @@ class PersonListView : VerticalLayout() {
         personGrid.dataProvider.refreshAll()
     }
 }
-
-/**
- * Adds a column for given [property]. The column key is set to the property name, so that you can look up the column
- * using [getColumnBy]. The column is also by default set to sortable
- * unless the [sortable] parameter is set otherwise.
- * @param block runs given block on the column.
- * @return the newly created column
- */
-fun <T, V : Comparable<V>> Grid<T>.addColumnFor(property: KProperty1<T, V?>,
-                                                sortable: Boolean = true,
-                                                converter: (V?)->Any? = { it },
-                                                block: Grid.Column<T>.() -> Unit = {}): Grid.Column<T> =
-    addColumn { it: T -> converter(property.get(it)) } .apply {
-        key = property.name
-        if (sortable) {
-            sortProperty = property
-        }
-        setHeader(property.name)
-        block()
-    }
-
