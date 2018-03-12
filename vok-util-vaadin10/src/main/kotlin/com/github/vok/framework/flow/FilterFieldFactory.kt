@@ -31,12 +31,13 @@ import java.util.*
  * is currently not supported directly, but it may be done manually.
  * @property itemClass The bean on which the filtering will be performed, not null.
  * @property filterFactory produces the actual filter objects accepted by the [dataProvider].
+ * @property dataProvider retrieves the most current data provider from the Grid, so that the filters are set to the currently selected DataProvider
  * @param T the type of beans handled by the Grid.
  * @param F the type of the filter accepted by the [dataProvider]
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
-                                             val dataProvider: ConfigurableFilterDataProvider<T, F?, F?>,
+                                             val dataProvider: ()->ConfigurableFilterDataProvider<T, F?, F?>,
                                              val filterFactory: FilterFactory<F>
 ) {
     /**
@@ -117,7 +118,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
                     currentFilter = newFilter
                     filters.add(newFilter)
                 }
-                dataProvider.setFilter(filterFactory.and(filters))
+                dataProvider().setFilter(filterFactory.and(filters))
             }
         }
     }
@@ -129,12 +130,12 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
  * @param T the type of beans produced by the [dataProvider]
  * @param F the type of the filter objects accepted by the [dataProvider].
  * @param clazz the class of the beans produced by the [dataProvider]
- * @param dataProvider provides bean instances.
+ * @param dataProvider retrieves the most current data provider from the Grid, so that the filters are set to the currently selected DataProvider
  * @param filterFactory allows filter components to produce filters accepted by the [dataProvider].
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 @Suppress("UNUSED_PARAMETER")
-open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvider: ConfigurableFilterDataProvider<T, F?, F?>, filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F>(clazz, dataProvider, filterFactory) {
+open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvider: ()->ConfigurableFilterDataProvider<T, F?, F?>, filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F>(clazz, dataProvider, filterFactory) {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.

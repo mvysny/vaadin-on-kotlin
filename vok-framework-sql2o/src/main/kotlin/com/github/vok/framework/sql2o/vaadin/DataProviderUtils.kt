@@ -39,11 +39,11 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.and(other: Filter<T>)
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : DataProvider<T, Filter<T>?> = configurableFilter().apply {
+fun <T: Any> DataProvider<T, in Filter<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> = configurableFilter().apply {
     setFilter(block)
 }
 @JvmName("andVaadin2")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : DataProvider<T, Filter<T>?> = adaptToVOKFilters().and(block)
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.and(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> = adaptToVOKFilters().and(block)
 
 /**
  * Creates a filter programmatically: `filter { Person::age lt 25 }`
@@ -52,7 +52,7 @@ fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block
 
 /**
  * Removes the original filter and sets the new filter. Allows you to write
- * expressions like this: `sqlDataProvider<Person>().and { Person::age lt 25 }`.
+ * expressions like this: `sqlDataProvider<Person>().apply { setFilter { Person::age lt 25 } }`.
  * See [SqlWhereBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will overwrite the previous filter.

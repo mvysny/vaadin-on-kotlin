@@ -24,6 +24,7 @@ dependencies {
 
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.h2database:h2:1.4.196'
+    testCompile "com.github.kaributesting:karibu-testing-v10:$kaributesting_version"
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
