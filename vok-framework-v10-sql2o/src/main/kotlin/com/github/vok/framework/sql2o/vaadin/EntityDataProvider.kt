@@ -1,10 +1,7 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vokorm.*
-import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
-import com.vaadin.flow.data.provider.DataProvider
-import com.vaadin.flow.data.provider.Query
-import com.vaadin.flow.data.provider.SortDirection
+import com.vaadin.flow.data.provider.*
 import java.util.stream.Stream
 
 /**
@@ -56,4 +53,5 @@ class EntityDataProvider<T : Any>(val clazz: Class<T>, val idMapper: (T)->Any) :
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
-inline val <reified T: Entity<*>> Dao<T>.dataProvider: DataProvider<T, Filter<T>?> get() = EntityDataProvider(T::class.java, { it.id!! })
+inline val <reified T: Entity<*>> Dao<T>.dataProvider: ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>
+    get() = EntityDataProvider(T::class.java, { it.id!! }).withConfigurableFilter2()

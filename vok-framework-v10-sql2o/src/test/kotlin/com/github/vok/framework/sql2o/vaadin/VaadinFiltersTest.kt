@@ -4,19 +4,13 @@ import com.github.karibu.testing.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.vok.karibudsl.flow.addColumnFor
+import com.github.vok.karibudsl.flow.getAll
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.ListDataProvider
 import com.vaadin.flow.data.provider.Query
 import kotlin.streams.toList
-
-@Deprecated("replace by karibu-testing")
-fun <T : Any> DataProvider<T, *>._findAll(): List<T> {
-    @Suppress("UNCHECKED_CAST")
-    val fetched = (this as DataProvider<T, Any?>).fetch(Query<T, Any?>(0, Int.MAX_VALUE, null, null, null))
-    return fetched.toList()
-}
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
@@ -26,15 +20,15 @@ class VaadinFiltersTest : DynaTest({
         data class Person(var name: String)
         val grid = Grid<Person>()
         grid.addColumnFor(Person::name)
-        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).and { Person::name eq "foo" }
-        expectList() { grid.dataProvider!!._findAll() }
+        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withFilter { Person::name eq "foo" }
+        expectList() { grid.dataProvider!!.getAll() }
         val filterComponents = grid.generateFilterComponents(Person::class)
 
         // now let's create another data provider
-        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).and { Person::name eq "foo" }
+        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withVOKFilterAdapter()
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
         (filterComponents["name"] as TextField).value = "foobar"
-        expectList(Person("foobar")) { grid.dataProvider!!._findAll() }
+        expectList(Person("foobar")) { grid.dataProvider!!.getAll() }
     }
 })

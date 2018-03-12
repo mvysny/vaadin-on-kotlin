@@ -30,7 +30,7 @@ class EntityDataProviderTest : DynaTest({
 
     test("filterTest1") {
         db { for (i in 15..90) Person(name = "test$i", age = i).save() }
-        val ds = Person.dataProvider.and { Person::age between 30..60 }
+        val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
         expect(31) { ds.size(Query()) }
         expect((30..60).toList()) { ds.fetch(Query(0, 100, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
@@ -45,15 +45,14 @@ class EntityDataProviderTest : DynaTest({
 
     test("paging") {
         db { for (i in 15..90) Person(name = "test$i", age = i).save() }
-        val ds = Person.dataProvider.and { Person::age between 30..60 }
+        val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
         expect((30..39).toList()) { ds.fetch(Query(0, 10, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
         expect((40..49).toList()) { ds.fetch(Query(10, 10, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
     }
 
     test("native query") {
         db { for (i in 15..90) Person(name = "test$i", age = i).save() }
-        val ds = Person.dataProvider.and { Person::age lt 60 and "age > :age"("age" to 29) }
+        val ds = Person.dataProvider.withFilter { Person::age lt 60 and "age > :age"("age" to 29) }
         expect((30..59).toList()) { ds.getAll().map { it.age } }
     }
-
 })

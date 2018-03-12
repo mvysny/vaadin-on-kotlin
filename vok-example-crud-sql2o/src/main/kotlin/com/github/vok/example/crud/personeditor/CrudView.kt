@@ -1,8 +1,8 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.sql2o.vaadin.configurableFilter
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
+import com.github.vok.framework.sql2o.vaadin.withFilter
 import com.github.vok.karibudsl.*
 import com.github.vok.karibudsl.ModifierKey.Alt
 import com.github.vok.karibudsl.ModifierKey.Ctrl
@@ -46,8 +46,9 @@ class CrudView: VerticalLayout(), View {
         }
         // the SQL2O list demo - shows all instances of a particular database table, allows sorting and filtering.
         // you can restrict the values by writing the following expression:
-        // dataProvider = Person.dataProvider.and { Person::age between 20..60 }
-        personGrid = grid(Person::class, dataProvider = Person.dataProvider.configurableFilter()) {
+        // dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }
+        // any user-configured filters will be applied on top of this filter.
+        personGrid = grid(Person::class, dataProvider = Person.dataProvider ) {
             expandRatio = 1f; setSizeFull()
 
             // example of a custom renderer which converts value to a displayable string.

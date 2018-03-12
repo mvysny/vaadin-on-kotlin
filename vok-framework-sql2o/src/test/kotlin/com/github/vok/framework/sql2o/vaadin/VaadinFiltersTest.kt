@@ -5,6 +5,7 @@ import com.github.karibu.testing._get
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.vok.karibudsl.addColumn
+import com.github.vok.karibudsl.getAll
 import com.github.vokorm.Entity
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
@@ -15,13 +16,6 @@ import com.vaadin.ui.TextField
 import kotlin.streams.toList
 import kotlin.test.expect
 
-@Deprecated("replace by karibu-testing")
-fun <T : Any> DataProvider<T, *>._findAll(): List<T> {
-    @Suppress("UNCHECKED_CAST")
-    val fetched = (this as DataProvider<T, Any?>).fetch(Query<T, Any?>(0, Int.MAX_VALUE, null, null, null))
-    return fetched.toList()
-}
-
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
 
@@ -30,15 +24,16 @@ class VaadinFiltersTest : DynaTest({
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         val filterRow = grid.appendHeaderRow()
-        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).and { Person::name eq "foo" }
-        expectList() { grid.dataProvider!!._findAll() }
+        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withFilter { Person::name eq "foo" }
+        expectList() { grid.dataProvider!!.getAll() }
         filterRow.generateFilterComponents(grid, Person::class)
 
-        // now let's create another data provider
-        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).and { Person::name eq "foo" }
+        // now let's create and set another data provider. If the generateFilterComponents grabs the DP eagerly, it will ignore this second DP.
+        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withVoKFilterAdapter()
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
-        (filterRow.getCell("name").component as TextField).value = "foobar"
-        expectList(Person("foobar")) { grid.dataProvider!!._findAll() }
+        val nameFilter = filterRow.getCell("name").component as TextField
+        nameFilter.value = "foobar"
+        expectList(Person("foobar")) { grid.dataProvider!!.getAll() }
     }
 })
