@@ -20,7 +20,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : Configur
  * Invoking this method multiple times will chain the data providers and restrict the rows further.
  * @param other applies this filter
  */
-fun <T: Any> ConfigurableFilterDataProvider<T, in Filter<T>?, Filter<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
         setFilter(other)
@@ -54,7 +54,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Fil
  * @param block the block which allows you to build the `where` expression.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
-    withConfigurableFilter2().withFilter(block(SqlWhereBuilder()))
+    withFilter(block(SqlWhereBuilder()))
 
 @JvmName("andVaadin2")
 fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =

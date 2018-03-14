@@ -19,7 +19,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : Configur
  * @param other applies this filter
  * @return a [ConfigurableFilterDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
-fun <T: Any> ConfigurableFilterDataProvider<T, in Filter<T>?, Filter<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
         setFilter(other)
@@ -53,7 +53,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Fil
  * @param block the block which allows you to build the `where` expression.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
-    withConfigurableFilter2().withFilter(block(SqlWhereBuilder()))
+    withFilter(block(SqlWhereBuilder()))
 
 @JvmName("withFilterVaadin2")
 fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
