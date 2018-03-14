@@ -1094,7 +1094,7 @@ data class Article(
 ) : Entity<Long> {
     companion object : Dao<Article>
 
-    val comments: DataProvider<Comment, Filter<Comment>?> get() = Comment.dataProvider.and { Comment::article_id eq id }
+    val comments: DataProvider<Comment, Filter<Comment>?> get() = Comment.dataProvider.withFilter { Comment::article_id eq id }
 }
 ```
 
