@@ -49,7 +49,7 @@ import java.util.stream.Stream
  */
 class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: Map<String, Any?> = mapOf(), val idMapper: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idMapper(item)
-    override fun toString() = "SqlDataProvider($clazz:$sql)"
+    override fun toString() = "SqlDataProvider($clazz:$sql($params))"
 
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = db {
         val q = con.createQuery(query.computeSQL(true))
@@ -71,9 +71,12 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
     }
 
     private fun org.sql2o.Query.fillInParamsFromFilters(query: Query<T, Filter<T>?>?): org.sql2o.Query {
-        val filters = query?.filter?.orElse(null) ?: return this
-        val params = filters.getSQL92Parameters()
-        params.entries.forEach { (name, value) -> addParameter(name, value) }
+        val filters: Filter<T> = query?.filter?.orElse(null) ?: return this
+        val params: Map<String, Any?> = filters.getSQL92Parameters()
+        params.entries.forEach { (name, value) ->
+            require(!this@SqlDataProvider.params.containsKey(name)) { "Filters tries to set the parameter $name to $value but that parameter is already forced by SqlDataProvider to ${params[name]}: filter=$filters dp=${this@SqlDataProvider}" }
+            addParameter(name, value)
+        }
         return this
     }
 
