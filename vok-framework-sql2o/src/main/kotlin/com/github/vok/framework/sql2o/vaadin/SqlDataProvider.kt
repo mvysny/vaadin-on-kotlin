@@ -6,7 +6,6 @@ import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import com.vaadin.shared.data.sort.SortDirection
-import java.sql.ResultSet
 import java.util.stream.Stream
 
 /**
@@ -93,9 +92,9 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
         val offset: Int? = this?.offset
         val limit: Int? = this?.limit.takeUnless { it == Int.MAX_VALUE }
         // MariaDB requires LIMIT first, then OFFSET: https://mariadb.com/kb/en/library/limit/
-        val paging = if (!isCountQuery && offset != null && limit != null) " LIMIT $limit OFFSET $offset" else ""
+        val paging: String = if (!isCountQuery && offset != null && limit != null) " LIMIT $limit OFFSET $offset" else ""
 
-        var s = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
+        var s: String = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
 
         // the count was obtained by a dirty trick - the ResultSet was simply scrolled to the last line and the row number is obtained.
         // however, PostgreSQL doesn't seem to like this: https://github.com/mvysny/vaadin-on-kotlin/issues/19
