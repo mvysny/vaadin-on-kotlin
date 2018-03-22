@@ -19,7 +19,7 @@ import java.util.stream.Stream
  * data class CustomerAddress(val customerName: String, val address: String)
  *
  * val provider = SqlDataProvider(CustomerAddress::class.java, """select c.name as customerName, a.street || ' ' || a.city as address
- *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by null{{ORDER}} {{PAGING}}""", idMapper = { it })
+ *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""", idMapper = { it })
  * ```
  *
  * (Note how select column names must correspond to field names in the `CustomerAddress` class)
@@ -95,7 +95,8 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
         // compute the {{PAGING}} replacement
         val offset: Int? = this?.offset
         val limit: Int? = this?.limit.takeUnless { it == Int.MAX_VALUE }
-        val paging = if (!isCountQuery && offset != null && limit != null) " offset $offset limit $limit" else ""
+        // MariaDB requires LIMIT first, then OFFSET: https://mariadb.com/kb/en/library/limit/
+        val paging = if (!isCountQuery && offset != null && limit != null) " LIMIT $limit OFFSET $offset" else ""
 
         val s = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
         return s
