@@ -52,14 +52,11 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
     override fun toString() = "SqlDataProvider($clazz:$sql($params))"
 
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = db {
-        val q = con.createQuery(query.computeSQL(true))
+        val q: org.sql2o.Query = con.createQuery(query.computeSQL(true))
         params.entries.forEach { (name, value) -> q.addParameter(name, value) }
         q.fillInParamsFromFilters(query)
-
-        // the count is obtained by a dirty trick - the ResultSet is simply scrolled to the last line and the row number is obtained.
-        // however, PostgreSQL doesn't seem to like this: https://github.com/mvysny/vaadin-on-kotlin/issues/19
-        val counts: List<Int> = q.executeAndFetch({ rs: ResultSet -> if (rs.last()) rs.row else 0 })
-        if (counts.isEmpty()) 0 else counts[0]
+        val count: Int = q.executeScalar(Int::class.java) ?: 0
+        count
     }
 
     override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> = db {
@@ -98,7 +95,15 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
         // MariaDB requires LIMIT first, then OFFSET: https://mariadb.com/kb/en/library/limit/
         val paging = if (!isCountQuery && offset != null && limit != null) " LIMIT $limit OFFSET $offset" else ""
 
-        val s = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
+        var s = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
+
+        // the count was obtained by a dirty trick - the ResultSet was simply scrolled to the last line and the row number is obtained.
+        // however, PostgreSQL doesn't seem to like this: https://github.com/mvysny/vaadin-on-kotlin/issues/19
+        // anyway there is a better way: simply wrap the select with "SELECT count(*) FROM (select)"
+        if (isCountQuery) {
+            // subquery in FROM must have an alias
+            s = "SELECT count(*) FROM ($s) AS Foo"
+        }
         return s
     }
 
