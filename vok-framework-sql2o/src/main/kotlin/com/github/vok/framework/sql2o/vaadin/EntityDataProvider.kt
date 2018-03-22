@@ -46,7 +46,8 @@ class EntityDataProvider<T : Entity<*>>(val clazz: Class<T>) : AbstractBackEndDa
             append("from ${clazz.databaseTableName}")
             if (where != null && where.isNotBlank()) append(" where $where")
             if (orderBy != null && orderBy.isNotBlank() && includeOrderBy) append(" order by $orderBy")
-            if (offset != null && limit != null) append(" offset $offset limit $limit")
+            // MariaDB requires LIMIT first, then OFFSET: https://mariadb.com/kb/en/library/limit/
+            if (offset != null && limit != null) append(" LIMIT $limit OFFSET $offset ")
         }
         return sql
     }
