@@ -4,6 +4,7 @@ import com.github.vokorm.Filter
 import com.github.vokorm.db
 import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query
+import com.vaadin.data.provider.QuerySortOrder
 import com.vaadin.shared.data.sort.SortDirection
 import java.sql.ResultSet
 import java.util.stream.Stream
@@ -39,7 +40,7 @@ import java.util.stream.Stream
  *
  * @param clazz the type of the holder class which will hold the result
  * @param sql the select which can map into the holder class (that is, it selects columns whose names match the holder class fields). It should contain
- * {{WHERE}}, {{ORDER}} and {{PAGING}} strings which will be replaced by a simple substring replacement.
+ * `{{WHERE}}`, `{{ORDER}}` and `{{PAGING}}` strings which will be replaced by a simple substring replacement.
  * @param params the [sql] may be parametrized; this map holds all the parameters present in the sql itself.
  * @param idMapper returns the primary key which must be unique for every row returned. If the holder class is a data class and/or has proper equals/hashcode, the class itself may act as the key; in such case
  * just pass in identity here: `{ it }`
@@ -54,6 +55,9 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
         val q = con.createQuery(query.computeSQL(true))
         params.entries.forEach { (name, value) -> q.addParameter(name, value) }
         q.fillInParamsFromFilters(query)
+
+        // the count is obtained by a dirty trick - the ResultSet is simply scrolled to the last line and the row number is obtained.
+        // however, PostgreSQL doesn't seem to like this: https://github.com/mvysny/vaadin-on-kotlin/issues/19
         val counts: List<Int> = q.executeAndFetch({ rs: ResultSet -> if (rs.last()) rs.row else 0 })
         if (counts.isEmpty()) 0 else counts[0]
     }
@@ -73,16 +77,36 @@ class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: 
         return this
     }
 
+    /**
+     * Using [sql] as a template, computes the replacement strings for the `{{WHERE}}`, `{{ORDER}}` and `{{PAGING}}` replacement strings.
+     */
     private fun Query<T, Filter<T>?>?.computeSQL(isCountQuery: Boolean): String {
+        // compute the {{WHERE}} replacement
         var where: String = this?.filter?.orElse(null)?.toSQL92() ?: ""
         if (where.isNotBlank()) where = "and $where"
-        var orderBy = if (isCountQuery) "" else
-            this?.sortOrders?.map { "${it.sorted} ${if (it.direction == SortDirection.ASCENDING) "ASC" else "DESC"}" }?.joinToString() ?: ""
+
+        // compute the {{ORDER}} replacement
+        var orderBy: String = if (isCountQuery) "" else this?.sortOrders?.toSql92OrderByClause() ?: ""
         if (orderBy.isNotBlank()) orderBy = ", $orderBy"
-        val offset = this?.offset
-        val limit = this?.limit.takeUnless { it == Int.MAX_VALUE }
+
+        // compute the {{PAGING}} replacement
+        val offset: Int? = this?.offset
+        val limit: Int? = this?.limit.takeUnless { it == Int.MAX_VALUE }
         val paging = if (!isCountQuery && offset != null && limit != null) " offset $offset limit $limit" else ""
+
         val s = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
         return s
     }
+
+    /**
+     * Converts Vaadin [QuerySortOrder] to something like "name ASC".
+     */
+    private fun QuerySortOrder.toSql92OrderByClause(): String =
+        "$sorted ${if (direction == SortDirection.ASCENDING) "ASC" else "DESC"}"
+
+    /**
+     * Converts a list of Vaadin [QuerySortOrder] to something like "name DESC, age ASC". If the list is empty, returns an empty string.
+     */
+    private fun List<QuerySortOrder>.toSql92OrderByClause(): String =
+        joinToString { it.toSql92OrderByClause() }
 }
