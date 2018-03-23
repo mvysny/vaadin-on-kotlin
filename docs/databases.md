@@ -145,9 +145,9 @@ data class Person(
     var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
 ) : Entity<Long> {
-    override fun save() {
+    override fun save(validate: Boolean) {
         modified = Instant.now()
-        super.save()
+        super.save(validate)
     }
 
     companion object : Dao<Person>
@@ -156,7 +156,7 @@ data class Person(
 
 By implementing the `Entity` interface the Kotlin class gains capability to create/update itself into
 the database; by having the companion object to implement the `Dao` interface the Kotlin class
-gains the lookup capabilities, for example edit the `MyUI.kt` file as follows:
+gains the lookup capabilities. You can paste the following example into the `MyUI.kt` file:
 
 ```kotlin
 @Theme("mytheme")
