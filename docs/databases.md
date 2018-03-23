@@ -359,8 +359,8 @@ The trick here is to *always* use DataProviders with configurable filters. By de
 not support setting filters, but that would disable the support for user-defined filters (the filters would fail in runtime
 when trying to set the user-defined filter to the data provider).
 
-Therefore, built-in VoK EntityDataProviders offered for all entities by the `Dao` interface are already configurable.
-User filters can thus cast them to `ConfigurableFilterDataProvider` and set filters. However, that will overwrite
+Therefore, built-in VoK data providers offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable.
+User filters can thus cast them to `VokDataProvider` and set filters to them. However, that will overwrite
 any previously set filter, and sometimes we want to prevent that. The important distinction here is as follows:
 
 * `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider,

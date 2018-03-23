@@ -38,7 +38,7 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
                                                 filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java,
-                                                    { grid.dataProvider as ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> },
+                                                    { grid.dataProvider as VokDataProvider<T> },
                                                         SqlFilterFactory<T>())) {
     val properties: Map<String, PropertyDefinition<T, *>> = BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
     for (propertyId in grid.columns.mapNotNull { it.id }) {

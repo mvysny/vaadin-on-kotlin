@@ -6,20 +6,26 @@ import com.vaadin.data.provider.DataProvider
 import com.vaadin.server.SerializablePredicate
 
 /**
+ * A data provider with configurable filter - use [setFilter] to set your custom filter. Note that user-provided filter value in Grid
+ * will overwrite this filter; if you want an unremovable filter use [withFilter].
+ */
+typealias VokDataProvider<T> = ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>
+
+/**
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
  * @return a new data provider which can be outfitted with a custom filter.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : VokDataProvider<T> =
     withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() })
 
 /**
- * Produces a new data provider which restricts rows returned by the original data provider to given filter.
+ * Produces a new data provider which always applies given [other] filter and restricts rows returned by the original data provider to given filter.
  *
  * Invoking this method multiple times will chain the data providers and restrict the rows further.
  * @param other applies this filter
- * @return a [ConfigurableFilterDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
+ * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
         setFilter(other)
@@ -28,7 +34,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : Confi
 
 // since SerializablePredicate is Vaadin-built-in interface which our Filters do not use, since Vaadin 8 has different SerializablePredicate class
 // than Vaadin 10 and we would have to duplicate filters just because a dumb interface.
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVoKFilterAdapter() : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVoKFilterAdapter() : VokDataProvider<T> =
     withConvertedFilter<Filter<T>?> { f ->
         if (f == null) null else SerializablePredicate { f.test(it) }
     }.withConfigurableFilter2()
@@ -41,7 +47,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVoKFilterAdapter(
  * @return a [ConfigurableFilterDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 @JvmName("withFilterAndConvert")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
     withVoKFilterAdapter().withFilter(other)
 
 /**
@@ -52,11 +58,11 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Fil
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
     withFilter(block(SqlWhereBuilder()))
 
 @JvmName("withFilterVaadin2")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?> =
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
     withVoKFilterAdapter().withFilter(block)
 
 /**

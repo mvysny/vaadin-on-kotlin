@@ -1,20 +1,12 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.karibu.testing.MockVaadin
-import com.github.karibu.testing._get
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import com.github.vok.karibudsl.addColumn
 import com.github.vok.karibudsl.getAll
-import com.github.vokorm.Entity
-import com.vaadin.data.provider.ConfigurableFilterDataProvider
-import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.ListDataProvider
-import com.vaadin.data.provider.Query
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
-import kotlin.streams.toList
-import kotlin.test.expect
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
