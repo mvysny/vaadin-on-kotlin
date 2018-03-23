@@ -398,7 +398,7 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
                 .executeAndFetch(PersonDept::class.java)
         }
         
-        val dataProvider: ConfigurableFilterDataProvider<PersonDept, Filter<PersonDept>?, Filter<PersonDept>?> get() =
+        val dataProvider: VokDataProvider<PersonDept> get() =
                 SqlDataProvider(SelectResult::class.java,
                     "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
                     idMapper = { it }).withConfigurableFilter2()
