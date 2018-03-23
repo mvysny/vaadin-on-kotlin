@@ -13,12 +13,10 @@ Vaadin-on-Kotlin provides first-class support for the following SQL databases ou
 All other SQL databases may or may not work. Care has been taken to only use the SQL92 syntax,
 but we only test and officially support the four of the above-mentioned databases.
 
-> Note: Only SQL databases which provide appropriate JDBC drivers are currently supported;
-there is no direct support for NoSQL databases. Of course they are easy to integrate into VoK.
+> *NoSQL Note*: Only SQL databases which provide appropriate JDBC drivers are currently supported.
+There is no direct support for NoSQL databases, but you can easily integrate any NoSQL database with VoK.
 
-## Note for experienced Java developers
-
-Experienced Java developers will notice that VoK is *not* using JPA nor Hibernate to access the
+> *Note for experienced Java developers*: Experienced Java developers will notice that VoK is *not* using JPA nor Hibernate to access the
 database. The reason is that there are inherent issues with the abstraction that JPA
 mandates - you can read more about the topic in the [Why Not JPA](http://mavi.logdown.com/posts/5771422) article.
 
@@ -35,18 +33,17 @@ The ORM stands for Object-Relational Mapping and stands for mapping database row
 for easier use from within your application. VoK does not use JPA but instead features
 a new, vastly simplified database access layer called `vok-orm`.
 
-## About `vok-orm`
+## About vok-orm
 
 `vok-orm` is a very simple object-relational mapping library, built around the following ideas:
 
 * Simplicity is the most valued property; working with plain SQL commands is preferred over having a type-safe
   query language.
-* The database is the source of truth. JVM objects are nothing more than DTOs,
-  merely capture snapshots of the JDBC `ResultSet` rows. The entities are populated by the
-  means of reflection: for every column in
-  the JDBC `ResultSet` an appropriate setter is invoked, to populate the data. 
-* The entities are real POJOs: they do not track modifications, they do not automatically store modified
-  values back into the database. They are not runtime-enhanced and can be final.
+* Kotlin objects merely capture JDBC `ResultSet` rows, by the means of invoking appropriate setters (based on the column name) via
+  Java reflection. 
+* The entities are just plain objects: they do not track modifications as JPA entities do,
+  they do not automatically store modified
+  values back into the database. They are never runtime-enhanced and can be final.
 * A switch from one type of database to another never happens. We understand that the programmer
   wants to exploit the full potential of the database, by writing SQLs tailored for that particular database.
   `vok-orm` should not attempt to generate SELECTs on behalf of the programmer (except for the very basic ones related to CRUD);
@@ -76,4 +73,3 @@ on a web page. It allows the user to:
 
 You can find more information about the Vaadin Grid at the [Vaadin Grid Documentation](http://wc.demo.vaadin.com/mcm/out/framework/components/components-grid.html) page.
 
-todo more
