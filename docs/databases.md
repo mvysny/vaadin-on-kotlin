@@ -277,14 +277,15 @@ SELECT person.name as personName, dept.name as deptName FROM Person person, Depa
 To capture the outcome of this SELECT we can simply declare the following class:
 
 ```kotlin
-data class PersonDept(var personName: String? = null, var deptName: String? = null)
+data class PersonDept(var personName: String? = null, var deptName: String? = null) : Serializable
 ```
 
 Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
-be saved nor deleted), hence it does not implement the `Entity` interface.
+be saved nor deleted), hence it does not implement the `Entity` interface and we won't reuse the `Dao`-induced finders.
 
 To load instances of this particular class, we will need to write our own finder methods. We will directly
-use the Sql2o capabilities to map any SELECT result into an arbitrary class:
+use the Sql2o capabilities to map any SELECT result into an arbitrary class. We just have to make
+sure that the SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching):
 
 ```kotlin
 data class PersonDept(var personName: String? = null, var deptName: String? = null) {
@@ -303,7 +304,8 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
 ```
 
 > Note: a bug in Github Pages prevents me to just write double-curly-braces: Please make sure
-to remove the backslashed `\{` and just replace them with just curly braces: `{`
+to remove the backslashed `\{` and just replace them with just curly braces: `{`. The `SqlDataProvider` class
+contains extensive documentation on this topic, please consult the kdoc for that class in your IDE.
 
 The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
 power of lazy-loading, sorting and filtering:
