@@ -123,7 +123,7 @@ create table Person (
 
 > *MaritalStatus Note*: We will store the enum name into the database, e.g. "Single", instead of
 just ordinal value of the constant (e.g. 0). The ordinal is easy to accidentally change by the programmer,
-e.g. by reordering the enum constants. The data will still load, but it will silently show incorrect
+e.g. by reordering the enum constants. The data would still load, but it would silently show incorrect
 information which is disastrous.
 
 The Kotlin class which maps to this table is as follows:
@@ -131,11 +131,11 @@ The Kotlin class which maps to this table is as follows:
 ```kotlin
 data class Person(
     override var id: Long? = null,
-    var name: String,
-    var age: Int,
+    var name: String = "",
+    var age: Int = 0,
     var dateOfBirth: LocalDate? = null,
     var alive: Boolean = null,
-    var maritalStatus: MaritalStatus,
+    var maritalStatus: MaritalStatus = MaritalStatus.Single,
     var modified: Instant? = null
 ) : Entity<Long> {
     override fun save() {
@@ -152,25 +152,36 @@ the database; by having the companion object to implement the `Dao` interface th
 gains the lookup capabilities, for example:
 
 ```kotlin
-fun main() {
-    val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
-    person.save()  // since ID is null, this will create the person and populate the ID
-    println(Person.findAll())  // will print [Person(id=1, name=John Doe, age=42 etc)]
-    println(Person.getById(person.id!!))  // will print Person(id=1, name=John Doe, age=42 etc)
-    person.name = "Agent Smith"
-    person.save()   // will update the person in the database, also updating the `modified` field
-    println(Person.findById(25L)) // will print null since there is no such person yet
-    Person.deleteAll()   // will delete all personnel
-    Person.deleteById(42L)   // will delete a person with ID of 42
-    println(Category.count()) // will print 0 since we deleted everything
-    println(Person.findBy { "name = :name1 or name = :name2"("name1" to "John Doe", "name2" to "Agent Smith") })   // will print []
-    Person.deleteBy { (Person::name eq "Agent Smith") }  
-    Person.getBy { "name = :name"("name" to "Agent Smith") }   // will fetch exactly one matching person, failing if there is no such person or there are more than one.
-    Person.findSpecificBy { "name = :name"("name" to "Agent Smith") } // will fetch one matching person, failing if there are more than one. Returns null if there is none.
+class MyUI : UI {
+    override fun init() {
+        button("Demo") {
+            onLeftClick {
+                val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
+                person.save()  // since ID is null, this will create the person and populate the ID
+                println(Person.findAll())  // will print [Person(id=1, name=John Doe, age=42 etc)]
+                println(Person.getById(person.id!!))  // will print Person(id=1, name=John Doe, age=42 etc)
+                person.name = "Agent Smith"
+                person.save()   // will update the person in the database, also updating the `modified` field
+                println(Person.findById(25L)) // will print null since there is no such person yet
+                Person.deleteAll()   // will delete all personnel
+                Person.deleteById(42L)   // will delete a person with ID of 42
+                println(Category.count()) // will print 0 since we deleted everything
+                println(Person.findBy { "name = :name1 or name = :name2"("name1" to "John Doe", "name2" to "Agent Smith") })   // will print []
+                Person.deleteBy { (Person::name eq "Agent Smith") }  
+                Person.getBy { "name = :name"("name" to "Agent Smith") }   // will fetch exactly one matching person, failing if there is no such person or there are more than one.
+                Person.findSpecificBy { "name = :name"("name" to "Agent Smith") } // will fetch one matching person, failing if there are more than one. Returns null if there is none.
+            }
+        }
+    }
 }
 ```
 
 For more information please read the [vok-orm documentation](https://github.com/mvysny/vok-orm).
+
+> Finding Persons: If we want to load a list of persons from the database, the very important thing is to have a zero-arg constructor for the Person class.
+This can be achieved either by providing default values for all parameters, or explicitly declaring the zero-arg constructor.
+Otherwise the code will fail in runtime: Sql2o will try to construct a `Person` instance for every row returned, using
+a zero-arg constructor.
 
 ## Forms
 
@@ -194,3 +205,110 @@ on a web page. It allows the user to:
 
 You can find more information about the Vaadin Grid at the [Vaadin Grid Documentation](http://wc.demo.vaadin.com/mcm/out/framework/components/components-grid.html) page.
 
+We will start with the most basic Grid which will show the list of `Person`. By default the Grid shows all columns,
+therefore we need to restrict the columns a bit:
+
+```kotlin
+class MyUI : UI {
+    override fun init() {
+        grid(Person::class, dataProvider = Person.dataProvider) {
+            setSizeFull()
+            
+            // show these columns, and in this order
+            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::modified)
+            
+            column(Person::dateOfBirth) {
+                setRenderer(LocalDateRenderer())
+            }
+            column(Person::modified) {
+                // an example of a Renderer which converts the value to string.
+                // it would be better to employ value provider for this; yet Vaadin does not allow for the value provider to be changed after the column is created.
+                setRenderer(ConvertingRenderer<Instant?>({ it!!.toString() }))
+            }
+            addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> event.item.delete(); refresh() }))
+        }
+    }
+}
+```
+
+This is a full-blown Grid with lazy-loading and SQL sorting working out-of-the-box. Adding the possibility
+for the user to filter on the contents of the Grid is really easy, just add the following call, as the last
+line into the `grid { ...  }` block:
+
+```kotlin
+appendHeaderRow().generateFilterComponents(this, Person::class)
+```
+
+This will create additional Grid header and will auto-populate it with filters. You can finetune
+the generator by extending the `DefaultFilterFieldFactory`; see the `generateFilterComponents()`
+documentation for details.
+
+You can also create an unremovable programmatic filter easily:
+```kotlin
+grid(Person::class, dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
+    // ...
+}
+```
+
+The trick here is to *always* use DataProviders with configurable filters. By default Vaadin DataProviders do
+not support setting filters, but that would disable the support for user-defined filters (the filters would fail in runtime
+when trying to set the user-defined filter to the data provider).
+
+Therefore, built-in VoK EntityDataProviders offered for all entities by the `Dao` interface are already configurable.
+User filters can thus cast them to `ConfigurableFilterDataProvider` and set filters. However, that will overwrite
+any previously set filter, and sometimes we want to prevent that. The important distinction here is as follows:
+
+* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider,
+  but this filter will be removed by any filtering value typed in by the user into the filtering component.
+* That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
+  takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
+  to the old one but always ANDs given filter with any filters set by the `setFilter()`.
+
+### Showing an arbitrary output of any SQL SELECT command
+
+Say that we have a join which joins Persons with their departments. Something like the following:
+
+```sql92
+SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id
+```
+
+To capture the outcome of this SELECT we can simply declare the following class:
+
+```kotlin
+data class PersonDept(var personName: String? = null, var deptName: String? = null)
+```
+
+Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
+be saved nor deleted), hence it does not implement the `Entity` interface.
+
+To load instances of this particular class, we will need to write our own finder methods. We will directly
+use the Sql2o capabilities to map any SELECT result into an arbitrary class:
+
+```kotlin
+data class PersonDept(var personName: String? = null, var deptName: String? = null) {
+    companion object {
+        fun findAll(): List<PersonDept> = db {
+            con.createQuery("SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id")
+                .executeAndFetch(PersonDept::class.java)
+        }
+        
+        val dataProvider: ConfigurableFilterDataProvider<PersonDept, Filter<PersonDept>?, Filter<PersonDept>?> get() =
+                SqlDataProvider(SelectResult::class.java,
+                    "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}",
+                    idMapper = { it }).withConfigurableFilter2()
+    }
+}
+```
+
+The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply:
+
+```kotlin
+class MyUI : UI {
+    override fun init() {
+        grid(PersonDept::class, dataProvider = PersonDept.dataProvider) {
+            setSizeFull()
+            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+        }
+    }
+}
+```
