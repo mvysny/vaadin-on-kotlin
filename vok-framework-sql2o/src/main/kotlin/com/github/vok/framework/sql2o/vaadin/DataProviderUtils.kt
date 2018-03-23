@@ -40,23 +40,24 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVoKFilterAdapter(
     }.withConfigurableFilter2()
 
 /**
- * Produces a new data provider which restricts rows returned by the original data provider to given filter.
+ * Produces a new data provider with unremovable [filter] which restricts rows returned by the receiver data provider.
  *
  * Invoking this method multiple times will chain the data providers and restrict the rows further.
- * @param other applies this filter
- * @return a [ConfigurableFilterDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
+ * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 @JvmName("withFilterAndConvert")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
-    withVoKFilterAdapter().withFilter(other)
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(filter: Filter<T>) : VokDataProvider<T> =
+    withVoKFilterAdapter().withFilter(filter)
 
 /**
- * Produces a new data provider which restricts rows returned by the original data provider to given filter. Allows you to write
+ * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
+ * Allows you to write
  * expressions like this: `Person.dataProvider.withFilter { Person::age lt 25 }`
  * See [SqlWhereBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
+ * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
     withFilter(block(SqlWhereBuilder()))
@@ -78,6 +79,6 @@ fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
+fun <T: Any> VokDataProvider<T>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
     setFilter(block(SqlWhereBuilder()))
 }

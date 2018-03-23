@@ -43,7 +43,7 @@ class EntityDataProvider<T : Any>(val clazz: Class<T>, val idMapper: (T)->Any) :
             append("from ${clazz.databaseTableName}")
             if (where != null && where.isNotBlank()) append(" where $where")
             if (orderBy != null && orderBy.isNotBlank() && includeOrderBy) append(" order by $orderBy")
-            if (offset != null && limit != null) append(" offset $offset limit $limit")
+            if (offset != null && limit != null) append(" LIMIT $limit OFFSET $offset")
         }
         return sql
     }
@@ -53,5 +53,5 @@ class EntityDataProvider<T : Any>(val clazz: Class<T>, val idMapper: (T)->Any) :
  * Allows you to simply create a data provider off your entity: `grid.dataProvider = Person.dataProvider`. This data provider
  * doesn't support any joins or more complex queries; to use those please use [SqlDataProvider].
  */
-inline val <reified T: Entity<*>> Dao<T>.dataProvider: ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>
+inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
     get() = EntityDataProvider(T::class.java, { it.id!! }).withConfigurableFilter2()

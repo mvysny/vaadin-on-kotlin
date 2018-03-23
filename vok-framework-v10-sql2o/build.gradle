@@ -25,6 +25,11 @@ dependencies {
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
     testCompile 'com.h2database:h2:1.4.196'
     testCompile "com.github.kaributesting:karibu-testing-v10:$kaributesting_version"
+    testCompile 'org.zeroturnaround:zt-exec:1.10'
+
+    testCompile 'org.postgresql:postgresql:42.2.1'
+    testCompile 'mysql:mysql-connector-java:5.1.45'
+    testCompile 'org.mariadb.jdbc:mariadb-java-client:2.2.3'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
