@@ -39,7 +39,7 @@ class CrudView: VerticalLayout(), View {
         setSizeFull(); isMargin = false
         horizontalLayout {
             createButton = button("Create New Person (Ctrl+Alt+C)") {
-                onLeftClick { createOrEditPerson(Person(created = Date())) }
+                onLeftClick { createOrEditPerson(Person()) }
                 clickShortcut = Ctrl + Alt + C
             }
             button("Generate testing data", { generateTestingData() })
@@ -81,7 +81,7 @@ class CrudView: VerticalLayout(), View {
     private fun generateTestingData() {
         db {
             (0..85).forEach {
-                Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true, created = Date()).save()
+                Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true).save()
             }
         }
         personGrid.refresh()

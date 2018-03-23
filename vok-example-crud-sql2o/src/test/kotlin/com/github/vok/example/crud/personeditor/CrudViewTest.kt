@@ -12,6 +12,7 @@ import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 import java.time.LocalDate
+import java.util.*
 import kotlin.test.expect
 
 /**
@@ -43,12 +44,13 @@ class CrudViewTest : DynaTest({
     usingApp()
 
     test("the grid lists all personnel properly") {
-        Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+        val created = Date(0)
+        Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = created).save()
         CrudView.navigateTo()
 
         val grid = _get<Grid<*>>()
         grid.expectRows(1)
-        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "null", "Show", "Edit", "Delete")
+        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01 02:00:00.0", "Show", "Edit", "Delete")
     }
 
     test("edit one person") {
