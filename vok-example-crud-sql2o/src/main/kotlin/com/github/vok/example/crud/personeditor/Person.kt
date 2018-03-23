@@ -2,6 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vokorm.Dao
 import com.github.vokorm.Entity
+import java.time.Instant
 import java.time.LocalDate
 import java.util.*
 import javax.validation.constraints.Max
@@ -37,7 +38,7 @@ data class Person(
         var dateOfBirth: LocalDate? = null,
 
         @field:NotNull
-        var created: Date? = null,
+        var created: Instant? = null,
 
         @field:NotNull
         var maritalStatus: MaritalStatus? = null,
@@ -51,7 +52,7 @@ data class Person(
 
     override fun save(validate: Boolean) {
         if (id == null) {
-            if (created == null) created = Date()
+            if (created == null) created = Instant.now()
         }
         super.save(validate)
     }

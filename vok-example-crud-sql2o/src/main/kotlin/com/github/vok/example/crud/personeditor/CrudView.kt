@@ -2,7 +2,6 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
-import com.github.vok.framework.sql2o.vaadin.withFilter
 import com.github.vok.karibudsl.*
 import com.github.vok.karibudsl.ModifierKey.Alt
 import com.github.vok.karibudsl.ModifierKey.Ctrl
@@ -54,7 +53,7 @@ class CrudView: VerticalLayout(), View {
             // example of a custom renderer which converts value to a displayable string.
             // @todo mavi it is better to employ value provider for this; yet value provider cannot be changed
             column(Person::created) {
-                setRenderer(ConvertingRenderer<Date?>({ it!!.toInstant().toString() }))
+                setRenderer(ConvertingRenderer<Date?>({ it!!.toString() }))
             }
 
             // show these columns, and in this order
