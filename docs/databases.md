@@ -199,8 +199,8 @@ Forms allows the user to enter the values of a newly created record, or edit the
 already existing ones. Validation is typically employed, to guide the user to enter
 meaningful data.
 
-We will use Vaadin Binder to bind form components to properties of the `Person` Kotlin class.
-A source code of the form is shown below, just add the following code into the `MyUI.kt` file:
+We will use [Vaadin Binder](https://vaadin.com/docs/v8/framework/datamodel/datamodel-forms.html) to bind form components to properties of the `Person` Kotlin class.
+A source code of the form is shown below; just add the following code into the `MyUI.kt` file:
 
 ```kotlin
 class PersonEditor : VerticalLayout() {
@@ -281,9 +281,9 @@ data class Person(
     var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
 ) : Entity<Long> {
-    override fun save() {
+    override fun save(validate: Boolean) {
         modified = Instant.now()
-        super.save()
+        super.save(validate)
     }
 
     companion object : Dao<Person>
