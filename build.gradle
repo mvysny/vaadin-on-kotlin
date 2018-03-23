@@ -6,7 +6,7 @@ buildscript {
     ext.vaadin10_version = '10.0.0.beta3'
     ext.hikaricp_version = '2.7.8'
     ext.flyway_version = '5.0.7'
-    ext.dynatest_version = "0.6"
+    ext.dynatest_version = "0.7"
 
     ext.local = new Properties()
     if (project.rootProject.file('local.properties').exists()) {

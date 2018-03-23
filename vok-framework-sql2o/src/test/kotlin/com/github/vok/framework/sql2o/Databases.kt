@@ -17,11 +17,11 @@ data class Person(override var id: Long? = null,
                   var maritalStatus: MaritalStatus? = null
 
 ) : Entity<Long> {
-    override fun save() {
+    override fun save(validate: Boolean) {
         if (id == null) {
             created = java.sql.Timestamp(System.currentTimeMillis())
         }
-        super.save()
+        super.save(validate)
     }
 
     companion object : Dao<Person>
