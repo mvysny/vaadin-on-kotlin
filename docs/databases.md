@@ -135,7 +135,7 @@ data class Person(
     var age: Int = 0,
     var dateOfBirth: LocalDate? = null,
     var alive: Boolean = null,
-    var maritalStatus: MaritalStatus = MaritalStatus.Single,
+    var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
 ) : Entity<Long> {
     override fun save() {
