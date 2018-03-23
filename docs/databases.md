@@ -300,7 +300,11 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
 }
 ```
 
-The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply:
+> Note: a bug in Github Pages prevents me to just write double-curly-braces: Please make sure
+to remove the backslashed `\{` and just replace them with just curly braces: `{`
+
+The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
+power of lazy-loading, sorting and filtering:
 
 ```kotlin
 class MyUI : UI {
