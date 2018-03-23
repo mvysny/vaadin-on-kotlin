@@ -249,7 +249,9 @@ This will create a form as a reusable component which we can then use in the `My
 @Theme("mytheme")
 class MyUI : UI() {
     override fun init(request: VaadinRequest) {
-        personEditor()
+        personEditor {
+            person = Person()
+        }
     }
 }
 ```
@@ -261,6 +263,10 @@ We will use so-called JSR303 validation annotations, which will make the `beanVa
 as follows:
 
 ```kotlin
+import javax.validation.constraints.Min
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Past
+
 data class Person(
     override var id: Long? = null,
     @field:NotNull
