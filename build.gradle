@@ -28,7 +28,7 @@ defaultTasks 'clean', 'build'
 
 allprojects {
     group 'com.github.vok'
-    version '0.4.4'
+    version '0.4.5-SNAPSHOT'
 
     // Heroku
     task stage(dependsOn: ['build'])
