@@ -25,9 +25,10 @@ Because of that, VoK feels more of a desktop widget library (such as Swing or Ja
 
 ## Tutorial
 
-To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
+To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the following pages:
 
-To see the old JPA-based tutorial, [Start Here](gettingstartedjpa.html)
+* [Vaadin-on-Kotlin Guides](vok-guides.md)
+* [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
 ## Vaadin 8-based Quick Starters
 
