@@ -205,6 +205,8 @@ on a web page. It allows the user to:
 
 You can find more information about the Vaadin Grid at the [Vaadin Grid Documentation](http://wc.demo.vaadin.com/mcm/out/framework/components/components-grid.html) page.
 
+### Showing entities in Grid
+
 We will start with the most basic Grid which will show the list of `Person`. By default the Grid shows all columns,
 therefore we need to restrict the columns a bit:
 
@@ -231,7 +233,7 @@ class MyUI : UI {
 }
 ```
 
-This is a full-blown Grid with lazy-loading and SQL sorting working out-of-the-box. Adding the possibility
+This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box. Adding the possibility
 for the user to filter on the contents of the Grid is really easy, just add the following call, as the last
 line into the `grid { ...  }` block:
 
