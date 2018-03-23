@@ -61,8 +61,10 @@ Please read the [Usage examples](https://github.com/mvysny/vok-orm#usage-example
 the `vok-orm` documentation on how to write Kotlin classes that correspond to a particular SQL database
 table, and how to create rows in that particular database tables.
 
-> Note: please read the [Getting Started Guide](gettingstarted.md) on information where to put
-all of these files and SQL scripts.
+In this tutorial, we will modify the [vok-helloworld-app](https://github.com/mvysny/vok-helloword-app) project
+- it contains all moving parts but not much of an actual code which makes it ideal for experimenting.
+
+> Note: please read the [Getting Started Guide](gettingstarted.md) on information on these files.
 
 Let us have a `Person` table with the following columns:
 
@@ -76,11 +78,8 @@ Let us have a `Person` table with the following columns:
 | maritalStatus | MaritalStatus? | The Marital status. Demoes binding to enum constants.
 | modified | Instant? | When the record was last modified in the database
 
-The marital status enum definition is simple:
-
-```kotlin
-enum class MaritalStatus { Single, Married, Divorced, Widowed }
-```
+Let's first create a migration script which will prepare the database for us. Create a file
+named `web/src/main/resources/db/migration/V01__CreatePerson.sql`, with the following DDL script, depending on your database:
 
 The PostgreSQL DDL script which creates such table is simple:
 ```postgresql
@@ -126,15 +125,22 @@ just ordinal value of the constant (e.g. 0). The ordinal is easy to accidentally
 e.g. by reordering the enum constants. The data would still load, but it would silently show incorrect
 information which is disastrous.
 
-The Kotlin class which maps to this table is as follows:
+Create the `web/src/main/kotlin/com/example/vok/Person.kt` file with the Kotlin class which will map to this table is as follows:
 
 ```kotlin
+import com.github.vokorm.Dao
+import com.github.vokorm.Entity
+import java.time.Instant
+import java.time.LocalDate
+
+enum class MaritalStatus { Single, Married, Divorced, Widowed }
+
 data class Person(
     override var id: Long? = null,
     var name: String = "",
     var age: Int = 0,
     var dateOfBirth: LocalDate? = null,
-    var alive: Boolean = null,
+    var alive: Boolean = true,
     var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
 ) : Entity<Long> {
@@ -149,11 +155,12 @@ data class Person(
 
 By implementing the `Entity` interface the Kotlin class gains capability to create/update itself into
 the database; by having the companion object to implement the `Dao` interface the Kotlin class
-gains the lookup capabilities, for example:
+gains the lookup capabilities, for example edit the `MyUI.kt` file as follows:
 
 ```kotlin
+@Theme("mytheme")
 class MyUI : UI {
-    override fun init() {
+    override fun init(request: VaadinRequest) {
         button("Demo") {
             onLeftClick {
                 val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
@@ -183,14 +190,104 @@ This can be achieved either by providing default values for all parameters, or e
 Otherwise the code will fail in runtime: Sql2o will try to construct a `Person` instance for every row returned, using
 a zero-arg constructor.
 
+To run the app, just type `./gradlew web:appRun` in your console, or run the `web` module in Tomcat.
+
 ## Forms
 
 Forms allows the user to enter the values of a newly created record, or edit the values of
 already existing ones. Validation is typically employed, to guide the user to enter
 meaningful data.
 
-todo how VoK encourages you to write validating forms which map values to your beans and how
-you can update new valies in the database.
+We will use Vaadin Binder to bind form components to properties of the `Person` Kotlin class.
+A source code of the form is shown below, just add the following code into the `MyUI.kt` file:
+
+```kotlin
+class PersonEditor : VerticalLayout() {
+    private val binder = beanValidationBinder<Person>()
+    var person: Person? = null
+        set(value) {
+            field = value
+            if (value != null) binder.readBean(value)
+        }
+
+    init {
+        isMargin = false
+        textField("Name") {
+            bind(binder).bind(Person::name)
+        }
+        textField("Age") {
+            bind(binder).toInt().bind(Person::age)
+        }
+        dateField("Date Of Birth") {
+            bind(binder).bind(Person::dateOfBirth)
+        }
+        checkBox("Alive") {
+            bind(binder).bind(Person::alive)
+        }
+        comboBox<MaritalStatus>("Marital Status") {
+            setItems(*MaritalStatus.values())
+            bind(binder).bind(Person::maritalStatus)
+        }
+        button("Save Person", { event ->
+            val person = person!!
+            if (binder.validate().isOk && binder.writeBeanIfValid(person)) {
+                person.save()
+                println(Person.findAll())
+            } else {
+                event.button.componentError = UserError("There are invalid fields")
+            }
+        })
+    }
+}
+
+fun HasComponents.personEditor(block: PersonEditor.()->Unit = {}) = init(PersonEditor(), block)
+```
+
+This will create a form as a reusable component which we can then use in the `MyUI` as follows:
+
+```kotlin
+@Theme("mytheme")
+class MyUI : UI() {
+    override fun init(request: VaadinRequest) {
+        personEditor()
+    }
+}
+```
+
+The form will allow you to create a new person, or edit an existing one. However,
+the user can now enter invalid data, such as negative numbers for age etc.
+
+We will use so-called JSR303 validation annotations, which will make the `beanValidationBinder` validate the bean for us. Edit the `Person` class
+as follows:
+
+```kotlin
+data class Person(
+    override var id: Long? = null,
+    @field:NotNull
+    @field:Length(min = 2)
+    var name: String = "",
+    @field:Min(1)
+    var age: Int = 0,
+    @field:Past
+    var dateOfBirth: LocalDate? = null,
+    var alive: Boolean = true,
+    var maritalStatus: MaritalStatus? = null,
+    var modified: Instant? = null
+) : Entity<Long> {
+    override fun save() {
+        modified = Instant.now()
+        super.save()
+    }
+
+    companion object : Dao<Person>
+}
+```
+
+> *Important*: Make sure to attach those annotations to `field`! If you would just write `@Min(1)`, the annotation would be applied to the getter
+instead to the field, and `beanValidationBinder` would ignore it.
+
+Now, typing in incorrect values will make the field go red and show the validation errors; the "Save" button will also not create a Person
+instance if the values are invalid.
 
 ## Using `vok-orm` with Vaadin Grid
 
@@ -212,7 +309,7 @@ therefore we need to restrict the columns a bit:
 
 ```kotlin
 class MyUI : UI {
-    override fun init() {
+    override fun init(request: VaadinRequest) {
         grid(Person::class, dataProvider = Person.dataProvider) {
             setSizeFull()
             
@@ -312,7 +409,7 @@ power of lazy-loading, sorting and filtering:
 
 ```kotlin
 class MyUI : UI {
-    override fun init() {
+    override fun init(request: VaadinRequest) {
         grid(PersonDept::class, dataProvider = PersonDept.dataProvider) {
             setSizeFull()
             appendHeaderRow().generateFilterComponents(this, PersonDept::class)
