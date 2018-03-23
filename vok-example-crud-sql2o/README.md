@@ -33,7 +33,7 @@ The application demonstrates the following things:
   and use them in any way you see fit:
   `val allPersons = db { Person.findAll() }`. The `db` is just a function defined in the [vok-orm framework](https://github.com/mvysny/vok-orm).
   You can call the `db{}` method from anywhere, be it Vaadin click listener or background thread.
-  No injections/beans/EJBs/whatever necessary! See the `vok-orm` documentation for more details.
+  No injections/beans/EJBs/whatever necessary! See the [vok-orm documentation](https://github.com/mvysny/vok-orm) for more details.
 * Serving the data via REST: add [vok-rest](../vok-rest) to your project, see [build.gradle](build.gradle). Then, declare REST Application to bind
   the REST to a particular URL endpoint, see
   [Bootstrap.kt](src/main/kotlin/com/github/vok/example/crud/Bootstrap.kt)
