@@ -1,4 +1,4 @@
-[Index](index.html) | [Getting Started](gettingstarted.html)
+[Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
 # Vaadin-on-Kotlin
 

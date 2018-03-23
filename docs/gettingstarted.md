@@ -1,4 +1,4 @@
-[Index](index.html) | [Getting Started](gettingstarted.html)
+[Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
 # Getting started with Vaadin-on-Kotlin
 
@@ -1559,7 +1559,7 @@ Now that you've seen your first VoK application, you should feel free to update 
 
 Remember you don't have to do everything without help. As you need assistance getting up and running with VoK, feel free to consult these support resources:
 
-* The [Vaadin-on-Kotlin Guides](todo)
+* The [Vaadin-on-Kotlin Guides](vok-guides.md)
 * The [Vaadin Tutorial](https://vaadin.com/docs/-/part/framework/introduction/intro-walkthrough.html) for documentation on pure Vaadin and Java
 * The [Vaadin Forums](https://vaadin.com/forum) for anything Vaadin-on-Kotlin-related
 * The [Kotlin Forums](https://discuss.kotlinlang.org/) for Kotlin-related questions
