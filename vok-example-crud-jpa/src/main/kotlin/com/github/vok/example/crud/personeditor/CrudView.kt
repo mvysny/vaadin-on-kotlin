@@ -49,7 +49,7 @@ class CrudView: VerticalLayout(), View {
             button("Generate testing data", { generateTestingData() })
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
-        personGrid = grid(Person::class, dataProvider = personGridDS) {
+        personGrid = grid(dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
 
             // a sample of how to reconfigure a column
