@@ -16,6 +16,7 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
+import com.vaadin.ui.renderers.TextRenderer
 import java.util.*
 
 /**
@@ -51,21 +52,18 @@ class CrudView: VerticalLayout(), View {
         personGrid = grid(Person::class, dataProvider = personGridDS) {
             expandRatio = 1f; setSizeFull()
 
-            // example of a custom renderer which converts value to a displayable string.
-            // @todo mavi it is better to employ value provider for this; yet value provider cannot be changed
-            column(Person::created) {
-                setRenderer(ConvertingRenderer<Date?>({ it!!.toInstant().toString() }))
-            }
-
-            // show these columns, and in this order
-            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::created)
-
             // a sample of how to reconfigure a column
-            column(Person::id) {
-                isSortable = false
-            }
-            column(Person::dateOfBirth) {
+            addColumnFor(Person::id) { isSortable = false }
+            addColumnFor(Person::name)
+            addColumnFor(Person::age)
+            addColumnFor(Person::dateOfBirth) {
                 setRenderer(LocalDateRenderer())
+            }
+            addColumnFor(Person::maritalStatus)
+            addColumnFor(Person::alive)
+            addColumnFor(Person::created) {
+                // example of a custom renderer which converts value to a displayable string.
+                setRenderer({ it.toString() }, TextRenderer())
             }
 
             // add additional columns with buttons
