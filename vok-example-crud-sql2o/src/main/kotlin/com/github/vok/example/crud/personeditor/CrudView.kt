@@ -16,7 +16,7 @@ import com.vaadin.ui.UI
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
-import java.util.*
+import com.vaadin.ui.renderers.TextRenderer
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
@@ -47,24 +47,21 @@ class CrudView: VerticalLayout(), View {
         // you can restrict the values by writing the following expression:
         // dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }
         // any user-configured filters will be applied on top of this filter.
-        personGrid = grid(Person::class, dataProvider = Person.dataProvider ) {
+        personGrid = grid(dataProvider = Person.dataProvider ) {
             expandRatio = 1f; setSizeFull()
 
-            // example of a custom renderer which converts value to a displayable string.
-            // @todo mavi it is better to employ value provider for this; yet value provider cannot be changed
-            column(Person::created) {
-                setRenderer(ConvertingRenderer<Date?>({ it!!.toString() }))
-            }
-
-            // show these columns, and in this order
-            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::created)
-
             // a sample of how to reconfigure a column
-            column(Person::id) {
-                isSortable = false
-            }
-            column(Person::dateOfBirth) {
+            addColumnFor(Person::id) { isSortable = false }
+            addColumnFor(Person::name)
+            addColumnFor(Person::age)
+            addColumnFor(Person::dateOfBirth) {
                 setRenderer(LocalDateRenderer())
+            }
+            addColumnFor(Person::maritalStatus)
+            addColumnFor(Person::alive)
+            addColumnFor(Person::created) {
+                // example of a custom renderer which converts value to a displayable string.
+                setRenderer({ it.toString() }, TextRenderer())
             }
 
             // add additional columns with buttons
