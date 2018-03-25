@@ -1,6 +1,5 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.vok.karibudsl.flow.AppendSortDataProvider
 import com.github.vokorm.Filter
 import com.github.vokorm.SqlWhereBuilder
 import com.github.vokorm.and
@@ -97,7 +96,8 @@ class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrder>, pr
         require(!delegate.isInMemory) { "$delegate is in-memory which is unsupported" }
     }
     override fun fetch(query: Query<T, F>): Stream<T> {
-        val q = Query(query.offset, query.limit, query.sortOrders + append, query.inMemorySorting, query.filter.orElse(null))
+        val sortOrders: List<QuerySortOrder> = query.sortOrders ?: listOf()
+        val q = Query(query.offset, query.limit, sortOrders + append, query.inMemorySorting, query.filter.orElse(null))
         return delegate.fetch(q)
     }
 }
