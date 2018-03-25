@@ -1,10 +1,12 @@
 package com.github.vok.framework.sql2o.vaadin
 
+import com.github.vok.karibudsl.flow.AppendSortDataProvider
 import com.github.vokorm.Filter
 import com.github.vokorm.SqlWhereBuilder
 import com.github.vokorm.and
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.provider.DataProvider
+import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.function.SerializablePredicate
 
 /**
@@ -82,4 +84,19 @@ fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block
  */
 fun <T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
     setFilter(block(SqlWhereBuilder()))
+}
+
+/**
+ * Returns a new data provider which delegates to receiver but always appends given list of [sort] orders.
+ * This class can be used to specify the default ordering if the Grid is currently unsorted.
+ *
+ * Cannot be used on in-memory data provider - this function will throw [IllegalArgumentException] if receiver is an in-memory data provider.
+ *
+ * Example of usage: `grid.dataProvider = Person.dataProvider.sortedBy(Person::name.asc)`
+ * @receiver delegate all data fetching calls to here
+ * @param sort append these sort criteria. May be empty - in that case just returns the receiver.
+ */
+fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataProvider<T> = when {
+    sort.isEmpty() -> this
+    else -> AppendSortDataProvider(sort.toList(), this).withConfigurableFilter2()
 }
