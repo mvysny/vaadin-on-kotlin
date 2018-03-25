@@ -88,8 +88,24 @@ fun <T: Any> VokDataProvider<T>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<
 }
 
 /**
- * Returns a new data provider which delegates to receiver but always appends given list of [sort] orders.
+ * Creates a new data provider which delegates to [delegate] but always appends given list of sort orders.
  * This class can be used to specify the default ordering if the Grid is currently unsorted.
+ */
+class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrder>, private val delegate: DataProvider<T, F>) : DataProvider<T, F> by delegate {
+    init {
+        require(!delegate.isInMemory) { "$delegate is in-memory which is unsupported" }
+    }
+    override fun fetch(query: Query<T, F>): Stream<T> {
+        val q = Query(query.offset, query.limit, query.sortOrders + append, query.inMemorySorting, query.filter.orElse(null))
+        return delegate.fetch(q)
+    }
+}
+
+/**
+ * Returns a new data provider which delegates to receiver but with given list of [sort] orders appended to anything passed in to [com.vaadin.flow.data.provider.Query].
+ * The [com.vaadin.flow.data.provider.Query.sortOrders] take precedence: any user-specified sorting in Grid takes precedence.
+ *
+ * This can thus be used to specify the default ordering of the data source in case when the user selected no sorting for the Grid.
  *
  * Cannot be used on in-memory data provider - this function will throw [IllegalArgumentException] if receiver is an in-memory data provider.
  *
