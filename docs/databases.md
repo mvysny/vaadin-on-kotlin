@@ -317,19 +317,20 @@ therefore we need to restrict the columns a bit:
 ```kotlin
 class MyUI : UI {
     override fun init(request: VaadinRequest) {
-        grid(Person::class, dataProvider = Person.dataProvider) {
+        grid(dataProvider = Person.dataProvider) {
             setSizeFull()
             
-            // show these columns, and in this order
-            showColumns(Person::id, Person::name, Person::age, Person::dateOfBirth, Person::maritalStatus, Person::alive, Person::modified)
-            
-            column(Person::dateOfBirth) {
+            addColumnFor(Person::id)
+            addColumnFor(Person::name)
+            addColumnFor(Person::age)
+            addColumnFor(Person::dateOfBirth) {
                 setRenderer(LocalDateRenderer())
             }
-            column(Person::modified) {
-                // an example of a Renderer which converts the value to string.
-                // it would be better to employ value provider for this; yet Vaadin does not allow for the value provider to be changed after the column is created.
-                setRenderer(ConvertingRenderer<Instant?>({ it!!.toString() }))
+            addColumnFor(Person::maritalStatus)
+            addColumnFor(Person::alive)
+            addColumnFor(Person::created) {
+                // example of a custom renderer which converts value to a displayable string.
+                setRenderer({ it.toString() }, TextRenderer())
             }
             addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> event.item.delete(); refresh() }))
         }
@@ -351,7 +352,7 @@ documentation for details.
 
 You can also create an unremovable programmatic filter easily:
 ```kotlin
-grid(Person::class, dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
+grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
     // ...
 }
 ```
@@ -417,8 +418,10 @@ power of lazy-loading, sorting and filtering:
 ```kotlin
 class MyUI : UI {
     override fun init(request: VaadinRequest) {
-        grid(PersonDept::class, dataProvider = PersonDept.dataProvider) {
+        grid(dataProvider = PersonDept.dataProvider) {
             setSizeFull()
+            addColumnFor(PersonDept::personName)
+            addColumnFor(PersonDept::deptName)
             appendHeaderRow().generateFilterComponents(this, PersonDept::class)
         }
     }

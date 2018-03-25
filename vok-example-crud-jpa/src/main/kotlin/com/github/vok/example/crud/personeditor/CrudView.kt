@@ -34,7 +34,6 @@ class CrudView: VerticalLayout(), View {
 
     private lateinit var createButton: Button
     private val personGrid: Grid<Person>
-    private val personGridDS = jpaDataProvider<Person>().withConfigurableFilter()
 
     // you can restrict the values by writing the following expression:
 //    private val personGridDS = jpaDataProvider<Person>().and { Person::age between 20..60 }
@@ -49,7 +48,7 @@ class CrudView: VerticalLayout(), View {
             button("Generate testing data", { generateTestingData() })
         }
         // the JPA list demo - shows all instances of a particular JPA entity, allow sorting and filtering
-        personGrid = grid(dataProvider = personGridDS) {
+        personGrid = grid(dataProvider = jpaDataProvider()) {
             expandRatio = 1f; setSizeFull()
 
             // a sample of how to reconfigure a column
