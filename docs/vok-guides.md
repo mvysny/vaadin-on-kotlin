@@ -19,3 +19,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 Continue reading here to understand how exactly VoK accesses the database.
 
 * The [Accessing Databases Guide](databases.md)
+
+## Testing
+
+* The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing/tree/master/karibu-testing-v8)
