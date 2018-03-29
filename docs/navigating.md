@@ -63,7 +63,8 @@ override fun enter(event: ViewChangeListener.ViewChangeEvent) {
 The `queryMap` is a `Map<String, List<String>>` containing the parsed query string. Since a key may be present multiple times in the query,
 the map maps key to a list of values. That's why the `"lang"` key will be mapped to a list containing one item, `"en"`.
 
-The `parameterList` is a `Map<Int, String>` of unnamed parameters, mapping from parameter index to the parameter value.
+The `parameterList` is a `Map<Int, String>` of unnamed parameters, mapping from 0-based parameter index to the parameter value. The first
+parameter will be stored under the key of `0`, the second under the key of `1` etc.
 
 ## Navigating to views
 
@@ -82,6 +83,8 @@ class PersonView : View {
     // ...
     companion object {
         fun navigateTo(id: Long) {
+            // this check must be performed in the enter() method as well, to guard against user-entered URLs
+            require(id > 0) { "The ID must be 1 or greater" }
             navigateToView<PersonView>(id.toString())
         }
     }
