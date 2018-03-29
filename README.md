@@ -31,7 +31,7 @@ For a Getting Started guide please see the official documentation at [http://www
 2. Then, at the command prompt, just type in:
 
     ```bash
-    git clone https://github.com/mvysny/vok-helloword-app
+    git clone https://github.com/mvysny/vok-helloworld-app
     cd vok-helloworld-app
     ./gradlew clean build web:appRun
     ```
