@@ -46,7 +46,7 @@ class WelcomeView: VerticalLayout(), View {
     init {
         formLayout {
             textField("Name:")
-            textField("Age:"
+            textField("Age:")
         }
         button("Click me") {
             onLeftClick {
@@ -59,7 +59,7 @@ class WelcomeView: VerticalLayout(), View {
 }
 ```
 
-The `formLayout()` function will create Vaadin `FormLayout` component and add it into the root `VerticalLayout`. Then it runs the configuration
+The `formLayout()` function creates Vaadin `FormLayout` component and adds it into the root `VerticalLayout`. Then it runs the configuration
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
