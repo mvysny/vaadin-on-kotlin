@@ -41,13 +41,15 @@ class CrudView: VerticalLayout(), View {
                 onLeftClick { createOrEditPerson(Person()) }
                 clickShortcut = Ctrl + Alt + C
             }
-            button("Generate testing data", { generateTestingData() })
+            button("Generate testing data") {
+                onLeftClick { generateTestingData() }
+            }
         }
         // the SQL2O list demo - shows all instances of a particular database table, allows sorting and filtering.
         // you can restrict the values by writing the following expression:
         // dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }
         // any user-configured filters will be applied on top of this filter.
-        personGrid = grid(dataProvider = Person.dataProvider ) {
+        personGrid = grid(dataProvider = Person.dataProvider) {
             expandRatio = 1f; setSizeFull()
 
             // a sample of how to reconfigure a column

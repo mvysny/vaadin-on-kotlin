@@ -31,9 +31,8 @@ class PersonListView : VerticalLayout() {
                 generateTestingData()
             }
         }
-        personGrid = grid {
+        personGrid = grid(dataProvider = Person.dataProvider) {
             flexGrow = 1.0
-            dataProvider = Person.dataProvider.withConfigurableFilter()
             addColumnFor(Person::id)
             addColumnFor(Person::name)
             addColumnFor(Person::age)

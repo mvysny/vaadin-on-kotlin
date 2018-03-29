@@ -312,14 +312,21 @@ class DateFilterPopup: CustomField<DateInterval?>() {
                 horizontalLayout {
                     alignment = Alignment.BOTTOM_RIGHT
                     isSpacing = true
-                    set = button("Set", {
-                        value = DateInterval(truncateDate(fromField.value, resolution, true), truncateDate(toField.value, resolution, false))
-                        isPopupVisible = false
-                    })
-                    clear = button("Clear", {
-                        value = null
-                        isPopupVisible = false
-                    })
+                    set = button("Set") {
+                        onLeftClick {
+                            value = DateInterval(
+                                truncateDate(fromField.value, resolution, true),
+                                truncateDate(toField.value, resolution, false)
+                            )
+                            isPopupVisible = false
+                        }
+                    }
+                    clear = button("Clear") {
+                        onLeftClick {
+                            value = null
+                            isPopupVisible = false
+                        }
+                    }
                 }
             }
         }

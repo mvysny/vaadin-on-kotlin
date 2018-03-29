@@ -55,7 +55,9 @@ internal class CreateEditPerson(val person: Person) : Window() {
                     onLeftClick { okPressed() }
                     setPrimary()
                 }
-                button("Cancel", { close() })
+                button("Cancel") {
+                    onLeftClick { close() }
+                }
             }
         }
         binder.readBean(person)
