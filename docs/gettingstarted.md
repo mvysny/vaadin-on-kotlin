@@ -354,8 +354,7 @@ class CreateArticleView: VerticalLayout(), View {
         textArea("Text") {
             bind(binder).bind(Article::text)
         }
-        button("Save Article", {
-        })
+        button("Save Article") 
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
@@ -391,12 +390,14 @@ class CreateArticleView: VerticalLayout(), View {
         textArea("Text") {
             bind(binder).bind(Article::text)
         }
-        button("Save Article", {
-            val article = Article()
-            if (binder.writeBeanIfValid(article)) {
-                article.save()
+        button("Save Article") {
+            onLeftClick {
+                val article = Article()
+                if (binder.writeBeanIfValid(article)) {
+                    article.save()
+                }
             }
-        })
+        }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
@@ -511,13 +512,15 @@ right below the `article.save()` call as follows:
 
 ```kotlin
 ...
-        button("Save Article", {
-            val article = Article()
-            if (binder.writeBeanIfValid(article)) {
-                article.save()
-                ArticleView.navigateTo(article.id!!)
+        button("Save Article") {
+            onLeftClick {
+                val article = Article()
+                if (binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                }
             }
-        })
+        }
 ...
 ```
 
@@ -576,8 +579,9 @@ Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init
             label("Hello, Vaadin-on-Kotlin!") {
                 styleName = ValoTheme.LABEL_H1
             }
-            button("My Blog", { navigateToView<ArticlesView>() }) {
+            button("My Blog") {
                 styleName = ValoTheme.BUTTON_LINK
+                onLeftClick { navigateToView<ArticlesView>() }
             }
         }
     }
@@ -588,8 +592,9 @@ The Vaadin `Button` component can also act as a link. It thus creates a hyperlin
 Let's add links to the other views as well, starting with adding this "New Article" link to `ArticlesView` class, placing it above the `grid` declaration:
 
 ```kotlin
-        button("New Article", { navigateToView<CreateArticleView>() }) {
+        button("New Article") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<CreateArticleView>() }
         }
 ```
 
@@ -598,16 +603,18 @@ This link will allow you to bring up the form that lets you create a new article
 Now, add another link in `CreateArticleView`, underneath the form's "Save Article" button, as the last line of the `init{}` block, to go back to the index action:
 
 ```kotlin
-        button("Back", { navigateToView<ArticlesView>() }) {
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
 ```
 
 Finally, add a link to the `ArticleView` view to go back to the index action as well (into the `init{}` block under those labels), so that people who are viewing a single article can go back and view the whole list again:
 
 ```kotlin
-        button("Back", { navigateToView<ArticlesView>() }) {
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
 ```
 
@@ -657,15 +664,17 @@ inside the create action. However, if `writeBeanIfValid()` fails, we need to sho
 and mark all invalid fields. To do this, change the button definition as follows:
 
 ```kotlin
-        button("Save Article", { event ->
-            val article = Article()
-            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                article.save()
-                ArticleView.navigateTo(article.id!!)
-            } else {
-                event.button.componentError = UserError("There are invalid fields")
+        button("Save Article") {
+            onLeftClick { event ->
+                val article = Article()
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                } else {
+                    event.button.componentError = UserError("There are invalid fields")
+                }
             }
-        })
+        }
 ```
 
 If you reload [http://localhost:8080/create-article](http://localhost:8080/create-article) and try to save an article without a title,
@@ -703,17 +712,20 @@ class EditArticleView: VerticalLayout(), View {
         textArea("Text") {
             bind(binder).bind(Article::text)
         }
-        button("Save Article", { event ->
-            val article = article!!
-            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                article.save()
-                ArticleView.navigateTo(article.id!!)
-            } else {
-                event.button.componentError = UserError("There are invalid fields")
+        button("Save Article") {
+            onLeftClick { event ->
+                val article = article!!
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                } else {
+                    event.button.componentError = UserError("There are invalid fields")
+                }
             }
-        })
-        button("Back", { navigateToView<ArticlesView>() }) {
+        }
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
@@ -777,11 +789,13 @@ class ArticleView: FormLayout(), View {
         text = label {
             caption = "Text:"
         }
-        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+        button("Edit") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { EditArticleView.navigateTo(article.id!!) }
         }
-        button("Back", { navigateToView<ArticlesView>() }) {
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
@@ -833,17 +847,20 @@ class ArticleEditor : VerticalLayout() {
         textArea("Text") {
             bind(binder).bind(Article::text)
         }
-        button("Save Article", { event ->
-            val article = article!!
-            if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
-                article.save()
-                ArticleView.navigateTo(article.id!!)
-            } else {
-                event.button.componentError = UserError("There are invalid fields")
+        button("Save Article") {
+            onLeftClick { event ->
+                val article = article!!
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                } else {
+                    event.button.componentError = UserError("There are invalid fields")
+                }
             }
-        })
-        button("Back", { navigateToView<ArticlesView>() }) {
+        }
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
 }
@@ -950,8 +967,9 @@ class ArticlesView: VerticalLayout(), View {
         label("Listing Articles") {
             styleName = ValoTheme.LABEL_H1
         }
-        button("New Article", { navigateToView<CreateArticleView>() }) {
+        button("New Article") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<CreateArticleView>() }
         }
         grid = grid(dataProvider = Article.dataProvider) {
             expandRatio = 1f; setSizeFull()
@@ -1191,13 +1209,17 @@ class ArticleView: FormLayout(), View {
             textField("Body:") {
                 bind(commentBinder).bind(Comment::body)
             }
-            createComment = button("Create", { createComment() })
+            createComment = button("Create") {
+                onLeftClick { createComment() }
+            }
         }
-        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+        button("Edit") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { EditArticleView.navigateTo(article.id!!) }
         }
-        button("Back", { navigateToView<ArticlesView>() }) {
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
@@ -1318,7 +1340,9 @@ class NewCommentForm : FormLayout() {
         textField("Body:") {
             bind(commentBinder).bind(Comment::body)
         }
-        createComment = button("Create", { createComment() })
+        createComment = button("Create") {
+            onLeftClick { createComment() }
+        }
     }
 
     private fun createComment() {
@@ -1371,11 +1395,13 @@ class ArticleView: VerticalLayout(), View {
         newComment = newCommentForm {
             commentCreatedListener = { comments.refresh() }
         }
-        button("Edit", { EditArticleView.navigateTo(article.id!!) }) {
+        button("Edit") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { EditArticleView.navigateTo(article.id!!) }
         }
-        button("Back", { navigateToView<ArticlesView>() }) {
+        button("Back") {
             styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
     override fun enter(event: ViewChangeListener.ViewChangeEvent) {
