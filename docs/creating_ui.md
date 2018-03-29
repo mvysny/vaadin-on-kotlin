@@ -63,4 +63,67 @@ The `formLayout()` function will create Vaadin `FormLayout` component and add it
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
-todo more
+## Referencing the components
+
+The `textField()` function also returns the newly created `TextField`. This is handy if we want to reference those text fields later, for
+example from the button click handler:
+
+```kotlin
+@AutoView("")
+class WelcomeView: VerticalLayout(), View {
+    private lateinit var nameField: TextField
+    private lateinit var ageField: TextField
+    init {
+        formLayout {
+            nameField = textField("Name:")
+            ageField = textField("Age:")
+        }
+        button("Click me") {
+            onLeftClick {
+                Notification.show("Hello, ${nameField.value} of age ${ageField.value}")
+            }
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+    }
+}
+```
+
+## Creating reusable components
+
+The core principle of Vaadin is that it is very easy to create reusable components. For example, in order to create a reusable form,
+all you need to do is to define a class:
+
+```kotlin
+class NameAgeForm : FormLayout() {
+    private val nameField = textField("Name:")
+    private val ageField = textField("Age:")
+    val greeting: String get() = "Hello, ${nameField.value} of age ${ageField.value}"
+}
+```
+
+This class is a form layout with two text fields nested inside of it. However, we can't use it directly in the DSL fashion yet -
+the integration function is missing:
+
+```kotlin
+fun HasComponents.nameAgeForm(block: NameAgeForm.()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
+```
+
+The function instantiates the form and calls the `init()` method which will add the newly created form into the parent layout and then
+it will call the configuration `block` on it. Now we can rewrite the `WelcomeView` as follows:
+
+```kotlin
+@AutoView("")
+class WelcomeView: VerticalLayout(), View {
+    init {
+        val form = nameAgeForm()
+        button("Click me") {
+            onLeftClick {
+                Notification.show(form.greeting)
+            }
+        }
+    }
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
+    }
+}
+```
