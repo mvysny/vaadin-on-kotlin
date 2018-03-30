@@ -19,20 +19,21 @@ After reading this guide, you will know:
 This guide is designed for beginners who want to get started with a VoK application from scratch.
 It does not assume that you have any prior experience with Vaadin. However, to get the most out of it,
 you need to have some prerequisites installed:
-   
+
 * Java 8 JDK or newer.
 
 VoK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
 prior experience with Kotlin, you will find a very steep learning curve diving straight 
 into VoK. There are several curated lists of online resources for learning Kotlin:
-   
+
 * [Official Kotlin Programming Language website](https://kotlinlang.org/)
 * [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
 
+Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT. But easier.
 To learn Vaadin:
 
 * [Official Vaadin website](https://www.vaadin.com)
-* [Vaadin Documentation](https://vaadin.com/docs) - we recommend to download and read the Vaadin Book PDF.
+* [Vaadin Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
 
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
 the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 

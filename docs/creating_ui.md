@@ -3,8 +3,13 @@
 # Creating UIs
 
 Vaadin-on-Kotlin uses the [Vaadin Framework](https://vaadin.com/docs/v8/framework/introduction/intro-overview.html) to deliver the UI.
-Vaadin is a single-page Rich Internet Application framework with the programming paradigm that resembles desktop toolkits like JavaFX
-and Swing. You add components such as Button and TextField into the page, nesting them in layouts which define the component placement on page.
+Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT.
+You add components such as Button and TextField into the page, nesting them in layouts which then position the components.
+
+> To learn Vaadin:
+>
+> * [Official Vaadin website](https://www.vaadin.com)
+> * [Vaadin Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
 
 ## Creating Views
 
