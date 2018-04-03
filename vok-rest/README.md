@@ -1,3 +1,5 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+
 # VoK REST support
 
 This module makes it easy to export your objects via REST. The aim here is to use as lightweight libraries as possible,
@@ -14,7 +16,7 @@ dependencies {
 }
 ```
 
-> Note: obtain the newest version from the release name, and the tag name as well: [https://github.com/mvysny/vaadin-on-kotlin/releases](https://github.com/mvysny/vaadin-on-kotlin/releases)
+> Note: to obtain the newest version see above for the most recent tag
 
 To activate the REST service you will need to create the following class:
 

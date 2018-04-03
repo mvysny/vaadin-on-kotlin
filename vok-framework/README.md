@@ -1,3 +1,5 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+
 # VoK Framework Core
 
 The core module of the Vaadin-on-Kotlin framework, always included in your projects, typically

@@ -1,3 +1,5 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+
 # VoK Vaadin 10 and SQL database support
 
 This module includes:
@@ -17,7 +19,7 @@ dependencies {
 }
 ```
 
-> Note: obtain the newest version from the release name, and the tag name as well: [https://github.com/mvysny/vaadin-on-kotlin/releases](https://github.com/mvysny/vaadin-on-kotlin/releases)
+> Note: to obtain the newest version see above for the most recent tag
 
 This module provides:
 

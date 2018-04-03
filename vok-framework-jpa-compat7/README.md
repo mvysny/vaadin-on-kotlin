@@ -1,3 +1,5 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+
 # JPA support for Vaadin8 compatibility package
 
 This module provides the `Container` implementation which is able to fetch JPA entities. It is able
