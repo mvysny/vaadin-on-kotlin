@@ -29,6 +29,11 @@ import java.util.*
  * Currently, only Vaadin Grid component is supported. Vaadin does not support attaching of the filter fields to a Vaadin Table.
  * Attaching filters to a Tepi FilteringTable
  * is currently not supported directly, but it may be done manually.
+ *
+ * Two of the most important functions you'll need to implement:
+ * * [createField] which creates the Vaadin component placed in the Grid Header bar.
+ * * [createFilter] takes the value produced by the Vaadin filter component and produces a filter accepted by the [dataProvider].
+ *
  * @property itemClass The bean on which the filtering will be performed, not null.
  * @property filterFactory produces the actual filter objects accepted by the [dataProvider].
  * @property dataProvider retrieves the most current data provider from the Grid, so that the filters are set to the currently selected DataProvider
@@ -54,12 +59,25 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * object which mandates given value to be contained in a numeric range.
      *
      * [createFilter] is later used internally when the field's value changes, to construct a filter for given field.
+     *
+     * The field component's UI should be as small as possible - it is going to be embedded into the Grid's header bar after all. If you need
+     * more screen space, please consider using the [PopupView] component. Please consult the [NumberFilterPopup] source code for an example
+     * on more details.
+     *
+     * As a rule of thumb, the filtering component should produce the following values:
+     * * [NumberInterval] for any [Number]-typed field
+     * * [DateInterval] for any date-typed field
+     * * [String] for String-typed field
+     * * [Enum] for Enum-typed field
+     * * [Boolean] for boolean-typed field
+     * * generally, a value of the type of the field itself; anything that the [createFilter] function accepts.
+     *
      * @param property the [itemClass] property.
      * @param V the type of the value the property holds.
-     * @return A field that can be assigned to the given fieldType and that is
-     *         capable of filtering given type of data. May return null if filtering of given data type with given field type is unsupported.
+     * @return A field that produces values which can be used to filter the property value.
+     * May return null if filtering of given data type with given field type is unsupported.
      */
-    abstract fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<V?>?
+    abstract fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<*>?
 
     protected fun getProperty(name: String): PropertyDefinition<T, *> =
             properties.getProperty(name).orElse(null) ?: throw IllegalArgumentException("$itemClass has no property $name; available properties: ${properties.properties.map { it.name }}")
@@ -145,7 +163,7 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvid
      */
     protected fun isUsePopupForNumericProperty(property: PropertyDefinition<T, *>): Boolean = true
 
-    override fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<V?>? {
+    override fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<*>? {
         val type = property.type.nonPrimitive
         val field: HasValue<*>
         if (type == java.lang.Boolean::class.java) {
@@ -163,8 +181,7 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvid
         field.apply {
             (this as Component).w = fillParent; (this as? HasValueChangeMode)?.valueChangeMode = ValueChangeMode.LAZY
         }
-        @Suppress("UNCHECKED_CAST")
-        return field as HasValue<V?>
+        return field
     }
 
     protected fun getEnumFilterDisplayName(property: PropertyDefinition<T, *>, constant: Enum<*>): String? = null

@@ -113,8 +113,14 @@ It's a good practice create this function as an extension function on the `Heade
 programmer can generate filter components simply by calling
 
 ```kotlin
-grid.appendHeaderRow().generateFilterComponents(grid)
+grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
 ```
+
+### Customizing filters
+
+You can provide your own implementation of `FilterFieldFactory` to the `generateFilterComponents()` function. The factory produces both
+Vaadin components placed in the Grid Header bar; then it takes the values of those Vaadin components and produces filters accepted by the
+Vaadin `DataProvider` which will then perform the filtering itself.
 
 For more details please see the `VaadinFilters.kt` file in the `vok-framework-sql2o` module.
 
