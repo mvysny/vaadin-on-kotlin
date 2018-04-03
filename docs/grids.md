@@ -86,7 +86,7 @@ provides a different default sorting instead: `grid(dataProvider = Person.dataPr
 Even better is to tell the Grid to initially sort by given column, by calling one of the `Grid.sort()` functions. That way, a visual
 sort indicator is displayed for the user as well.
 
-> Note: please make sure to create database index for every sortable column, otherwise the database SELECTs would be quite slow.
+> Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
 ## Column Widths
 
@@ -118,6 +118,8 @@ grid(dataProvider = Person.dataProvider) {
 
 VoK provides means to auto-generate filter components for all bean properties shown in the Grid itself. For more information on this topic
 please read the [VoK Vaadin 8 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin8/README.md).
+
+> Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
 
 ## Editing rows, customizing Grid look and feel
 
