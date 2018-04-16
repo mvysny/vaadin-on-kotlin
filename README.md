@@ -114,6 +114,7 @@ The list of modules:
   Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to access your database or your app classes or via the REST interface.
 * [vok-db](vok-db) - Provides access to the database; uses [VoK-ORM](https://github.com/mvysny/vok-orm)
+* [vok-security](vok-security) - provides basic security support. The documentation there explains the basics and provides links to sample projects.
 
 ## Code Examples
 
