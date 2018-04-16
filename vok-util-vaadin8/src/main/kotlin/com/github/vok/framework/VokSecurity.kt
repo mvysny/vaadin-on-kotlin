@@ -38,7 +38,11 @@ object VokSecurity {
     }
 
     /**
-     * Call this from your `UI.init()` function after the Navigator has been set. Hooks will be installed which will check for `@HasRoles` on views
+     * Call this from your `UI.init()` function after the [Navigator] has been set. Hooks will be installed into the [Navigator]
+     * which will check for [HasRoles] annotations on views.
+     *
+     * Do not forget to install an error handler (by the means of [UI.setErrorHandler]) and handle the [AccessRejectedException] there appropriately.
+     * Usually showing an error notification, or an "access denied" view is the best approach.
      */
     fun install() {
         checkUIThread()
