@@ -24,7 +24,7 @@ Continue reading here to understand how exactly VoK accesses the database.
 
 Security is an important part of any web-based application. Please check the following resources for more information:
 
-* The [vok-security](../vok-security/README.md) module description.
+* The [vok-security](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md) module description.
 
 ## Testing
 
