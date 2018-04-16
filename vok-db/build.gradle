@@ -20,8 +20,8 @@ publishing {
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'A very simple persistence framework, built on top of Sql2o')
-                root.appendNode('name', 'Vaadin-On-Kotlin')
+                root.appendNode('description', 'VoK: A very simple persistence framework built on top of vok-orm/Sql2o')
+                root.appendNode('name', 'vok-db')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }
             from components.java

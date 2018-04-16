@@ -22,8 +22,8 @@ publishing {
             version project.version
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', 'The Core of Vaadin-On-Kotlin, a simple way to build webapp with Kotlin and Vaadin')
-                root.appendNode('name', 'Vaadin-On-Kotlin')
+                root.appendNode('description', 'VoK: The Core classes')
+                root.appendNode('name', 'vok-framework')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }
             from components.java

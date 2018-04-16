@@ -46,7 +46,7 @@ publishing {
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'VOK: Vaadin 10 Flow with VOK-DB persistence')
-                root.appendNode('name', 'Vaadin-On-Kotlin')
+                root.appendNode('name', 'vok-framework-v10-sql2o')
                 root.appendNode('url', 'https://github.com/mvysny/vaadin-on-kotlin')
             }
             from components.java
