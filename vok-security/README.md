@@ -55,6 +55,8 @@ This module only provides basic API classes which lays out the foundation of the
 security mechanism. The actual security-checking code differs for Vaadin 8 and Vaadin 10
 and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 [vok-util-vaadin10](../vok-util-vaadin10) modules.
+For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/com/github/vok/framework/VokSecurity.kt) class;
+for Vaadin 10 please see the @todo class.
 
 ## Example projects
 

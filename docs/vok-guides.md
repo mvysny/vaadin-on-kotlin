@@ -20,6 +20,12 @@ Continue reading here to understand how exactly VoK accesses the database.
 
 * The [Accessing Databases Guide](databases.md)
 
+## Security
+
+Security is an important part of any web-based application. Please check the following resources for more information:
+
+* The [vok-security](../vok-security/README.md) module description.
+
 ## Testing
 
 * The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing/tree/master/karibu-testing-v8)

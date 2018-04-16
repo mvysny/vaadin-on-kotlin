@@ -1,0 +1,49 @@
+package com.github.vok.framework
+
+import com.github.vok.security.AccessRejectedException
+import com.github.vok.security.HasRoles
+import com.github.vok.security.loggedInUserResolver
+import com.vaadin.navigator.Navigator
+import com.vaadin.navigator.View
+import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.ui.UI
+
+/**
+ * The security provider. Don't forget to call [install] from your UI!
+ */
+object VokSecurity {
+    private val viewChangeListener = object : ViewChangeListener {
+        override fun beforeViewChange(event: ViewChangeListener.ViewChangeEvent): Boolean {
+            checkViewAccessible(event.newView.javaClass)
+            return true
+        }
+
+        override fun afterViewChange(event: ViewChangeListener.ViewChangeEvent) {
+            checkViewAccessible(event.newView.javaClass)
+        }
+    }
+
+    private fun checkViewAccessible(viewClass: Class<out View>) {
+        // if this is not an UI thread, then we can't retrieve the current session and we can't accurately check for user's roles
+        // just a safety precaution since we should be called from Navigator only, which always runs in the UI thread.
+        checkUIThread()
+        val annotation: HasRoles = viewClass.getAnnotation(HasRoles::class.java) ?: throw AccessRejectedException("The view ${viewClass.simpleName} is missing the @HasRoles annotation, can not access", viewClass, setOf())
+        val requiredRoles: Set<String> = annotation.roles.toSet()
+        if (requiredRoles.isEmpty()) return
+        val currentUserRoles: Set<String> = VaadinOnKotlin.loggedInUserResolver!!.getCurrentUserRoles()
+        if (!currentUserRoles.containsAll(requiredRoles)) {
+            val missingRoles: Set<String> = requiredRoles - currentUserRoles
+            throw AccessRejectedException("Can not access ${viewClass.simpleName}, you are not $missingRoles", viewClass, missingRoles)
+        }
+    }
+
+    /**
+     * Call this from your `UI.init()` function after the Navigator has been set. Hooks will be installed which will check for `@HasRoles` on views
+     */
+    fun install() {
+        checkUIThread()
+        check(VaadinOnKotlin.loggedInUserResolver != null) { "The VaadinOnKotlin.resolver has not been set. You need to set it before the @HasRoles annotation can be checked on views" }
+        val navigator: Navigator = checkNotNull(UI.getCurrent().navigator) { "The UI.getCurrent().navigator returns null - there is no Navigator set. You must set a navigator prior calling this function" }
+        navigator.addViewChangeListener(viewChangeListener)
+    }
+}

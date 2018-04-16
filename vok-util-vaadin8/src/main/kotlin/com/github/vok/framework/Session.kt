@@ -7,9 +7,7 @@ import com.vaadin.server.VaadinSession
 import com.vaadin.ui.UI
 import java.io.Serializable
 import javax.servlet.http.Cookie
-import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 /**
  * A namespace object for attaching your session objects.

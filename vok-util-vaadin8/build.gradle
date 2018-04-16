@@ -4,6 +4,7 @@ apply plugin: "com.jfrog.bintray"
 
 dependencies {
     compile(project(':vok-framework'))
+    compile(project(':vok-security'))
 
     // Vaadin
     compile "com.github.vok.karibudsl:karibu-dsl-v8:$karibudsl_version"
