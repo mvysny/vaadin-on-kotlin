@@ -19,7 +19,7 @@ import com.vaadin.ui.Label
 import com.vaadin.ui.UI
 
 class MySecuredUI : UI() {
-    override fun init(request: VaadinRequest?) {
+    override fun init(request: VaadinRequest) {
         navigator = Navigator(this, this)
         navigator.addProvider(autoViewProvider)
         VokSecurity.install()

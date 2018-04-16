@@ -1,12 +1,16 @@
 package com.github.vok.framework
 
+import com.github.vok.karibudsl.*
 import com.github.vok.security.AccessRejectedException
 import com.github.vok.security.HasRoles
 import com.github.vok.security.loggedInUserResolver
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.ui.UI
+import com.vaadin.server.UserError
+import com.vaadin.ui.*
+import com.vaadin.ui.themes.ValoTheme
 
 /**
  * The security provider. Don't forget to call [install] from your UI!
@@ -50,4 +54,110 @@ object VokSecurity {
         val navigator: Navigator = checkNotNull(UI.getCurrent().navigator) { "The UI.getCurrent().navigator returns null - there is no Navigator set. You must set a navigator prior calling this function" }
         navigator.addViewChangeListener(viewChangeListener)
     }
+}
+
+/**
+ * A simple full-screen login form which shows a simple login form; calls [login] on login.
+ *
+ * There are two ways to use this form. If the whole app is user-protected (an user must log in to view any view of the app, there are no views that an anonymous user may view), then
+ * it is simply possible to show the form as a full-screen in the UI if no user is logged in:
+ * ```
+ * class MyUI : UI() {
+ *   override fun init(request: VaadinRequest) {
+ *     if (Session.loggedInUser == null) {
+ *       content = LoginView()
+ *       return;
+ *     } else {
+ *       content = MainLayout()  // create a main layout, populate the menu, etc
+ *       navigator = Navigator(this, content as ViewProvider)
+ *       navigator.addProvider(autoViewProvider)
+ *       VokSecurity.install()
+ *       // install the error handler which would handle AccessRejectedException
+ *   }
+ * }
+ *
+ * class LoginView : VerticalLayout {
+ *   init {
+ *      setSizeFull()
+ *      val loginForm = LoginForm("My App") {
+ *        override fun login(username: String, password: String) {
+ *          val user = User.findByUsername(username)
+ *          if (user == null) {
+ *            username.componentError = UserError("The user does not exist")
+ *            return
+ *          }
+ *          if (!user.passwordMatches(password)) {
+ *              this.password.componentError = UserError("Invalid password")
+ *              return
+ *          }
+ *          Session.loggedInUser = user
+ *          Page.getCurrent().reload()  // this will cause the UI to be re-created, but the user is now logged in so the MainLayout should be instantiated etc.
+ *        }
+ *      }
+ *      addComponent(loginForm)
+ *      loginForm.alignment = Alignment.MIDDLE_CENTER
+ *   }
+ * }
+ * ```
+ *
+ * If only parts of the app are protected, you may simply show the LoginForm class in a `Window`, when your app-specific login button is pressed.
+ */
+abstract class LoginForm(appName: String) : Panel() {
+    protected lateinit var appNameLabel: Label
+    protected lateinit var username: TextField
+    protected lateinit var password: TextField
+    init {
+        w = 500.px
+        verticalLayout {
+            w = fillParent
+            horizontalLayout {
+                w = fillParent
+                label("Welcome") {
+                    alignment = Alignment.BOTTOM_LEFT
+                    addStyleNames(ValoTheme.LABEL_H4, ValoTheme.LABEL_COLORED)
+                }
+                appNameLabel = label(appName) {
+                    alignment = Alignment.BOTTOM_RIGHT; styleName = ValoTheme.LABEL_H3; expandRatio = 1f
+                }
+            }
+            horizontalLayout {
+                w = fillParent
+                username = textField("Username") {
+                    expandRatio = 1f; w = fillParent
+                    icon = VaadinIcons.USER; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+                }
+                password = passwordField("Password") {
+                    expandRatio = 1f; w = fillParent
+                    icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
+                }
+                button("Sign In") {
+                    alignment = Alignment.BOTTOM_RIGHT; setPrimary()
+                    onLeftClick { login() }
+                }
+            }
+        }
+    }
+
+    protected fun login() {
+        username.componentError = null
+        password.componentError = null
+        val user: String = username.value.trim()
+        if (user.isBlank()) {
+            username.componentError = UserError("The user name is blank")
+            return
+        }
+        val password: String = password.value.trim()
+        if (password.isBlank()) {
+            this.password.componentError = UserError("The password is blank")
+            return
+        }
+    }
+
+    /**
+     * Tries to log in the user with given [username] and [password]. Both are not blank. If such user does not exist, or the password
+     * does not match, just set the appropriate [UserError] to [username] or [password] and bail out. Else,
+     * log in the user (e.g. by storing the user into the session) and reload the page ([com.vaadin.server.Page.reload]) (so that the UI
+     * is re-created and redraws the welcome page for the user, if the entire app is user-protected), or navigate to the user's welcome view.
+     */
+    protected abstract fun doLogin(username: String, password: String)
 }
