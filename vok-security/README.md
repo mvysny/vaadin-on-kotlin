@@ -12,12 +12,14 @@ variant:
 * Kerberos-provided security token (client-to-server tickets):
   * Authentication via NTLM/SPNEGO/Windows login via a NTLM servlet filter (the Waffle library)
 * SAML-based solutions which are anything but simple
+* Oauth2
 * Other means: smart cards, fingerprints, ...
 * All that while supporting SSO, or using the Servlet container-provided authentication mechanism
   (the `ServletContext.login()` method).
 
 It is impossible to create an API convering all those cases without going abstraction-crazy.
-That's why we deliberately avoid to use an all-encompassing library like Shiro or Spring Security
+That's why we deliberately avoid to use an all-encompassing library like [Apache Shiro](https://shiro.apache.org/)
+or [Spring Security](https://projects.spring.io/spring-security/)
 with insanely complex APIs. We also don't provide our own authentication API (since it would
 either be incomplete or complex). In this case, the best abstraction is no abstraction at all.
 
@@ -51,8 +53,8 @@ an error notification "access rejected" should be shown (Vaadin 8), or
 the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 10).
 
 The API is intended to be very simple so that it can be backed easily by any kind
-of auth scheme: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)
-library, or others.
+of auth scheme you need: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)
+library, [Apache Shiro](https://shiro.apache.org/) or others.
 
 ### The vok-security module
 
