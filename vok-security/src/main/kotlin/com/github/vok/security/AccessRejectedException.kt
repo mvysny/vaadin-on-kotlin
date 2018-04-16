@@ -7,9 +7,9 @@ package com.github.vok.security
  *
  * Also, you can throw this exception when you implement your custom authorization logic in the `View`'s `AfterNavigationHandler.afterNavigation()` (Vaadin 10) or `View.enter` (Vaadin 8).
  * For example, often the View takes an ID of a document as a parameter and you need to check whether
- * the current user can access that particular document. This case can not be handled by the simple [HasRoles] logic.
+ * the current user can access that particular document. This case can not be handled by the simple [AllowRoles] logic.
  * @property viewClass the view which was attempted to be accessed.
- * @property missingRoles which roles were missing. May be empty if the exception is thrown because the [HasRoles] annotation is missing on the view, or there
+ * @property missingRoles which roles were missing. May be empty if the exception is thrown because the [AllowRoles] annotation is missing on the view, or there
  * is some other reason for which the set of missing roles can not be provided.
  */
 open class AccessRejectedException(message: String, val viewClass: Class<*>, val missingRoles: Set<String>) : Exception(message)

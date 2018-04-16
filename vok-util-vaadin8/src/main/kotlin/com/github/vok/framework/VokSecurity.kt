@@ -1,8 +1,9 @@
 package com.github.vok.framework
 
+import com.github.vok.framework.VokSecurity.install
 import com.github.vok.karibudsl.*
 import com.github.vok.security.AccessRejectedException
-import com.github.vok.security.HasRoles
+import com.github.vok.security.AllowRoles
 import com.github.vok.security.loggedInUserResolver
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.Navigator
@@ -31,26 +32,19 @@ object VokSecurity {
         // if this is not an UI thread, then we can't retrieve the current session and we can't accurately check for user's roles
         // just a safety precaution since we should be called from Navigator only, which always runs in the UI thread.
         checkUIThread()
-        val annotation: HasRoles = viewClass.getAnnotation(HasRoles::class.java) ?: throw AccessRejectedException("The view ${viewClass.simpleName} is missing the @HasRoles annotation, can not access", viewClass, setOf())
-        val requiredRoles: Set<String> = annotation.roles.toSet()
-        if (requiredRoles.isEmpty()) return
-        val currentUserRoles: Set<String> = VaadinOnKotlin.loggedInUserResolver!!.getCurrentUserRoles()
-        if (!currentUserRoles.containsAll(requiredRoles)) {
-            val missingRoles: Set<String> = requiredRoles - currentUserRoles
-            throw AccessRejectedException("Can not access ${viewClass.simpleName}, you are not $missingRoles", viewClass, missingRoles)
-        }
+        VaadinOnKotlin.loggedInUserResolver!!.checkPermissionsOnClass(viewClass)
     }
 
     /**
      * Call this from your `UI.init()` function after the [Navigator] has been set. Hooks will be installed into the [Navigator]
-     * which will check for [HasRoles] annotations on views.
+     * which will check for [AllowRoles] annotations on views.
      *
      * Do not forget to install an error handler (by the means of [UI.setErrorHandler]) and handle the [AccessRejectedException] there appropriately.
      * Usually showing an error notification, or an "access denied" view is the best approach.
      */
     fun install() {
         checkUIThread()
-        check(VaadinOnKotlin.loggedInUserResolver != null) { "The VaadinOnKotlin.resolver has not been set. You need to set it before the @HasRoles annotation can be checked on views" }
+        check(VaadinOnKotlin.loggedInUserResolver != null) { "The VaadinOnKotlin.resolver has not been set. You need to set it before the @AllowRoles annotation can be checked on views" }
         val navigator: Navigator = checkNotNull(UI.getCurrent().navigator) { "The UI.getCurrent().navigator returns null - there is no Navigator set. You must set a navigator prior calling this function" }
         navigator.addViewChangeListener(viewChangeListener)
     }
@@ -76,14 +70,14 @@ object VokSecurity {
  *   }
  * }
  *
- * class LoginView : VerticalLayout {
+ * class LoginView : VerticalLayout() {
  *   init {
  *      setSizeFull()
- *      val loginForm = LoginForm("My App") {
- *        override fun login(username: String, password: String) {
+ *      val loginForm = object : LoginForm("My App") {
+ *        override fun doLogin(username: String, password: String) {
  *          val user = User.findByUsername(username)
  *          if (user == null) {
- *            username.componentError = UserError("The user does not exist")
+ *            this.username.componentError = UserError("The user does not exist")
  *            return
  *          }
  *          if (!user.passwordMatches(password)) {
@@ -151,6 +145,7 @@ abstract class LoginForm(appName: String) : Panel() {
             this.password.componentError = UserError("The password is blank")
             return
         }
+        doLogin(user, password)
     }
 
     /**

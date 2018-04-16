@@ -7,10 +7,7 @@ import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.autoDiscoverViews
 import com.github.vok.karibudsl.autoViewProvider
 import com.github.vok.karibudsl.navigateToView
-import com.github.vok.security.AccessRejectedException
-import com.github.vok.security.HasRoles
-import com.github.vok.security.LoggedInUserResolver
-import com.github.vok.security.loggedInUserResolver
+import com.github.vok.security.*
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
@@ -26,13 +23,13 @@ class MySecuredUI : UI() {
     }
 }
 
-@AutoView("") @HasRoles
+@AutoView("") @AllowAll
 class UnsecuredView : View, Label("Anybody can see this")
-@AutoView("secured") @HasRoles("admin")
+@AutoView("secured") @AllowRoles("admin")
 class SecuredView : View, Label("Only admin can see this")
 @AutoView("omitted")
-class OmittedAnnotationView : View, Label("A new view which has the @HasRoles annotation omitted. Nobody should be able to navigate here")
-@AutoView("document") @HasRoles
+class OmittedAnnotationView : View, Label("A new view which has the @AllowRoles annotation omitted. Nobody should be able to navigate here")
+@AutoView("document") @AllowAll
 class CustomAuthorizationLogicView : View, Label("A custom authorization logic") {
     override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
         throw AccessRejectedException("Simulated access rejected exception", javaClass, setOf("document-viewer"))
@@ -57,12 +54,12 @@ class VokSecurityTest : DynaTest({
             navigateToView(UnsecuredView::class.java)
         }
         test("secured fails") {
-            expectThrows(AccessRejectedException::class, "Can not access SecuredView, you are not [admin]") {
+            expectThrows(AccessRejectedException::class, "Cannot access SecuredView, you're not logged in") {
                 navigateToView(SecuredView::class.java)
             }
         }
         test("omitted fails") {
-            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing the @HasRoles annotation, can not access") {
+            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing one of the [AllowRoles, AllowAll, AllowAllUsers] annotation") {
                 navigateToView(OmittedAnnotationView::class.java)
             }
         }
@@ -79,12 +76,12 @@ class VokSecurityTest : DynaTest({
             navigateToView(UnsecuredView::class.java)
         }
         test("secured fails") {
-            expectThrows(AccessRejectedException::class, "Can not access SecuredView, you are not [admin]") {
+            expectThrows(AccessRejectedException::class, "Can not access SecuredView, you are not admin") {
                 navigateToView(SecuredView::class.java)
             }
         }
         test("omitted fails") {
-            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing the @HasRoles annotation, can not access") {
+            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing one of the [AllowRoles, AllowAll, AllowAllUsers] annotation") {
                 navigateToView(OmittedAnnotationView::class.java)
             }
         }
@@ -101,12 +98,12 @@ class VokSecurityTest : DynaTest({
             navigateToView(UnsecuredView::class.java)
         }
         test("secured fails") {
-            expectThrows(AccessRejectedException::class, "Can not access SecuredView, you are not [admin]") {
+            expectThrows(AccessRejectedException::class, "Can not access SecuredView, you are not admin") {
                 navigateToView(SecuredView::class.java)
             }
         }
         test("omitted fails") {
-            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing the @HasRoles annotation, can not access") {
+            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing one of the [AllowRoles, AllowAll, AllowAllUsers] annotation") {
                 navigateToView(OmittedAnnotationView::class.java)
             }
         }
@@ -126,7 +123,7 @@ class VokSecurityTest : DynaTest({
             navigateToView(SecuredView::class.java)
         }
         test("omitted fails") {
-            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing the @HasRoles annotation, can not access") {
+            expectThrows(AccessRejectedException::class, "The view OmittedAnnotationView is missing one of the [AllowRoles, AllowAll, AllowAllUsers] annotation") {
                 navigateToView(OmittedAnnotationView::class.java)
             }
         }
