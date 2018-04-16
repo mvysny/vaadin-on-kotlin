@@ -25,11 +25,16 @@ Instead we demo the best practices on the simplest username+password scenario.
 We then rely on the programmer to read the tutorials, the documentation and copy-paste
 from code examples to create authentication mechanism that's best tailored for his project.
 
+> Note: sorry, there are no other tutorials beside the most simple username+password authentication,
+with role-based authorization and users stored in a SQL database.
+
 ## VoK-Security API
 
-The VoK API provides no support for authentication. It is expected that the
+The VoK API provides no direct support for authentication. It is expected that the
 application programmer will employ appropriate authentication mechanism himself.
-We provide a very simple password-based example though, to get you started.
+We provide a very simple password-based example though, to get you started;
+VoK also provide basic login forms and the documentation on how to integrate them
+with your app.
 
 ### Authorization
 
@@ -40,7 +45,7 @@ process.
 
 More complex authorization is simply provided via Kotlin code in the
 View itself. On navigation, the View checks e.g. whether given user has the right
-to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/com/github/vok/security/AccessRejectedException) must be simply thrown.
+to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/com/github/vok/security/AccessRejectedException.kt) must be simply thrown.
 The exception is then caught by the Vaadin exception handler and either
 an error notification "access rejected" should be shown (Vaadin 8), or
 the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 10).
