@@ -27,7 +27,7 @@ object Session {
      * @return the attribute value, may be null
      */
     operator fun get(key: String): Any? {
-        checkUIThread()
+        // checkUIThread()  // no need to check - polling `current` will check this for us. Also this would prevent us from manipulating session before the UI is constructed.
         return current.getAttribute(key)
     }
 
@@ -37,7 +37,7 @@ object Session {
      * @return the attribute value, may be null
      */
     operator fun <T: Any> get(key: KClass<T>): T? {
-        checkUIThread()
+        // checkUIThread()  // no need to check - polling `current` will check this for us. Also this would prevent us from manipulating session before the UI is constructed.
         return current.getAttribute(key.java)
     }
 
@@ -46,7 +46,7 @@ object Session {
      * @param value the value to store, may be null to remove the mapping.
      */
     operator fun set(key: String, value: Any?) {
-        checkUIThread()
+        // checkUIThread()  // no need to check - polling `current` will check this for us. Also this would prevent us from manipulating session before the UI is constructed.
         current.setAttribute(key, value)
     }
 
@@ -56,7 +56,7 @@ object Session {
      * @param value the value to store, may be null if
      */
     operator fun <T: Any> set(key: KClass<T>, value: T?) {
-        checkUIThread()
+        // checkUIThread()  // no need to check - polling `current` will check this for us. Also this would prevent us from manipulating session before the UI is constructed.
         current.setAttribute(key.java, value)
     }
 
