@@ -23,7 +23,8 @@ In a fictional book shop:
 In this example, we will have three roles, `administrator`, `bookkeeper` and `sales`. We will pre-create
 the admin user which will then create other users and assign the roles. We will then annotate Vaadin views
 so that `OrdersView` can only be viewed by the `sales` users:
-```
+
+```kotlin
 @AllowRoles("sales")
 class OrdersView : VerticalLayout(), View {}
 
@@ -36,7 +37,8 @@ class BookListView : VerticalLayout(), View {}
 
 The last rule is somewhat special: the view need to check whether the order in question belongs to the
 currently logged-in user. We can't express this with annotations, so we'll simply use Kotlin code to do that:
-```
+
+```kotlin
 @AllowAllUsers
 class OrderView : VerticalLayout(), View {
   override fun enter(event: ViewChangeListener.ViewChangeEvent) {
