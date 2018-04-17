@@ -66,7 +66,7 @@ object VokSecurity {
  *       navigator = Navigator(this, content as ViewProvider)
  *       navigator.addProvider(autoViewProvider)
  *       VokSecurity.install()
- *       // install the error handler which would handle AccessRejectedException
+ *       // you need to install the error handler which would handle AccessRejectedException
  *   }
  * }
  *
@@ -77,11 +77,11 @@ object VokSecurity {
  *        override fun doLogin(username: String, password: String) {
  *          val user = User.findByUsername(username)
  *          if (user == null) {
- *            this.username.componentError = UserError("The user does not exist")
+ *            usernameField.componentError = UserError("The user does not exist")
  *            return
  *          }
  *          if (!user.passwordMatches(password)) {
- *              this.password.componentError = UserError("Invalid password")
+ *              passwordField.componentError = UserError("Invalid password")
  *              return
  *          }
  *          Session.loggedInUser = user
@@ -98,8 +98,8 @@ object VokSecurity {
  */
 abstract class LoginForm(appName: String) : Panel() {
     protected lateinit var appNameLabel: Label
-    protected lateinit var username: TextField
-    protected lateinit var password: TextField
+    protected lateinit var usernameField: TextField
+    protected lateinit var passwordField: TextField
     init {
         w = 500.px
         verticalLayout {
@@ -116,11 +116,11 @@ abstract class LoginForm(appName: String) : Panel() {
             }
             horizontalLayout {
                 w = fillParent
-                username = textField("Username") {
+                usernameField = textField("Username") {
                     expandRatio = 1f; w = fillParent
                     icon = VaadinIcons.USER; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
                 }
-                password = passwordField("Password") {
+                passwordField = passwordField("Password") {
                     expandRatio = 1f; w = fillParent
                     icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
                 }
@@ -133,16 +133,16 @@ abstract class LoginForm(appName: String) : Panel() {
     }
 
     protected fun login() {
-        username.componentError = null
-        password.componentError = null
-        val user: String = username.value.trim()
+        usernameField.componentError = null
+        passwordField.componentError = null
+        val user: String = usernameField.value.trim()
         if (user.isBlank()) {
-            username.componentError = UserError("The user name is blank")
+            usernameField.componentError = UserError("The user name is blank")
             return
         }
-        val password: String = password.value.trim()
+        val password: String = passwordField.value.trim()
         if (password.isBlank()) {
-            this.password.componentError = UserError("The password is blank")
+            passwordField.componentError = UserError("The password is blank")
             return
         }
         doLogin(user, password)
