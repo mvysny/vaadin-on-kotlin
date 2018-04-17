@@ -68,7 +68,10 @@ from code examples to create authentication mechanism that's best tailored for h
 with role-based authorization and users stored in a SQL database.
 
 VoK also provide basic login forms and the documentation on how to integrate them
-with your app. There is also a set of example projects: todo links
+with your app. There is also a set of example projects:
+
+* For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
+* For Vaadin 10 there's todo
 
 ## Authorization
 
@@ -104,7 +107,11 @@ and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 
 ## Example projects
 
-@todo add example projects for Vaadin8 and Vaadin10
+Please find example projects below. Both projects are using the username+password authentication with users
+stored in the SQL database:
+
+* For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
+* For Vaadin 10 there's todo
 
 ## VoK-Security Simple
 
