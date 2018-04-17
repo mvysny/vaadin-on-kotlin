@@ -6,9 +6,12 @@ When securing your apps, you generally need to perform two duties:
 * Only allow users with appropriate rights to access particular parts of the app: *authorization*.
   For example you'd only want administrators to manage users in the app.
 
-Vaadin-on-Kotlin and uses *role-based* authorization - every user in the app is assigned
-a set of roles - a set of duties it is expected to perform in the app. For example, in a fictional
-book shop:
+Vaadin-on-Kotlin uses *role-based* authorization. Every user in the app is assigned
+a set of roles - a set of duties it is expected to perform in the app.
+
+## Example: Fictional Book Shop
+
+In a fictional book shop:
 
 * Only the users which are assigned to the `administrator` role are allowed to create/delete other users
 * Only users with the `bookkeeper` and `administrator` role may edit the book information;
@@ -45,7 +48,7 @@ class OrderView : VerticalLayout(), View {
 }
 ```
 
-## Authentication
+## VoK Authentication
 
 Authentication identifies the user and tries to prove that it's indeed the user who's
 accessing the app, and not an impersonator. Usually the user provides a secret that only he
@@ -73,7 +76,7 @@ with your app. There is also a set of example projects:
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
 * For Vaadin 10 there's todo
 
-## Authorization
+## VoK Authorization
 
 The VoK API authorization API uses role-based authorization on Vaadin views. There are
 three annotations in the [AllowRoles.kt](src/main/kotlin/com/github/vok/security/AllowRoles.kt) file,
