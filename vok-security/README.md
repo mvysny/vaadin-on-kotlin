@@ -7,7 +7,9 @@ When securing your apps, you generally need to perform two duties:
   For example you'd only want administrators to manage users in the app.
 
 Vaadin-on-Kotlin uses *role-based* authorization. Every user in the app is assigned
-a set of roles - a set of duties it is expected to perform in the app.
+a set of roles - a set of duties it is expected to perform in the app. Every Vaadin view
+then declares roles allowed to see that particular view; only users which are assigned at least one
+of the roles declared on the view are then allowed to visit that view.
 
 ## Example: Fictional Book Shop
 
