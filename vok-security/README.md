@@ -35,8 +35,12 @@ class UsersView : VerticalLayout(), View {}
 class BookListView : VerticalLayout(), View {}
 ```
 
-The last rule is somewhat special: the view need to check whether the order in question belongs to the
-currently logged-in user. We can't express this with annotations, so we'll simply use Kotlin code to do that:
+The remaining rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
+(specified in the URL as an order ID). Since the view will contain sensitive data (say a delivery address),
+the view may not be viewed by anybody else than the user which created the order, and the members of the `sales`
+group. We therefore need to check whether the current is user is `sales` user, or the
+order in question belongs to the
+currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
 
 ```kotlin
 @AllowAllUsers
@@ -44,7 +48,8 @@ class OrderView : VerticalLayout(), View {
   override fun enter(event: ViewChangeListener.ViewChangeEvent) {
     val user: User = Session.loginManager.loggedInUser!!
     val order: Order = Order.getById(event.parameterList[0].toLong())
-    if (order.userId != user.id) {
+    val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
+    if (!authorized) {
       throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf())
     }
     // .. rest of the code, init the view, show the details about the order
