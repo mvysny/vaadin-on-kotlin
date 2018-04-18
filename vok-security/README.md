@@ -83,7 +83,7 @@ VoK also provide basic login forms and the documentation on how to integrate the
 with your app. There is also a set of example projects:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's todo
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
 
 ## VoK Authorization
 
@@ -123,7 +123,7 @@ Please find example projects below. Both projects are using the username+passwor
 stored in the SQL database:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's todo
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
 
 ## VoK-Security Simple
 

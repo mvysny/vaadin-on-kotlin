@@ -28,4 +28,4 @@ Security is an important part of any web-based application. Please check the fol
 
 ## Testing
 
-* The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing/tree/master/karibu-testing-v8)
+* The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing)
