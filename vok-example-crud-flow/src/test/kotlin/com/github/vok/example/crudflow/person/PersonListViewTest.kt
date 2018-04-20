@@ -19,7 +19,7 @@ fun DynaNodeGroup.usingApp() {
     beforeGroup { Bootstrap().contextInitialized(null) }
     afterGroup { Bootstrap().contextDestroyed(null) }
 
-    beforeEach { MockVaadin.setup(autoDiscoverViews("com.github")) }
+    beforeEach { MockVaadin.setup(Routes().autoDiscoverViews("com.github")) }
     fun cleanupDb() { Person.deleteAll() }
     beforeEach { cleanupDb() }
     afterEach { cleanupDb() }
