@@ -51,7 +51,7 @@ object VokSecurity {
 }
 
 /**
- * A simple full-screen login form which shows a simple login form; calls [login] on login.
+ * A simple login form which shows a simple login form; calls a handler provided in the [onLogin] when user clicks the "Sign In" button.
  *
  * There are two ways to use this form. If the whole app is user-protected (an user must log in to view any view of the app, there are no views that an anonymous user may view), then
  * it is simply possible to show the form as a full-screen in the UI if no user is logged in:
@@ -100,6 +100,8 @@ class LoginForm(appName: String) : Panel() {
         private set
     lateinit var passwordField: TextField
         private set
+    lateinit var loginButton: Button
+        private set
     init {
         w = 500.px
         verticalLayout {
@@ -124,7 +126,7 @@ class LoginForm(appName: String) : Panel() {
                     expandRatio = 1f; w = fillParent
                     icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
                 }
-                button("Sign In") {
+                loginButton = button("Sign In") {
                     alignment = Alignment.BOTTOM_RIGHT; setPrimary()
                     onLeftClick { login() }
                 }
