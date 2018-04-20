@@ -73,33 +73,33 @@ object VokSecurity {
  * class LoginView : VerticalLayout() {
  *   init {
  *      setSizeFull()
- *      val loginForm = object : LoginForm("My App") {
- *        override fun doLogin(username: String, password: String) {
+ *      loginForm("My App") {
+ *        alignment = Alignment.MIDDLE_CENTER
+ *        onLogin { username, password ->
  *          val user = User.findByUsername(username)
  *          if (user == null) {
  *            usernameField.componentError = UserError("The user does not exist")
- *            return
+ *          } else if (!user.passwordMatches(password)) {
+ *            passwordField.componentError = UserError("Invalid password")
+ *          } else {
+ *            Session.loggedInUser = user
+ *            Page.getCurrent().reload()  // this will cause the UI to be re-created, but the user is now logged in so the MainLayout should be instantiated etc.
  *          }
- *          if (!user.passwordMatches(password)) {
- *              passwordField.componentError = UserError("Invalid password")
- *              return
- *          }
- *          Session.loggedInUser = user
- *          Page.getCurrent().reload()  // this will cause the UI to be re-created, but the user is now logged in so the MainLayout should be instantiated etc.
  *        }
  *      }
- *      addComponent(loginForm)
- *      loginForm.alignment = Alignment.MIDDLE_CENTER
  *   }
  * }
  * ```
  *
  * If only parts of the app are protected, you may simply show the LoginForm class in a `Window`, when your app-specific login button is pressed.
  */
-abstract class LoginForm(appName: String) : Panel() {
-    protected lateinit var appNameLabel: Label
-    protected lateinit var usernameField: TextField
-    protected lateinit var passwordField: TextField
+class LoginForm(appName: String) : Panel() {
+    lateinit var appNameLabel: Label
+        private set
+    lateinit var usernameField: TextField
+        private set
+    lateinit var passwordField: TextField
+        private set
     init {
         w = 500.px
         verticalLayout {
@@ -132,7 +132,7 @@ abstract class LoginForm(appName: String) : Panel() {
         }
     }
 
-    protected fun login() {
+    private fun login() {
         usernameField.componentError = null
         passwordField.componentError = null
         val user: String = usernameField.value.trim()
@@ -145,14 +145,20 @@ abstract class LoginForm(appName: String) : Panel() {
             passwordField.componentError = UserError("The password is blank")
             return
         }
-        doLogin(user, password)
+        onLoginHandler(user, password)
     }
 
+    private var onLoginHandler: (username: String, password: String)->Unit = {_, _ -> }
+
     /**
-     * Tries to log in the user with given [username] and [password]. Both are not blank. If such user does not exist, or the password
-     * does not match, just set the appropriate [UserError] to [username] or [password] and bail out. Else,
+     * The [loginHandler] will try to log in the user with given username and password. Both are not blank and trimmed. If such user does not exist, or the password
+     * does not match, just set the appropriate [UserError] to [usernameField] or [passwordField] and bail out. Else,
      * log in the user (e.g. by storing the user into the session) and reload the page ([com.vaadin.server.Page.reload]) (so that the UI
      * is re-created and redraws the welcome page for the user, if the entire app is user-protected), or navigate to the user's welcome view.
      */
-    protected abstract fun doLogin(username: String, password: String)
+    fun onLogin(loginHandler: (username: String, password: String)->Unit) {
+        onLoginHandler = loginHandler
+    }
 }
+
+fun (@VaadinDsl HasComponents).loginForm(appName: String, block: LoginForm.()->Unit = {}) = init(LoginForm(appName), block)
