@@ -139,7 +139,10 @@ class LoginForm(appName: String) : VerticalLayout() {
             width = "100%"
             content { align(between, baseline) }
             h3("Welcome")
-            h4(appName)
+            h4(appName) {
+                // workaround for https://github.com/vaadin/vaadin-ordered-layout-flow/issues/54
+                isExpand = true; textAlign = "right"
+            }
         }
         horizontalLayout {
             width = "100%"
