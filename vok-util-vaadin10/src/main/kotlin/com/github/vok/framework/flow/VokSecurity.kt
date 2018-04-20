@@ -10,6 +10,8 @@ import com.vaadin.flow.router.Route
  * The security provider. Since Vaadin 10 applications typically don't define their own UIs but use the approach of setting [Route.layout],
  * we will provide support for that as well.
  *
+ * Don't forget to install a proper [VaadinOnKotlin.loggedInUserResolver] for your project.
+ *
  * ## If you have your own UI class
  *
  * Simply call [install] - the function will add the [UI.addBeforeEnterListener] which will check permissions on all views.
@@ -46,6 +48,10 @@ object VokSecurity {
         }
     }
 
+    /**
+     * If you have your own custom UI, then simply call this function from your [UI.init] method. It will install [UI.addBeforeEnterListener]
+     * and will check all views.
+     */
     fun install() {
         UI.getCurrent().addBeforeEnterListener({ e -> checkPermissionsOfView(e.navigationTarget) })
     }
