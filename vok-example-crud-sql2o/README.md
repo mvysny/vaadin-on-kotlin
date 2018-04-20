@@ -1,3 +1,6 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Heroku](https://heroku-badge.herokuapp.com/?app=vok-crud&style=flat&svg=1)](https://vok-crud.herokuapp.com/)
+
 # VoK-CRUD Example application
 
 A more complete full-stack example application which you can inspire from. You can launch the app simply from your terminal:

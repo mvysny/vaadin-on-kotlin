@@ -1,3 +1,5 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+
 # VoK-Security
 
 When securing your apps, you generally need to perform two duties:
