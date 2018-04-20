@@ -25,6 +25,7 @@ dependencies {
     // testing
     testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
     testCompile "com.github.kaributesting:karibu-testing-v10:$kaributesting_version"
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
