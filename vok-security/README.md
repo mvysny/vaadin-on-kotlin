@@ -115,7 +115,7 @@ security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 
 and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 [vok-util-vaadin10](../vok-util-vaadin10) modules:
 * For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/com/github/vok/framework/VokSecurity.kt) class;
-* For Vaadin 10 please see the @todo class.
+* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/com/github/vok/framework/flow/VokSecurity.kt) class;
 
 ## Example projects
 
