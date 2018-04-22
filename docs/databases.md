@@ -307,7 +307,7 @@ on a web page. It allows the user to:
 * VoK provides means to auto-generate filter components and auto-populate them into the Grid,
   which provides you with a simple means to allow the user to filter as well.
 
-You can find more information about the Vaadin Grid at the [Vaadin Grid Documentation](http://wc.demo.vaadin.com/mcm/out/framework/components/components-grid.html) page.
+You can find more information about how to use Vaadin Grid with Vaadin-on-Kotlin at the [Using Grids](grids.md) guide page.
 
 ### Showing entities in Grid
 
