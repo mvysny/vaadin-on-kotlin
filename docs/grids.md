@@ -91,7 +91,7 @@ sort indicator is displayed for the user as well.
 ## Column Widths
 
 Columns have by default undefined width, which causes automatic sizing based on the widths of the displayed data.
-You can set column widths explicitly by pixel value with `setWidth()``, or relatively using expand ratios with `setExpandRatio()``.
+You can set column widths explicitly by pixel value with `setWidth()`, or relatively using expand ratios with `setExpandRatio()`.
 
 When using expand ratios, the columns with a non-zero expand ratio use the extra space remaining from other columns, in proportion
 to the defined ratios. Do note that the minimum width of an expanded column by default is based on the contents of the column
@@ -242,8 +242,6 @@ addColumnFor(Person::age) {
     setStyleGenerator({ "v-align-right" })
 }
 ```
-
-Please note in the next example, that formatting has to be handled separately for the grid (no editor invoked) and the editor. Also, no conversion is needed as the DateField and Person::birthday are both LocalDate:
 
 ## Saving edited data
 
