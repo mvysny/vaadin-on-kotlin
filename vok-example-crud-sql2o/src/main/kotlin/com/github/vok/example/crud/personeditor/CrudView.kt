@@ -10,10 +10,7 @@ import com.github.vokorm.deleteById
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.ui.Button
-import com.vaadin.ui.Grid
-import com.vaadin.ui.UI
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
@@ -52,15 +49,29 @@ class CrudView: VerticalLayout(), View {
         personGrid = grid(dataProvider = Person.dataProvider) {
             expandRatio = 1f; setSizeFull()
 
+            // we will also enable in-place editors; please see http://www.vaadinonkotlin.eu/grids.html for more info
+            editor.isEnabled = true; editor.binder = beanValidationBinder()
+            editor.addSaveListener { e -> e.bean.save(); refresh() }
+
             // a sample of how to reconfigure a column
             addColumnFor(Person::id) { isSortable = false }
-            addColumnFor(Person::name)
-            addColumnFor(Person::age)
+            addColumnFor(Person::name) {
+                setEditorComponent(TextField())
+            }
+            addColumnFor(Person::age) {
+                editorBinding = editor.binder.forField(TextField()).toInt().bind(Person::age)
+                setStyleGenerator({ "v-align-right" })
+            }
             addColumnFor(Person::dateOfBirth) {
                 setRenderer(LocalDateRenderer())
+                setEditorComponent(DateField())
             }
-            addColumnFor(Person::maritalStatus)
-            addColumnFor(Person::alive)
+            addColumnFor(Person::maritalStatus) {
+                setEditorComponent(ComboBox<MaritalStatus>(null, MaritalStatus.values().toList()))
+            }
+            addColumnFor(Person::alive) {
+                setEditorComponent(CheckBox("Alive"))
+            }
             addColumnFor(Person::created) {
                 // example of a custom renderer which converts value to a displayable string.
                 setRenderer({ it.toString() }, TextRenderer())
@@ -69,7 +80,7 @@ class CrudView: VerticalLayout(), View {
             // add additional columns with buttons
             addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
             addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) })).id = "edit"
-            addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
+            addColumn({ "\u274C" }, ButtonRenderer<Person>({ event -> event.item.delete(); refresh() }))
 
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this, Person::class)
@@ -82,11 +93,6 @@ class CrudView: VerticalLayout(), View {
                 Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true).save()
             }
         }
-        personGrid.refresh()
-    }
-
-    private fun deletePerson(id: Long) {
-        Person.deleteById(id)
         personGrid.refresh()
     }
 
