@@ -155,10 +155,10 @@ a the developer the implement a complete CRUD stack with minimum coding
 in a spreadsheet like manner. In order to properly set-up the grid editor,
 the following steps need to be taken:
 
-1) making the grid editable
-2) setting a simple editor component for each column **or** setting up a complex editor component and a converting field binder for each column
-3) Saving data after value change
-4) Creating support for deleting and adding a row
+1. making the grid editable
+2. setting a simple editor component for each column **or** setting up a complex editor component and a converting field binder for each column
+3. Saving data after value change
+4. Creating support for deleting and adding a row
 
 ## Making Grid editable
 
