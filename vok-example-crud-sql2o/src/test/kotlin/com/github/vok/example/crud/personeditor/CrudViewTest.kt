@@ -51,7 +51,7 @@ class CrudViewTest : DynaTest({
 
         val grid = _get<Grid<*>>()
         grid.expectRows(1)
-        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", "Show", "Edit", "Delete")
+        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", "Show", "Edit", "❌")
     }
 
     test("edit one person") {
