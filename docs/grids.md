@@ -199,7 +199,8 @@ no information in the editor can be changed. Therefore, we need to either:
 
 Either of those actions will automatically switch the column to the edit mode (sets the `Column.isEditable` to true).
 
-In simple cases like editing a `String` field with a `TextField`, setting up the editor Component (which handles the data entry) also sets a none converting binder which magically handles all the rest.
+In simple cases when there is no data conversion necessary (for example editing a `String` field with a `TextField`), setting up the editor Component
+(which handles the data entry) is all that's needed:
 
 ```kotlin
 grid { // ..
@@ -216,7 +217,8 @@ addColumnFor(Person::gender) {
 }
 ```
 
-Yet another example is `DateField` with custom formatting. Please note that the formatting has to be handled separately for the grid column (the renderer) and the editor.
+Yet another example is `DateField` with custom formatting. Please note that
+the formatting has to be handled separately for the grid column (the renderer) and the editor.
 
 ```kotlin
 // ..
@@ -228,7 +230,8 @@ addColumnFor(Person::birthday) {
 
 ## Conversion on editing
 
-If any conversion has to be done between the type of the editor component and the type of the data (for example editing a `Long` value in a `TextField`), we need to use the binder.
+If any conversion has to be done between the type of the editor component and the type of
+the data (for example editing a `Long` value in a `TextField`), we need to use the binder.
 
 ```kotlin
 // ..
@@ -267,11 +270,13 @@ val gridPerson = grid(dataSource) {
     // ..
 }
 
-button("New Line", {
+button("New Line") {
+  onLeftClick {
     Person().save()
     gridPerson.refresh()
     gridPerson.scrollToEnd()
-    })
+  }
+}
 ```
 
 ## All-in-One CRUD Grid example
@@ -362,8 +367,6 @@ class MainView: VerticalLayout(), View {
             gridPerson.refresh()
             gridPerson.scrollToEnd()
         })
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
 }
 ```
