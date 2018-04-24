@@ -9,15 +9,12 @@ import com.github.vokorm.db
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.server.FontIcon
-import com.vaadin.server.Page
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
-import com.vaadin.ui.themes.ValoTheme
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
