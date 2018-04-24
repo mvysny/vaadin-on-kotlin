@@ -76,7 +76,8 @@ class CrudView: VerticalLayout(), View {
 
             // add additional columns with buttons
             addButtonColumn(VaadinIcons.EXTERNAL_LINK, { event -> PersonView.navigateTo(event.item) })
-            addButtonColumn(VaadinIcons.EDIT, { event -> createOrEditPerson(event.item) })
+            // the tests need to target and click the EDIT button, and hence we need to give an id to the column.
+            addButtonColumn(VaadinIcons.EDIT, { event -> createOrEditPerson(event.item) }, "edit")
             addButtonColumn(VaadinIcons.TRASH, { event -> event.item.delete(); refresh() })
 
             // automatically create filters, based on the types of values present in particular columns.
@@ -103,11 +104,15 @@ class CrudView: VerticalLayout(), View {
 
 /**
  * A helper function which adds a borderless button column with given [icon] to the grid. When clicked, [listener] is notified.
+ * The column will optionally have given [id]
  */
-fun <T> Grid<T>.addButtonColumn(icon: FontIcon, listener: (ClickableRenderer.RendererClickEvent<T>)->Unit): Grid.Column<T, String> {
+fun <T> Grid<T>.addButtonColumn(icon: FontIcon, listener: (ClickableRenderer.RendererClickEvent<T>)->Unit, id: String? = null): Grid.Column<T, String> {
     val renderer = ButtonRenderer<T>(listener).apply { isHtmlContentAllowed = true }
     val html = icon.html
     val column = addColumn({ html }, renderer)
     column.setStyleGenerator { "borderless" }
+    if (id != null) {
+        column.id = id
+    }
     return column
 }

@@ -8,6 +8,7 @@ import com.github.vok.example.crud.MyUI
 import com.github.vok.karibudsl.autoDiscoverViews
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
@@ -51,7 +52,7 @@ class CrudViewTest : DynaTest({
 
         val grid = _get<Grid<*>>()
         grid.expectRows(1)
-        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", "Show", "Edit", "❌")
+        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", VaadinIcons.EXTERNAL_LINK.html, VaadinIcons.EDIT.html, VaadinIcons.TRASH.html)
     }
 
     test("edit one person") {
