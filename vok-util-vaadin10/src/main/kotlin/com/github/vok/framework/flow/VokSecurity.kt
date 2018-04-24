@@ -136,7 +136,11 @@ class LoginForm(appName: String) : VerticalLayout() {
         binder.bean = UsernamePassword()
 
         horizontalLayout {
-            width = "100%"; isSpacing = false  // it's important to disable spacing when using align with JustifyContentMode: https://github.com/vaadin/vaadin-ordered-layout-flow/issues/54
+            width = "100%"
+            // the trick to this layout is to use the "between" layout mode, which adds as much space as possible between two elements, thus pushing
+            // first child to the left (the "Welcome" label), while pushing second child to the right (the AppName label).
+            // yet in order for this to work, it's important to disable spacing: https://github.com/vaadin/vaadin-ordered-layout-flow/issues/54
+            isSpacing = false
             content { align(between, baseline) }
 
             h3("Welcome")
