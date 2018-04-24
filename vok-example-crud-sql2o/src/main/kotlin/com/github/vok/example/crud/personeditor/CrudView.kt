@@ -6,14 +6,18 @@ import com.github.vok.karibudsl.*
 import com.github.vok.karibudsl.ModifierKey.Alt
 import com.github.vok.karibudsl.ModifierKey.Ctrl
 import com.github.vokorm.db
-import com.github.vokorm.deleteById
 import com.vaadin.event.ShortcutAction.KeyCode.C
+import com.vaadin.icons.VaadinIcons
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
+import com.vaadin.server.FontIcon
+import com.vaadin.server.Page
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
+import com.vaadin.ui.renderers.ClickableRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
+import com.vaadin.ui.themes.ValoTheme
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
@@ -78,9 +82,9 @@ class CrudView: VerticalLayout(), View {
             }
 
             // add additional columns with buttons
-            addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
-            addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) })).id = "edit"
-            addColumn({ "\u274C" }, ButtonRenderer<Person>({ event -> event.item.delete(); refresh() }))
+            addButtonColumn(VaadinIcons.EXTERNAL_LINK, { event -> PersonView.navigateTo(event.item) })
+            addButtonColumn(VaadinIcons.EDIT, { event -> createOrEditPerson(event.item) })
+            addButtonColumn(VaadinIcons.TRASH, { event -> event.item.delete(); refresh() })
 
             // automatically create filters, based on the types of values present in particular columns.
             appendHeaderRow().generateFilterComponents(this, Person::class)
@@ -102,4 +106,15 @@ class CrudView: VerticalLayout(), View {
             UI.getCurrent().addWindow(this)
         }
     }
+}
+
+/**
+ * A helper function which adds a borderless button column with given [icon] to the grid. When clicked, [listener] is notified.
+ */
+fun <T> Grid<T>.addButtonColumn(icon: FontIcon, listener: (ClickableRenderer.RendererClickEvent<T>)->Unit): Grid.Column<T, String> {
+    val renderer = ButtonRenderer<T>(listener).apply { isHtmlContentAllowed = true }
+    val html = icon.html
+    val column = addColumn({ html }, renderer)
+    column.setStyleGenerator { ValoTheme.BUTTON_BORDERLESS }
+    return column
 }

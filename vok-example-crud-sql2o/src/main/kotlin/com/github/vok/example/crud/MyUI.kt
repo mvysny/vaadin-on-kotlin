@@ -15,6 +15,7 @@ import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.PushStateNavigation
 import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.ClassResource
+import com.vaadin.server.Page
 import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.Label
@@ -62,6 +63,7 @@ class MyUI : UI() {
         }
         navigator = Navigator(this, content as ViewDisplay)
         navigator.addProvider(autoViewProvider)
+        Page.getCurrent().styles.add(ClassResource("mystyles.css"))
     }
 
     override fun attach() {
