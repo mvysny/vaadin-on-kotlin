@@ -136,13 +136,11 @@ class LoginForm(appName: String) : VerticalLayout() {
         binder.bean = UsernamePassword()
 
         horizontalLayout {
-            width = "100%"
+            width = "100%"; isSpacing = false  // it's important to disable spacing when using align with JustifyContentMode: https://github.com/vaadin/vaadin-ordered-layout-flow/issues/54
             content { align(between, baseline) }
+
             h3("Welcome")
-            h4(appName) {
-                // workaround for https://github.com/vaadin/vaadin-ordered-layout-flow/issues/54
-                isExpand = true; textAlign = "right"
-            }
+            h4(appName)
         }
         horizontalLayout {
             width = "100%"
