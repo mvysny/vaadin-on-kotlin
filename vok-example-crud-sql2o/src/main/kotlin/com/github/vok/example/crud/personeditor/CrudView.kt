@@ -115,6 +115,6 @@ fun <T> Grid<T>.addButtonColumn(icon: FontIcon, listener: (ClickableRenderer.Ren
     val renderer = ButtonRenderer<T>(listener).apply { isHtmlContentAllowed = true }
     val html = icon.html
     val column = addColumn({ html }, renderer)
-    column.setStyleGenerator { "borderlessg" }
+    column.setStyleGenerator { "borderless" }
     return column
 }
