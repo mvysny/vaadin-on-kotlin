@@ -24,10 +24,6 @@ import com.vaadin.ui.themes.ValoTheme
  */
 @AutoView
 class CrudView: VerticalLayout(), View {
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-        personGrid.refresh()
-    }
-
     companion object {
         fun navigateTo() = navigateToView<CrudView>()
     }
