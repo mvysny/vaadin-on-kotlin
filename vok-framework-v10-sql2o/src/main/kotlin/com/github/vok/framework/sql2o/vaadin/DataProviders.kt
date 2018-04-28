@@ -1,6 +1,39 @@
 package com.github.vok.framework.sql2o.vaadin
 
+import com.github.vokorm.*
+import com.github.vokorm.dataloader.DataLoader
+import com.github.vokorm.dataloader.EntityDataLoader
+import com.github.vokorm.dataloader.SortClause
 import com.github.vokorm.dataloader.SqlDataLoader
+import com.vaadin.flow.data.provider.*
+import java.util.stream.Stream
+
+class DataLoaderAdapter<T : Any>(val loader: DataLoader<T>, val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+    override fun getId(item: T): Any = idResolver(item)
+    override fun toString() = "DataLoaderAdapter($loader)"
+    override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = loader.getCount(query?.filter?.orElse(null))
+    override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> {
+        val sortBy: List<SortClause> = query?.sortOrders?.map { SortClause(it.sorted, it.direction == SortDirection.ASCENDING) } ?: listOf()
+        val offset = query?.offset ?: 0
+        val limit = query?.limit ?: Int.MAX_VALUE
+        var endInclusive = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        if (endInclusive == Int.MAX_VALUE - 1) endInclusive = Int.MAX_VALUE
+        val list = loader.fetch(query?.filter?.orElse(null), sortBy, offset..endInclusive)
+        return list.stream()
+    }
+}
+
+/**
+ * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering
+ * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [sqlDataProvider].
+ *
+ * Example of use: `grid.dataProvider = Person.dataProvider`.
+ */
+inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
+    get() {
+        val entityDataProvider = DataLoaderAdapter(EntityDataLoader(T::class.java), { it.id!! })
+        return entityDataProvider.withConfigurableFilter2()
+    }
 
 /**
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
@@ -11,13 +44,13 @@ import com.github.vokorm.dataloader.SqlDataLoader
  * ```
  * data class CustomerAddress(val customerName: String, val address: String)
  *
- * val provider = SqlDataProvider(CustomerAddress::class.java, """select c.name as customerName, a.street || ' ' || a.city as address
+ * val provider = sqlDataProvider(CustomerAddress::class.java, """select c.name as customerName, a.street || ' ' || a.city as address
  *     from Customer c inner join Address a on c.address_id=a.id where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""", idMapper = { it })
  * ```
  *
  * (Note how select column names must correspond to field names in the `CustomerAddress` class)
  *
- * Now SqlDataProvider can hot-patch the `where` clause computed from Grid's filters into `{{WHERE}}` (as a simple string replacement),
+ * Now `sqlDataProvider` can hot-patch the `where` clause computed from Grid's filters into `{{WHERE}}` (as a simple string replacement),
  * and the `order by` and `offset`/`limit` into the `{{ORDER}}` and `{{PAGING}}`, as follows:
  *
  * * `{{WHERE}}` will be replaced by something like this: `"and name=:pqw5as and age>:p123a"` - note the auto-generated parameter
@@ -40,10 +73,8 @@ import com.github.vokorm.dataloader.SqlDataLoader
  * @param T the type of the holder class.
  * @author mavi
  */
-class SqlDataProvider<T: Any>(val clazz: Class<T>,
-                              val sql: String,
-                              val params: Map<String, Any?> = mapOf(),
-                              val idMapper: (T)->Any) : DataLoaderAdapter<T>(SqlDataLoader<T>(clazz, sql, params)) {
-    override fun getId(item: T): Any = idMapper(item)
-    override fun toString() = "SqlDataProvider($clazz:$sql($params))"
-}
+fun <T: Any> sqlDataProvider(clazz: Class<T>,
+                             sql: String,
+                             params: Map<String, Any?> = mapOf(),
+                             idMapper: (T)->Any) : VokDataProvider<T>
+        = DataLoaderAdapter(SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
