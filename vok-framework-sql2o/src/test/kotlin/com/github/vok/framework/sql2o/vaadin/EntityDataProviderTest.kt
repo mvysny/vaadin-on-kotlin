@@ -6,6 +6,7 @@ import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.withAllDatabases
 import com.github.vok.karibudsl.getAll
 import com.github.vokorm.db
+import com.github.vokorm.filter
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import kotlin.streams.toList

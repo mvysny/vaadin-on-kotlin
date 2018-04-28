@@ -6,6 +6,7 @@ import com.github.vok.karibudsl.asc
 import com.github.vok.karibudsl.desc
 import com.github.vok.karibudsl.getAll
 import com.github.vokorm.Filter
+import com.github.vokorm.filter
 import com.vaadin.data.provider.*
 import java.util.stream.Stream
 import kotlin.streams.toList

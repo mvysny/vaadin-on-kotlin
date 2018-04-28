@@ -5,8 +5,9 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.withAllDatabases
-import com.github.vokorm.databaseTableName
 import com.github.vokorm.db
+import com.github.vokorm.filter
+import com.github.vokorm.meta
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import com.vaadin.shared.data.sort.SortDirection
@@ -22,7 +23,7 @@ class SqlDataProviderTest : DynaTest({
 
         test("EmptyDataProvider") {
             val dp = SqlDataProvider(SelectResult::class.java,
-                """select p.id as id, p.name as name from ${Person::class.java.databaseTableName} p where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
+                """select p.id as id, p.name as name from ${Person.meta.databaseTableName} p where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
                 idMapper = { it.id })
 
             expect(0) { dp.size(Query()) }
@@ -45,7 +46,7 @@ class SqlDataProviderTest : DynaTest({
         test("overwriting parameters is forbidden") {
             expectThrows(IllegalArgumentException::class) {
                 val dp = SqlDataProvider(SelectResult::class.java,
-                    """select p.id as id, p.name as name from ${Person::class.java.databaseTableName} p where age > :age {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
+                    """select p.id as id, p.name as name from ${Person.meta.databaseTableName} p where age > :age {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
                     mapOf("age" to 25),
                     { it.id })
                 val f = filter<SelectResult> { "age<:age"("age" to 48) }
@@ -57,7 +58,7 @@ class SqlDataProviderTest : DynaTest({
         test("parametrized DP") {
             db { (0..50).forEach { Person(name = "name $it", age = it).save() } }
             val dp = SqlDataProvider(SelectResult::class.java,
-                """select p.id as id, p.name as name from ${Person::class.java.databaseTableName} p where age > :age {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
+                """select p.id as id, p.name as name from ${Person.meta.databaseTableName} p where age > :age {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}""",
                 mapOf("age" to 25),
                 { it.id })
             val f = filter<SelectResult> { "age<:age_f"("age_f" to 48) }
