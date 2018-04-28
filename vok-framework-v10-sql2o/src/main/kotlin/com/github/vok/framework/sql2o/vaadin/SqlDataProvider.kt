@@ -1,13 +1,6 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.vokorm.Filter
-import com.github.vokorm.db
-import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
-import com.vaadin.flow.data.provider.Query
-import com.vaadin.flow.data.provider.QuerySortOrder
-import com.vaadin.flow.data.provider.SortDirection
-import java.sql.ResultSet
-import java.util.stream.Stream
+import com.github.vokorm.dataloader.SqlDataLoader
 
 /**
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
@@ -47,75 +40,10 @@ import java.util.stream.Stream
  * @param T the type of the holder class.
  * @author mavi
  */
-class SqlDataProvider<T: Any>(val clazz: Class<T>, val sql: String, val params: Map<String, Any?> = mapOf(), val idMapper: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+class SqlDataProvider<T: Any>(val clazz: Class<T>,
+                              val sql: String,
+                              val params: Map<String, Any?> = mapOf(),
+                              val idMapper: (T)->Any) : DataLoaderAdapter<T>(SqlDataLoader<T>(clazz, sql, params)) {
     override fun getId(item: T): Any = idMapper(item)
     override fun toString() = "SqlDataProvider($clazz:$sql($params))"
-
-    override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = db {
-        val q: org.sql2o.Query = con.createQuery(query.computeSQL(true))
-        params.entries.forEach { (name, value) -> q.addParameter(name, value) }
-        q.fillInParamsFromFilters(query)
-        val count: Int = q.executeScalar(Int::class.java) ?: 0
-        count
-    }
-
-    override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> = db {
-        val q = con.createQuery(query.computeSQL(false))
-        params.entries.forEach { (name, value) -> q.addParameter(name, value) }
-        q.fillInParamsFromFilters(query)
-        val list = q.executeAndFetch(clazz)
-        list.stream()
-    }
-
-    private fun org.sql2o.Query.fillInParamsFromFilters(query: Query<T, Filter<T>?>?): org.sql2o.Query {
-        val filters: Filter<T> = query?.filter?.orElse(null) ?: return this
-        val params: Map<String, Any?> = filters.getSQL92Parameters()
-        params.entries.forEach { (name, value) ->
-            require(!this@SqlDataProvider.params.containsKey(name)) { "Filters tries to set the parameter $name to $value but that parameter is already forced by SqlDataProvider to ${params[name]}: filter=$filters dp=${this@SqlDataProvider}" }
-            addParameter(name, value)
-        }
-        return this
-    }
-
-    /**
-     * Using [sql] as a template, computes the replacement strings for the `{{WHERE}}`, `{{ORDER}}` and `{{PAGING}}` replacement strings.
-     */
-    private fun Query<T, Filter<T>?>?.computeSQL(isCountQuery: Boolean): String {
-        // compute the {{WHERE}} replacement
-        var where: String = this?.filter?.orElse(null)?.toSQL92() ?: ""
-        if (where.isNotBlank()) where = "and $where"
-
-        // compute the {{ORDER}} replacement
-        var orderBy: String = if (isCountQuery) "" else this?.sortOrders?.toSql92OrderByClause() ?: ""
-        if (orderBy.isNotBlank()) orderBy = ", $orderBy"
-
-        // compute the {{PAGING}} replacement
-        val offset: Int? = this?.offset
-        val limit: Int? = this?.limit.takeUnless { it == Int.MAX_VALUE }
-        // MariaDB requires LIMIT first, then OFFSET: https://mariadb.com/kb/en/library/limit/
-        val paging: String = if (!isCountQuery && offset != null && limit != null) " LIMIT $limit OFFSET $offset" else ""
-
-        var s: String = sql.replace("{{WHERE}}", where).replace("{{ORDER}}", orderBy).replace("{{PAGING}}", paging)
-
-        // the count was obtained by a dirty trick - the ResultSet was simply scrolled to the last line and the row number is obtained.
-        // however, PostgreSQL doesn't seem to like this: https://github.com/mvysny/vaadin-on-kotlin/issues/19
-        // anyway there is a better way: simply wrap the select with "SELECT count(*) FROM (select)"
-        if (isCountQuery) {
-            // subquery in FROM must have an alias
-            s = "SELECT count(*) FROM ($s) AS Foo"
-        }
-        return s
-    }
-
-    /**
-     * Converts Vaadin [QuerySortOrder] to something like "name ASC".
-     */
-    private fun QuerySortOrder.toSql92OrderByClause(): String =
-        "$sorted ${if (direction == SortDirection.ASCENDING) "ASC" else "DESC"}"
-
-    /**
-     * Converts a list of Vaadin [QuerySortOrder] to something like "name DESC, age ASC". If the list is empty, returns an empty string.
-     */
-    private fun List<QuerySortOrder>.toSql92OrderByClause(): String =
-        joinToString { it.toSql92OrderByClause() }
 }
