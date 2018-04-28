@@ -4,7 +4,7 @@ plugins {
 
 apply plugin: 'kotlin'
 apply plugin: 'war'
-apply plugin: "org.akhikhl.gretty"
+apply plugin: "org.gretty"
 
 gretty {
     contextPath = '/'

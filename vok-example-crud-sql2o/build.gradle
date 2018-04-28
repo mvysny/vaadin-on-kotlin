@@ -1,6 +1,6 @@
 apply plugin: 'kotlin'
 apply plugin: 'war'
-apply plugin: "org.akhikhl.gretty"
+apply plugin: "org.gretty"
 
 gretty {
     contextPath = '/'
@@ -35,7 +35,7 @@ dependencies {
     testCompile "com.github.kaributesting:karibu-testing-v8:$kaributesting_version"
 
     // heroku app runner
-    testRuntime 'com.github.jsimone:webapp-runner:8.5.11.3'
+    testRuntime 'com.github.jsimone:webapp-runner:8.5.30.0'
 }
 
 // heroku
