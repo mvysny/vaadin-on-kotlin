@@ -458,7 +458,7 @@ class MyUI : UI {
                     dp.setFilter(filter)
                 }
             }
-            // wrap 'dp' in configurable filter data provider. This is so that the generated filter
+            // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
             // components would not overwrite filter set by the custom text field filter above.
             grid(dataProvider = dp.withConfigurableFilter2()) {
                 setSizeFull()
