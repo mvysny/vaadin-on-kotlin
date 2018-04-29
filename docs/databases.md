@@ -453,7 +453,7 @@ class MyUI : UI {
                 addValueChangeListener { e ->
                     val normalizedFilter = filter.trim().toLowerCase() + "%"
                     val filter: Filter<ReviewWithCategory>? = if (value.isNotBlank()) {
-                        filter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to filter) }
+                        filter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
                     } else null
                     dp.setFilter(filter)
                 }
