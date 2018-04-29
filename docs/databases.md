@@ -392,6 +392,8 @@ To load instances of this particular class, we will need to write our own finder
 use the Sql2o capabilities to map any SELECT result into an arbitrary class. We just have to make
 sure that the SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching):
 
+> Note: replace `\{` by `{`:
+
 ```kotlin
 data class PersonDept(var personName: String? = null, var deptName: String? = null) {
     companion object {
@@ -401,15 +403,14 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
         }
         
         val dataProvider: VokDataProvider<PersonDept> get() =
-                SqlDataProvider(SelectResult::class.java,
+                sqlDataProvider(SelectResult::class.java,
                     "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
-                    idMapper = { it }).withConfigurableFilter2()
+                    idMapper = { it })
     }
 }
 ```
 
-> Note: a bug in Github Pages prevents me to just write double-curly-braces: Please make sure
-to remove the backslashed `\{` and just replace them with just curly braces: `{`. The `SqlDataProvider` class
+> Note: The `sqlDataProvider` function
 contains extensive documentation on this topic, please consult the kdoc for that class in your IDE.
 
 The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
@@ -423,6 +424,48 @@ class MyUI : UI {
             addColumnFor(PersonDept::personName)
             addColumnFor(PersonDept::deptName)
             appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+        }
+    }
+}
+```
+
+### Sorting, Paging and SQL Filters
+
+Paging will simply work out-of-the box, since `sqlDataProvider` will simply replace `\{\{PAGING}}`
+with appropriate `LIMIT 30 OFFSET 0` stanzas.
+
+Sorting will also work out-of-the-box since `sqlDataProvider` will emit `, personName ASC` stanzas
+based on `PersonDept::personName` property names. This will naturally work properly since such columns are
+present in the SQL SELECT command.
+
+Simple auto-generated filters will also work since they will simply filter based on proper column names.
+
+We can of course create much more complex filters, say global filters that will find given text anywhere
+in the table, in all fields. Just create a `TextField` above the grid and in its value change listener simply
+set the new filter as shown below:
+
+```kotlin
+class MyUI : UI {
+    override fun init(request: VaadinRequest) {
+        verticalLayout {
+            val dp = PersonDept.dataProvider
+            textField {
+                addValueChangeListener { e ->
+                    val normalizedFilter = filter.trim().toLowerCase() + "%"
+                    val filter: Filter<ReviewWithCategory>? = if (value.isNotBlank()) {
+                        filter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to filter) }
+                    } else null
+                    dp.setFilter(filter)
+                }
+            }
+            // wrap 'dp' in configurable filter data provider. This is so that the generated filter
+            // components would not overwrite filter set by the custom text field filter above.
+            grid(dataProvider = dp.withConfigurableFilter2()) {
+                setSizeFull()
+                addColumnFor(PersonDept::personName)
+                addColumnFor(PersonDept::deptName)
+                appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+            }
         }
     }
 }
