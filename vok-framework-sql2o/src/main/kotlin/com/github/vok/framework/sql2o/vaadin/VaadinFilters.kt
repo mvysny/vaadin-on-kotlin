@@ -10,8 +10,10 @@ import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
+import com.vaadin.ui.HasValueChangeMode
 import com.vaadin.ui.components.grid.HeaderRow
 import kotlin.reflect.KClass
 import kotlin.streams.toList
@@ -34,16 +36,22 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
  * @param grid the owner grid.
  * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
+ * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
+ * typically only applies to inline filter
+ * components (most importantly [com.vaadin.ui.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])
+ * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
  */
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
                                                 filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java,
                                                     { grid.dataProvider as VokDataProvider<T> },
-                                                        SqlFilterFactory<T>())) {
+                                                        SqlFilterFactory<T>()),
+                                                valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY) {
     val properties: Map<String, PropertyDefinition<T, *>> = BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
     for (propertyId in grid.columns.mapNotNull { it.id }) {
         val property = properties[propertyId]
         val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
+        (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
         val cell = getCell(propertyId)
         if (field == null) {
             cell.text = ""  // this also removes the cell from the row
