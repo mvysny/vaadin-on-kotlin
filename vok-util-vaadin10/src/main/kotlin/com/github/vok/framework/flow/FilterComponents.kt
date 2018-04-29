@@ -191,11 +191,11 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
             if (value.isSingleItem) {
                 content.text = "[x] = ${value.max}"
             } else if (value.min != null && value.max != null) {
-                content.text = "${value.min} < [x] < ${value.max}"
+                content.text = "${value.min} ≤ [x] ≤ ${value.max}"
             } else if (value.min != null) {
-                content.text = "[x] >= ${value.min}"
+                content.text = "[x] ≥ ${value.min}"
             } else if (value.max != null) {
-                content.text = "[x] <= ${value.max}"
+                content.text = "[x] ≤ ${value.max}"
             }
         }
     }
