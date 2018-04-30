@@ -60,6 +60,21 @@ class DataProvidersTest : DynaTest({
         adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, filter { Person::age eq "foo" }))
         loader.checkCalled()
     }
+
+    group("ID retrieval") {
+        test("entitydp") {
+            expect(1L) { Person.dataProvider.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("entitydp with filter") {
+            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("sqldp") {
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("sqldp with filter") {
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+    }
 })
 
 val String.desc get() = SortClause(this, false)

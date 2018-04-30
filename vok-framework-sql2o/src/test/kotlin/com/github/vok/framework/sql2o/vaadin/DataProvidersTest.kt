@@ -1,7 +1,6 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectList
 import com.github.vok.framework.sql2o.Person
 import com.github.vokorm.Filter
 import com.github.vokorm.dataloader.DataLoader
@@ -9,7 +8,6 @@ import com.github.vokorm.dataloader.SortClause
 import com.github.vokorm.filter
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
-import com.vaadin.data.provider.QuerySortOrderBuilder
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({
@@ -61,6 +59,21 @@ class DataProvidersTest : DynaTest({
         adapter.size(Query(filter { Person::age eq "foo" }))
         adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, filter { Person::age eq "foo" }))
         loader.checkCalled()
+    }
+
+    group("ID retrieval") {
+        test("entitydp") {
+            expect(1L) { Person.dataProvider.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("entitydp with filter") {
+            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("sqldp") {
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+        test("sqldp with filter") {
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
     }
 })
 
