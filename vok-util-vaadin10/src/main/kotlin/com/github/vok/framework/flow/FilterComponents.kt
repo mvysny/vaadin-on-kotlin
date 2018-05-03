@@ -5,31 +5,12 @@ import com.github.vok.karibudsl.flow.*
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
-import com.vaadin.flow.component.grid.ColumnGroup
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.Binder
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
-
-/**
- * Currently the only way to add a component above current header. Very hacky and fragile; also highly limited:
- * * it is only possible to add the component *above* the current header, not below.
- * * only the first attempt will succeed; for any further updates the returned `ColumnGroup` must be used.
- * See https://github.com/vaadin/vaadin-grid-flow/issues/59 for more info.
- * @param header adds this component above the current header.
- * @return the column group which can be used to replace the header component.
- */
-fun Grid.Column<*>.appendHeaderAbove(header: Component): ColumnGroup {
-    val index = grid.element.indexOfChild(element)
-    check(index >= 0) { "This column $this is no longer attached to the Grid" }
-    grid.element.removeChild(element)
-    val columnGroup = ColumnGroup(grid, this)
-    grid.element.insertChild(index, columnGroup.element)
-    columnGroup.setHeader(header)
-    return columnGroup
-}
 
 /**
  * Used by filter components (such as [NumberInterval]) to create actual filter objects. The filters are expected to have properly

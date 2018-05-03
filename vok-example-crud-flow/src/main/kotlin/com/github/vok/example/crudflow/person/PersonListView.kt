@@ -41,7 +41,7 @@ class PersonListView : VerticalLayout() {
             addColumnFor(Person::maritalStatus)
             addColumnFor(Person::created, converter = { it?.toString() })
 
-            generateFilterComponents(Person::class)
+            appendHeaderRow().generateFilterComponents(this, Person::class)
         }
     }
 

@@ -2,7 +2,6 @@ package com.github.vok.framework.flow
 
 import com.github.vok.karibudsl.flow.DateInterval
 import com.github.vok.karibudsl.flow.DateRangePopup
-import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.icon.Icon
@@ -79,7 +78,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * the field's value to a filter.
      * @param property The bean property on which the filtering will be performed, not null.
      */
-    fun <C: Component, V> bind(field: HasValue<C, V?>, property: PropertyDefinition<T, V?>) {
+    fun <E: HasValue.ValueChangeEvent<V?>, V> bind(field: HasValue<E, V?>, property: PropertyDefinition<T, V?>) {
         val filterFieldWatcher = FilterFieldWatcher(field, property)
         field.addValueChangeListener(filterFieldWatcher)
     }
@@ -90,8 +89,8 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * @property property The bean property on which the filtering will be performed.
      * @param V the value type
      */
-    private inner class FilterFieldWatcher<C: Component, V>(private val field: HasValue<C, V?>, private val property: PropertyDefinition<T, V?>) :
-        HasValue.ValueChangeListener<C, V?> {
+    private inner class FilterFieldWatcher<E: HasValue.ValueChangeEvent<V?>, V>(private val field: HasValue<E, V?>,
+                                                                                private val property: PropertyDefinition<T, V?>) : HasValue.ValueChangeListener<E> {
 
         /**
          * The current container filter, may be null if no filtering is currently needed because the
@@ -103,7 +102,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
             valueChange()
         }
 
-        override fun onComponentEvent(event: HasValue.ValueChangeEvent<C, V?>) {
+        override fun valueChanged(event: E) {
             valueChange()
         }
 

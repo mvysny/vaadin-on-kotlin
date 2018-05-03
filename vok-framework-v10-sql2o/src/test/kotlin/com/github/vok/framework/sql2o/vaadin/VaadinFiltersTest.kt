@@ -22,7 +22,7 @@ class VaadinFiltersTest : DynaTest({
         grid.addColumnFor(Person::name)
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withFilter { Person::name eq "foo" }
         expectList() { grid.dataProvider!!.getAll() }
-        val filterComponents = grid.generateFilterComponents(Person::class)
+        val filterComponents = grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
 
         // now let's create another data provider
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withVOKFilterAdapter()
