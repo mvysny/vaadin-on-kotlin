@@ -1,6 +1,6 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.karibu.testing.MockVaadin
+import com.github.karibu.testing.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.karibudsl.flow.bind
 import com.github.vokorm.Entity

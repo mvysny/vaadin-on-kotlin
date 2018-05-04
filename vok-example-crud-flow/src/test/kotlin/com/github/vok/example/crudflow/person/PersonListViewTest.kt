@@ -1,6 +1,6 @@
 package com.github.vok.example.crudflow.person
 
-import com.github.karibu.testing.*
+import com.github.karibu.testing.v10.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crudflow.Bootstrap
