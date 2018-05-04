@@ -2,10 +2,9 @@ package com.github.vok.framework.flow
 
 import com.github.vok.framework.toDate
 import com.github.vok.karibudsl.flow.*
-import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.AbstractCompositeField
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
-import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.Binder
 import java.io.Serializable
@@ -102,7 +101,7 @@ data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
  *
  * The current numeric range is also displayed as the caption of the button.
  */
-class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>() {
+class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, NumberInterval<Double>>(null) {
     private lateinit var ltInput: TextField
     private lateinit var gtInput: TextField
     private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = NumberInterval(null, null) }
@@ -136,7 +135,7 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
                     set = button("Set") {
                         onLeftClick {
                             val value = binder.bean.copy()
-                            propagateValueOutwards(if (value.isUniversalSet) null else value)
+                            setModelValue(if (value.isUniversalSet) null else value, true)
                             updateCaption()
                             dialog.close()
                         }
@@ -144,7 +143,7 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
                     clear = button("Clear") {
                         onLeftClick {
                             binder.fields.forEach { it.clear() }
-                            propagateValueOutwards(null)
+                            setModelValue(null, true)
                             updateCaption()
                             dialog.close()
                         }
@@ -160,8 +159,8 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
         updateCaption()
     }
 
-    override fun propagateValueInwards(value: NumberInterval<Double>?) {
-        binder.bean = value?.copy() ?: NumberInterval<Double>(null, null)
+    override fun setPresentationValue(newPresentationValue: NumberInterval<Double>?) {
+        binder.bean = newPresentationValue?.copy() ?: NumberInterval<Double>(null, null)
         updateCaption()
     }
 
@@ -189,7 +188,7 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
         gtInput.isEnabled = !readOnly
     }
 
-    override fun initContent(): Component = content
+    override fun initContent(): Button = content
 
     override fun isReadOnly(): Boolean = !ltInput.isEnabled
 
