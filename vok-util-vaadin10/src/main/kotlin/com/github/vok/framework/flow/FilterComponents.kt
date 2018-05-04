@@ -63,10 +63,10 @@ interface FilterFactory<F> : Serializable {
 
 /**
  * A potentially open numeric range. If both [min] and [max] are `null`, then the interval accepts any number.
- * @property max the maximum accepted value, inclusive. If `null` then the numeric range has no upper limit.
  * @property min the minimum accepted value, inclusive. If `null` then the numeric range has no lower limit.
+ * @property max the maximum accepted value, inclusive. If `null` then the numeric range has no upper limit.
  */
-data class NumberInterval<T : Number>(var max: T?, var min: T?) : Serializable {
+data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
 
     /**
      * Creates a filter out of this interval, using given [filterFactory].
@@ -135,7 +135,8 @@ class NumberFilterPopup: CustomField<NumberFilterPopup, NumberInterval<Double>>(
                 horizontalLayout {
                     set = button("Set") {
                         onLeftClick {
-                            propagateValueOutwards(binder.bean.copy())
+                            val value = binder.bean.copy()
+                            propagateValueOutwards(if (value.isUniversalSet) null else value)
                             updateCaption()
                             dialog.close()
                         }
