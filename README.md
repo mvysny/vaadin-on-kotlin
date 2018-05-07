@@ -250,7 +250,7 @@ sample JPA-based application here: [vok-example-crud-jpa](vok-example-crud-jpa).
 
 Licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
-Copyright (c) 2004-2015 Martin Vysny
+Copyright (c) 2017-2018 Martin Vysny
 
 All rights reserved.
 
