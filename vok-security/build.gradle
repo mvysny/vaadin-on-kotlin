@@ -40,7 +40,7 @@ bintray {
     pkg {
         repo = 'vaadin-on-kotlin'
         name = 'vaadin-on-kotlin'
-        licenses = ['Apache-2.0']
+        licenses = ['MIT']
         vcsUrl = 'https://github.com/mvysny/vaadin-on-kotlin'
         publish = true
         publications = ['mavenJava']
