@@ -49,14 +49,14 @@ object BookingService {
 }
 ```
 
-The `object` thing is just a Kotlin word for singleton. Now you can simply call the function as
+The `object` keyword is just a Kotlin word for singleton. Now you can simply call the function as
 
 ```kotlin
 BookingService.book()
 ```
 
 Since it's a singleton, multiple threads may call the `book()` function
-at the same time. It is therefore important that the `book()` function does not store its computation (not even temporarily) in
+at the same time, on the same instance. It is therefore important that the `book()` function does not store its computation (not even temporarily) in
 some kind of a global variable, or into a field/property of the `BookingService`. If this is needed,
 simply turn the service into a class:
 
