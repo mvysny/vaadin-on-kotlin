@@ -4,7 +4,7 @@
 
 In a simple app it is enough for the UI to access the database directly, through
 the entity's `Dao`s. However, more complex app tends to have so-called
-*business logic code* which deals with the functionality.
+*business logic code* which deals with the app's intrinsic functionality.
 
 For example, in a fictional hotel booking system, a successful booking must ensure that:
 
