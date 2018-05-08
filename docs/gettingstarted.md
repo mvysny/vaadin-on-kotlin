@@ -1,6 +1,6 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-# Getting started with Vaadin-on-Kotlin
+# Getting started with Vaadin-on-Kotlin Vaadin 8
 
 This guide covers getting up and running with Vaadin On Kotlin (VoK).
 
@@ -33,7 +33,7 @@ Vaadin lets you forget the web and program user interfaces much like you would p
 To learn Vaadin:
 
 * [Official Vaadin website](https://www.vaadin.com)
-* [Vaadin Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
+* [Vaadin 8 Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
 
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
 the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
@@ -131,17 +131,16 @@ can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
 
 The `vok-helloworld-app` directory has a number of files and folders that make up the
 structure of a VoK application. Most of the work in this tutorial will happen in the
-`src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and 
+`web/src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and
 folders:
 
 | File/Folder       | Purpose                                 |
 |-------------------|-----------------------------------------|
-| `src/main/kotlin` | Contains the source files of all of your Views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
-| `src/main/webapp` | Contains the Vaadin Theme (a SCSS-based theme which gets compiled to CSS). All Themes inherit from the [Valo Theme](https://vaadin.com/valo). JavaScript files, additional CSS files and images are also placed here.  |
-| `src/main/resources` | Contains the logger configuration file (`logback.xml`) |
+| `web/src/main/kotlin` | Contains the source files of all of your Views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
+| `web/src/main/webapp` | Contains the Vaadin Theme (a SCSS-based theme which gets compiled to CSS). All Themes inherit from the [Valo Theme](https://vaadin.com/valo). JavaScript files, additional CSS files and images are also placed here.  |
+| `web/src/main/resources` | Contains the logger configuration file (`logback.xml`) |
 | `build.gradle`    | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
 | `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
-| `src/test/kotlin` | Unit tests, fixtures, and other test apparatus. These are covered in @todo |
 | .gitignore        | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files. |
 
 ## 4 Hello, Vaadin-on-Kotlin!<a name="4"></a>

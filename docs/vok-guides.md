@@ -45,7 +45,7 @@ component-oriented approach we love from Vaadin 8.
 
 When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 
-* TBD
+* The [Getting Started](gettingstarted-v10.md) guide
 
 ## Building the UIs
 
