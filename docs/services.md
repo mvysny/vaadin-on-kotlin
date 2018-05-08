@@ -34,22 +34,34 @@ disadvantages, and therefore VoK is not using DI and is using a much simpler app
 
 ## The stateless service
 
-The fictional booking system above is just a recipe which needs to be followed, a set of steps to be performed. It has no state, apart
-from which part of the recipe we are executing now. We don't have any preparation steps which need to be followed in order
-for the function to work. The database can simply be accessed by the means of the `db {}` method (or via `Dao` methods) which
-can be called from anywhere. We can therefore simply create a *function* which performs the booking. Since we will probably
-have multiple functions dealing with the bookings (say, print a receipt when the guest leaves), we will *group* the functions
-in a single common class:
+The fictional booking system above is just a set of steps to be performed. The process does not have any state, at most couple of
+local variables. We don't have any preparation steps which need to be followed in order
+for the function to work. We don't have to run special steps to access the database since the database
+can simply be accessed by the means of the `db{}` block or via `Dao` methods which
+can be called from anywhere (read more about this in the [Accessing SQL databases](databases.md) Guide).
+
+We can therefore simply create a single standalone *function* which performs the booking; a set of such standalone functions
+can then form the *service layer*.
+
+We can also *group* functions which perform related tasks together. Say that we expect to have
+multiple functions dealing with the bookings; for example another function can handle printing of a receipt when the guest leaves.
+We can group such function in a single common class:
 
 ```kotlin
 object BookingService {
   fun book(from: LocalDate, to: LocalDate) {
     ...
   }
+  fun printReceiptAsPdf(bookingId: Long): ByteArray {
+    ...
+  }
 }
 ```
 
-The `object` keyword is just a Kotlin word for singleton. Now you can simply call the function as
+> **Note:** The `object` keyword is just a Kotlin word for singleton; since the functions do not need global state, we don't need multiple
+instances of the `BookingService`
+
+Now you can simply call the function as follows:
 
 ```kotlin
 BookingService.book()
