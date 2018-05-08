@@ -1,6 +1,8 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-# Vaadin-on-Kotlin Guides
+# Vaadin-on-Kotlin Guides for Vaadin 8
+
+Vaadin 8 is stable and battle-proven framework. Start here if you need to be production-ready.
 
 ## Getting started Guides
 
@@ -19,6 +21,38 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 Continue reading here to understand how exactly VoK accesses the database.
 
 * The [Accessing Databases Guide](databases.md)
+
+## Security
+
+Security is an important part of any web-based application. Please check the following resources for more information:
+
+* The [vok-security](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md) module description.
+
+## Testing
+
+* The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing)
+
+# Vaadin-on-Kotlin Guides for Vaadin 10
+
+Vaadin 10 is based on Web Components as opposed to Vaadin 8 (which is based
+on a GWT-based customized widget system), and hence the programming model
+tends to differ a bit.
+
+## Getting started Guides
+
+When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
+
+* TBD
+
+## Building the UIs
+
+* TBD
+
+## Database access guides
+
+Continue reading here to understand how exactly VoK accesses the database.
+
+* TBD
 
 ## Security
 

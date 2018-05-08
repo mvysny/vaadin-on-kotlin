@@ -26,15 +26,33 @@ In this example, we will have three roles, `administrator`, `bookkeeper` and `sa
 the admin user which will then create other users and assign the roles. We will then annotate Vaadin views
 so that `OrdersView` can only be viewed by the `sales` users:
 
+Vaadin 8:
+
 ```kotlin
 @AllowRoles("sales")
-class OrdersView : VerticalLayout(), View {}
+class OrdersView : VerticalLayout(), View { ... }
 
 @AllowRoles("administrator")
-class UsersView : VerticalLayout(), View {}
+class UsersView : VerticalLayout(), View { ... }
 
 @AllowRoles("bookkeeper", "administrator")
-class BookListView : VerticalLayout(), View {}
+class BookListView : VerticalLayout(), View { ... }
+```
+
+Vaadin 10:
+
+```kotlin
+@Route("orders", layout = MainLayout::class)
+@AllowRoles("sales")
+class OrdersView : VerticalLayout() { ... }
+
+@Route("users", layout = MainLayout::class)
+@AllowRoles("administrator")
+class UsersView : VerticalLayout() { ... }
+
+@Route("booklist", layout = MainLayout::class)
+@AllowRoles("bookkeeper", "administrator")
+class BookListView : VerticalLayout() { ... }
 ```
 
 The remaining rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
@@ -44,11 +62,30 @@ group. We therefore need to check whether the current is user is `sales` user, o
 order in question belongs to the
 currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
 
+Vaadin 8:
+
 ```kotlin
 @AllowAllUsers
 class OrderView : VerticalLayout(), View {
   override fun enter(event: ViewChangeListener.ViewChangeEvent) {
     val user: User = Session.loginManager.loggedInUser!!
+    val order: Order = Order.getById(event.parameterList[0].toLong())
+    val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
+    if (!authorized) {
+      throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf())
+    }
+    // .. rest of the code, init the view, show the details about the order
+  }
+}
+```
+
+Vaadin 10:
+
+```kotlin
+@AllowAllUsers
+class OrderView : VerticalLayout(), BeforeEnterObserver {
+  override fun beforeEnter(event: BeforeEnterEvent) {
+    val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @AllowAllUsers
     val order: Order = Order.getById(event.parameterList[0].toLong())
     val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
     if (!authorized) {
@@ -99,8 +136,9 @@ and your view must list exactly one of them otherwise it will be inaccessible:
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
 define more complex rules as a Kotlin code in the `View.enter()` which is invoked on navigation
-to that particular view.
-For example, the View checks e.g. whether given user has the right
+to that particular view. For Vaadin 10, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
+
+For example, the View may check e.g. whether given user has the right
 to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/com/github/vok/security/AccessRejectedException.kt) must be simply thrown.
 The exception is then caught by the Vaadin exception handler and either
 an error notification "access rejected" should be shown (Vaadin 8), or
