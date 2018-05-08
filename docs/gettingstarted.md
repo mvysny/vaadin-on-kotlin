@@ -218,8 +218,6 @@ class MyWelcomeView: VerticalLayout(), View {
             styleName = ValoTheme.LABEL_H1
         }
     }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
-    }
 }
 ```
 
@@ -357,8 +355,6 @@ class CreateArticleView: VerticalLayout(), View {
         }
         button("Save Article") 
     }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
-    }
 }
 ```
 If you restart the server refresh the page now, you'll see the exact same form from our example above.
@@ -399,8 +395,6 @@ class CreateArticleView: VerticalLayout(), View {
                 }
             }
         }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
 }
 ```
@@ -906,8 +900,6 @@ class CreateArticleView: VerticalLayout(), View {
         editor = articleEditor {
             article = Article()
         }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
     }
 }
 ```
