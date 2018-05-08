@@ -161,14 +161,13 @@ When we tie our services to the `Session`, we are effectively building up a *rep
 It is extremely easy to look up the service we need, simply by using IDE's auto-completion features: simply type in
 `Session.` and press `Ctrl+Space` and your IDE will list all extension properties including the `loginService`.
 
-This has the following advantages:
+This approach has the following advantages:
 
 * Different modules can attach different services to the `Session` object, thus building up a service repository. This way you can
   reuse services within different apps.
 * The IDE's auto-completion will provide the searchable list of all services. No IDE plugin is needed for this since the extension property
   is a language feature of the Kotlin programming language.
-* The type safety ensures that the service exists in compile time. If it doesn't, your program won't compile. This is superior to
-  runtime configuration as provided by Spring, since you don't have to wait 2 minutes for your app to boot up and crash only because
-  your misconfigured Spring annotations somewhere.
-* No proxy classes and no runtime class enhancement magic. No 30+ stack traces through proxies/interceptors/DI container internals. Fast, simple
-  and reliable.
+* The type safety ensures that the service exists in compile time and is accessible. If it isnt't, your program won't compile.
+  This is superior to runtime configuration since the configuration errors show up much faster, at compile time.
+* There are no proxy classes and there is no runtime class enhancement magic; hence there are no 30+ stack traces through
+  proxies/interceptors/DI container internals. Because of that, this approach is fast, simple and reliable.
