@@ -27,8 +27,9 @@ The best way to have this kind of functionality in one place only is to extract 
 > When using *dependency injection* (DI) containers such as Spring and JavaEE, you would typically turn the
 services into a bean, so that you can have access to the database. However, your UI components can't simply obtain bean
 instances - you can't just instantiate the bean yourself since Spring wouldn't inject stuff into the bean.
-You need to have them injected and hence you need to turn all of your UI components into beans, which
-is simply absurd. That's why VoK is not using DI and we use a much simpler approach.
+You need to either obtain the instances from a global `ApplicationContext` instance, or have them injected into the View
+and provide them for all data-bound UI components, or turn all of your UI components into beans. All of these solutions have
+disadvantages, and therefore VoK is not using DI and is using a much simpler approach.
 
 ## The stateless service
 
@@ -39,7 +40,40 @@ can be called from anywhere. We can therefore simply create a *function* which p
 have multiple functions dealing with the bookings (say, print a receipt when the guest leaves), we will *group* the functions
 in a single common class:
 
-TBD
+```kotlin
+object BookingService {
+  fun book(from: LocalDate, to: LocalDate) {
+    ...
+  }
+}
+```
+
+The `object` thing is just a Kotlin word for singleton. Now you can simply call the function as
+
+```kotlin
+BookingService.book()
+```
+
+Since it's a singleton, multiple threads may call the `book()` function
+at the same time. It is therefore important that the `book()` function does not store its computation (not even temporarily) in
+some kind of a global variable, or into a field/property of the `BookingService`. If this is needed,
+simply turn the service into a class:
+
+```kotlin
+class BookingService {
+  fun book(from: LocalDate, to: LocalDate) {
+    ...
+  }
+}
+```
+
+To call it, just call
+
+```kotlin
+BookingService().book()
+```
+
+Creating a new instance of an object is very cheap on current JVMs so there is no worry for performance.
 
 ## The stateful service
 
@@ -122,7 +156,7 @@ class LoginView : VerticalLayout() {
 }
 ```
 
-When we tie our services to the `Session`, we are effectively building up a *repository* of services, or a *directory*.
+When we tie our services to the `Session`, we are effectively building up a *repository* (a *directory*) of services.
 It is extremely easy to look up the service we need, simply by using IDE's auto-completion features: simply type in
 `Session.` and press `Ctrl+Space` and your IDE will list all extension properties including the `loginService`.
 
