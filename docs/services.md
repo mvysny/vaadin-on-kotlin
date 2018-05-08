@@ -24,10 +24,11 @@ from multiple parts of the code base:
 
 The best way to have this kind of functionality in one place only is to extract it into a *service*.
 
-> When using *dependency injection* (DI) containers such as Spring and JavaEE, you would typically turn the
+> **Note:** When using *dependency injection* (DI) containers such as Spring and JavaEE, you would typically turn the
 services into a bean, so that you can have access to the database. However, your UI components can't simply obtain bean
 instances - you can't just instantiate the bean yourself since Spring wouldn't inject stuff into the bean.
-You need to either obtain the instances from a global `ApplicationContext` instance, or have them injected into the View
+>
+> You need to either obtain the instances from a global `ApplicationContext` instance, or have them injected into the View
 and provide them for all data-bound UI components, or turn all of your UI components into beans. All of these solutions have
 disadvantages, and therefore VoK is not using DI and is using a much simpler approach.
 
