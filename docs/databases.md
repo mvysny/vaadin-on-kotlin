@@ -22,7 +22,7 @@ mandates - you can read more about the topic in the [Why Not JPA](http://mavi.lo
 
 ## Basic CRUD ORM
 
-The above horrific acronym stands for inserting, querying and deleting rows from your database,
+The above scary acronym stands for inserting, querying and deleting rows from your database,
 and mapping those rows into Kotlin objects so that they are easy to work with.
 
 The "CRUD" stands for [Create, read, update and delete](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) -
