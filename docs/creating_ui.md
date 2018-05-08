@@ -3,7 +3,7 @@
 # Creating UIs
 
 Vaadin-on-Kotlin uses the [Vaadin Framework](https://vaadin.com/docs/v8/framework/introduction/intro-overview.html) to deliver the UI.
-Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT.
+Vaadin lets you forget the web and develop user interfaces much like you would develop a desktop application with conventional Java toolkits such as AWT, Swing, or SWT.
 You add components such as Button and TextField into the page, nesting them in layouts which then position the components.
 
 > To learn Vaadin:
@@ -31,8 +31,6 @@ class WelcomeView: VerticalLayout(), View {
             }
         }
     }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-    }
 }
 ```
 
@@ -58,8 +56,6 @@ class WelcomeView: VerticalLayout(), View {
                 Notification.show("Clicked")
             }
         }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
     }
 }
 ```
@@ -88,8 +84,6 @@ class WelcomeView: VerticalLayout(), View {
                 Notification.show("Hello, ${nameField.value} of age ${ageField.value}")
             }
         }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
     }
 }
 ```
@@ -127,8 +121,6 @@ class WelcomeView: VerticalLayout(), View {
                 Notification.show(form.greeting)
             }
         }
-    }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
     }
 }
 ```
