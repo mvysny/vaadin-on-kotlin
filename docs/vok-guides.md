@@ -35,8 +35,10 @@ Security is an important part of any web-based application. Please check the fol
 # Vaadin-on-Kotlin Guides for Vaadin 10
 
 Vaadin 10 is based on Web Components as opposed to Vaadin 8 (which is based
-on a GWT-based customized widget system), and hence the programming model
-tends to differ a bit.
+on a GWT-based customized widget system). The programming model
+tends to differ a bit from Vaadin 8, and that's why there is a separate set of guides
+for Vaadin 8 and for Vaadin 10. Don't worry though - Vaadin 10 still uses the
+component-oriented approach we love from Vaadin 8.
 
 ## Getting started Guides
 
