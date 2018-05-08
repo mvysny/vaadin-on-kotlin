@@ -144,34 +144,24 @@ This is a lot of code to write for every single service. Luckily, we can do bett
 val Session.loginService: LoginService get() = getOrPut { LoginService() }
 ```
 
-Now you will simply call the login service as follows:
+Now you will simply call the login service as follows (an excerpt of the `LoginView`):
 
 ```kotlin
-class LoginView : VerticalLayout() {
-    init {
-        setSizeFull()
-        loginForm("VoK Security Demo") {
-            alignment = Alignment.MIDDLE_CENTER
-            (content as VerticalLayout).label("Log in as user/user or admin/admin")
-
-            onLogin { username, password ->
-                val user = User.findByUsername(username)
-                if (user == null) {
-                    usernameField.componentError = UserError("The user does not exist")
-                } else if (!user.passwordMatches(password)) {
-                    passwordField.componentError = UserError("Invalid password")
-                } else {
-                    Session.loginService.login(user)
-                }
-            }
-        }
+onLogin { username, password ->
+    val user = User.findByUsername(username)
+    if (user == null) {
+        usernameField.componentError = UserError("The user does not exist")
+    } else if (!user.passwordMatches(password)) {
+        passwordField.componentError = UserError("Invalid password")
+    } else {
+        Session.loginService.login(user)
     }
 }
 ```
 
-When we tie our services to the `Session`, we are effectively building up a *repository* (a *directory*) of services.
-It is extremely easy to look up the service we need, simply by using IDE's auto-completion features: simply type in
-`Session.` and press `Ctrl+Space` and your IDE will list all extension properties including the `loginService`.
+When we 'extend' the `Session` object with services, we are effectively building up a *repository* (a *directory*) of services.
+This directory can be iterated in development time, simply by using IDE's auto-completion features. In your IDE, you simply type in
+the "`Session.`" stanza, press the `Ctrl+Space` keys and your IDE will list all extension properties including the `loginService`.
 
 This approach has the following advantages:
 
