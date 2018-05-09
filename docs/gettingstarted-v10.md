@@ -137,7 +137,7 @@ folders:
 | File/Folder       | Purpose                                 |
 |-------------------|-----------------------------------------|
 | `web/src/main/kotlin` | Contains the source files of all of your views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
-| `web/src/main/webapp` | Contains the basic CSS file
+| `web/src/main/webapp` | Contains the 'Chuck Norris' image file
 | `web/src/main/resources` | Contains the logger configuration file (`logback.xml`) |
 | `build.gradle`    | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
 | `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
@@ -159,4 +159,69 @@ $ ./gradlew clean web:appRun
 This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
  to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
-TBD
+![Welcome VoK](images/welcome_vok_v10.png)
+
+> **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped
+you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $.
+
+> **Note:** Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
+ running `./gradlew build`.
+
+The "Welcome aboard" page is the smoke test for a new VoK application: it makes sure that you
+have your software configured correctly enough to serve a page.
+
+### 4.2 Say "Hello", Vaadin
+
+To get VoK saying "Hello", you need to create a route.
+
+A route's purpose is to provide a Vaadin Component (usually a layout containing other components), which then interacts with the user.
+The Route Registry decides which view receives which requests. Usually there is exactly one route to a view. You can collect the data
+to be displayed right in the view itself (for small applications), or you can define so-called Service layer
+(a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
+VoK however does not enforce this, and we will not use this pattern in the tutorial.
+
+All Vaadin Components have two parts:
+
+* Their JavaScript-based client side Web Component which you usually can not use directly;
+* A server side class which you access from your code.
+
+For example, a Button Web Component ([`vaadin-button`](https://vaadin.com/components/vaadin-button)) contains the logic to send the notification about the mouse click
+to all JavaScript listeners; server-side `Button` registers the JavaScript listener, transfers the event server-side and allows you to register server-side listeners which listen for button clicks.
+
+Another example: [`vaadin-grid`](https://vaadin.com/components/vaadin-grid) shows a list of data in tabular fashion; it performs scrolling and fetching of the data as the user scrolls, via a data provider.
+Server-side `Grid` allows you to set the `DataProvider` which will actually fetch the data, from the database or from anywhere, depending on how you implement it.
+
+To create a new view, all that's needed is to create a Kotlin class which is annotated with the `@Route` annotation and extends
+some Vaadin Component.
+
+Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make sure it looks like follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("")
+class MyWelcomeView: VerticalLayout() {
+    init {
+        h1("Hello, Vaadin-on-Kotlin!")
+    }
+}
+```
+
+### 4.3 Setting the Application Home Page
+Now that we have made the view, we need to tell VoK when we want "Hello, Vaadin-on-Kotlin!"
+to show up. In our case, we want it to show up when we navigate to the root URL of our site,
+[http://localhost:8080](http://localhost:8080). At the moment, "Welcome aboard" is occupying that spot.
+
+Open up the `WelcomeView.kt` file and change the `@Route("")` annotation to the following:
+`@Route("old-welcome")`. This will map the original "Welcome aboard" page to
+[http://localhost:8080/old-welcome](http://localhost:8080/old-welcome) , making space for our new Hello page.
+
+Having the `@Route("")` on `MyWelcomeView` will tell the Vaadin Route Registry to map requests to the root of the application to the `MyWelcomeView` view.
+
+Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
+message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
+that this new route is indeed going to `MyWelcomeView` and is rendering the view correctly.

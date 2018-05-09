@@ -194,7 +194,7 @@ For example, a Button client-side (`VButton`) contains the logic to send the not
 server-side; server-side `Button` allows you to register listeners which listen for button clicks.
 
 Another example: `VGrid` shows a list of data in tabular fashion; it performs scrolling and fetching of the data as the user scrolls, via the Connector.
-Server-side `Grid` allows you to set the `DataSource` which will actually fetch the data, from the database or from anywhere, depending on how you implement it.
+Server-side `Grid` allows you to set the `DataProvider` which will actually fetch the data, from the database or from anywhere, depending on how you implement it.
 
 To create a new View, all that's needed is to create a Kotlin class which implements the `View` interface and extends
 some Vaadin Component. 
