@@ -768,3 +768,118 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
 And here's how our app looks so far:
 
 ![Article List View](images/article_list_view_v10.png)
+
+### 5.12 Creating components to clean up duplication in views
+
+Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact,
+they both share the same code for displaying the form.
+Let's remove this duplication by using a common component.
+
+Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with the following content:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+
+class ArticleEditor : VerticalLayout() {
+    private val binder = beanValidationBinder<Article>()
+    var article: Article? = null
+        set(value) {
+            field = value
+            if (value != null) binder.readBean(value)
+        }
+
+    init {
+        isMargin = false
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article") {
+            onLeftClick { event ->
+                val article = article!!
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                }
+            }
+        }
+        routerLink(null, "Back", ArticlesView::class)
+    }
+}
+
+fun HasComponents.articleEditor(block: ArticleEditor.()->Unit = {}) = init(ArticleEditor(), block)
+```
+
+This is just an ordinary Vaadin component which you can insert anywhere into your View. Its API consists of a single public
+property named `article`. When you assign this property, the `ArticleEditor` will populate the fields and the user will be
+able to edit the article.
+When you press the "Save Article" button, the `ArticleEditor` component will either create a new article, or update an existing one.
+
+The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to
+build Vaadin UIs in a structured way, using purely Kotlin code.
+This technique is called DSL (Domain Specific Language). The name fits - in a way we have constructed
+a 'language' used to create Vaadin UIs. You can find more information about the Kotlin DSL at the [Kotlin Type-Safe Builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
+
+Using type-safe builders or DSL has the advantage that the Kotlin compiler will check
+for typos, and the Kotlin IDEA plugin will help us with the auto-completion.
+
+> **Note:** The [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library actually defines such builder functions for every Vaadin component.
+You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/vok/karibudsl/Basic.kt) file
+for the definitions of the sources for the `button` and `textField` builder methods.
+
+Now, let's update the `CreateArticleView.kt` view to use this new component, rewriting it completely:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("create-article")
+class CreateArticleView: VerticalLayout() {
+    private val editor: ArticleEditor
+    init {
+        h1("New Article")
+        editor = articleEditor {
+            article = Article()
+        }
+    }
+}
+```
+
+Then do the same for the `EditArticleView.kt` view:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("edit-article")
+class EditArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private val editor: ArticleEditor
+    init {
+        h1("Edit Article")
+        editor = articleEditor()
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        editor.article = Article.getById(articleId!!)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(EditArticleView::class.java, articleId)
+    }
+}
+```
+
