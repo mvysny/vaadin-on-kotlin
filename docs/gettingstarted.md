@@ -269,7 +269,7 @@ We can now implement the REST endpoint for REST clients to access the article re
 > **Note:** This step is completely optional and is actually not used by Vaadin, since
 Vaadin connectors use its internal JSON protocol (called UIDL) to communicate with components.
 Having REST may come handy though, since we can use it to examine the state of the database
-(using curl or wget).
+(using the `curl` or `wget` tools).
 
 Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which will look as follows:
 

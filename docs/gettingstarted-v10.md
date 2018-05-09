@@ -225,3 +225,41 @@ Having the `@Route("")` on `MyWelcomeView` will tell the Vaadin Route Registry t
 Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
 that this new route is indeed going to `MyWelcomeView` and is rendering the view correctly.
+
+## 5 Getting Up and Running
+
+Now that you've seen how to create a view, let's create something with a bit more substance.
+
+In the Blog application, you will now create a new database table, or in REST terms, a resource. A resource is the term used
+for a collection of similar objects, such as articles, people or animals. You can create,
+read, update and destroy items for a resource and these operations are referred to as
+CRUD operations.
+
+VoK provides a resources method which can be used to declare a standard REST resource. But first, let us define the article.
+Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vokorm.*
+
+data class Article(
+        override var id: Long? = null,
+
+        var title: String? = null,
+
+        var text: String? = null
+) : Entity<Long> {
+    companion object : Dao<Article>
+}
+```
+
+This will define a so-called entity class, which basically represents a row in the "Article" database table.
+
+We can now implement the REST endpoint for REST clients to access the article resource.
+
+> **Note:** This step is completely optional and is actually not used by Vaadin, since
+Vaadin Flow uses its own internal JSON protocol to communicate with components.
+Having REST may come handy though, since we can use it to examine the state of the database
+(using the `curl` or `wget` tools).
+
