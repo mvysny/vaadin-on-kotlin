@@ -1106,3 +1106,247 @@ $ curl localhost:8080/rest/articles/1/comments
 [{"id":1,"commenter":"A buddy programmer","body":"I like Vaadin-on-Kotlin, too!"}]
 ```
 
+### 6.4 Writing a view
+
+Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed.
+
+So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.*
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("article")
+class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private lateinit var article: Article
+    private val editLink: RouterLink
+    private lateinit var title: Text
+    private lateinit var text: Text
+    private val comments: Div
+    private val commentBinder = beanValidationBinder<Comment>()
+    private lateinit var createComment: Button
+    init {
+        div {
+            strong("Title: ")
+            this@ArticleView.title = text("")
+        }
+        div {
+            strong("Text: ")
+            this@ArticleView.text = text("")
+        }
+        p("Comments")
+        comments = div()
+        p("Add a comment:")
+        textField("Commenter:") {
+            bind(commentBinder).bind(Comment::commenter)
+        }
+        textField("Body:") {
+            bind(commentBinder).bind(Comment::body)
+        }
+        createComment = button("Create") {
+            onLeftClick { createComment() }
+        }
+        editLink = routerLink(null, "Edit")
+        routerLink(text = "Back", viewType = ArticlesView::class)
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        article = Article.getById(articleId!!)
+        title.text = article.title
+        text.text = article.text
+        editLink.setRoute(EditArticleView::class, articleId)
+    }
+
+    private fun createComment() {
+        val comment = Comment()
+        if (commentBinder.validate().isOk && commentBinder.writeBeanIfValid(comment)) {
+            comment.article_id = article.id
+            comment.save()
+            refreshComments()
+            commentBinder.readBean(Comment())  // this clears the comment fields
+        }
+    }
+    private fun refreshComments() {
+        comments.removeAll()
+        article.comments.getAll().forEach { comment ->
+            comments.html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+        }
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+    }
+}
+```
+
+This adds a form on the `Article` show page that creates a new comment, by calling the `comment.save()` code.
+
+Once we have made the new comment, we need to stay on the page of the original article. That's why there is no
+`navigate` call in the `createComment()` function. However, since the page does not reload (remember we use the single-page-framework),
+we need to refresh the comments ourselves. See the `comments` div? We will populate this div with a html-formatted list of all comments.
+This exactly is done by the `refreshComments()` function.
+
+Now you can add articles and comments to your blog and have them show up in the right places.
+
+![Create and List Comments](images/comments_create_list.png)
+
+> **Note:** in the `refreshComments()` the `getAll()` function will re-fetch the fresh list of `comments`; the comments are not cached
+in the `Article.comments` field. If you need to access the comment list multiple times, it is best to store the list of comments
+into a variable.
+
+## 7 Refactoring
+
+Now that we have articles and comments working, take a look at the `web/src/main/kotlin/com/example/vok/ArticleView.kt` view.
+It is getting long and awkward. We can create reusable components to clean it up.
+
+### 7.1 The Comments Component
+
+First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
+in the future, the `div` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+
+class CommentsComponent : VerticalLayout() {
+    var articleId: Long = 0L
+        set(value) { field = value; refresh() }
+
+    private val comments: VerticalLayout
+    init {
+        isMargin = false
+        p("Comments")
+        comments = verticalLayout()
+    }
+
+    fun refresh() {
+        comments.removeAll()
+        Article.getById(articleId).comments.getAll().forEach { comment ->
+            comments.div {
+                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+            }
+        }
+    }
+}
+// the extension function which will allow us to use CommentsComponent inside a DSL
+fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+```
+
+The component has a handy property `articleId` which, upon setting, will populate itself with comments
+for that particular article.
+
+We also need the means to include the `CommentsComponent` component into the DSL, and thus we have also introduced
+the DSL extension method as well. The extension function simply calls the `init()` function, which performs the following things:
+* Inserts the newly created component (in this case, the `CommentsComponent`) into the parent layout;
+* Calls `block` to optionally allow us to configure the component further.
+
+You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin Part 4](http://mavi.logdown.com/posts/1493730) tutorial.
+
+### 7.2 Converting the Comments Form to a component
+
+Let us also move that new comment section out to its own component. Create the file named
+`web/src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+
+class NewCommentForm : VerticalLayout() {
+    var commentCreatedListener: ()->Unit = {}
+    lateinit var article: Article
+    private val commentBinder = beanValidationBinder<Comment>()
+    private val createComment: Button
+    init {
+        text("Add a comment:")
+        textField("Commenter:") {
+            bind(commentBinder).bind(Comment::commenter)
+        }
+        textField("Body:") {
+            bind(commentBinder).bind(Comment::body)
+        }
+        createComment = button("Create") {
+            onLeftClick { createComment() }
+        }
+    }
+
+    private fun createComment() {
+        val comment = Comment()
+        if (commentBinder.validate().isOk && commentBinder.writeBeanIfValid(comment)) {
+            comment.article_id = article.id
+            comment.save()
+            commentBinder.readBean(Comment())  // this clears the comment fields
+            commentCreatedListener()
+        }
+    }
+}
+fun HasComponents.newCommentForm(block: NewCommentForm.()->Unit = {}) = init(NewCommentForm(), block)
+```
+
+The component handles the comment creation now. In order for the component to work properly, the article for which the comment is to be created must be set.
+Also, when the component creates the comment, it needs to notify the `ArticleView` about this fact. This is done by the means of the
+`commentCreatedListener` listener which the component calls upon comment creation. Now, let's refactor the `ArticleView.kt`
+to make use of the `NewCommentForm` component, and register itself to `NewCommentForm` as a listener:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.*
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("article")
+class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private val editLink: RouterLink
+    private lateinit var title: Text
+    private lateinit var text: Text
+    private val comments: CommentsComponent
+    private val newComment: NewCommentForm
+    init {
+        div {
+            strong("Title: ")
+            this@ArticleView.title = text("")
+        }
+        div {
+            strong("Text: ")
+            this@ArticleView.text = text("")
+        }
+        comments = commentsComponent()
+        newComment = newCommentForm {
+            commentCreatedListener = { comments.refresh() }
+        }
+        editLink = routerLink(null, "Edit")
+        routerLink(text = "Back", viewType = ArticlesView::class)
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        val article = Article.getById(articleId!!)
+        newComment.article = article
+        comments.articleId = articleId
+        title.text = article.title
+        text.text = article.text
+        editLink.setRoute(EditArticleView::class, articleId)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+    }
+}
+```
