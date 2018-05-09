@@ -1068,3 +1068,41 @@ appear in `Article.toString()`, so that logging a newly created article (which c
 Computed properties also do not appear in the JSON output as returned by the REST services - this way we can prevent polluting of the REST JSON
 article output with all comments.
 
+### 6.3 Exposing Comments via REST
+
+You can expose the comments via the REST interface. This is completely optional and is not used by Vaadin in any way,
+it may just be handy to check your database status via the `curl` tool. Edit `ArticleRest.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.getAll
+import com.github.vokorm.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+
+@Path("/articles")
+class ArticleRest {
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getAll(): List<Article> = Article.findAll()
+
+    @GET
+    @Path("/{id}/comments")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments.getAll()
+}
+```
+
+Now, you can run curl in your terminal:
+```bash
+$ curl localhost:8080/rest/articles/1/comments
+[{"id":1,"commenter":"A buddy programmer","body":"I like Vaadin-on-Kotlin, too!"}]
+```
+
