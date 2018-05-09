@@ -883,3 +883,135 @@ class EditArticleView: VerticalLayout(), HasUrlParameter<Long> {
 }
 ```
 
+### 5.13 Deleting Articles
+
+We're now ready to cover the "D" part of CRUD, deleting articles from the database. To delete the article, all that's
+needed is to call `delete()` in the article from appropriate place.
+
+We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything together:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.dataProvider
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.data.renderer.NativeButtonRenderer
+import com.vaadin.flow.router.*
+
+@Route("articles")
+class ArticlesView: VerticalLayout(), AfterNavigationObserver {
+    private val grid: Grid<Article>
+    init {
+        setSizeFull()
+        h1("Listing Articles")
+        routerLink(text = "New Article", viewType = CreateArticleView::class)
+        grid = grid(dataProvider = Article.dataProvider) {
+            isExpand = true; setSizeFull()
+            addColumnFor(Article::id)
+            addColumnFor(Article::title)
+            addColumnFor(Article::text)
+            addColumn(NativeButtonRenderer<Article>("Show", { ArticleView.navigateTo(it.id!!) }))
+            addColumn(NativeButtonRenderer<Article>("Edit", { EditArticleView.navigateTo(it.id!!) }))
+            addColumn(NativeButtonRenderer<Article>("Destroy", { article ->
+                confirmDialog {
+                    article.delete()
+                    this@grid.refresh()
+                }
+            }))
+        }
+    }
+
+    override fun afterNavigation(event: AfterNavigationEvent) {
+        grid.refresh()
+    }
+}
+```
+
+The "Destroy" button calls the `confirmDialog` which shows a simple Vaadin dialog. The function is implemented in a way that
+it will call the follow-up block when the "Yes" button is clicked. The block will just delete the article
+and refresh the Grid, to display the new data. To get rid of the confirmation dialog, just delete the `confirmDialog` line:
+```kotlin
+            addColumn(NativeButtonRenderer<Article>("Destroy", { article ->
+                article.delete()
+                this@grid.refresh()
+            }))
+```
+
+> **Note:** To see the definition of the function,
+just open up Intellij IDEA and click your mouse on the `confirmDialog` function name while holding the `Control` key.
+
+![Delete Article](images/delete_article_v10.png)
+
+Congratulations, you can now create, show, list, update and destroy articles.
+
+## 6 Adding a Second Database Entity
+
+It's time to add a second database table to the application. The second database table will handle comments on articles.
+
+### 6.1 Creating the 'Comments' Entity
+
+We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vokorm.*
+import org.hibernate.validator.constraints.Length
+import javax.validation.constraints.NotNull
+
+data class Comment(
+        override var id: Long? = null,
+
+        var article_id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 3)
+        var commenter: String? = null,
+
+        @field:NotNull
+        @field:Length(min = 3)
+        var body: String? = null
+) : Entity<Long> {
+    companion object : Dao<Comment>
+
+    val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
+}
+```
+
+This is very similar to the `Article` entity that you saw earlier. The difference is the property `article`
+which sets up an association. You'll learn a little about associations in the next section of this guide.
+
+Note the `article_id` column - it tells which Article the comment belongs to.
+You can get a better understanding after analyzing the appropriate migration script. Just create
+`web/src/main/resources/db/migration/V02__CreateComment.sql` file with the following contents:
+
+```sql
+create TABLE Comment(
+  id bigint auto_increment PRIMARY KEY,
+  commenter varchar(200) NOT NULL,
+  body VARCHAR(4000) NOT NULL,
+  article_id bigint not null REFERENCES Article(id)
+);
+```
+
+The `article_id` line creates an integer column called `article_id`, an index for it, and a
+foreign key constraint that points to the `id` column of the articles table. Go ahead and run
+the project.
+
+Since we are running an embedded database which starts in a clear state, all migrations will run:
+
+```
+15:43:44.532 [RMI TCP Connection(2)-127.0.0.1] INFO  com.example.vok.Bootstrap - Running DB migrations
+15:43:44.553 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.c.internal.util.VersionPrinter - Flyway 4.2.0 by Boxfuse
+15:43:44.676 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.c.i.dbsupport.DbSupportFactory - Database: jdbc:h2:mem:test (H2 1.4)
+15:43:44.754 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.026s)
+15:43:44.767 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.c.i.m.MetaDataTableImpl - Creating Metadata table: "PUBLIC"."schema_version"
+15:43:44.792 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "PUBLIC": << Empty Schema >>
+15:43:44.794 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version 01 - CreateArticle
+15:43:44.813 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version 02 - CreateComment
+15:43:44.823 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbMigrate - Successfully applied 2 migrations to schema "PUBLIC" (execution time 00:00.057s).
+```
+
+However, if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not already been run against the current database.
