@@ -351,4 +351,139 @@ Building forms in VoK is really just that easy!
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
 Currently, the click listener is empty, we will need to add the database code to save the article.
 
-TBD
+### 5.3 Creating articles
+
+To make the "Save Article" button do something, just change the class as follows:
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("create-article")
+class CreateArticleView: VerticalLayout() {
+    private val binder = beanValidationBinder<Article>()
+    init {
+        h1("New Article")
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article") {
+            onLeftClick {
+                val article = Article()
+                if (binder.writeBeanIfValid(article)) {
+                    article.save()
+                }
+            }
+        }
+    }
+}
+```
+
+Now when you click the "Save Article" button, you'll see an "Internal Error" notification - it's because we haven't
+created the database table for Article yet.
+
+### 5.4 Creating the Article model
+
+Luckily, we have already created the model - it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
+To create the table, we will have to create the migration.
+
+> **Note:** Sql2o is smart enough to automatically map column names to the Article class properties,
+which means you don't have to provide the database name for every property inside entities, as that will be done automatically by Sql2o.
+
+To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
+
+```sql
+create table Article(
+  id bigint auto_increment PRIMARY KEY,
+  title varchar(200) NOT NULL,
+  text varchar(4000) NOT NULL
+);
+```
+
+This is a SQL data definition (DDL) script which will create a table named Article with three columns. We are using the H2 database
+SQL dialect here.
+
+### 5.5 Running a Migration
+
+As we've just seen, migrations are simple SQL scripts which create and modify database tables. The database migration is done automatically,
+on the web app startup, by the `Bootstrap` class.  You can also reconfigure your app to do the migrations manually instead,
+simply by commenting out relevant part of the `Bootstrap` class and altering the `build.gradle` file as stated in the
+[Flyway Gradle documentation](https://flywaydb.org/getstarted/firststeps/gradle).
+
+If you look in the `V01__CreateArticle.sql` file, you'll see the `V01` prefix, followed by two underscores, and then the name.
+The name may be arbitrary, and it doesn't affect the migration outcome. The number defines the ordering -
+migration scripts will be run sorted by the version number, and exactly once. You can read more about the exact numbering
+rules in the [Flyway Versioned Migrations Guide](https://flywaydb.org/documentation/migration/versioned).
+
+When Flyway runs this migration it will create an articles table with one string column and a text column.
+
+At this point, you can simply kill and restart the server, to automatically run all migrations.
+Since we are currently using an in-memory H2 database, its contents are gone when the server is killed,
+and since we are starting with a fresh database, all migrations will run. When we'll use a persistent database,
+Flyway will make sure that only a newly defined migrations are run.
+
+### 5.6 Saving data in the CreateArticleView
+
+Back in `CreateArticleView` view, everything is ready. Try clicking the "Save Article" button - seemingly nothing
+will happen, but the article will be saved into the database. To actually see the article,
+we will redirect to an `ArticleView` which we'll define later.
+
+> **Note:** You might be wondering why the A in Article is capitalized above, whereas most other references to articles in this guide have used lowercase.
+In this context, we are referring to the class named Article that is defined in `web/src/main/kotlin/com/example/vok/Article.kt`.
+Class names in Kotlin must begin with a capital letter.
+
+> **Note:** As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whether the article was saved or not.
+
+### 5.7 Showing Articles
+
+If you submit the form again now, VoK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
+
+Vaadin 10 supports adding parameters after the view name. This way, we can pass the Article ID to the `ArticleView` as follows:
+[http://localhost:8080/article/12](http://localhost:8080/article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("article")
+class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private lateinit var title: Text
+    private lateinit var text: Text
+    init {
+        div {
+            strong("Title: ")
+            this@ArticleView.title = text("")
+        }
+        div {
+            strong("Text: ")
+            this@ArticleView.text = text("")
+        }
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        val article = Article.getById(articleId!!)
+        title.text = article.title
+        text.text = article.text
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+    }
+}
+```
+A couple of things to note. We use `Article.getById(id)` to find the article we're interested in,
+passing in `articleId` to get the first parameter from the request. In Vaadin, the parameter is passed to the `navigate()` function
+which takes the view class and a parameter as its input, constructs the target URL
+and redirects the browser to the URL. In this case, [http://localhost:8080/article/12](http://localhost:8080/article/12).
+
+The router then detects that the URL has been changed, it parses the view name out of the URL and
+invokes the `view.setParameter()` method. The parameter is passed as the second argument of the `setParameter()` function.

@@ -422,7 +422,6 @@ create table Article(
 This is a SQL data definition (DDL) script which will create a table named Article with three columns. We are using the H2 database
 SQL dialect here.
 
-
 ### 5.5 Running a Migration
 
 As we've just seen, migrations are simple SQL scripts which create and modify database tables. The database migration is done automatically,
