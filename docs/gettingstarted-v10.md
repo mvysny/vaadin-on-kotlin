@@ -326,18 +326,15 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
-import com.vaadin.navigator.*
-import com.vaadin.ui.VerticalLayout
-import com.vaadin.ui.themes.ValoTheme
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
 
-@AutoView
-class CreateArticleView: VerticalLayout(), View {
+@Route("create-article")
+class CreateArticleView: VerticalLayout() {
     private val binder = beanValidationBinder<Article>()
     init {
-        label("New Article") {
-            styleName = ValoTheme.LABEL_H1
-        }
+        h1("New Article")
         textField("Title") {
             bind(binder).bind(Article::title)
         }
