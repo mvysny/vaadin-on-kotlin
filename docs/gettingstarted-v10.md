@@ -1409,3 +1409,81 @@ Modify the `Article.kt` file and add the `delete` function right below the `comm
     }
 ```
 
+## 9 Security
+
+If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
+
+### 9.1 The Login Dialog
+
+Adding security to Java WAR apps is usually done by letting the web server (e.g. Tomcat) handle the username/password storage
+and verification, while our web app provides the login dialog. To keep this guide web server agnostic,
+we'll do the verification ourselves.
+
+We will implement a login service and a login form. Just create the `web/src/main/kotlin/com/example/vok/LoginService.kt` file:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.flow.Session
+import com.vaadin.flow.component.UI
+import com.vaadin.flow.server.VaadinSession
+import java.io.Serializable
+
+data class User(val name: String) : Serializable
+
+object LoginService {
+    fun login(user: User) {
+        Session[User::class] = user
+        UI.getCurrent().page.reload()
+    }
+    val currentUser: User? get() = Session[User::class]
+    fun logout() {
+        VaadinSession.getCurrent().close()
+        UI.getCurrent().page.reload()
+    }
+}
+```
+
+This is how the `LoginForm` component looks like:
+
+![Login Form](images/login_form.png)
+
+The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
+user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
+will reinstantiate the layouts.
+
+Please follow the [vok-security](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md) module documentation on
+how to properly integrate login dialog into your app.
+
+### 9.2 Other Security Considerations
+
+Security, especially in web applications, is a broad and detailed area. You can decide not to use the login dialog at all,
+and instead use the HTTP Basic Auth, thus letting the web server handle the security completely. You can also employ
+other security options. This is however out of scope of this tutorial.
+
+## 10 What's Next?
+
+Now that you've seen your first VoK application, you should feel free to update it and experiment on your own.
+
+Remember you don't have to do everything without help. As you need assistance getting up and running with VoK, feel free to consult these support resources:
+
+* The [Vaadin-on-Kotlin Guides](vok-guides.md)
+* The [Vaadin 10 Tutorial](https://vaadin.com/docs/v10/flow/Overview.html) for documentation on pure Vaadin and Java
+* The [Vaadin Forums](https://vaadin.com/forum) for anything Vaadin-on-Kotlin-related
+* The [Kotlin Forums](https://discuss.kotlinlang.org/) for Kotlin-related questions
+
+## Feedback
+
+You're encouraged to help improve the quality of this guide.
+
+Please contribute if you see any typos or factual errors. To get started, you can read our
+[documentation contributions](todo) section.
+
+You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
+Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.
+
+If for whatever reason you spot something to fix but cannot patch it yourself, please [open an issue](https://github.com/mvysny/vaadin-on-kotlin/issues).
+
+And last but not least, any kind of discussion regarding Vaadin on Kotlin documentation is very welcome in the [Vaadin Forums](https://vaadin.com/forum).
+
+<sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>

@@ -1468,7 +1468,7 @@ Modify the `Article.kt` file and add the `delete` function right below the `comm
 
 If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
 
-## 9.1 The Login Dialog
+### 9.1 The Login Dialog
 
 Adding security to Java WAR apps is usually done by letting the web server (e.g. Tomcat) handle the username/password storage
 and verification, while our web app provides the login dialog. To keep this guide web server agnostic,
@@ -1568,7 +1568,7 @@ edit `MyUI.kt` and change the `init()` method as follows:
 
 ```
 
-## 9.2 Other Security Considerations
+### 9.2 Other Security Considerations
 
 Security, especially in web applications, is a broad and detailed area. You can decide not to use the login dialog at all,
 and instead use the HTTP Basic Auth, thus letting the web server handle the security completely. You can also employ
