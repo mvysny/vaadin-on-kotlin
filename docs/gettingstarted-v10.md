@@ -263,3 +263,45 @@ Vaadin Flow uses its own internal JSON protocol to communicate with components.
 Having REST may come handy though, since we can use it to examine the state of the database
 (using the `curl` or `wget` tools).
 
+Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which will look as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vokorm.*
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+
+@Path("/articles")
+class ArticleRest {
+
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    fun getAll(): List<Article> = Article.findAll()
+}
+```
+
+This will add the possibility to retrieve the articles via a REST call. Just try
+
+```bash
+$ wget localhost:8080/rest/articles
+```
+
+You will get 500 internal server error; the server log will show a long stacktrace, with the most interesting
+part being
+```
+Caused by: org.h2.jdbc.JdbcSQLException: Table "ARTICLE" not found; SQL statement:
+select * from Article [42102-196]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+```
+
+That is to be expected since we haven't yet created the table for Articles. We'll do that in a minute.
+In the next section, you will add the ability to create new articles in your application and be able to view them. This is the "C" and the "R" from CRUD: create and read. The form for doing this will look like this:
+
