@@ -476,7 +476,7 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class, articleId)
     }
 }
 ```
@@ -557,7 +557,7 @@ Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init
     init {
         verticalLayout {
             h1("Hello, Vaadin-on-Kotlin!")
-            routerLink(text = "My Blog", viewType = ArticlesView::class.java)
+            routerLink(null, "My Blog", ArticlesView::class)
         }
     }
 ```
@@ -567,7 +567,7 @@ The Vaadin `RouterLink` component creates a hyperlink based on text to display a
 Let's add links to the other views as well, starting with adding this "New Article" link to `ArticlesView` class, placing it above the `grid` declaration:
 
 ```kotlin
-        routerLink(text = "New Article", viewType = CreateArticleView::class.java)
+        routerLink(null, "New Article", CreateArticleView::class)
 ```
 
 This link will allow you to bring up the form that lets you create a new article.
@@ -575,13 +575,13 @@ This link will allow you to bring up the form that lets you create a new article
 Now, add another link in `CreateArticleView`, underneath the form's "Save Article" button, as the last line of the `init{}` block, to go back to the index action:
 
 ```kotlin
-        routerLink(text = "Back", viewType = ArticlesView::class.java)
+        routerLink(null, "Back", ArticlesView::class)
 ```
 
 Finally, add a link to the `ArticleView` view to go back to the index action as well (into the `init{}` block under those labels), so that people who are viewing a single article can go back and view the whole list again:
 
 ```kotlin
-        routerLink(text = "Back", viewType = ArticlesView::class.java)
+        routerLink(null, "Back", ArticlesView::class)
 ```
 
 > **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
@@ -646,3 +646,125 @@ If you reload [http://localhost:8080/create-article](http://localhost:8080/creat
 VoK will send you back to the form, with the invalid fields marked red.
 The `binder.validate().isOk` call will mark invalid fields, while `binder.writeBeanIfValid(article)` will write the values to
 the `article` entity, but only if everything is valid.
+
+### 5.11 Updating Articles
+
+We've covered the "CR" part of CRUD. Now let's focus on the "U" part, updating articles.
+
+The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/EditArticleView.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.UI
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("edit-article")
+class EditArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private val binder = beanValidationBinder<Article>()
+    private var article: Article? = null
+    init {
+        h1("Edit Article")
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article") {
+            onLeftClick { event ->
+                val article = article!!
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                }
+            }
+        }
+        routerLink(null, "Back", ArticlesView::class)
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        edit(Article.getById(articleId!!))
+    }
+
+    private fun edit(article: Article) {
+        this.article = article
+        binder.readBean(article)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(EditArticleView::class, articleId)
+    }
+}
+```
+
+The view will contain a form similar to the one we used when creating new articles. The only difference is that
+when the view is entered (that is, navigated to), it looks up the article ID, loads the article and binds
+it with the components.
+
+Finally, we want to show a link to the edit action in the list of all the articles, so let's add
+that now to `ArticlesView.kt` to make it appear next to the "Show" link.
+Just change the `grid {}` block as follows:
+
+```kotlin
+        grid = grid(dataProvider = Article.dataProvider) {
+            isExpand = true; setSizeFull()
+            addColumnFor(Article::id)
+            addColumnFor(Article::title)
+            addColumnFor(Article::text)
+            addColumn(NativeButtonRenderer<Article>("Show", { ArticleView.navigateTo(it.id!!) }))
+            addColumn(NativeButtonRenderer<Article>("Edit", { EditArticleView.navigateTo(it.id!!) }))
+        }
+```
+
+> **Note**: The `ButtonRenderer` will be marked red; you will need to import the class. You can do that simply by pressing `Alt+Enter`
+and choosing *Import* from the menu.
+
+And we'll also add one to the `ArticleView.kt` template as well, so that there's also an "Edit" link on an article's page. Modify the class to look as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("article")
+class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+    private val editLink: RouterLink
+    private lateinit var title: Text
+    private lateinit var text: Text
+    init {
+        div {
+            strong("Title: ")
+            this@ArticleView.title = text("")
+        }
+        div {
+            strong("Text: ")
+            this@ArticleView.text = text("")
+        }
+        editLink = routerLink(null, "Edit")
+        routerLink(text = "Back", viewType = ArticlesView::class)
+    }
+
+    override fun setParameter(event: BeforeEvent, articleId: Long?) {
+        val article = Article.getById(articleId!!)
+        title.text = article.title
+        text.text = article.text
+        editLink.setRoute(EditArticleView::class, articleId)
+    }
+
+    companion object {
+        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+    }
+}
+```
+
+And here's how our app looks so far:
+
+![Article List View](images/article_list_view_v10.png)
