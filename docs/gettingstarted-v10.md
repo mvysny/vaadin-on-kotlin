@@ -487,3 +487,25 @@ and redirects the browser to the URL. In this case, [http://localhost:8080/artic
 
 The router then detects that the URL has been changed, it parses the view name out of the URL and
 invokes the `view.setParameter()` method. The parameter is passed as the second argument of the `setParameter()` function.
+
+To navigate to the Article View, just add `ArticleView.navigateTo(article.id!!)` to your `CreateArticleView.kt` file,
+right below the `article.save()` call as follows:
+
+```kotlin
+...
+        button("Save Article") {
+            onLeftClick {
+                val article = Article()
+                if (binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                }
+            }
+        }
+...
+```
+
+With this change, you should finally be able to create new articles. Visit
+[http://localhost:8080/create-article](http://localhost:8080/create-article) and give it a try!
+
+![Show Article](images/show_article_v10.png)
