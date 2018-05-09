@@ -1350,3 +1350,62 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 }
 ```
+
+## 8 Deleting Comments
+
+Another important feature of a blog is being able to delete spam comments. To do this, we need to implement a link of some sort in the `CommentsComponent`.
+
+Let's add a link button to the `CommentsComponent.kt` file:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.getById
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+
+class CommentsComponent : VerticalLayout() {
+    var articleId: Long = 0L
+        set(value) { field = value; refresh() }
+
+    private val comments: VerticalLayout
+    init {
+        isMargin = false
+        p("Comments")
+        comments = verticalLayout()
+    }
+
+    fun refresh() {
+        comments.removeAll()
+        Article.getById(articleId).comments.getAll().forEach { comment ->
+            comments.div {
+                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+            }
+            comments.button("Delete comment") {
+                themes.add("tertiary small")
+                onLeftClick { comment.delete(); refresh() }
+            }
+        }
+    }
+}
+// the extension function which will allow us to use CommentsComponent inside a DSL
+fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = init(CommentsComponent(), block)
+```
+
+Clicking the "Delete comment" button will delete the comment and refresh the component, to show the rest of the comments.
+
+### 8.1 Deleting Associated Objects
+
+If you delete an article, its associated comments will also need to be deleted, otherwise they would simply occupy space in the database.
+Or even worse, since we have the foreign constraint set up, the database would fail to delete the article. We will need to modify the
+`Article.delete()` method to do that for us.
+Modify the `Article.kt` file and add the `delete` function right below the `comments` val, as follows:
+
+```kotlin
+    override fun delete() = db {
+        Comment.deleteBy { Comment::article_id eq id }
+        super.delete()
+    }
+```
+

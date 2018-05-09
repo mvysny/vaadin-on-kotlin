@@ -1458,7 +1458,7 @@ Or even worse, since we have the foreign constraint set up, the database would f
 Modify the `Article.kt` file and add the `delete` function right below the `comments` val, as follows:
 
 ```kotlin
-    override fun delete() {
+    override fun delete() = db {
         Comment.deleteBy { Comment::article_id eq id }
         super.delete()
     }
