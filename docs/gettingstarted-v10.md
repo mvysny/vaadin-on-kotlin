@@ -305,3 +305,53 @@ select * from Article [42102-196]
 That is to be expected since we haven't yet created the table for Articles. We'll do that in a minute.
 In the next section, you will add the ability to create new articles in your application and be able to view them. This is the "C" and the "R" from CRUD: create and read. The form for doing this will look like this:
 
+![Create Article Screenshot](images/create_article_v10.png)
+
+It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
+
+### 5.1 Laying down the groundwork
+
+Firstly, you need a place within the application to create a new article. A great place for that
+would be at `create-article`. Navigate to [http://localhost:8080/create-article](http://localhost:8080/create-article) and you'll see a general error:
+
+![Navigator Error](images/navigator_error_v10.png)
+
+This happens because there is no View yet, mapped to the `create-article` route.
+
+### 5.2 The first form
+
+The solution to this particular problem is simple:
+create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleView.kt` as follows:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.*
+import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.themes.ValoTheme
+
+@AutoView
+class CreateArticleView: VerticalLayout(), View {
+    private val binder = beanValidationBinder<Article>()
+    init {
+        label("New Article") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        textField("Title") {
+            bind(binder).bind(Article::title)
+        }
+        textArea("Text") {
+            bind(binder).bind(Article::text)
+        }
+        button("Save Article")
+    }
+}
+```
+If you restart the server and refresh the page now, you'll see the exact same form from our example above.
+Building forms in VoK is really just that easy!
+
+There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
+Currently, the click listener is empty, we will need to add the database code to save the article.
+
+TBD

@@ -356,7 +356,7 @@ class CreateArticleView: VerticalLayout(), View {
     }
 }
 ```
-If you restart the server refresh the page now, you'll see the exact same form from our example above.
+If you restart the server and refresh the page now, you'll see the exact same form from our example above.
 Building forms in VoK is really just that easy!
 
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
