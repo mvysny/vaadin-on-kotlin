@@ -509,3 +509,140 @@ With this change, you should finally be able to create new articles. Visit
 [http://localhost:8080/create-article](http://localhost:8080/create-article) and give it a try!
 
 ![Show Article](images/show_article_v10.png)
+
+### 5.8 Listing all articles
+
+We still need a way to list all our articles, so let's do that. We'll create the `web/src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
+following contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.dataProvider
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+
+@Route("articles")
+class ArticlesView: VerticalLayout(), AfterNavigationObserver {
+    private val grid: Grid<Article>
+    init {
+        setSizeFull()
+        h1("Listing Articles")
+        grid = grid(dataProvider = Article.dataProvider) {
+            isExpand = true; setSizeFull()
+            addColumnFor(Article::id)
+            addColumnFor(Article::title)
+            addColumnFor(Article::text)
+        }
+    }
+
+    override fun afterNavigation(event: AfterNavigationEvent) {
+        grid.refresh()
+    }
+}
+```
+
+Now if you go to [http://localhost:8080/articles](http://localhost:8080/articles) you will see a list of all the articles that you have created.
+Note that we have used the Grid component. Grid is a powerful tabular component which supports paging and lazy-loading of the data,
+including sorting and filtering.
+
+### 5.9 Adding links
+You can now create, show, and list articles. Now let's add some links to navigate through pages.
+
+Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init {}` contents as follows:
+
+```kotlin
+    init {
+        verticalLayout {
+            h1("Hello, Vaadin-on-Kotlin!")
+            routerLink(text = "My Blog", viewType = ArticlesView::class.java)
+        }
+    }
+```
+
+The Vaadin `RouterLink` component creates a hyperlink based on text to display and where to go - in this case, to the path for articles.
+
+Let's add links to the other views as well, starting with adding this "New Article" link to `ArticlesView` class, placing it above the `grid` declaration:
+
+```kotlin
+        routerLink(text = "New Article", viewType = CreateArticleView::class.java)
+```
+
+This link will allow you to bring up the form that lets you create a new article.
+
+Now, add another link in `CreateArticleView`, underneath the form's "Save Article" button, as the last line of the `init{}` block, to go back to the index action:
+
+```kotlin
+        routerLink(text = "Back", viewType = ArticlesView::class.java)
+```
+
+Finally, add a link to the `ArticleView` view to go back to the index action as well (into the `init{}` block under those labels), so that people who are viewing a single article can go back and view the whole list again:
+
+```kotlin
+        routerLink(text = "Back", viewType = ArticlesView::class.java)
+```
+
+> **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
+or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
+
+### 5.10 Adding Some Validation
+
+The entity file, `Article.kt` is about as simple as it can get.
+
+There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of functionality to your entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
+
+Vaadin-on-Kotlin includes methods to help you validate the data that you send to models.
+Open the `Article.kt` file and edit it:
+
+```kotlin
+package com.example.vok
+
+import com.github.vokorm.*
+import org.hibernate.validator.constraints.Length
+import javax.validation.constraints.NotNull
+
+data class Article(
+        override var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 5)
+        var title: String? = null,
+
+        @field:NotNull
+        @field:Length(min = 2)
+        var text: String? = null
+) : Entity<Long> {
+    companion object : Dao<Article>
+}
+```
+
+These changes will ensure that all articles have a title that is at least five characters long.
+VoK can validate a variety of conditions in an entity, including the presence or uniqueness
+of columns, their format, and the existence of associated objects. The [Hibernate Validator](http://hibernate.org/validator/) is used
+to provide validation support; validations are covered
+in detail in the Hibernate Validator documentation.
+
+With the validation now in place, when you call `binder.writeBeanIfValid(article)` on an invalid
+article, it will return `false`. If you open `CreateArticleView.kt`
+again, you'll notice that we actually check the result of calling `binder.writeBeanIfValid(article)`
+inside the create action. However, if `writeBeanIfValid()` fails, we need to show the form back to the user,
+and mark all invalid fields. To do this, change the button definition as follows:
+
+```kotlin
+        button("Save Article") {
+            onLeftClick {
+                val article = Article()
+                if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
+                    article.save()
+                    ArticleView.navigateTo(article.id!!)
+                }
+            }
+        }
+```
+
+If you reload [http://localhost:8080/create-article](http://localhost:8080/create-article) and try to save an article without a title,
+VoK will send you back to the form, with the invalid fields marked red.
+The `binder.validate().isOk` call will mark invalid fields, while `binder.writeBeanIfValid(article)` will write the values to
+the `article` entity, but only if everything is valid.
