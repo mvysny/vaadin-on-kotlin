@@ -1015,3 +1015,56 @@ Since we are running an embedded database which starts in a clear state, all mig
 ```
 
 However, if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not already been run against the current database.
+
+### 6.2 Associating Models
+
+Vaadin on Kotlin associations let you easily declare the relationship between two entities. In the case of
+comments and articles, you could write out the relationships this way:
+
+* Each comment belongs to one article.
+* One article can have many comments.
+
+You've already seen the line of code inside the `Comment` entity (`Comment.kt`) that makes each
+comment belong to an `Article`:
+
+```kotlin
+    val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
+```
+
+You'll need to edit `Article.kt` to add the other side of the association:
+
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vokorm.*
+import com.vaadin.data.provider.DataProvider
+import org.hibernate.validator.constraints.Length
+import javax.validation.constraints.NotNull
+
+data class Article(
+        override var id: Long? = null,
+
+        @field:NotNull
+        @field:Length(min = 5)
+        var title: String? = null,
+
+        var text: String? = null
+) : Entity<Long> {
+    companion object : Dao<Article>
+
+    val comments: VokDataProvider<Comment> get() = Comment.dataProvider.withFilter { Comment::article_id eq id }
+}
+```
+
+These two declarations enable a good bit of automatic behavior. For example, if you have a
+variable `article` containing an article, you can retrieve all the comments belonging to that article
+as an array using `article.comments.getAll()`.
+
+> **Note:** Note that the `comments` field is outside of the `data class` constructor. This is intentional,
+since the `comments` field is not really a field but a computed property and thus can not stand as a constructor parameter. `comments` is hence lazy -
+it is evaluated every time it is read; reading it causes a database `select` to be run. That's why the `comments` property shouldn't
+appear in `Article.toString()`, so that logging a newly created article (which calls `toString()`) won't run a select.
+Computed properties also do not appear in the JSON output as returned by the REST services - this way we can prevent polluting of the REST JSON
+article output with all comments.
+
