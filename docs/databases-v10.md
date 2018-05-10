@@ -40,7 +40,7 @@ a new, vastly simplified database access layer called `vok-orm`.
 * Simplicity is the most valued property; working with plain SQL commands is preferred over having a type-safe
   query language.
 * Kotlin objects merely capture JDBC `ResultSet` rows, by the means of invoking appropriate setters (based on the column name) via
-  Java reflection. 
+  Java reflection.
 * The entities are just plain objects: they do not track modifications as JPA entities do,
   they do not automatically store modified
   values back into the database. They are never runtime-enhanced and can be final.
@@ -53,7 +53,7 @@ a new, vastly simplified database access layer called `vok-orm`.
 Because of its simple design principles, `vok-orm` supports not just mapping tables to Kotlin classes,
 but it allows mapping of any complex SELECT with joins and everything, even VIEWs, into Kotlin classes.
 Naturally this allows you to use any SELECT inside of a Vaadin Grid component which is a
-very powerful combination. 
+very powerful combination.
 
 ## Persisting simple objects into tables
 
@@ -61,11 +61,11 @@ Please read the [Usage examples](https://github.com/mvysny/vok-orm#usage-example
 the `vok-orm` documentation on how to write Kotlin classes that correspond to a particular SQL database
 table, and how to create rows in that particular database tables.
 
-In this tutorial, we will modify the [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app) project:
+In this tutorial, we will modify the [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10) project:
 it contains all moving parts but not much of an actual code which makes it ideal for experimenting. Just run
-`git clone https://github.com/mvysny/vok-helloworld-app` and open the project in your IDE and you're good to go.
+`git clone https://github.com/mvysny/vok-helloworld-app-v10` and open the project in your IDE and you're good to go.
 
-> Note: please read the [Getting Started Guide](gettingstarted.md) on information on these files.
+> Note: please read the [Getting Started Guide](gettingstarted-v10.md) on information on these files.
 
 Let us have a `Person` table with the following columns:
 
@@ -158,23 +158,19 @@ data class Person(
 
 By implementing the `Entity` interface the Kotlin class gains capability to create/update itself into
 the database; by having the companion object to implement the `Dao` interface the Kotlin class
-gains the lookup capabilities. You can paste the following example into the `MyUI.kt` file:
+gains the lookup capabilities. You can paste the following example into the `WelcomeView.kt` file:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.*
-import com.vaadin.annotations.Theme
-import com.vaadin.navigator.PushStateNavigation
-import com.vaadin.server.VaadinRequest
-import com.vaadin.ui.UI
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
 
-@Theme("mytheme")
-@PushStateNavigation
-class MyUI : UI() {
-
-    override fun init(request: VaadinRequest?) {
+@Route("")
+class WelcomeView: VerticalLayout() {
+    init {
         button("Demo") {
             onLeftClick {
                 val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
@@ -212,16 +208,16 @@ Forms allows the user to enter the values of a newly created record, or edit the
 already existing ones. Validation is typically employed, to guide the user to enter
 meaningful data.
 
-We will use [Vaadin Binder](https://vaadin.com/docs/v8/framework/datamodel/datamodel-forms.html) to bind form components to properties of the `Person` Kotlin class.
+We will use [Vaadin Binder](https://vaadin.com/docs/v10/flow/binding-data/tutorial-flow-components-binder.html) to bind form components to properties of the `Person` Kotlin class.
 A source code of the form is shown below; just create a file named `web/src/main/kotlin/com/example/vok/PersonEditor.kt` with the following contents:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.findAll
-import com.vaadin.server.UserError
-import com.vaadin.ui.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
 class PersonEditor : VerticalLayout() {
     private val binder = beanValidationBinder<Person>()
@@ -239,7 +235,7 @@ class PersonEditor : VerticalLayout() {
         textField("Age") {
             bind(binder).toInt().bind(Person::age)
         }
-        dateField("Date Of Birth") {
+        datePicker("Date Of Birth") {
             bind(binder).bind(Person::dateOfBirth)
         }
         checkBox("Alive") {
@@ -250,13 +246,11 @@ class PersonEditor : VerticalLayout() {
             bind(binder).bind(Person::maritalStatus)
         }
         button("Save Person") {
-            onLeftClick { event ->
+            onLeftClick {
                 val person = person!!
                 if (binder.validate().isOk && binder.writeBeanIfValid(person)) {
                     person.save()
                     println(Person.findAll())
-                } else {
-                    event.button.componentError = UserError("There are invalid fields")
                 }
             }
         }
@@ -266,20 +260,17 @@ class PersonEditor : VerticalLayout() {
 fun HasComponents.personEditor(block: PersonEditor.()->Unit = {}) = init(PersonEditor(), block)
 ```
 
-This will create a form as a reusable component which we can then use in the `MyUI` as follows:
+This will create a form as a reusable component which we can then use in the `WelcomeView` as follows:
 
 ```kotlin
 package com.example.vok
 
-import com.vaadin.annotations.Theme
-import com.vaadin.navigator.PushStateNavigation
-import com.vaadin.server.VaadinRequest
-import com.vaadin.ui.UI
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
 
-@Theme("mytheme")
-@PushStateNavigation
-class MyUI : UI() {
-    override fun init(request: VaadinRequest) {
+@Route("")
+class WelcomeView: VerticalLayout() {
+    init {
         personEditor {
             person = Person()
         }
@@ -342,7 +333,7 @@ on a web page. It allows the user to:
 * VoK provides means to auto-generate filter components and auto-populate them into the Grid,
   which provides you with a simple means to allow the user to filter as well.
 
-You can find more information about how to use Vaadin Grid with Vaadin-on-Kotlin at the [Using Grids](grids.md) guide page.
+You can find more information about how to use Vaadin Grid with Vaadin-on-Kotlin at the [Using Grids](grids-v10.md) guide page.
 
 ### Showing entities in Grid
 
@@ -350,24 +341,30 @@ We will start with the most basic Grid which will show the list of `Person`. By 
 therefore we need to restrict the columns a bit:
 
 ```kotlin
-class MyUI : UI {
-    override fun init(request: VaadinRequest) {
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.data.renderer.NativeButtonRenderer
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
+    init {
+        setSizeFull()
         grid(dataProvider = Person.dataProvider) {
             setSizeFull()
-            
+
             addColumnFor(Person::id)
             addColumnFor(Person::name)
             addColumnFor(Person::age)
-            addColumnFor(Person::dateOfBirth) {
-                setRenderer(LocalDateRenderer())
-            }
+            addColumnFor(Person::dateOfBirth)
             addColumnFor(Person::maritalStatus)
             addColumnFor(Person::alive)
-            addColumnFor(Person::created) {
-                // example of a custom renderer which converts value to a displayable string.
-                setRenderer({ it.toString() }, TextRenderer())
-            }
-            addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> event.item.delete(); refresh() }))
+            // example of a custom renderer which converts value to a displayable string.
+            addColumnFor(Person::modified, converter = { it.toString() })
+            addColumn(NativeButtonRenderer<Person>("Delete", { item -> item.delete(); this@grid.refresh() }))
         }
     }
 }
@@ -381,127 +378,4 @@ line into the `grid { ...  }` block:
 appendHeaderRow().generateFilterComponents(this, Person::class)
 ```
 
-This will create additional Grid header and will auto-populate it with filters. You can finetune
-the generator by extending the `DefaultFilterFieldFactory`; see the `generateFilterComponents()`
-documentation for details.
-
-You can also create an unremovable programmatic filter easily:
-```kotlin
-grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
-    // ...
-}
-```
-
-The trick here is to *always* use DataProviders with configurable filters. By default Vaadin DataProviders do
-not support setting filters, but that would disable the support for user-defined filters (the filters would fail in runtime
-when trying to set the user-defined filter to the data provider).
-
-Therefore, built-in VoK data providers offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable.
-User filters can thus cast them to `VokDataProvider` and set filters to them. However, that will overwrite
-any previously set filter, and sometimes we want to prevent that. The important distinction here is as follows:
-
-* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider,
-  but this filter will be removed by any filtering value typed in by the user into the filtering component.
-* That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
-  takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
-  to the old one but always ANDs given filter with any filters set by the `setFilter()`.
-
-### Showing an arbitrary output of any SQL SELECT command
-
-Say that we have a join which joins Persons with their departments. Something like the following:
-
-```sql92
-SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id
-```
-
-To capture the outcome of this SELECT we can simply declare the following class:
-
-```kotlin
-data class PersonDept(var personName: String? = null, var deptName: String? = null) : Serializable
-```
-
-Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
-be saved nor deleted), hence it does not implement the `Entity` interface and we won't reuse the `Dao`-induced finders.
-
-To load instances of this particular class, we will need to write our own finder methods. We will directly
-use the Sql2o capabilities to map any SELECT result into an arbitrary class. We just have to make
-sure that the SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching):
-
-> Note: replace `\{` by `{`:
-
-```kotlin
-data class PersonDept(var personName: String? = null, var deptName: String? = null) {
-    companion object {
-        fun findAll(): List<PersonDept> = db {
-            con.createQuery("SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id")
-                .executeAndFetch(PersonDept::class.java)
-        }
-        
-        val dataProvider: VokDataProvider<PersonDept> get() =
-                sqlDataProvider(SelectResult::class.java,
-                    "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
-                    idMapper = { it })
-    }
-}
-```
-
-> Note: The `sqlDataProvider` function
-contains extensive documentation on this topic, please consult the kdoc for that class in your IDE.
-
-The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
-power of lazy-loading, sorting and filtering:
-
-```kotlin
-class MyUI : UI {
-    override fun init(request: VaadinRequest) {
-        grid(dataProvider = PersonDept.dataProvider) {
-            setSizeFull()
-            addColumnFor(PersonDept::personName)
-            addColumnFor(PersonDept::deptName)
-            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
-        }
-    }
-}
-```
-
-### Sorting, Paging and SQL Filters
-
-Paging will simply work out-of-the box, since `sqlDataProvider` will simply replace `\{\{PAGING}}`
-with appropriate `LIMIT 30 OFFSET 0` stanzas.
-
-Sorting will also work out-of-the-box since `sqlDataProvider` will emit `, personName ASC` stanzas
-based on `PersonDept::personName` property names. This will naturally work properly since such columns are
-present in the SQL SELECT command.
-
-Simple auto-generated filters will also work since they will simply filter based on proper column names.
-
-We can of course create much more complex filters, say global filters that will find given text anywhere
-in the table, in all fields. Just create a `TextField` above the grid and in its value change listener simply
-set the new filter as shown below:
-
-```kotlin
-class MyUI : UI {
-    override fun init(request: VaadinRequest) {
-        verticalLayout {
-            val dp = PersonDept.dataProvider
-            textField {
-                addValueChangeListener { e ->
-                    val normalizedFilter = filter.trim().toLowerCase() + "%"
-                    val filter: Filter<ReviewWithCategory>? = if (value.isNotBlank()) {
-                        filter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
-                    } else null
-                    dp.setFilter(filter)
-                }
-            }
-            // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
-            // components would not overwrite filter set by the custom text field filter above.
-            grid(dataProvider = dp.withConfigurableFilter2()) {
-                setSizeFull()
-                addColumnFor(PersonDept::personName)
-                addColumnFor(PersonDept::deptName)
-                appendHeaderRow().generateFilterComponents(this, PersonDept::class)
-            }
-        }
-    }
-}
-```
+TBD

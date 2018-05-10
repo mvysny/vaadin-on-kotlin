@@ -55,7 +55,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 
 Continue reading here to understand how exactly VoK accesses the database.
 
-* TBD
+* The [Accessing Databases Guide](databases-v10.md)
 * [Writing services](services.md) to place your business logic in
 
 ## Security
