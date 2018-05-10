@@ -345,6 +345,7 @@ package com.example.vok
 
 import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vok.karibudsl.flow.*
+import com.github.vokorm.db
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.router.Route
@@ -352,6 +353,9 @@ import com.vaadin.flow.router.Route
 @Route("")
 class WelcomeView: VerticalLayout() {
     init {
+        db {
+            (5..30).forEach { Person(name = "p$it", age = it).save() }
+        }
         setSizeFull()
         grid(dataProvider = Person.dataProvider) {
             setSizeFull()
