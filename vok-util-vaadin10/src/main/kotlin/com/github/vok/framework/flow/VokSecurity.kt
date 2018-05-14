@@ -5,6 +5,7 @@ import com.github.vok.karibudsl.flow.*
 import com.github.vok.security.loggedInUserResolver
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.icon.VaadinIcons
@@ -149,12 +150,12 @@ class LoginForm(appName: String) : VerticalLayout() {
         horizontalLayout {
             width = "100%"
             usernameField = textField("Username") {
-                isExpand = true
+                isExpand = true; minWidth = "0px"
                 prefixComponent = Icon(VaadinIcons.USER)
                 bind(binder).asRequired().trimmingConverter().bind(UsernamePassword::username)
             }
             passwordField = passwordField("Password") {
-                isExpand = true
+                isExpand = true; minWidth = "0px"
                 prefixComponent = Icon(VaadinIcons.LOCK)
                 bind(binder).asRequired().trimmingConverter().bind(UsernamePassword::password)
             }
@@ -173,3 +174,8 @@ class LoginForm(appName: String) : VerticalLayout() {
 }
 
 fun (@VaadinDsl HasComponents).loginForm(appName: String, block: (@VaadinDsl LoginForm).() -> Unit = {}) = init(LoginForm(appName), block)
+
+// remove when karibu-dsl 0.4.4 is used.
+private var HasSize.minWidth: String?
+    get() = element.style.get("minWidth")
+    set(value) { element.style.set("minWidth", value) }
