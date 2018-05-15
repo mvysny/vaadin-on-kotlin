@@ -71,11 +71,6 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: Sql
     withVOKFilterAdapter().withFilter(block)
 
 /**
- * Creates a filter programatically: `filter { Person::age lt 25 }`
- */
-fun <T: Any> filter(block: SqlWhereBuilder<T>.()-> Filter<T>): Filter<T> = block(SqlWhereBuilder())
-
-/**
  * Removes the original filter and sets the new filter. Allows you to write
  * expressions like this: `sqlDataProvider<Person>().setFilter { Person::age lt 25 }`.
  * See [SqlWhereBuilder] for a complete list of applicable operators.
