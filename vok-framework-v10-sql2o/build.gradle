@@ -6,11 +6,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'kotlin'
 apply plugin: "com.jfrog.bintray"
 
-repositories {
-    maven { url "https://repo.vaadin.com/nexus/content/repositories/flow" }
-    maven { url 'https://dl.bintray.com/webjars/maven' }
-}
-
 dependencyManagement {
     imports { mavenBom "com.vaadin:vaadin-bom:$vaadin10_version" }
 }
