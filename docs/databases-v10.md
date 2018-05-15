@@ -446,9 +446,9 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
         }
 
         val dataProvider: VokDataProvider<PersonDept> get() =
-                sqlDataProvider(SelectResult::class.java,
-                    "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
-                    idMapper = { it })
+            sqlDataProvider(PersonDept::class.java,
+                "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
+                idMapper = { it })
     }
 }
 ```
@@ -487,4 +487,39 @@ We can of course create much more complex filters, say global filters that will 
 in the table, in all fields. Just create a `TextField` above the grid and in its value change listener simply
 set the new filter as shown below:
 
-TBD
+```kotlin
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
+    init {
+        setSizeFull(); content { align(center, middle) }; isMargin = false; isSpacing = true
+
+        val dp = PersonDept.dataProvider
+        textField {
+            addValueChangeListener {
+                val normalizedFilter = value.trim().toLowerCase() + "%"
+                if (value.isNotBlank()) {
+                    dp.setFilter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
+                } else {
+                    dp.setFilter(null)
+                }
+            }
+        }
+        // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
+        // components would not overwrite filter set by the custom text field filter above.
+        grid(dataProvider = dp.withConfigurableFilter2()) {
+            setSizeFull()
+            addColumnFor(PersonDept::personName)
+            addColumnFor(PersonDept::deptName)
+            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+        }
+    }
+}
+```
+

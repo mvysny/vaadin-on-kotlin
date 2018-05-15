@@ -443,11 +443,11 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
             con.createQuery("SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id")
                 .executeAndFetch(PersonDept::class.java)
         }
-        
+
         val dataProvider: VokDataProvider<PersonDept> get() =
-                sqlDataProvider(SelectResult::class.java,
-                    "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
-                    idMapper = { it })
+            sqlDataProvider(PersonDept::class.java,
+                "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
+                idMapper = { it })
     }
 }
 ```
@@ -487,17 +487,30 @@ in the table, in all fields. Just create a `TextField` above the grid and in its
 set the new filter as shown below:
 
 ```kotlin
-class MyUI : UI {
+package com.example.vok
+
+import com.github.vok.framework.sql2o.vaadin.*
+import com.github.vok.karibudsl.*
+import com.vaadin.navigator.PushStateNavigation
+import com.vaadin.server.VaadinRequest
+import com.vaadin.ui.UI
+
+@PushStateNavigation
+class MyUI : UI() {
+
     override fun init(request: VaadinRequest) {
         verticalLayout {
+            setSizeFull()
+
             val dp = PersonDept.dataProvider
             textField {
-                addValueChangeListener { e ->
-                    val normalizedFilter = filter.trim().toLowerCase() + "%"
-                    val filter: Filter<ReviewWithCategory>? = if (value.isNotBlank()) {
-                        filter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
-                    } else null
-                    dp.setFilter(filter)
+                addValueChangeListener {
+                    val normalizedFilter = value.trim().toLowerCase() + "%"
+                    if (value.isNotBlank()) {
+                        dp.setFilter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
+                    } else {
+                        dp.setFilter(null)
+                    }
                 }
             }
             // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
