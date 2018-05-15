@@ -3,9 +3,9 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.framework.sql2o.Person
 import com.github.vokorm.Filter
+import com.github.vokorm.buildFilter
 import com.github.vokorm.dataloader.DataLoader
 import com.github.vokorm.dataloader.SortClause
-import com.github.vokorm.filter
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
 import kotlin.test.expect
@@ -54,10 +54,10 @@ class DataProvidersTest : DynaTest({
     }
 
     test("fetch with filter") {
-        val loader = AssertingDataLoader(filter { Person::age eq "foo" }, listOf(), 0..Int.MAX_VALUE)
+        val loader = AssertingDataLoader(buildFilter { Person::age eq "foo" }, listOf(), 0..Int.MAX_VALUE)
         val adapter = DataLoaderAdapter(loader, { it })
-        adapter.size(Query(filter { Person::age eq "foo" }))
-        adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, filter { Person::age eq "foo" }))
+        adapter.size(Query(buildFilter { Person::age eq "foo" }))
+        adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, buildFilter { Person::age eq "foo" }))
         loader.checkCalled()
     }
 

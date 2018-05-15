@@ -6,6 +6,7 @@ import com.github.vok.karibudsl.flow.asc
 import com.github.vok.karibudsl.flow.desc
 import com.github.vok.karibudsl.flow.getAll
 import com.github.vokorm.Filter
+import com.github.vokorm.buildFilter
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
 import com.vaadin.flow.data.provider.ListDataProvider
 import com.vaadin.flow.data.provider.Query
