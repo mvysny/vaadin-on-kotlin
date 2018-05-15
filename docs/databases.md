@@ -373,7 +373,11 @@ class MyUI : UI {
 }
 ```
 
-This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box. Adding the possibility
+This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box.
+
+#### Grid Filters
+
+Adding the possibility
 for the user to filter on the contents of the Grid is really easy, just add the following call, as the last
 line into the `grid { ...  }` block:
 
@@ -383,25 +387,24 @@ appendHeaderRow().generateFilterComponents(this, Person::class)
 
 This will create additional Grid header and will auto-populate it with filters. You can finetune
 the generator by extending the `DefaultFilterFieldFactory`; see the `generateFilterComponents()`
-documentation for details.
+documentation for details. All filter components will be monitored for a value change events, and a proper filter
+will be set to the data provider upon every change. To achieve this, all built-in VoK data providers
+offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable
+(that is, instances of `ConfigurableFilterDataProvider`).
 
 You can also create an unremovable programmatic filter easily:
+
 ```kotlin
 grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
     // ...
 }
 ```
 
-The trick here is to *always* use DataProviders with configurable filters. By default Vaadin DataProviders do
-not support setting filters, but that would disable the support for user-defined filters (the filters would fail in runtime
-when trying to set the user-defined filter to the data provider).
+The unremovable filter will be ANDed with any additional filters set by the filter components. The important distinction here is as follows:
 
-Therefore, built-in VoK data providers offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable.
-User filters can thus cast them to `VokDataProvider` and set filters to them. However, that will overwrite
-any previously set filter, and sometimes we want to prevent that. The important distinction here is as follows:
-
-* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider,
-  but this filter will be removed by any filtering value typed in by the user into the filtering component.
+* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider. However
+  this filter will be removed by any filtering value typed in by the user into the filtering component. That is because
+  the filter components will simply call `setFilter()`, overwriting any filter you provided earlier.
 * That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
   takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
   to the old one but always ANDs given filter with any filters set by the `setFilter()`.
@@ -421,13 +424,17 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
 ```
 
 Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
-be saved nor deleted), hence it does not implement the `Entity` interface and we won't reuse the `Dao`-induced finders.
+be saved nor deleted), hence it does not implement the `Entity` interface. Since `Dao` interface is only
+applicable to entities, we can't reuse the `Dao`-induced finders.
 
 To load instances of this particular class, we will need to write our own finder methods. We will directly
-use the Sql2o capabilities to map any SELECT result into an arbitrary class. We just have to make
-sure that the SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching):
+use the Sql2o capabilities to map any SELECT result into an arbitrary class. In order for the automatic mapping to work,
+we must ensure that:
 
-> Note: replace `\{` by `{`:
+* The SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching);
+* The SQL types are compatible with Java types of matching fields.
+
+For example: (*Note:* replace `\{` by `{`):
 
 ```kotlin
 data class PersonDept(var personName: String? = null, var deptName: String? = null) {

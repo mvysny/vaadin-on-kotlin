@@ -374,12 +374,117 @@ class WelcomeView: VerticalLayout() {
 }
 ```
 
-This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box. Adding the possibility
+This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box.
+
+#### Grid Filters
+
+Adding the possibility
 for the user to filter on the contents of the Grid is really easy, just add the following call, as the last
 line into the `grid { ...  }` block:
 
 ```kotlin
 appendHeaderRow().generateFilterComponents(this, Person::class)
 ```
+
+This will create additional Grid header and will auto-populate it with filters. You can finetune
+the generator by extending the `DefaultFilterFieldFactory`; see the `generateFilterComponents()`
+documentation for details. All filter components will be monitored for a value change events, and a proper filter
+will be set to the data provider upon every change. To achieve this, all built-in VoK data providers
+offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable
+(that is, instances of `ConfigurableFilterDataProvider`).
+
+You can also create an unremovable programmatic filter easily:
+
+```kotlin
+grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
+    // ...
+}
+```
+
+The unremovable filter will be ANDed with any additional filters set by the filter components. The important distinction here is as follows:
+
+* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider. However
+  this filter will be removed by any filtering value typed in by the user into the filtering component. That is because
+  the filter components will simply call `setFilter()`, overwriting any filter you provided earlier.
+* That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
+  takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
+  to the old one but always ANDs given filter with any filters set by the `setFilter()`.
+
+### Showing an arbitrary output of any SQL SELECT command
+
+Say that we have a join which joins Persons with their departments. Something like the following:
+
+```sql92
+SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id
+```
+
+To capture the outcome of this SELECT we can simply declare the following class:
+
+```kotlin
+data class PersonDept(var personName: String? = null, var deptName: String? = null) : Serializable
+```
+
+Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
+be saved nor deleted), hence it does not implement the `Entity` interface. Since `Dao` interface is only
+applicable to entities, we can't reuse the `Dao`-induced finders.
+
+To load instances of this particular class, we will need to write our own finder methods. We will directly
+use the Sql2o capabilities to map any SELECT result into an arbitrary class. In order for the automatic mapping to work,
+we must ensure that:
+
+* The SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching);
+* The SQL types are compatible with Java types of matching fields.
+
+For example: (*Note:* replace `\{` by `{`):
+
+```kotlin
+data class PersonDept(var personName: String? = null, var deptName: String? = null) {
+    companion object {
+        fun findAll(): List<PersonDept> = db {
+            con.createQuery("SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id")
+                .executeAndFetch(PersonDept::class.java)
+        }
+
+        val dataProvider: VokDataProvider<PersonDept> get() =
+                sqlDataProvider(SelectResult::class.java,
+                    "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
+                    idMapper = { it })
+    }
+}
+```
+
+> Note: The `sqlDataProvider` function
+contains extensive documentation on this topic, please consult the kdoc for that class in your IDE.
+
+The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
+power of lazy-loading, sorting and filtering:
+
+```kotlin
+class MyUI : UI {
+    override fun init(request: VaadinRequest) {
+        grid(dataProvider = PersonDept.dataProvider) {
+            setSizeFull()
+            addColumnFor(PersonDept::personName)
+            addColumnFor(PersonDept::deptName)
+            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+        }
+    }
+}
+```
+
+### Sorting, Paging and SQL Filters
+
+Paging will simply work out-of-the box, since `sqlDataProvider` will simply replace `\{\{PAGING}}`
+with appropriate `LIMIT 30 OFFSET 0` stanzas.
+
+Sorting will also work out-of-the-box since `sqlDataProvider` will emit `, personName ASC` stanzas
+based on `PersonDept::personName` property names. This will naturally work properly since such columns are
+present in the SQL SELECT command.
+
+Simple auto-generated filters will also work since they will simply filter based on proper column names.
+
+We can of course create much more complex filters, say global filters that will find given text anywhere
+in the table, in all fields. Just create a `TextField` above the grid and in its value change listener simply
+set the new filter as shown below:
 
 TBD
