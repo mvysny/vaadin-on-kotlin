@@ -25,15 +25,18 @@ However, the behavior of those two classes is a bit different with Vaadin 10 tha
 read [Vaadin 10 server-side layouting for Vaadin 8 and Android developers](http://mavi.logdown.com/posts/6855605)
 for a full explanation.
 
-TBD
-
-TBD
-
 Let's now replace the contents of the `WelcomeView` by a single button. Rewrite the `WelcomeView` class as follows:
 
 ```kotlin
-@AutoView("")
-class WelcomeView: VerticalLayout(), View {
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
     init {
         button("Click me") {
             onLeftClick {
@@ -44,7 +47,7 @@ class WelcomeView: VerticalLayout(), View {
 }
 ```
 
-The `button()` function simply creates the Vaadin `Button`, sets a caption into it, inserts it into the parent layout (in this case,
+The `button()` function simply creates the Vaadin `Button`, sets a caption for it, inserts it into the parent layout (in this case,
 the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for that button. The configuration block adds a left click
 listener.
 
@@ -54,8 +57,15 @@ article.
 Let us add a simple form, consisting of two text fields:
 
 ```kotlin
-@AutoView("")
-class WelcomeView: VerticalLayout(), View {
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
     init {
         formLayout {
             textField("Name:")
@@ -74,14 +84,25 @@ The `formLayout()` function creates Vaadin `FormLayout` component and adds it in
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
+> The `FormLayout` is a powerful responsive layout which can change the number of columns depending on its width. Please find out more
+at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) documentation page.
+
 ## Referencing the components
 
 The `textField()` function also returns the newly created `TextField`. This is handy if we want to reference those text fields later, for
 example from the button click handler:
 
 ```kotlin
-@AutoView("")
-class WelcomeView: VerticalLayout(), View {
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
     private lateinit var nameField: TextField
     private lateinit var ageField: TextField
     init {
@@ -122,8 +143,17 @@ The function instantiates the form and calls the `init()` method which will add 
 it will call the configuration `block` on it. Now we can rewrite the `WelcomeView` as follows:
 
 ```kotlin
-@AutoView("")
-class WelcomeView: VerticalLayout(), View {
+package com.example.vok
+
+import com.github.vok.karibudsl.flow.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.Route
+
+@Route("")
+class WelcomeView: VerticalLayout() {
     init {
         val form = nameAgeForm()
         button("Click me") {
@@ -133,4 +163,11 @@ class WelcomeView: VerticalLayout(), View {
         }
     }
 }
+
+class NameAgeForm : FormLayout() {
+    private val nameField = textField("Name:")
+    private val ageField = textField("Age:")
+    val greeting: String get() = "Hello, ${nameField.value} of age ${ageField.value}"
+}
+fun HasComponents.nameAgeForm(block: NameAgeForm.()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
 ```
