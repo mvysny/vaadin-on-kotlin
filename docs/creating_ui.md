@@ -64,7 +64,7 @@ The `formLayout()` function creates Vaadin `FormLayout` component and adds it in
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
-## Referencing the components
+## Referencing Components
 
 The `textField()` function also returns the newly created `TextField`. This is handy if we want to reference those text fields later, for
 example from the button click handler:

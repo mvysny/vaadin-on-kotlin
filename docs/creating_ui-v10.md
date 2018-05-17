@@ -87,7 +87,7 @@ the newly created `TextField` class into the `FormLayout` itself, and not into t
 > The `FormLayout` is a powerful responsive layout which can change the number of columns depending on its width. Please find out more
 at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) documentation page.
 
-## Referencing the components
+## Referencing Components
 
 The `textField()` function also returns the newly created `TextField`. This is handy if we want to reference those text fields later, for
 example from the button click handler:
