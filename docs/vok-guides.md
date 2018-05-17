@@ -50,6 +50,9 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 ## Building the UIs
 
 * TBD
+* [Navigating](https://vaadin.com/docs/v10/flow/routing/tutorial-routing-annotation.html)
+  allows you to create multiple pages and explains how to navigate between them.
+* TBD
 
 ## Database access guides
 
