@@ -52,7 +52,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 * [Creating UIs](creating_ui-v10.md) explains how to compose your UI out of visual components such as Buttons and TextFields
 * [Navigating](https://vaadin.com/docs/v10/flow/routing/tutorial-routing-annotation.html)
   allows you to create multiple pages and explains how to navigate between them.
-* TBD
+* [Using Grids](grids-v10.md) shows best practices on how to display a lazy-loaded tabular list of data.
 
 ## Database access guides
 

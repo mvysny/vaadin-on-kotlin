@@ -8,7 +8,7 @@ It also allows you to sort and filter for particular column.
 Vaadin Grid is probably the most versatile and complex component, and it may take some time to learn all of its capabilities.
 Just take things slow and you'll be used to Grid in no time.
 
-You can learn about Grid capabilities in the [official Vaadin 8 Grid Documentation page](https://vaadin.com/docs/v8/framework/components/components-grid.html).
+You can learn about Grid capabilities in the [official Vaadin 10 Grid Documentation page](https://vaadin.com/docs/v10/flow/components/tutorial-flow-grid.html).
 
 There are more ways of using Grid; in the tutorial we will use the easiest way as endorsed by the VoK framework.
 
@@ -31,7 +31,7 @@ grid(dataProvider = Person.dataProvider) {
 This `DataProvider` automatically fetches pages of data lazily from a database table, supporting all optional features such as sorting
 and filtering.
 
-> Note: if you wish to display an outcome of a complex SELECT JOIN, please read the [Showing an arbitrary output of any SQL SELECT command](databases.md)
+> Note: if you wish to display an outcome of a complex SELECT JOIN, please read the [Showing an arbitrary output of any SQL SELECT command](databases-v10.md)
 section.
 
 You can configure the `Person.dataProvider` in multiple ways:
@@ -44,27 +44,20 @@ You can configure the `Person.dataProvider` in multiple ways:
 By default the Grid will show no columns. You can add columns easily, by calling the `addColumnFor()` function as follows:
 
 ```kotlin
-grid(dataProvider = Person.dataProvider) {
-    expandRatio = 1f; setSizeFull()
-
-    // a sample of how to reconfigure a column
-    addColumnFor(Person::id) { isSortable = false }
+personGrid = grid(dataProvider = Person.dataProvider) {
+    flexGrow = 1.0
+    addColumnFor(Person::id, sortable = false)
     addColumnFor(Person::name)
     addColumnFor(Person::age)
-    addColumnFor(Person::dateOfBirth) {
-        setRenderer(LocalDateRenderer())
-    }
-    addColumnFor(Person::maritalStatus)
     addColumnFor(Person::alive)
-    addColumnFor(Person::created) {
-        // example of a custom renderer which converts value to a displayable string.
-        setRenderer({ it.toString() }, TextRenderer())
-    }
+    addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
+    addColumnFor(Person::maritalStatus)
+    // example of a custom renderer which converts value to a displayable string.
+    addColumnFor(Person::created, converter = { it?.toString() })
 
     // add additional columns with buttons
-    addColumn({ "Show" }, ButtonRenderer<Person>({ event -> PersonView.navigateTo(event.item) }))
-    addColumn({ "Edit" }, ButtonRenderer<Person>({ event -> createOrEditPerson(event.item) })).id = "edit"
-    addColumn({ "Delete" }, ButtonRenderer<Person>({ event -> deletePerson(event.item.id!!) }))
+    addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) }))
+    //TODO edit+delete
 }
 ```
 
@@ -76,6 +69,12 @@ which will allow you to configure the column further (simply by calling setters/
 The `addColumnFor()` function is tailored towards creating columns bound to a bean property. If you wish to create columns not backed by
 any property (say, a column with the "Show Details" link), you can simply use the `addColumn()` function as provided by the Vaadin Grid
 itself. Please see above for the example.
+
+TBD
+
+TBD
+
+
 
 ## Sorting
 

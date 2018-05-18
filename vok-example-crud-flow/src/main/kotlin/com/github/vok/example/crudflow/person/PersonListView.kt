@@ -1,5 +1,6 @@
 package com.github.vok.example.crudflow.person
 
+import com.github.vok.example.crudflow.MainLayout
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.framework.toDate
@@ -9,6 +10,7 @@ import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.page.BodySize
 import com.vaadin.flow.component.page.Viewport
+import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.theme.Theme
 import com.vaadin.flow.theme.lumo.Lumo
@@ -17,10 +19,7 @@ import java.time.LocalDate
 /**
  * The main view contains a button and a template element.
  */
-@BodySize(width = "100vw", height = "100vh")
-@Route("")
-@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
-@Theme(Lumo::class)
+@Route("", layout = MainLayout::class)
 class PersonListView : VerticalLayout() {
     private val personGrid: Grid<Person>
     init {
@@ -33,13 +32,15 @@ class PersonListView : VerticalLayout() {
         }
         personGrid = grid(dataProvider = Person.dataProvider) {
             flexGrow = 1.0
-            addColumnFor(Person::id)
+            addColumnFor(Person::id, sortable = false)
             addColumnFor(Person::name)
             addColumnFor(Person::age)
             addColumnFor(Person::alive)
             addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
             addColumnFor(Person::maritalStatus)
             addColumnFor(Person::created, converter = { it?.toString() })
+
+            addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) }))
 
             appendHeaderRow().generateFilterComponents(this, Person::class)
         }
