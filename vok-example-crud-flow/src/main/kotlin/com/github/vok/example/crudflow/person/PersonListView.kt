@@ -39,11 +39,13 @@ class PersonListView : VerticalLayout() {
             addColumnFor(Person::alive)
             addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
             addColumnFor(Person::maritalStatus)
-            addColumnFor(Person::created, converter = { it?.toString() })
+            addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
 
             addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) }))
             addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) }))
-            addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() }))
+            addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
+                width = "64px"; flexGrow = 0
+            }
 
             appendHeaderRow().generateFilterComponents(this, Person::class)
         }

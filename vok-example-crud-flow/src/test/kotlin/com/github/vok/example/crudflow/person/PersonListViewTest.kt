@@ -5,9 +5,11 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crudflow.Bootstrap
 import com.github.vokorm.deleteAll
+import com.github.vokorm.findAll
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
+import java.time.LocalDate
 import kotlin.test.expect
 
 /**
@@ -30,13 +32,31 @@ class PersonListViewTest : DynaTest({
     usingApp()
 
     test("Smoke test") {
-        UI.getCurrent().navigate("")
         _get<PersonListView>()
     }
 
     test("grid is refreshed when data is generated") {
-        UI.getCurrent().navigate("")
         _get<Button> { caption = "Generate testing data" } ._click()
-        expect(86) { _get<Grid<*>>()._size() }
+
+        val grid = _get<Grid<*>>()
+        grid.expectRows(86)
+        grid.expectRow(0, "1", "generated0", "15", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z", "null", "null", "null")
+    }
+
+    test("edit one person") {
+        Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+
+        val grid = _get<Grid<*>>()
+        // currently not possible: https://github.com/mvysny/karibu-testing/issues/2
+/*
+        grid._clickRenderer(0, "edit")
+
+        // the CreateEditPerson dialog should pop up
+        _get<TextField> { caption = "Name:" }.value = "Duke Leto Atreides"
+        _get<Button> { caption = "Save" }._click()
+
+        // assert the updated person
+        expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.name } }
+*/
     }
 })

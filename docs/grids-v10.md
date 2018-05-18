@@ -56,8 +56,11 @@ personGrid = grid(dataProvider = Person.dataProvider) {
     addColumnFor(Person::created, converter = { it?.toString() })
 
     // add additional columns with buttons
-    addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) }))
-    //TODO edit+delete
+    addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) }))
+    addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) }))
+    addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() }))
+
+    appendHeaderRow().generateFilterComponents(this, Person::class)
 }
 ```
 
