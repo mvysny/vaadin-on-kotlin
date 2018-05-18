@@ -48,6 +48,11 @@ data class Person(
 ) : Entity<Long> {
     // this brings in tons of useful static methods such as findAll(), findById() etc.
     companion object : Dao<Person>
+
+    override fun save(validate: Boolean) {
+        if (created == null) created = Date()
+        super.save(validate)
+    }
 }
 
 enum class MaritalStatus {
