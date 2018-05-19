@@ -132,258 +132,27 @@ TBD
 
 
 
-## Conditional Row formats
+## Conditional Row/Cell formats
 
-Often it is required to change the row formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.
+Often it is required to change the cell formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.
+Vaadin 10 currently does not support styling cells directly; there is a feature request: https://github.com/vaadin/vaadin-grid-flow/issues/185
+In order to achieve custom formatting you need to use a `ComponentRenderer` for that particular column, which renders a `Div` styled in any way you wish.
+
+For example, to center text inside of a column you can use something like this:
 
 ```kotlin
-grid (dataSource) {
-    // ..
-    styleGenerator = StyleGenerator<Person> {
-        if (it.name == "John Doe") "redFlag" else ""
-    }
-}
-```
+fun <T> Grid<T>.center(vp: (T)->String?): Renderer<T> =
+    ComponentRenderer<Div, T>({ it:T -> Div().apply { text = vp(it); style.set("text-align", "center") }})
 
-Definition of redFlag Style in mytheme.scss:
-
-```css
-@import "../valo/valo.scss";
-@mixin mytheme {
-    @include valo;
-    …
-    .v-grid-row.redFlag > .v-grid-cell{
-        background-color: coral;
-        font-weight: 400;
-    }
+grid(dataProvider = Person.dataProvider) {
+    addColumnFor(Person::age, center({it.age?.toString()}))
 }
 ```
 
 # Grid Editor
 
-One of the powerful functions of Vaadin Grid is the inline editor which allows
-a the developer the implement a complete CRUD stack with minimum coding
-in a spreadsheet like manner. In order to properly set-up the grid editor,
-the following steps need to be taken:
+Note: Vaadin 10 does not support row editors yet: https://github.com/vaadin/vaadin-grid-flow/issues/199
 
-1. making the grid editable
-2. setting a simple editor component for each column **or** setting up a complex editor component and a converting field binder for each column
-3. Saving data after value change
-4. Creating support for deleting and adding a row
-
-## Making Grid editable
-
-As a first step, the grid editor must be enabled. The `Editor` uses Vaadin `Binder` to bind to
-the editing fields, exactly as it is done when writing forms.
-By default, the binder will not be aware of validation constraints; therefore it is good to
-overwrite the default binder with the `beanValidationBinder`.
-
-There are 2 different editing modes for Vaadin grids: **buffered** and **unbuffered**:
-
-* In buffered mode (which is the standard setting), whenever a row is selected for editing,
-  a bean with the current row content is created and passed on to the editor. Only after all changes
-  in all columns of this row are made, all values are valid and the user has pressed “Save”, this edited bean is passed back to the grid.
-  At this point, the new values will appear in the grid but not in the database. In order to propagate the changes into the database
-  we need to hook to the "save" event and save the bean into the database, simply by calling `save()`.
-* In unbuffered mode, any value change on a particular field will be immediately saved to the grid,
-  thus the developer has to either hook the value-change on every field for saving data back to the datasource,
-  or to implement a separate commit changes process.
-
-Since using the buffered mode is safer (in a sense that the bean is overwritten only when validations have passed),
-we recommend to use the buffered mode.
-
-```kotlin
-grid<Person>(dataSource = Person.dataSource) {
-    editor.isEnabled = true; editor.binder = beanValidationBinder(); editor.isBuffered = true
-    editor.addSaveListener { e -> e.bean.save(); refresh() }
-    // configure columns, etc
-}
-```
-
-## Simple editor components
-
-The editor is shown when the Grid row is double-clicked. By default there are no editor components configured and hence
-no information in the editor can be changed. Therefore, we need to either:
-
-* set the editor component directly, for simple cases when there is no value conversion needed; or
-* set the binder manually.
-
-Either of those actions will automatically switch the column to the edit mode (sets the `Column.isEditable` to true).
-
-In simple cases when there is no data conversion necessary (for example editing a `String` field with a `TextField`), setting up the editor Component
-(which handles the data entry) is all that's needed:
-
-```kotlin
-grid { // ..
-    addColumnFor(Person::name) { setEditorComponent(TextField()) }
-}
-```
-
-Another example might be to use a combobox of static values without conversion:
-
-```kotlin
-// ..
-addColumnFor(Person::gender) {
-    setEditorComponent(ComboBox(null, listOf("-", "m", "f")).apply { isEmptySelectionAllowed = false })
-}
-```
-
-Yet another example is `DateField` with custom formatting. Please note that
-the formatting has to be handled separately for the grid column (the renderer) and the editor.
-
-```kotlin
-// ..
-addColumnFor(Person::birthday) {
-    setRenderer(LocalDateRenderer("dd.MM.yyyy"))
-    setEditorComponent(DateField().apply { dateFormat = "dd.MM.yyyy" })
-}
-```
-
-## Conversion on editing
-
-If any conversion has to be done between the type of the editor component and the type of
-the data (for example editing a `Long` value in a `TextField`), we need to use the binder.
-
-```kotlin
-// ..
-addColumnFor(Person::age) {
-    caption = "age in years"
-    editorBinding = editor.binder.forField(TextField()).toInt().bind(Person::age)
-    setRenderer(NumberRenderer ("%,d", Locale.GERMANY))
-    setStyleGenerator({ "v-align-right" })
-}
-```
-
-## Saving edited data
-
-```kotlin
-editor.addSaveListener({ event -> event.bean.save(); refresh() })
-```
-
-## Creating support for deleting and adding a row
-
-An easy way of deleting a row is by adding an additional column with a delete button.
-
-```kotlin
-// ..
-addColumn({ "\u274C" }, ButtonRenderer<Person>({ event ->
-    event.item.delete()
-    refresh()  // this will call the Grid.refresh() extension method which will in turn call DataProvider.refreshAll()
-}))
-```
-
-Likewise, a new row can be create by the push of a button, which than can be edited like a normal row of data. This code is best placed below the grid and needs the grid to get a name in order to be referenced. Beware that as this method always creates a new database row, actions have to be taken in case of unique constraints on the database.
-
-```kotlin
-val gridPerson = grid(dataSource) {
-    // ..
-}
-
-button("New Line") {
-  onLeftClick {
-    Person().save()
-    gridPerson.refresh()
-    gridPerson.scrollToEnd()
-  }
-}
-```
-
-## All-in-One CRUD Grid example
-
-```kotlin
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
-import com.github.vok.karibudsl.*
-import com.github.vokorm.*
-import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
-import com.vaadin.shared.data.sort.SortDirection
-import com.vaadin.ui.*
-import com.vaadin.ui.renderers.ButtonRenderer
-import com.vaadin.ui.renderers.LocalDateRenderer
-import com.vaadin.ui.renderers.NumberRenderer
-import java.time.LocalDate
-import java.util.*
-import javax.validation.constraints.*
-
-data class Person(
-    override var id: Long? = null,
-
-    var name: String? = "new",
-
-    @field:NotNull
-    @field:Min(0)
-    @field:Max(100)
-    var age: Long = 0,
-
-    @field:NotNull
-    var dateOfBirth: LocalDate = LocalDate.now(),
-
-    @field:NotNull
-    @field:Pattern(regexp="[-mf]")
-    var gender: String = "-"
-
-) : Entity<Long> {
-    companion object : Dao<Person>
-}
-
-@AutoView("")
-class MainView: VerticalLayout(), View {
-    init {
-        setSizeFull()
-        isMargin = false
-        val gridPerson = grid(dataProvider = Person.dataProvider) {
-            expandRatio = 1f; setSizeFull()
-
-            editor.isEnabled = true; editor.binder = beanValidationBinder()
-            editor.addSaveListener { e -> e.bean.save(); refresh() }
-
-            addColumnFor(Person::name) { width = 300.0; setEditorComponent(TextField()) }
-            addColumnFor(Person::age) {
-                width = 100.0
-                editorBinding = editor.binder.forField(TextField()).toInt().bind(Person::age)
-                setStyleGenerator({ "v-align-right" })
-                setRenderer(NumberRenderer ("%,d", Locale.GERMANY))
-            }
-            column(Person::gender) {
-                caption = "Gen"
-                val combo = ComboBox<String>(null, listOf("-", "m", "f"))
-                combo.isEmptySelectionAllowed = false
-                setEditorComponent(combo)
-                width = 100.0
-            }
-            column(Person::dateOfBirth) {
-                caption = "Birthday"
-                setRenderer(LocalDateRenderer("dd.MM.yyyy"))
-                val dateField = DateField()
-                dateField.dateFormat = "dd.MM.yyyy"
-                setEditorBinding(editor.binder.forField(dateField).bind(Person::dateOfBirth))
-                width = 200.0
-            }
-            editor.addSaveListener({ event -> event.bean.save(); refresh() })
-
-            addColumn({ "\u274C" }, ButtonRenderer<Person>({ event ->
-                event.item.delete(); refresh()
-            })).width=70.0
-            styleGenerator = StyleGenerator<Person> {
-                if (it.name == "new") "redFlag" else ""
-            }
-            appendHeaderRow().generateFilterComponents(this@grid, Person::class)
-            sort(Person::id.name, SortDirection.ASCENDING)
-        }
-        button("New Line", {
-            Person().save()
-            gridPerson.refresh()
-            gridPerson.scrollToEnd()
-        })
-    }
-}
-```
-
-Also please see the [CrudView](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/CrudView.kt)
-class for a complete demo; see the [vok-example-crud-sql2o](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud-sql2o) for documentation
-on the example project.
-
-## Other grid options
+## Other Grid options
 
 For more information on the Vaadin Grid, please consult the [official Vaadin 8 Grid Documentation page](https://vaadin.com/docs/v8/framework/components/components-grid.html).

@@ -373,6 +373,6 @@ Also please see the [CrudView](https://github.com/mvysny/vaadin-on-kotlin/blob/m
 class for a complete demo; see the [vok-example-crud-sql2o](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud-sql2o) for documentation
 on the example project.
 
-## Other grid options
+## Other Grid options
 
 For more information on the Vaadin Grid, please consult the [official Vaadin 8 Grid Documentation page](https://vaadin.com/docs/v8/framework/components/components-grid.html).

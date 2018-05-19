@@ -7,6 +7,7 @@ import com.github.vok.framework.flow.FilterFactory
 import com.github.vok.framework.flow.FilterFieldFactory
 import com.github.vokorm.*
 import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
@@ -61,6 +62,7 @@ fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
             filterFieldFactory.bind(field as HasValue<HasValue.ValueChangeEvent<Any?>, Any?>, property!! as PropertyDefinition<T, Any?>)
             getCell(grid.getColumnByKey(propertyId)).setComponent(field as Component)
             result[propertyId] = field as Component
+            (field as? HasSize)?.width = "100%"
         }
     }
     return result
