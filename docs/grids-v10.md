@@ -84,6 +84,7 @@ sort indicator would be displayed for the user as well. Unfortunately this is no
 
 > Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
+> Note: `Grid.sort()` is not yet implemented; feature request: [Bug 200](https://github.com/vaadin/vaadin-grid-flow/issues/200).
 ## Column Widths
 
 All columns are by default expanded, with the expand ratio of `1`. That means they all use the same portion of available width space and hence
@@ -126,16 +127,10 @@ please read the [VoK Vaadin 10 Utils Documentation](https://github.com/mvysny/va
 
 > Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
 
-TBD
-
-TBD
-
-
-
 ## Conditional Row/Cell formats
 
 Often it is required to change the cell formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.
-Vaadin 10 currently does not support styling cells directly; there is a feature request: https://github.com/vaadin/vaadin-grid-flow/issues/185
+Vaadin 10 currently does not support styling cells directly; there is a feature request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
 In order to achieve custom formatting you need to use a `ComponentRenderer` for that particular column, which renders a `Div` styled in any way you wish.
 
 For example, to center text inside of a column you can use something like this:
@@ -149,11 +144,11 @@ grid(dataProvider = Person.dataProvider) {
 }
 ```
 
-Another option is to use the `TemplateRenderer` as described here: https://github.com/vaadin/vaadin-grid-flow/issues/146
+Another option is to use the `TemplateRenderer` as described here: [Bug 146](https://github.com/vaadin/vaadin-grid-flow/issues/146)
 
 # Grid Editor
 
-Note: Vaadin 10 does not support row editors yet: https://github.com/vaadin/vaadin-grid-flow/issues/199
+Note: Vaadin 10 does not support row editors yet: [Bug 199](https://github.com/vaadin/vaadin-grid-flow/issues/199)
 
 ## Other Grid options
 
