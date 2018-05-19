@@ -40,7 +40,9 @@ class PersonListViewTest : DynaTest({
 
         val grid = _get<Grid<*>>()
         grid.expectRows(86)
-        grid.expectRow(0, "1", "generated0", "15", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z", "null", "null", "null")
+        // unfortunately since we're using Renderer to render Age, we won't see the "Age" value here because of
+        // https://github.com/vaadin/vaadin-grid-flow/issues/197
+        grid.expectRow(0, "1", "generated0", "null", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z", "null", "null", "null")
     }
 
     test("edit one person") {
