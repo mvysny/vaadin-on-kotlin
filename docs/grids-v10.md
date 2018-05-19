@@ -149,6 +149,8 @@ grid(dataProvider = Person.dataProvider) {
 }
 ```
 
+Another option is to use the `TemplateRenderer` as described here: https://github.com/vaadin/vaadin-grid-flow/issues/146
+
 # Grid Editor
 
 Note: Vaadin 10 does not support row editors yet: https://github.com/vaadin/vaadin-grid-flow/issues/199
