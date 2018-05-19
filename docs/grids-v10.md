@@ -73,33 +73,36 @@ The `addColumnFor()` function is tailored towards creating columns bound to a be
 any property (say, a column with the "Show Details" link), you can simply use the `addColumn()` function as provided by the Vaadin Grid
 itself. Please see above for the example.
 
-TBD
-
-TBD
-
-
-
 ## Sorting
 
 The Grid is initially unsorted and shows the data in the whatever order the `DataProvider` considers the default one. In entity data providers
 the data is typically sorted by the primary key by default, which makes little sense for the user. You can hence create a data provider which
 provides a different default sorting instead: `grid(dataProvider = Person.dataProvider.sortedBy(Person::name.asc)) {}`
 
-Even better is to tell the Grid to initially sort by given column, by calling one of the `Grid.sort()` functions. That way, a visual
-sort indicator is displayed for the user as well.
+Even better would be to tell the Grid to initially sort by given column, by calling something like `Grid.sort()`. That way, a visual
+sort indicator would be displayed for the user as well. Unfortunately this is not yet supported by Vaadin 10.
 
 > Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
 ## Column Widths
 
-Columns have by default undefined width, which causes automatic sizing based on the widths of the displayed data.
-You can set column widths explicitly by pixel value with `setWidth()`, or relatively using expand ratios with `setExpandRatio()`.
+All columns are by default expanded, with the expand ratio of `1`. That means they all use the same portion of available width space and hence
+they all have the same width. You can turn off this behavior by setting column's `isExpand` to false (which is an alias for setting `flexGrow` to 0):
+
+```kotlin
+grid(...) {
+    addColumn(newDeleteButtonRenderer()).apply {
+        isExpand = false
+    }
+}
+```
+
+This will cause the column to have undefined width, which causes automatic sizing based on the widths of the displayed data.
+You can set column widths explicitly by pixel value with setting the column `width` property, or relatively using expand ratios with `flexGrow`.
 
 When using expand ratios, the columns with a non-zero expand ratio use the extra space remaining from other columns, in proportion
 to the defined ratios. Do note that the minimum width of an expanded column by default is based on the contents of the column
-(the initially rendered rows). To allow the column to become narrower than this, use `setMinimumWidthFromContent(false)` (introduced in 8.1).
-
-You can specify minimum and maximum widths for the expanding columns with `setMinimumWidth()` and `setMaximumWidth()`, respectively.
+(the initially rendered rows).
 
 The user can resize columns by dragging their separators with the mouse. When resized manually, all the columns widths are set to explicit
 pixel values, even if they had relative values before.
@@ -114,14 +117,20 @@ grid(dataProvider = Person.dataProvider) {
     // ..
 
     // automatically create filters, based on the types of values present in particular columns.
-    grid.appendHeaderRow().generateFilterComponents(grid)
+    grid.appendHeaderRow().generateFilterComponents(grid, Task::class)
 }
 ```
 
 VoK provides means to auto-generate filter components for all bean properties shown in the Grid itself. For more information on this topic
-please read the [VoK Vaadin 8 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin8/README.md).
+please read the [VoK Vaadin 10 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin10/README.md).
 
 > Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
+
+TBD
+
+TBD
+
+
 
 ## Conditional Row formats
 

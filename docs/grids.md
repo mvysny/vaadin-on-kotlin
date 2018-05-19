@@ -112,7 +112,7 @@ grid(dataProvider = Person.dataProvider) {
     // ..
 
     // automatically create filters, based on the types of values present in particular columns.
-    grid.appendHeaderRow().generateFilterComponents(grid)
+    grid.appendHeaderRow().generateFilterComponents(grid, Task::class)
 }
 ```
 
