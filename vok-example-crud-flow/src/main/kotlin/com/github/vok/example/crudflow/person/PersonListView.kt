@@ -59,7 +59,7 @@ class PersonListView : VerticalLayout() {
                 width = "90px"; isExpand = false
             }
             addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
-                width = "90px"; flexGrow = 0
+                width = "90px"; isExpand = false
             }
 
             appendHeaderRow().generateFilterComponents(this, Person::class)
