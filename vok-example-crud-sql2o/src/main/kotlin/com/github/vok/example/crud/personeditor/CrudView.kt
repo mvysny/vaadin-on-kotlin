@@ -56,7 +56,8 @@ class CrudView: VerticalLayout(), View {
                 setEditorComponent(TextField())
             }
             addColumnFor(Person::age) {
-                editorBinding = editor.binder.forField(TextField()).toInt().bind(Person::age)
+                // this demoes binding of a component which edits String (the TextField) to an Int-typed Person::age property
+                editorBinding = this@grid.editor.binder.forField(TextField()).toInt().bind(Person::age)
                 setStyleGenerator({ "v-align-right" })
             }
             addColumnFor(Person::dateOfBirth) {

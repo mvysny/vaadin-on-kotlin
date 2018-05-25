@@ -8,16 +8,11 @@ import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.db
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.icon.VaadinIcons
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.page.BodySize
-import com.vaadin.flow.component.page.Viewport
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.data.renderer.Renderer
 import com.vaadin.flow.router.Route
-import com.vaadin.flow.theme.Theme
-import com.vaadin.flow.theme.lumo.Lumo
 import java.time.LocalDate
 
 /**
@@ -52,7 +47,7 @@ class PersonListView : VerticalLayout() {
             }
             addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
 
-            addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) })).apply {
+            addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) })).apply {
                 width = "90px"; isExpand = false
             }
             addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
