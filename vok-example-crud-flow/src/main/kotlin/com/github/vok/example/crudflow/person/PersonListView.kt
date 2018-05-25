@@ -37,26 +37,26 @@ class PersonListView : VerticalLayout() {
         personGrid = grid(dataProvider = Person.dataProvider) {
             flexGrow = 1.0
             addColumnFor(Person::id, sortable = false) {
-                width = "90px"; flexGrow = 0
+                width = "90px"; isExpand = false
             }
             addColumnFor(Person::name)
             addColumnFor(Person::age, center({it.age?.toString()})) {
-                width = "120px"; flexGrow = 0
+                width = "120px"; isExpand = false
             }
             addColumnFor(Person::alive) {
-                width = "130px"; flexGrow = 0
+                width = "130px"; isExpand = false
             }
             addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
             addColumnFor(Person::maritalStatus) {
-                width = "160px"; flexGrow = 0
+                width = "160px"; isExpand = false
             }
             addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
 
             addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) })).apply {
-                width = "90px"; flexGrow = 0
+                width = "90px"; isExpand = false
             }
             addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
-                width = "90px"; flexGrow = 0
+                width = "90px"; isExpand = false
             }
             addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
                 width = "90px"; flexGrow = 0
