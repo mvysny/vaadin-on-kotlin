@@ -1,6 +1,8 @@
 package com.github.vok.framework.flow
 
 import com.github.vok.framework.VaadinOnKotlin
+import com.github.vok.framework.flow.VokSecurity.checkPermissionsOfView
+import com.github.vok.framework.flow.VokSecurity.install
 import com.github.vok.karibudsl.flow.*
 import com.github.vok.security.loggedInUserResolver
 import com.vaadin.flow.component.Component
@@ -8,7 +10,7 @@ import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.icon.Icon
-import com.vaadin.flow.component.icon.VaadinIcons
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
@@ -151,12 +153,12 @@ class LoginForm(appName: String) : VerticalLayout() {
             width = "100%"
             usernameField = textField("Username") {
                 isExpand = true; minWidth = "0px"
-                prefixComponent = Icon(VaadinIcons.USER)
+                prefixComponent = Icon(VaadinIcon.USER)
                 bind(binder).asRequired().trimmingConverter().bind(UsernamePassword::username)
             }
             passwordField = passwordField("Password") {
                 isExpand = true; minWidth = "0px"
-                prefixComponent = Icon(VaadinIcons.LOCK)
+                prefixComponent = Icon(VaadinIcon.LOCK)
                 bind(binder).asRequired().trimmingConverter().bind(UsernamePassword::password)
             }
             button("Login") {
