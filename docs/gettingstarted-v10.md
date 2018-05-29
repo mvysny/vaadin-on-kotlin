@@ -476,12 +476,12 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(ArticleView::class, articleId)
     }
 }
 ```
 A couple of things to note. We use `Article.getById(id)` to find the article we're interested in,
-passing in `articleId` to get the first parameter from the request. In Vaadin, the parameter is passed to the `navigate()` function
+passing in `articleId` to get the first parameter from the request. In Vaadin, the parameter is passed to the `navigateToView()` function
 which takes the view class and a parameter as its input, constructs the target URL
 and redirects the browser to the URL. In this case, [http://localhost:8080/article/12](http://localhost:8080/article/12).
 
@@ -658,7 +658,6 @@ package com.example.vok
 
 import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.getById
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
@@ -696,7 +695,7 @@ class EditArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(EditArticleView::class, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(EditArticleView::class, articleId)
     }
 }
 ```
@@ -760,7 +759,7 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(ArticleView::class, articleId)
     }
 }
 ```
@@ -861,7 +860,6 @@ package com.example.vok
 
 import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.getById
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
@@ -878,7 +876,7 @@ class EditArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(EditArticleView::class.java, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(EditArticleView::class, articleId)
     }
 }
 ```
@@ -1181,7 +1179,7 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(ArticleView::class, articleId)
     }
 }
 ```
@@ -1346,7 +1344,7 @@ class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
     }
 
     companion object {
-        fun navigateTo(articleId: Long) = UI.getCurrent().navigate(ArticleView::class.java, articleId)
+        fun navigateTo(articleId: Long) = navigateToView(ArticleView::class, articleId)
     }
 }
 ```
