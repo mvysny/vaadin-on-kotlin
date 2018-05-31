@@ -3,11 +3,13 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.framework.sql2o.Person
 import com.github.vokorm.Filter
+import com.github.vokorm.ILikeFilter
 import com.github.vokorm.buildFilter
 import com.github.vokorm.dataloader.DataLoader
 import com.github.vokorm.dataloader.SortClause
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
+import com.vaadin.ui.ComboBox
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({
@@ -73,6 +75,33 @@ class DataProvidersTest : DynaTest({
         }
         test("sqldp with filter") {
             expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+        }
+    }
+
+    group("API test: populating combobox with data providers") {
+        // test that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
+        // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
+        // this test does not test a functionality; it rather tests the API itself whether the API is simple to use.
+        test("entity data provider") {
+            val dp = Person.dataProvider
+            ComboBox<Person>().apply {
+                setItemCaptionGenerator { it.name }
+                setDataProvider(dp, { searchString: String? ->
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::name.name, searchString!!)
+                })
+            }
+        }
+        // tests that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
+        // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
+        // this test does not test a functionality; it rather tests the API itself whether the API is simple to use.
+        test("sql data provider") {
+            val dp = sqlDataProvider(Person::class.java, "select * from Person where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
+            ComboBox<Person>().apply {
+                setItemCaptionGenerator { it.name }
+                setDataProvider(dp, { searchString: String? ->
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::name.name, searchString!!)
+                })
+            }
         }
     }
 })

@@ -21,7 +21,7 @@ typealias VokDataProvider<T> = ConfigurableFilterDataProvider<T, Filter<T>?, Fil
  * @return data provider which can be configured to always apply given filter.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : VokDataProvider<T> =
-    withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOf(f1, f2).filterNotNull().toSet().and() })
+    withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() })
 
 /**
  * Produces a new data provider which restricts rows returned by the original data provider to given filter.

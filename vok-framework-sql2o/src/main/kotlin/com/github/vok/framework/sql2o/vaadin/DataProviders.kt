@@ -10,7 +10,17 @@ import com.vaadin.data.provider.Query
 import com.vaadin.shared.data.sort.SortDirection
 import java.util.stream.Stream
 
-class DataLoaderAdapter<T : Any>(val loader: DataLoader<T>, val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+/**
+ * A Vaadin [com.vaadin.data.provider.DataProvider] implementation which delegates the data-fetching calls to a VoK-ORM [DataLoader];
+ * an adapter which adapts calls to Vaadin DataProvider to VoK-ORM DataLoader.
+ * @param T the type of items returned by this data provider.
+ * @param loader performs the actual data fetching. All data-fetching calls are delegated here.
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.data.provider.DataProvider.getId] for more details. Typically every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
     override fun toString() = "DataLoaderAdapter($loader)"
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = loader.getCount(query?.filter?.orElse(null))
