@@ -16,7 +16,7 @@ starting point for beginner programmers.
 With VoK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
 to style up your application and/or write your own custom rich component. 
 
-VoK is not just yet another HTTP route mapping library. On the contrary: it is built on Vaadin which provides you with a 
+VoK is not just yet another HTTP route mapping library. On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
 [wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders; allows drag'n'drop between those components.
 All components have rich JavaScript facade which provides rich functionality. Vaadin transparently handles the state synchronisation between the client part and
 the server part of the component which allows you to focus on wiring the components in pure server-side Kotlin code.
