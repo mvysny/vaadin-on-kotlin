@@ -555,3 +555,18 @@ class WelcomeView: VerticalLayout() {
 }
 ```
 
+## Exporting data from DataProviders
+
+You can simply call `DataProvider.getAll()` which will fetch all beans from the
+data provider satisfying filters set by the `setFilter()` or `withFilter()`. You need to be
+careful though - you can easily run out of memory if the number of matching rows is huge.
+
+Since Grid's generated filter components calls `setFilter()`, the `getAll()` function will
+honor both the user-configured values in the filter components, and the search-everywhere text field
+in the example above.
+
+> Note: don't use the `ListDataProvider.getItems()` or `ListDataProvider.items` to fetch the data. This will
+return all items as they were provided to the `ListDataProvider` constructor, not applying any
+filters set by either the Grid or the search-everywhere `TextField`.
+
+You can then export the beans into, say, a CSV.
