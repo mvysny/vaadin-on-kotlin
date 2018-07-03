@@ -97,9 +97,9 @@ The filter component call flow is then as follows:
   there will be just a single value of type `String`.
 * Since these values can't be passed directly into the `DataProvider`, the values are passed to the
   `FilterFactory` implementation instead, which then provides proper filter objects accepted by the `DataProvider`.
-* Those filter objects are then passed into the `ConfigurableFilterDataProvider.setFilter()` method which
+* Those filter objects are then passed into the `VokDataProvider.setFilter()` method which
   will then notify the Grid that the data set may have been changed.
-* The Grid component will then refresh the data by calling `DataProvider.fetch()`; the `ConfigurableFilterDataProvider`
+* The Grid component will then refresh the data by calling `DataProvider.fetch()`; the `VokDataProvider`
   implementation will make sure to include the filters configured in the above step.
 
 With this automatized approach, all you need to provide is:
@@ -117,6 +117,8 @@ programmer can generate filter components simply by calling
 ```kotlin
 grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
 ```
+
+For more information about using filters with `DataProviders` please see the [Databases Guide](http://www.vaadinonkotlin.eu/databases.html).
 
 ### Customizing filters
 

@@ -47,3 +47,8 @@ If you plan to use JPA, then use the [vok-framework-jpa](../vok-framework-jpa) m
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin8](../vok-util-vaadin8) module. You will then have to write your own data fetching
 layer; however you may find inspiration on how to do so, by checking the sources of this module.
+
+## More documentation
+
+* The [Accessing Database Guide](http://www.vaadinonkotlin.eu/databases.html)
+* The [Using Grids Guide](http://www.vaadinonkotlin.eu/grids.html)

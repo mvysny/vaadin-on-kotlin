@@ -47,3 +47,8 @@ Unfortunately there is no support for Vaadin10 + JPA at the moment.
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin10](../vok-util-vaadin10) module. You will then have to write your own data fetching
 layer; however you may find inspiration on how to do so, by checking the sources of this module.
+
+## More Information
+
+* The [Accessing Database Guide](http://www.vaadinonkotlin.eu/databases-v10.html)
+* The [Using Grids Guide](http://www.vaadinonkotlin.eu/grids-v10.html)
