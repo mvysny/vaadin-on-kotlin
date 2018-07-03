@@ -121,6 +121,8 @@ please read the [VoK Vaadin 8 Utils Documentation](https://github.com/mvysny/vaa
 
 > Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
 
+You can do quite a lot with the data providers - please see the (Databases Guide)[databases.md] for more details.
+
 ## Conditional Row formats
 
 Often it is required to change the row formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.

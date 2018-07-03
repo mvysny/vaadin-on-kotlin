@@ -480,48 +480,82 @@ Sorting will also work out-of-the-box since `sqlDataProvider` will emit `, perso
 based on `PersonDept::personName` property names. This will naturally work properly since such columns are
 present in the SQL SELECT command.
 
-Simple auto-generated filters will also work since they will simply filter based on proper column names.
+Simple Grid auto-generated filters will also work since they will simply filter based on proper column names.
 
 We can of course create much more complex filters, say global filters that will find given text anywhere
-in the table, in all fields. Just create a `TextField` above the grid and in its value change listener simply
-set the new filter as shown below:
+in the table, in all fields. Read below on how this can be done.
+
+## Chaining Data Providers
+
+Sometimes filtering the Grid using the generated filter components is not enough: sometimes it is handy to have an additional search-everywhere `TextField`
+right above the Grid, to do a very fast coarse search. The user can then fine-tune the search by further refining the search criteria in `Grid`'s generated
+filter bar. We need to compute the filters both from the search-everywhere `TextField` and the `Grid` and AND them together.
+
+A naive implementation would be to create one data provider, set it to the Grid and set its filter whenever the search-everywhere `TextField` changes.
+The problem with this approach is that when user types something into Grid's auto-generated filter component, it will set the filter
+into the data provider as well, overwriting any filter set previously by the search-everywhere `TextField`.
+
+In order to AND multiple filters, we can use the data provider chaining / delegation technique. We will take a data provider and create a new one,
+which will delegate the data-fetching tasks to the original data provider but will AND the query filter with any filter
+that's set into it:
 
 ```kotlin
-package com.example.vok
-
-import com.github.vok.framework.sql2o.vaadin.*
-import com.github.vok.karibudsl.*
-import com.vaadin.navigator.PushStateNavigation
-import com.vaadin.server.VaadinRequest
-import com.vaadin.ui.UI
-
-@PushStateNavigation
-class MyUI : UI() {
-
-    override fun init(request: VaadinRequest) {
-        verticalLayout {
-            setSizeFull()
-
-            val dp = PersonDept.dataProvider
-            textField {
-                addValueChangeListener {
-                    val normalizedFilter = value.trim().toLowerCase() + "%"
-                    if (value.isNotBlank()) {
-                        dp.setFilter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
-                    } else {
-                        dp.setFilter(null)
-                    }
-                }
-            }
-            // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
-            // components would not overwrite filter set by the custom text field filter above.
-            grid(dataProvider = dp.withConfigurableFilter2()) {
-                setSizeFull()
-                addColumnFor(PersonDept::personName)
-                addColumnFor(PersonDept::deptName)
-                appendHeaderRow().generateFilterComponents(this, PersonDept::class)
-            }
-        }
-    }
-}
+val dp = PersonDept.dataProvider
+// the search-everywhere TextField will set the filters into `dp` by calling dp.setFilter()
+val chainedDP = dp.withConfigurableFilter2()
+// the withConfigurableFilter2() method creates a new data provider which delegates data-fetching calls to the original, but
+// will apply its own filters as well
 ```
+
+We can now set the `chainedDP` to the `Grid` and generate the grid filter components. The filter components will set filters to the
+`chainedDP` while the search-everywhere `TextField` will set filters to the `dp`. This way the filters won't get overwritten by one another.
+
+You can chain even more data providers: for example if you wish to restrict the result to a particular company only, you can type
+
+```kotlin
+val dp = PersonDept.dataProvider.withFilter { PersonDept::companyId eq 25L }
+```
+
+Following is a full example code which demonstrates this technique:
+
+ ```kotlin
+ package com.example.vok
+ 
+ import com.github.vok.framework.sql2o.vaadin.*
+ import com.github.vok.karibudsl.*
+ import com.vaadin.navigator.PushStateNavigation
+ import com.vaadin.server.VaadinRequest
+ import com.vaadin.ui.UI
+ 
+ @PushStateNavigation
+ class MyUI : UI() {
+ 
+     override fun init(request: VaadinRequest) {
+         verticalLayout {
+             setSizeFull()
+ 
+             val dp = PersonDept.dataProvider
+             textField {
+                 addValueChangeListener {
+                     val normalizedFilter = value.trim().toLowerCase() + "%"
+                     if (value.isNotBlank()) {
+                         dp.setFilter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
+                     } else {
+                         dp.setFilter(null)
+                     }
+                 }
+             }
+             
+             // wrap 'dp' in configurable filter data provider so that the search-everywhere text field won't overwrite filters set by the
+             // generated filter components. See above for an explanation.
+             grid(dataProvider = dp.withConfigurableFilter2()) {
+                 setSizeFull()
+                 addColumnFor(PersonDept::personName)
+                 addColumnFor(PersonDept::deptName)
+                 appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+             }
+         }
+     }
+ }
+ ```
+ 
