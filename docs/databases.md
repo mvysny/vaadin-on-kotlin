@@ -516,6 +516,11 @@ You can chain even more data providers: for example if you wish to restrict the 
 val dp = PersonDept.dataProvider.withFilter { PersonDept::companyId eq 25L }
 ```
 
+> *Important:* Make sure to configure Grid with the last chained data provider (in this example, the `chainedDP`).
+If you set the data providers in reverse (say, you'll set the `dp` to the Grid and fill the search-everywhere filter into `chainedDP`),
+the Grid will always poll `dp` for data. The problem is that `dp` never delegates data fetching to `chainedDP` and hence the filter
+set to `chainedDP` is never applied. 
+
 Following is a full example code which demonstrates this technique:
 
  ```kotlin
