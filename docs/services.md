@@ -97,7 +97,7 @@ it has couple of disadvantages:
    `BookingService().book()` to `BookingService.book()` and vice versa.
 2. For a new programmer in the project it is next to impossible to discover all services which are at his disposal.
    You can establish some naming convention (all service classes must end with `Service`), or
-   implement a `Service` interface, but that still doesn't provide a simple and handy way of
+   make them implement a `Service` interface, but that still doesn't provide a simple and handy way of
    listing all services in your IDE.
 
 Luckily, there is a way. We will build a repository of services.
