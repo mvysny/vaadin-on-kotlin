@@ -88,6 +88,59 @@ BookingService().book()
 
 Creating a new instance of an object is very cheap on current JVMs so there is no worry for performance.
 
+## A repository of services
+
+Having `BookingService` as a simple POJO is great since there is no dark injection/enhancement magic going on. However,
+it has couple of disadvantages:
+
+1. Refactoring of the service from `object` to `class` and vice versa requires you to change all call sites,
+   `BookingService().book()` to `BookingService.book()` and vice versa.
+2. For a new programmer in the project it is next to impossible to discover all services which are at his disposal.
+   You can establish some naming convention (all service classes must end with `Service`), or
+   implement a `Service` interface, but that still doesn't provide a simple and handy way of
+   listing all services in your IDE.
+
+Luckily, there is a way. We will build a repository of services.
+
+Consider having the following object:
+```kotlin
+object Services
+```
+This is just an empty singleton with no methods and no fields, and it appears to be completely useless.
+However, with Kotlin we can extend any class with additional fields and methods, by the
+means of extension methods. So, we can simply add getters for all services into the `Services`
+object. That would allow us to simply type `Services.` into your IDE, then press `Ctrl+Space`
+and your IDE will list all services you have in your app. Awesome!
+
+In other words: when we 'extend' the `Services` object with services, we are effectively building up a *repository* (a *directory*) of services.
+This directory can be iterated in development time, simply by using IDE's auto-completion features. In your IDE, you simply type in
+the "`Services.`" stanza, press the `Ctrl+Space` keys and your IDE will list all extension properties including the `bookingService`.
+
+This approach has the following advantages:
+
+* Different modules can attach different services to the `Services` object, thus building up a service repository. This way you can
+  reuse services within different apps.
+* The IDE's auto-completion will provide the searchable list of all services. No IDE plugin is needed for this since the extension property
+  is a language feature of the Kotlin programming language itself.
+* The type safety ensures that the service exists in compile time and is accessible. If it isn't, your program won't compile.
+  This is superior to runtime configuration since the configuration errors show up much faster, at compile time.
+* There are no proxy classes and there is no runtime class enhancement magic; hence there are no 30+ stack traces through
+  proxies/interceptors/DI container internals. Because of that, this approach is fast, simple and reliable.
+
+An example of attaching of the `BookingService` to the `Services` object:
+
+```kotlin
+val Services.booking: BookingService get() = BookingService()
+```
+
+Now you can write this into your code:
+
+```kotlin
+...
+Services.booking.book()
+...
+```
+
 ## The stateful service
 
 Sometimes services need to have a state. For example we could have a `LoginService` which would deal with user
@@ -162,14 +215,3 @@ onLogin { username, password ->
 When we 'extend' the `Session` object with services, we are effectively building up a *repository* (a *directory*) of services.
 This directory can be iterated in development time, simply by using IDE's auto-completion features. In your IDE, you simply type in
 the "`Session.`" stanza, press the `Ctrl+Space` keys and your IDE will list all extension properties including the `loginService`.
-
-This approach has the following advantages:
-
-* Different modules can attach different services to the `Session` object, thus building up a service repository. This way you can
-  reuse services within different apps.
-* The IDE's auto-completion will provide the searchable list of all services. No IDE plugin is needed for this since the extension property
-  is a language feature of the Kotlin programming language.
-* The type safety ensures that the service exists in compile time and is accessible. If it isnt't, your program won't compile.
-  This is superior to runtime configuration since the configuration errors show up much faster, at compile time.
-* There are no proxy classes and there is no runtime class enhancement magic; hence there are no 30+ stack traces through
-  proxies/interceptors/DI container internals. Because of that, this approach is fast, simple and reliable.
