@@ -63,6 +63,9 @@ private var resolver: LoggedInUserResolver? = null
 
 /**
  * The global instance of the resolver.
+ *
+ * In order for the [AllowRoles]/[AllowAll]/[AllowAllUsers] interfaces to be checked, you need to implement [LoggedInUserResolver] properly and set it here.
+ * Yet this is just a helper class. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 var VaadinOnKotlin.loggedInUserResolver: LoggedInUserResolver?
     get() = resolver

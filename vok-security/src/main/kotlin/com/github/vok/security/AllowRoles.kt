@@ -1,5 +1,7 @@
 package com.github.vok.security
 
+import com.github.vok.framework.VaadinOnKotlin
+
 /**
  * Allows any user with one of the listed roles to see the view.
  *
@@ -12,6 +14,9 @@ package com.github.vok.security
  *
  * Only one of the [AllowRoles], [AllowAll] and [AllowAllUsers] can be present. If more than one is present, it's a configuration error and a [RuntimeException] will be thrown.
  * If none is present, nobody can see that view. This is to prevent views accidentally exposed by omitting the security annotation on them.
+ *
+ * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
+ * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  * @property roles the current user must possess any of the roles listed here, in order to pass the authorization. If the [roles] array is empty,
  * no users will qualify and the view remains inaccessible.
  */
@@ -26,6 +31,9 @@ annotation class AllowRoles(vararg val roles: String)
  *
  * Only one of the [AllowRoles], [AllowAll] and [AllowAllUsers] can be present. If more than one is present, it's a configuration error and a [RuntimeException] will be thrown.
  * If none is present, nobody can see that view. This is to prevent views accidentally exposed by omitting the security annotation on them.
+ *
+ * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
+ * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
 annotation class AllowAll
@@ -38,6 +46,9 @@ annotation class AllowAll
  *
  * Only one of the [AllowRoles], [AllowAll] and [AllowAllUsers] can be present. If more than one is present, it's a configuration error and a [RuntimeException] will be thrown.
  * If none is present, nobody can see that view. This is to prevent views accidentally exposed by omitting the security annotation on them.
+ *
+ * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
+ * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
 annotation class AllowAllUsers

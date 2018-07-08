@@ -148,6 +148,22 @@ The API is intended to be very simple so that it can be backed easily by any kin
 of auth scheme you need: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)
 library, [Apache Shiro](https://shiro.apache.org/) or others.
 
+### Replace 'roles' with 'permissions'
+
+In bigger apps with lots of functionality and lots of views the number of roles may grow big. For example,
+you may need multiple administrator types which have access to a particular part of an app but not to the other -
+say, manager-admin, admin, super-admin etc etc. In such app, the difference between roles starts
+to blur and it becomes hard to differentiate between roles.
+
+In such case we recommend to start thinking of 'permissions' rather than 'roles'. For example, instead of a
+user having an administrator role, the user would have a permission to view and edit the list of all users.
+
+To convert your app to this new security paradigm:
+
+1. Introduce a permission for every action, say, `can-view-users`, `can-create-order`.
+2. Instead of assigning users roles, you assign them permissions.
+3. A view listing users will then be annotated with `@AllowRoles('can-view-users')`
+
 ### The vok-security module
 
 This module only provides basic API classes which lays out the foundation of the
