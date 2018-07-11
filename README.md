@@ -191,7 +191,7 @@ popupView("Details") {
 Support for sorting and filtering out-of-the-box:
 
 ```kotlin
-grid(Person::class, dataProvider = Person.dataProvider.withConfigurableFilter()) {
+grid(Person::class, dataProvider = Person.dataProvider) {
   setSizeFull()
   cols {
     column(Person::id) {
