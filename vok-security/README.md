@@ -13,7 +13,7 @@ a set of roles - a set of duties it is expected to perform in the app. Every Vaa
 then declares roles allowed to see that particular view; only users which are assigned at least one
 of the roles declared on the view are then allowed to visit that view.
 
-## Example: Fictional Book Shop
+## The 'Fictional Book Shop' Example
 
 In a fictional book shop:
 
@@ -183,9 +183,7 @@ stored in the SQL database:
 
 ## VoK-Security Simple
 
-The VoK-Security API does not provide much functionality out-of-the-box and it may
-be hard to use it properly. That's
-why VoK-Security provides a simple password-based auth with all of the best practices:
+VoK-Security provides a simple password-based auth with all of the best practices:
 
 * A login dialog is provided, to ask the user for the user name/password
 * The username/password is checked against a SQL database. The passwords are stored
@@ -229,3 +227,6 @@ That's why we deliberately avoid to use an all-encompassing library like [Apache
 or [Spring Security](https://projects.spring.io/spring-security/)
 with insanely complex APIs. We also don't provide our own authentication API (since it would
 either be incomplete or complex). In this case, the best abstraction is no abstraction at all.
+
+However, if need be, we may add support for most used combinations (e.g. username+password via LDAP).
+A standalone library will then be created.
