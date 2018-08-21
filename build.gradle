@@ -1,9 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.2.60'
     ext.vaadin8_version = '8.5.1'
     ext.karibudsl_version = '0.4.7'
     ext.kaributesting_version = '0.4.15'
-    ext.vaadin10_version = '10.0.2'
+    ext.vaadin10_version = '10.0.4'
     ext.hikaricp_version = '3.2.0'
     ext.flyway_version = '5.1.4'
     ext.dynatest_version = "0.8"
@@ -15,7 +14,7 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.60"
+    id "org.jetbrains.kotlin.jvm" version "1.2.61"
     id "org.gretty" version "2.1.0"
     id "com.jfrog.bintray" version "1.8.1"
 }

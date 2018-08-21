@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 apply plugin: "com.jfrog.bintray"
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // logging
     compile 'org.slf4j:slf4j-api:1.7.25'

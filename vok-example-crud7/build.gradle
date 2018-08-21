@@ -10,7 +10,7 @@ dependencies {
     compile "com.github.vok.karibudsl:karibu-dsl-v8compat7:$karibudsl_version"
 
     compile(project(":vok-framework-jpa-compat7"))
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
     testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
 
     // logging
