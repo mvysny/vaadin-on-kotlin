@@ -3,6 +3,7 @@ package com.github.vok.framework
 import com.github.mvysny.dynatest.DynaTest
 import java.io.Serializable
 import kotlin.test.expect
+import kotlin.test.fail
 
 interface MyListener : Serializable {
     fun onFoo(param1: String)
@@ -38,8 +39,8 @@ class ListenersTest : DynaTest({
     test("unregistered listeners are not invoked") {
         val listeners = listeners<MyListener>()
         val listener = object : MyListener {
-            override fun onFoo(param1: String) = kotlin.test.fail("shouldn't be called")
-            override fun onBar(param2: Int) = kotlin.test.fail("shouldn't be called")
+            override fun onFoo(param1: String) = fail("shouldn't be called")
+            override fun onBar(param2: Int) = fail("shouldn't be called")
         }
         listeners.add(listener)
         listeners.remove(listener)

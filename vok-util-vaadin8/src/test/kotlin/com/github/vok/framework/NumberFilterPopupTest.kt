@@ -4,6 +4,7 @@ import com.github.karibu.testing.*
 import com.github.mvysny.dynatest.DynaTest
 import com.vaadin.ui.*
 import kotlin.test.expect
+import kotlin.test.fail
 
 class NumberFilterPopupTest : DynaTest({
     beforeEach { MockVaadin.setup() }
@@ -22,7 +23,7 @@ class NumberFilterPopupTest : DynaTest({
     group("value change listener tests") {
         test("Setting to the same value does nothing") {
             component.addValueChangeListener {
-                kotlin.test.fail("should not be fired")
+                fail("should not be fired")
             }
             component.value = null
         }
@@ -40,7 +41,7 @@ class NumberFilterPopupTest : DynaTest({
 
         test("value change won't trigger unregistered change listeners") {
             component.addValueChangeListener {
-                kotlin.test.fail("should not be fired")
+                fail("should not be fired")
             } .remove()
             component.value = NumberInterval(5.0, 25.0)
         }
@@ -55,7 +56,7 @@ class NumberFilterPopupTest : DynaTest({
 
         test("Clear does nothing when the value is already null") {
             component.addValueChangeListener {
-                kotlin.test.fail("No listener must be fired")
+                fail("No listener must be fired")
             }
             _get<Button> { caption = "Clear" } ._click()
             expect(null) { component.value }
