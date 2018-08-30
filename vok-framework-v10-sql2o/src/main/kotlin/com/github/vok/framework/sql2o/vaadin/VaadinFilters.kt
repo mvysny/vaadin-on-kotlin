@@ -2,8 +2,8 @@
 
 package com.github.vok.framework.sql2o.vaadin
 
+import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.flow.DefaultFilterFieldFactory
-import com.github.vok.framework.flow.FilterFactory
 import com.github.vok.framework.flow.FilterFieldFactory
 import com.github.vokorm.*
 import com.vaadin.flow.component.Component

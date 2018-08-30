@@ -1,5 +1,6 @@
 package com.github.vok.framework.flow
 
+import com.github.vok.framework.FilterFactory
 import com.github.vok.karibudsl.flow.DateInterval
 import com.github.vok.karibudsl.flow.DateRangePopup
 import com.vaadin.flow.component.HasValue
