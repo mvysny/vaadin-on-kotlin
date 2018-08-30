@@ -11,13 +11,13 @@ interface MyListener : Serializable {
 
 class ListenersTest : DynaTest({
     test("empty listeners do nothing") {
-        val listeners = Listeners<MyListener>()
+        val listeners = listeners<MyListener>()
         listeners.fire.onFoo("foo")
         listeners.fire.onBar(25)
     }
 
     test("listeners get invoked") {
-        val listeners = Listeners<MyListener>()
+        val listeners = listeners<MyListener>()
         var called = 0
         listeners.add(object: MyListener {
             override fun onFoo(param1: String) {
@@ -36,7 +36,7 @@ class ListenersTest : DynaTest({
     }
 
     test("unregistered listeners are not invoked") {
-        val listeners = Listeners<MyListener>()
+        val listeners = listeners<MyListener>()
         val listener = object : MyListener {
             override fun onFoo(param1: String) = kotlin.test.fail("shouldn't be called")
             override fun onBar(param2: Int) = kotlin.test.fail("shouldn't be called")
