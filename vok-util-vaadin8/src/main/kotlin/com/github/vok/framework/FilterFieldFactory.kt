@@ -6,7 +6,6 @@ import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
 import com.vaadin.data.PropertySet
-import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
@@ -36,20 +35,12 @@ import java.util.*
  *
  * @property itemClass The bean on which the filtering will be performed, not null.
  * @property filterFactory produces the actual filter objects accepted by the [dataProvider].
- * @property dataProvider retrieves the most current data provider from the Grid, so that the filters are set to the currently selected DataProvider
  * @param T the type of beans handled by the Grid.
  * @param F the type of the filter accepted by the [dataProvider]
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
-                                             val dataProvider: ()->ConfigurableFilterDataProvider<T, F?, F?>,
-                                             val filterFactory: FilterFactory<F>
-) {
-    /**
-     * Current set of filters. Every filter component adds or removes stuff from this set on value change.
-     */
-    internal val filters = mutableSetOf<F>()
-
+                                             val filterFactory: FilterFactory<F>) {
     protected val properties: PropertySet<T> = BeanPropertySet.get(itemClass)
 
     /**
@@ -89,57 +80,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * @param property the property
      * @return a filter, may be null if no filtering is needed or if the value indicates that the filtering is disabled for this column.
      */
-    protected abstract fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
-
-    /**
-     * Binds given filtering field to a container - starts filtering based on the contents of the field, and starts watching for field value changes.
-     * @param field The field which provides the filtering values, not null. [createFilter] is used to convert
-     * the field's value to a filter.
-     * @param property The bean property on which the filtering will be performed, not null.
-     */
-    fun <V> bind(field: HasValue<V?>, property: PropertyDefinition<T, V?>) {
-        val filterFieldWatcher = FilterFieldWatcher(field, property)
-        field.addValueChangeListener(filterFieldWatcher)
-    }
-
-    /**
-     * Listens on value change on given field and updates [ConfigurableFilterDataProvider.setFilter] accordingly.
-     * @property field The field which provides the filtering values.
-     * @property property The bean property on which the filtering will be performed.
-     * @param V the value type
-     */
-    private inner class FilterFieldWatcher<V>(private val field: HasValue<V?>, private val property: PropertyDefinition<T, V?>) :
-        HasValue.ValueChangeListener<V?> {
-
-        /**
-         * The current container filter, may be null if no filtering is currently needed because the
-         * field's value indicates that the filtering is disabled for this column (e.g. the text filter is blank, the filter field is cleared, etc).
-         */
-        private var currentFilter: F? = null
-
-        init {
-            valueChange()
-        }
-
-        override fun valueChange(event: HasValue.ValueChangeEvent<V?>) {
-            valueChange()
-        }
-
-        private fun valueChange(value: V? = field.value) {
-            val newFilter = createFilter(value, field, property)
-            if (newFilter != currentFilter) {
-                if (currentFilter != null) {
-                    filters.remove(currentFilter!!)
-                    currentFilter = null
-                }
-                if (newFilter != null) {
-                    currentFilter = newFilter
-                    filters.add(newFilter)
-                }
-                dataProvider().setFilter(filterFactory.and(filters))
-            }
-        }
-    }
+    abstract fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
 }
 
 /**
@@ -148,12 +89,11 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
  * @param T the type of beans produced by the [dataProvider]
  * @param F the type of the filter objects accepted by the [dataProvider].
  * @param clazz the class of the beans produced by the [dataProvider]
- * @param dataProvider retrieves the most current data provider from the Grid, so that the filters are set to the currently selected DataProvider
  * @param filterFactory allows filter components to produce filters accepted by the [dataProvider].
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 @Suppress("UNUSED_PARAMETER")
-open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, dataProvider: ()->ConfigurableFilterDataProvider<T, F?, F?>, filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F>(clazz, dataProvider, filterFactory) {
+open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F>(clazz, filterFactory) {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
