@@ -41,18 +41,9 @@ class JPAFilterFactory : FilterFactory<JPAFilter> {
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
                                                 filterFieldFactory: FilterFieldFactory<T, JPAFilter> = DefaultFilterFieldFactory(itemClass.java,
-                                                    { grid.dataProvider as ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?> },
-                                                        JPAFilterFactory())) {
-    val properties: Map<String, PropertyDefinition<T, *>> = BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
-    for (propertyId in grid.columns.map { it.id }.filterNotNull()) {
-        val property = properties[propertyId]
-        val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
-        val cell = getCell(propertyId)
-        if (field == null) {
-            cell.text = null  // this also removes the cell from the row
-        } else {
-            filterFieldFactory.bind(field as HasValue<Any?>, property!! as PropertyDefinition<T, Any?>)
-            cell.component = field as Component
-        }
-    }
+                                                        JPAFilterFactory()),
+                                                valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, JPAFilter> {
+    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory)
+    filterRow.generateFilterComponents(valueChangeMode)
+    return filterRow
 }

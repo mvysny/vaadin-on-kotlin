@@ -32,18 +32,69 @@ val Long.seconds: Duration get() = Duration.ofSeconds(this)
 
 operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
 
-inline fun <reified T: Serializable> Listeners() = Listeners(T::class)
+/**
+ * Allows you to add listeners for a particular event into your component like following:
+ * ```
+ * val onFilterChangeListeners = listeners<OnClickListener>()
+ * ```
+ */
+inline fun <reified T: Serializable> listeners() = Listeners(T::class)
+
+/**
+ * Allows you to add listeners for a particular event into your component.
+ *
+ * Say that you have a click listener:
+ * ```
+ * interface OnClickListener { fun onClick(button: Int) }
+ * ```
+ * You can add support for click listeners into your Button component easily:
+ * ```
+ * class Button {
+ *     val onClickListeners = listeners<OnClickListener>()
+ * }
+ * ```
+ * The clients can then simply register their listeners as follows:
+ * ```
+ * val button = Button()
+ * button.onClickListeners.add(object : OnClickListener {})
+ * ```
+ * The button can fire an event for all listeners as follows:
+ * ```
+ * onClickListeners.fire.onClick(2)
+ * ```
+ */
 class Listeners<T: Serializable>(val listenerType: KClass<T>): Serializable {
     init {
         require(listenerType.java.isInterface) { "$listenerType must be an interface" }
     }
-    private val listeners = LinkedList<T>()
+
+    private val listeners = mutableSetOf<T>()
+
+    /**
+     * Registers a new listener. Registering same listener multiple times has no further effect.
+     *
+     * The equality of the listener is measured by using the standard [Any.equals] and [Any.hashCode].
+     */
     fun add(listener: T) {
         listeners.add(listener)
     }
+
+    /**
+     * Removes the listener. Removing same listener multiple times has no further effect. Does nothing
+     * if the listener has not yet been registered.
+     *
+     * The equality of the listener is measured by using the standard [Any.equals] and [Any.hashCode].
+     */
     fun remove(listener: T) {
         listeners.remove(listener)
     }
+
+    /**
+     * Use the returned value to fire particular event to all listeners.
+     *
+     * Returns a proxy of type [T]. Any method call on this proxy is propagated to all
+     * listeners.
+     */
     @Suppress("UNCHECKED_CAST")
     val fire: T = Proxy.newProxyInstance(listenerType.java.classLoader, arrayOf(listenerType.java)) { _, method, args ->
         for (listener in listeners) {
