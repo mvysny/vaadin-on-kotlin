@@ -2,10 +2,8 @@ package com.github.vok.framework
 
 import com.github.vok.karibudsl.fillParent
 import com.github.vok.karibudsl.w
-import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
-import com.vaadin.data.PropertySet
 import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.shared.ui.datefield.DateTimeResolution
@@ -39,10 +37,7 @@ import java.util.*
  * @param F the type of the filter accepted by the [dataProvider]
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
-abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
-                                             val filterFactory: FilterFactory<F>) {
-    protected val properties: PropertySet<T> = BeanPropertySet.get(itemClass)
-
+interface FilterFieldFactory<T: Any, F> : Serializable {
     /**
      * Creates the filtering component for given bean property, or Grid column.
      * The component may not necessarily produce values of given data types - for example,
@@ -68,10 +63,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * @return A field that produces values which can be used to filter the property value.
      * May return null if filtering of given data type with given field type is unsupported.
      */
-    abstract fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<*>?
-
-    protected fun getProperty(name: String): PropertyDefinition<T, *> =
-            properties.getProperty(name).orElse(null) ?: throw IllegalArgumentException("$itemClass has no property $name; available properties: ${properties.properties.map { it.name }}")
+    fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<*>?
 
     /**
      * Creates a new Container Filter based on given value.
@@ -80,7 +72,7 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
      * @param property the property
      * @return a filter, may be null if no filtering is needed or if the value indicates that the filtering is disabled for this column.
      */
-    abstract fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
+    fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
 }
 
 /**
@@ -88,12 +80,11 @@ abstract class FilterFieldFactory<T: Any, F>(protected val itemClass: Class<T>,
  * Supports filter fields for dates, numbers and strings.
  * @param T the type of beans produced by the [dataProvider]
  * @param F the type of the filter objects accepted by the [dataProvider].
- * @param clazz the class of the beans produced by the [dataProvider]
  * @param filterFactory allows filter components to produce filters accepted by the [dataProvider].
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 @Suppress("UNUSED_PARAMETER")
-open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F>(clazz, filterFactory) {
+open class DefaultFilterFieldFactory<T: Any, F: Any>(val filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F> {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.

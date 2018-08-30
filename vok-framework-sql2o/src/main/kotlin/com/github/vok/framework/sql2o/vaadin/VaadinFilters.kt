@@ -44,9 +44,9 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, SqlFilterFactory<T>()),
+                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(SqlFilterFactory<T>()),
                                                 valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory)
+    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, SqlFilterFactory<T>())
     filterRow.generateFilterComponents(valueChangeMode)
     return filterRow
 }

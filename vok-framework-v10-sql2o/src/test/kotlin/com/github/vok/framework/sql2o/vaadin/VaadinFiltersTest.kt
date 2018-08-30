@@ -5,6 +5,7 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.vok.karibudsl.flow.addColumnFor
 import com.github.vok.karibudsl.flow.getAll
+import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.provider.ListDataProvider
@@ -19,7 +20,8 @@ class VaadinFiltersTest : DynaTest({
         grid.addColumnFor(Person::name)
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withFilter { Person::name eq "foo" }
         expectList() { grid.dataProvider!!.getAll() }
-        val filterComponents = grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
+        val filterComponents: Map<String, Component> =
+            grid.appendHeaderRow().generateFilterComponents(grid, Person::class).getFilterComponents()
 
         // now let's create another data provider
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withVOKFilterAdapter()

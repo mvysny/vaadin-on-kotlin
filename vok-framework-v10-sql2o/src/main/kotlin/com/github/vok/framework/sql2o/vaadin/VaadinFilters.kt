@@ -5,18 +5,13 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.flow.DefaultFilterFieldFactory
 import com.github.vok.framework.flow.FilterFieldFactory
+import com.github.vok.framework.flow.FilterRow
 import com.github.vokorm.*
-import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.HasSize
-import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
-import com.vaadin.flow.data.binder.BeanPropertySet
-import com.vaadin.flow.data.binder.PropertyDefinition
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import kotlin.reflect.KClass
-import kotlin.streams.*
 
 /**
  * Produces filters defined by the `VoK-ORM` library. This will allow us to piggyback on the ability of `VoK-ORM` filters to produce
@@ -47,23 +42,10 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
                                                 itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java,
-                                                    { grid.dataProvider as VokDataProvider<T> },
-                                                        SqlFilterFactory<T>()),
+                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, SqlFilterFactory<T>()),
                                               valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER
-                                              ): Map<String, Component> {
-    val properties: Map<String, PropertyDefinition<T, *>> = BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
-    val result = mutableMapOf<String, Component>()
-    for (propertyId in grid.columns.mapNotNull { it.key }) {
-        val property = properties[propertyId]
-        val field: HasValue<*, *>? = if (property == null) null else filterFieldFactory.createField(property)
-        if (field != null) {
-            (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
-            filterFieldFactory.bind(field as HasValue<HasValue.ValueChangeEvent<Any?>, Any?>, property!! as PropertyDefinition<T, Any?>)
-            getCell(grid.getColumnByKey(propertyId)).setComponent(field as Component)
-            result[propertyId] = field as Component
-            (field as? HasSize)?.width = "100%"
-        }
-    }
-    return result
+                                              ): FilterRow<T, Filter<T>> {
+    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, SqlFilterFactory<T>())
+    filterRow.generateFilterComponents(valueChangeMode)
+    return filterRow
 }

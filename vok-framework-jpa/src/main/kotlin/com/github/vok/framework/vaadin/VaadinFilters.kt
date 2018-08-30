@@ -1,26 +1,11 @@
 package com.github.vok.framework.vaadin
 
 import com.github.vok.framework.*
-import com.github.vok.karibudsl.*
-import com.vaadin.data.*
-import com.vaadin.data.provider.ConfigurableFilterDataProvider
-import com.vaadin.server.Page
-import com.vaadin.server.Resource
 import com.vaadin.shared.ui.ValueChangeMode
-import com.vaadin.shared.ui.datefield.DateTimeResolution
-import com.vaadin.ui.*
+import com.vaadin.ui.Grid
 import com.vaadin.ui.components.grid.HeaderRow
 import java.io.Serializable
-import java.sql.Timestamp
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.time.temporal.Temporal
-import java.util.*
 import kotlin.reflect.KClass
-import kotlin.streams.toList
 
 @Suppress("UNCHECKED_CAST")
 class JPAFilterFactory : FilterFactory<JPAFilter> {
@@ -40,10 +25,9 @@ class JPAFilterFactory : FilterFactory<JPAFilter> {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, JPAFilter> = DefaultFilterFieldFactory(itemClass.java,
-                                                        JPAFilterFactory()),
+                                                filterFieldFactory: FilterFieldFactory<T, JPAFilter> = DefaultFilterFieldFactory(JPAFilterFactory()),
                                                 valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, JPAFilter> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory)
+    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, JPAFilterFactory())
     filterRow.generateFilterComponents(valueChangeMode)
     return filterRow
 }
