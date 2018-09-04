@@ -20,7 +20,9 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 
 Continue reading here to understand how exactly VoK accesses the database.
 
-* The [Accessing Databases Guide](databases.md)
+* The [Accessing Databases Guide](databases.md) for accessing SQL databases
+* The [Accessing NoSQL or REST data sources](nosql_rest_datasurces.md) for displaying data
+  from a NoSQL database, or a REST service endpoint.
 * [Writing services](services.md) to place your business logic in
 
 ## Security
@@ -59,6 +61,8 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 Continue reading here to understand how exactly VoK accesses the database.
 
 * The [Accessing Databases Guide](databases-v10.md)
+* The [Accessing NoSQL or REST data sources](nosql_rest_datasurces.md) for displaying data
+  from a NoSQL database, or a REST service endpoint.
 * [Writing services](services.md) to place your business logic in
 
 ## Security

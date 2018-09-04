@@ -6,6 +6,9 @@ This module makes it easy to export your objects via REST. The aim here is to us
 that's why we're using [RESTEasy](http://resteasy.jboss.org/) instead of Jersey, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
 Jackson.
 
+> Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
+Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasurces.html) guide for more information.
+
 ## Adding REST to your app
 
 Include dependency on this module to your app; just add the following Gradle dependency to your `build.gradle`:
