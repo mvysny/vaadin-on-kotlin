@@ -7,7 +7,7 @@ that's why we're using [RESTEasy](http://resteasy.jboss.org/) instead of Jersey,
 Jackson.
 
 > Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
-Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasurces.html) guide for more information.
+Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources.html) guide for more information.
 
 ## Adding REST to your app
 
