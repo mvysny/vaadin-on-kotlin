@@ -2,8 +2,8 @@
 
 # Accessing NoSQL or REST data sources
 
-VoK provides no out-of-the-box support for accessing NoSQL or REST data
-sources. To access data from a NoSQL database you should use appropriate NoSQL
+VoK provides no out-of-the-box support for accessing external NoSQL or REST data
+sources and polling them for data. To access data from a NoSQL database you should use appropriate NoSQL
 database Java driver; to access data from a REST endpoint you can use a REST client
 library such as [Retrofit](https://square.github.io/retrofit/).
 
