@@ -90,7 +90,7 @@ your needs (e.g. make `createField()` return null for columns you don't want to 
 Then, in your code just call
 
 ```kotlin
-grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFactory)`
+grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFactory)
 ```
 
 to create the filter row and populate it with filter components.
