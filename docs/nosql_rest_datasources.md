@@ -47,4 +47,48 @@ REST http call. For NoSQL, the set of available indices limit available sorting 
 
 ### Adding support for filtering
 
-todo
+To add support for filters, both of your `sizeInBackEnd()` and `fetchFromBackEnd()` implementations
+must take the `Query.filter` field into consideration.
+
+Adding support for filtering is more complicated than adding support for sorting:
+
+* Vaadin provides no predefined set of filters which you can use; it is expected
+  that every implementation of `DataProvider` will introduce its own set of filters
+  which are tailored towards that particular `DataProvider`. Some data providers
+  also have certain limitations, for example some data providers can't handle
+  ANDing or ORing other filters etc.
+* Vaadin Grid itself will never pass in any kind of filters: it will always pass in
+  `null` as the value of `Query.filter`.
+
+In order to add filters to your data provider and to the Grid displaying that
+particular data provider, you need to:
+
+* Define classes that will act as filters and will be accepted by your `DataProvider` (the `F`
+  generic parameter of the `DataProvider` interface)
+* Create UI components that convert user input into instances of the filter classes from
+  the step above.
+* Create a filter bar, by creating a `HeaderRow` in the Grid; populate the filter bar
+  with the components.
+* Wrap your `DataProvider` in a `ConfigurableFilterDataProvider` before setting it to the Grid.
+  When your filter components change, compute the newest filter and set it to the data provider
+  via the `ConfigurableFilterDataProvider.setFilter()` method. The method will take care
+  to notify the Grid, which will then re-poll the data.
+
+This is a lot of manual work. Fortunately, if your data provider support full filter logic, you
+can use VoK's provided filtering components.
+
+#### FilterFactory
+
+If your filters support all logic as required by the `FilterFactory` interface, then
+you can use the `FilterFieldFactory` class to automatically create the filtering UI components
+and auto-populate the filter bar for you.
+
+Just implement the `FilterFactory` interface, then override `DefaultFilterFieldFactory` and tailor it towards
+your needs (e.g. make `createField()` return null for columns you don't want to support).
+Then, in your code just call
+
+```kotlin
+grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFactory)`
+```
+
+to create the filter row and populate it with filter components.

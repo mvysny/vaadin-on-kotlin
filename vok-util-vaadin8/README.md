@@ -82,10 +82,10 @@ The filter component creation flow is as follows:
 This manual process is a lot of work. Luckily, this process can be vastly automatized by a proper set of
 utility classes provided by VoK. 
 
-* The programmer uses the `DefaultFilterFieldFactory` to create the filter components based on the type
+* The programmer uses the `FilterRow` class. `FilterRow` uses `DefaultFilterFieldFactory` by default,
+  to create the filter components based on the type
   of the value shown by the particular column (say, it will create a `TextField` when the column type is `String`).
-  The
-  `DefaultFilterFieldFactory` will then handle value changes and will set the filters properly into the
+* The `FilterRow` then uses `FilterBinder` to handle value changes and will set the filters properly into the
   data provider.
 * In order for the `DefaultFilterFieldFactory` to do that, it needs an implementation of `FilterFactory`
   for your particular database backend.
@@ -93,7 +93,7 @@ utility classes provided by VoK.
 The filter component call flow is then as follows:
 
 * The user changes the value in the filter component; say, a `String`-based TextField which does substring filtering.
-* The `FilterFieldFactory` intercepts the change and polls all filter components for the current values. In this example
+* The `FilterBinder` intercepts the change and polls all filter components for the current values. In this example
   there will be just a single value of type `String`.
 * Since these values can't be passed directly into the `DataProvider`, the values are passed to the
   `FilterFactory` implementation instead, which then provides proper filter objects accepted by the `DataProvider`.
