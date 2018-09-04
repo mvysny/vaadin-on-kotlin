@@ -16,6 +16,11 @@ In order to feed the Vaadin Grid with data, you need to have two things:
   * Fetch the data from the NoSQL/REST/other source;
   * Map the data to a bean so that it provides instances of that bean directly.
 
+> Note: If you are accessing a SQL database, there are already two data providers pre-provided for you:
+  the `EntityDataProvider` (fetching entities from their tables) and `SQLDataProvider` (fetching
+  result of any SQL SELECT query).
+  Please read [Grids](grids.md) and [Accessing SQL Databases](databases.md) (Vaadin 10: [Grids](grids-v10.md) and [Accessing SQL Databases](databases-v10.md)) for more details.
+
 To implement the `DataProvider` interface it's easiest to extend the
 `AbstractBackEndDataProvider` class.
 Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit`

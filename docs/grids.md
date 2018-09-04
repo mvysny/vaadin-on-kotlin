@@ -12,6 +12,9 @@ You can learn about Grid capabilities in the [official Vaadin 8 Grid Documentati
 
 There are more ways of using Grid; in the tutorial we will use the easiest way as endorsed by the VoK framework.
 
+> Note: this article uses a SQL database to fetch data. If you are using NoSQL or REST
+  or other means to fetch data, please read [Accessing NoSQL/REST DataSources](nosql_rest_datasources.md) for more details.
+
 ## General Rules
 
 Since the Grid scrolls by itself, it makes no sense to set its height to `wrapContent`. The best way is to make the Grid to fill its parent
@@ -20,7 +23,7 @@ a particular height set, e.g. `200.px`) and so on.
 
 ## Binding to Data
 
-VoK entities automatically provide a `DataProvider` instances. It is the means to populate Grid with the data. The simplest Grid
+VoK entities automatically provide a `DataProvider` instances (the `EntityDataProvider`s). It is the means to populate Grid with the data. The simplest Grid
 can be constructed as follows:
 
 ```kotlin
