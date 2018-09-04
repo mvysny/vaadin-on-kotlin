@@ -1,3 +1,5 @@
+[Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
+
 # Accessing NoSQL or REST data sources
 
 VoK provides no out-of-the-box support for accessing NoSQL or REST data
