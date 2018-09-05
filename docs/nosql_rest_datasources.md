@@ -23,8 +23,8 @@ In order to feed the Vaadin Grid with data, you need to have two things:
 
 To implement the `DataProvider` interface it's easiest to extend the
 `AbstractBackEndDataProvider` class.
-Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit`
-or `Void` or `Nothing` as the `F` generic parameter to not to support any filters.
+Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit?`
+as the `F` generic parameter to not to support any filters.
 
 The only thing you need to do is to:
 * Support the count query and implement the `AbstractBackEndDataProvider.sizeInBackEnd()` function

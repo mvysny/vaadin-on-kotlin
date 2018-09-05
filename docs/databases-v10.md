@@ -15,6 +15,7 @@ but we only test and officially support the four of the above-mentioned database
 
 > *NoSQL Note*: Only SQL databases which provide appropriate JDBC drivers are currently supported.
 There is no direct support for NoSQL databases, but you can easily integrate any NoSQL database with VoK.
+Please read [Accessing NoSQL or REST data sources](nosql_rest_datasources.md) for more information.
 
 > *Note for experienced Java developers*: Experienced Java developers will notice that VoK is *not* using JPA nor Hibernate to access the
 database. The reason is that there are inherent issues with the abstraction that JPA
