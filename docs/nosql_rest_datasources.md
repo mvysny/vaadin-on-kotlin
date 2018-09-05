@@ -26,14 +26,16 @@ To implement the `DataProvider` interface it's easiest to extend the
 Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit?`
 as the `F` generic parameter to not to support any filters.
 
-The only thing you need to do is to:
-* Support the count query and implement the `AbstractBackEndDataProvider.sizeInBackEnd()` function
-* Implement the paged fetches by implementing the `AbstractBackEndDataProvider.fetchFromBackEnd()`
-  function. You need to pay attention to `Query.offset` and `Query.limit` fields which
-  specifies the paging for you.
+There are two things you need to implement:
+* Implement the `AbstractBackEndDataProvider.sizeInBackEnd()` function which queries how many rows
+  there are in the data source. That enables the Grid to draw a proper scroll bar.
+* Implement the `AbstractBackEndDataProvider.fetchFromBackEnd()`
+  function which retrieves the actual data. You need to pay attention to `Query.offset` and `Query.limit` fields which
+  specifies the paging.
 
 Then, just call `Grid.setDataProvider()` to set your data provider and you're good to go.
-Grid will never attempt to pass in any filters on its own - you need to create
+Grid will never attempt to pass in any filters on its own (it will always set
+`Query.filter` to `null`). If you need filtering, you need to create
 a filter bar and implement it yourself to do that. We'll go through this in a minute.
 
 ### Adding support for sorting
@@ -51,6 +53,10 @@ or a sorting clauses (in case of a NoSQL query).
 Which columns are actually sortable will depend on your data source. For REST,
 the sorting parameters are limited to whatever is available as a query parameter in the
 REST http call. For NoSQL, the set of available indices limit available sorting parameters.
+
+It is best for your `DataProvider` to throw `IllegalArgumentException` in `AbstractBackEndDataProvider.fetchFromBackEnd()` for
+any unsupported sort clause it encounters in the `Query.sortOrders` field. Then, document all supported sorting criteria
+in the kdoc for your `DataProvider`, so that you'll know which columns to mark as non-sortable in the Grid.
 
 ### Adding support for filtering
 
