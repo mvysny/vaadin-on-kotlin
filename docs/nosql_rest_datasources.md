@@ -65,7 +65,7 @@ must take the `Query.filter` field into consideration.
 
 Adding support for filtering is more complicated than adding support for sorting:
 
-* Vaadin provides no predefined set of filters which you can use; it is expected
+* Vaadin provides no predefined filter class hierarchy which you can use. Vaadin expects
   that every implementation of `DataProvider` will introduce its own set of filters
   which are tailored towards that particular `DataProvider`. Some data providers
   also have certain limitations, for example some data providers can't handle
@@ -81,7 +81,7 @@ particular data provider, you need to:
 * Create UI components that convert user input into instances of the filter classes from
   the step above.
 * Create a filter bar, by creating a `HeaderRow` in the Grid; populate the filter bar
-  with the components.
+  with the UI components from the above step.
 * Wrap your `DataProvider` in a `ConfigurableFilterDataProvider` before setting it to the Grid.
   When your filter components change, compute the newest filter and set it to the data provider
   via the `ConfigurableFilterDataProvider.setFilter()` method. The method will take care
@@ -105,3 +105,7 @@ grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFact
 ```
 
 to create the filter row and populate it with filter components.
+
+Please read the documentation for the [vok-util-vaadin8](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin8)
+or [vok-util-vaadin10](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
+module for more information.
