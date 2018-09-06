@@ -4,7 +4,7 @@ apply plugin: "com.jfrog.bintray"
 
 dependencies {
     compile(project(':vok-framework'))
-    compile("com.github.vokorm:vok-orm:0.6")
+    compile("com.github.vokorm:vok-orm:0.8")
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {
