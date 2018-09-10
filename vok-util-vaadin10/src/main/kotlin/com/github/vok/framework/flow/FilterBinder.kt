@@ -3,6 +3,7 @@ package com.github.vok.framework.flow
 import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.Listeners
 import com.github.vok.framework.listeners
+import com.github.vok.karibudsl.flow.getColumnBy
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
@@ -17,6 +18,7 @@ import com.vaadin.flow.function.SerializableConsumer
 import com.vaadin.flow.shared.Registration
 import java.io.Serializable
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 import kotlin.streams.toList
 
 /**
@@ -161,10 +163,10 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
             if (field != null) {
                 (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
                 binder.bind(field as HasValue<HasValue.ValueChangeEvent<Any?>, Any?>, property!! as PropertyDefinition<T, Any?>)
-                headerRow.getCell(grid.getColumnByKey(propertyId)).setComponent(field as Component)
                 filterComponents[propertyId] = field as Component
                 (field as? HasSize)?.width = "100%"
             }
+            headerRow.getCell(grid.getColumnByKey(propertyId)).setComponent(field as Component?)
         }
     }
 
@@ -172,4 +174,44 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
      * @return map mapping [T] property name to the filtering component generated.
      */
     fun getFilterComponents(): Map<String, Component> = filterComponents
+
+    /**
+     * Unbinds all filters and clears the [headerRow] (sets null component to every cell).
+     */
+    fun clear() {
+        binder.unbindAll()
+        grid.columns.forEach { column -> headerRow.getCell(column).setComponent(null) }
+    }
+
+
+    /**
+     * Returns the filter component filtering given [property]. Fails if no filter component has been generated for
+     * that property.
+     */
+    fun getFilterComponent(property: KProperty1<T, *>): HasValue<HasValue.ValueChangeEvent<Any?>, Any?> {
+        val component = filterComponents[property.name] ?: throw IllegalArgumentException("There is no filter configured for $property")
+        return component as HasValue<HasValue.ValueChangeEvent<Any?>, Any?>
+    }
+}
+
+
+/**
+ * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
+ * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ * @param T the type of items in the grid.
+ * @param grid the owner grid.
+ * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
+ * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
+ * typically only applies to inline filter
+ * components (most importantly [com.vaadin.ui.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])
+ * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
+ */
+@Suppress("UNCHECKED_CAST")
+fun <T: Any, F: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
+                                                        filterFactory: FilterFactory<F>,
+                                                        filterFieldFactory: FilterFieldFactory<T, F> = DefaultFilterFieldFactory(itemClass.java, filterFactory),
+                                                        valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, F> {
+    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, filterFactory)
+    filterRow.generateFilterComponents(valueChangeMode)
+    return filterRow
 }

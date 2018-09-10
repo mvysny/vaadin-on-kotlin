@@ -6,6 +6,7 @@ import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.flow.DefaultFilterFieldFactory
 import com.github.vok.framework.flow.FilterFieldFactory
 import com.github.vok.framework.flow.FilterRow
+import com.github.vok.framework.flow.generateFilterComponents
 import com.github.vokorm.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
@@ -40,12 +41,10 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  * @return map mapping property ID to the filtering component generated
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
-                                                itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, SqlFilterFactory<T>()),
-                                              valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER
-                                              ): FilterRow<T, Filter<T>> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, SqlFilterFactory<T>())
-    filterRow.generateFilterComponents(valueChangeMode)
-    return filterRow
+fun <T: Any> HeaderRow.generateFilterComponentsSql(grid: Grid<T>,
+                                                   itemClass: KClass<T>,
+                                                   filterFactory: FilterFactory<Filter<T>> = SqlFilterFactory(),
+                                                   filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, filterFactory),
+                                                   valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, Filter<T>> {
+    return generateFilterComponents(grid, itemClass, filterFactory, filterFieldFactory, valueChangeMode)
 }

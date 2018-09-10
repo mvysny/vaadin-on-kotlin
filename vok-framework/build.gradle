@@ -4,7 +4,7 @@ apply plugin: "com.jfrog.bintray"
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile "org.slf4j:slf4j-api:$slf4j_version"
     testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
 }
 

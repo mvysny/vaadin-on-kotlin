@@ -6,6 +6,9 @@ buildscript {
     ext.hikaricp_version = '3.2.0'
     ext.flyway_version = '5.1.4'
     ext.dynatest_version = "0.9"
+    ext.logback_version = "1.2.3"
+    ext.h2_version = "1.4.197"
+    ext.slf4j_version = "1.7.25"
 
     ext.local = new Properties()
     if (project.rootProject.file('local.properties').exists()) {

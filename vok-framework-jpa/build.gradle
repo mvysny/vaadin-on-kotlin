@@ -16,7 +16,7 @@ dependencies {
     compile 'javax.xml.bind:jaxb-api:2.3.0'
 
     testCompile "org.flywaydb:flyway-core:${flyway_version}"
-    testCompile 'com.h2database:h2:1.4.196'
+    testCompile "com.h2database:h2:$h2_version"
 }
 
 task sourceJar(type: Jar, dependsOn: classes) {

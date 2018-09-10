@@ -14,8 +14,8 @@ dependencies {
     testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
 
     // logging
-    compile 'ch.qos.logback:logback-classic:1.2.3'
-    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile "ch.qos.logback:logback-classic:$logback_version"
+    compile "org.slf4j:slf4j-api:$slf4j_version"
 
     // Vaadin
     compile "com.vaadin:vaadin-compatibility-client-compiled:$vaadin8_version"
@@ -30,7 +30,7 @@ dependencies {
         exclude group: 'javax.enterprise'
     }
     compile "com.zaxxer:HikariCP:${hikaricp_version}"
-    compile 'com.h2database:h2:1.4.196'
+    compile "com.h2database:h2:$h2_version"
 
     // REST
     compile(project(":vok-rest"))

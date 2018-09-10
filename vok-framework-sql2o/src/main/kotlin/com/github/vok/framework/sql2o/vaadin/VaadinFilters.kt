@@ -43,10 +43,9 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(SqlFilterFactory<T>()),
-                                                valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, SqlFilterFactory<T>())
-    filterRow.generateFilterComponents(valueChangeMode)
-    return filterRow
+fun <T: Any> HeaderRow.generateFilterComponentsSql(grid: Grid<T>, itemClass: KClass<T>,
+                                                   filterFactory: FilterFactory<Filter<T>> = SqlFilterFactory(),
+                                                   filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(filterFactory),
+                                                   valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
+    return generateFilterComponents(grid, itemClass, filterFactory, filterFieldFactory, valueChangeMode)
 }

@@ -18,7 +18,7 @@ class VaadinFiltersTest : DynaTest({
         val filterRow = grid.appendHeaderRow()
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withFilter { Person::name eq "foo" }
         expectList() { grid.dataProvider!!.getAll() }
-        filterRow.generateFilterComponents(grid, Person::class)
+        filterRow.generateFilterComponentsSql(grid, Person::class)
 
         // now let's create and set another data provider. If the generateFilterComponents grabs the DP eagerly, it will ignore this second DP.
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).withVoKFilterAdapter()
