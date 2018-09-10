@@ -1,7 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.framework.sql2o.vaadin.generateFilterComponentsSql
+import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.karibudsl.*
 import com.github.vok.karibudsl.ModifierKey.Alt
 import com.github.vok.karibudsl.ModifierKey.Ctrl
@@ -82,7 +82,7 @@ class CrudView: VerticalLayout(), View {
             addButtonColumn(VaadinIcons.TRASH, { event -> event.item.delete(); refresh() })
 
             // automatically create filters, based on the types of values present in particular columns.
-            appendHeaderRow().generateFilterComponentsSql(this, Person::class)
+            appendHeaderRow().generateFilterComponents(this, Person::class)
         }
     }
 

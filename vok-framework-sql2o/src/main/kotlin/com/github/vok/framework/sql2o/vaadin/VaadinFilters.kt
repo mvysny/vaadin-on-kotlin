@@ -4,19 +4,11 @@ package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.*
 import com.github.vokorm.*
-import com.vaadin.data.BeanPropertySet
-import com.vaadin.data.HasValue
-import com.vaadin.data.PropertyDefinition
-import com.vaadin.data.provider.ConfigurableFilterDataProvider
-import com.vaadin.server.SerializableConsumer
 import com.vaadin.shared.ui.ValueChangeMode
-import com.vaadin.ui.Component
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HasValueChangeMode
 import com.vaadin.ui.components.grid.HeaderRow
-import java.io.Serializable
 import kotlin.reflect.KClass
-import kotlin.streams.toList
 
 /**
  * Produces filters defined by the `VoK-ORM` library. This will allow us to piggyback on the ability of `VoK-ORM` filters to produce
@@ -43,9 +35,8 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponentsSql(grid: Grid<T>, itemClass: KClass<T>,
-                                                   filterFactory: FilterFactory<Filter<T>> = SqlFilterFactory(),
-                                                   filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(filterFactory),
-                                                   valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
-    return generateFilterComponents(grid, itemClass, filterFactory, filterFieldFactory, valueChangeMode)
+fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
+                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(SqlFilterFactory<T>()),
+                                                valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
+    return generateFilterComponents(grid, itemClass, SqlFilterFactory<T>(), filterFieldFactory, valueChangeMode)
 }

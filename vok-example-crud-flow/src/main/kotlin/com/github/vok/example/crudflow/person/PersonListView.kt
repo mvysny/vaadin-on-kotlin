@@ -2,7 +2,7 @@ package com.github.vok.example.crudflow.person
 
 import com.github.vok.example.crudflow.MainLayout
 import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.framework.sql2o.vaadin.generateFilterComponentsSql
+import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.framework.toDate
 import com.github.vok.karibudsl.flow.*
 import com.github.vokorm.db
@@ -57,7 +57,7 @@ class PersonListView : VerticalLayout() {
                 width = "90px"; isExpand = false
             }
 
-            appendHeaderRow().generateFilterComponentsSql(this, Person::class)
+            appendHeaderRow().generateFilterComponents(this, Person::class)
         }
     }
 

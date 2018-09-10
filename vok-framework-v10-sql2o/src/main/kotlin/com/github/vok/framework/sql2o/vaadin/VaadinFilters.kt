@@ -41,10 +41,9 @@ class SqlFilterFactory<T: Any> : FilterFactory<Filter<T>> {
  * @return map mapping property ID to the filtering component generated
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponentsSql(grid: Grid<T>,
-                                                   itemClass: KClass<T>,
-                                                   filterFactory: FilterFactory<Filter<T>> = SqlFilterFactory(),
-                                                   filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, filterFactory),
-                                                   valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, Filter<T>> {
-    return generateFilterComponents(grid, itemClass, filterFactory, filterFieldFactory, valueChangeMode)
+fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
+                                                itemClass: KClass<T>,
+                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, SqlFilterFactory<T>()),
+                                                valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, Filter<T>> {
+    return generateFilterComponents(grid, itemClass, SqlFilterFactory<T>(), filterFieldFactory, valueChangeMode)
 }
