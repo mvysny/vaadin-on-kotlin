@@ -181,8 +181,8 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
     fun clear() {
         binder.unbindAll()
         grid.columns.forEach { column -> headerRow.getCell(column).setComponent(null) }
+        filterComponents.clear()
     }
-
 
     /**
      * Returns the filter component filtering given [property]. Fails if no filter component has been generated for

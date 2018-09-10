@@ -57,6 +57,14 @@ class VaadinFiltersTest : DynaTest({
         expect(1) { grid.dataProvider._size() }
     }
 
+    test("filter components from cleared filter bar gone") {
+        data class Person(var name: String)
+        val grid = Grid<Person>(Person::class.java)
+        val filterRow = grid.appendHeaderRow().generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        filterRow.clear()
+        expect(mapOf()) { filterRow.getFilterComponents() }
+    }
+
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17
     test("grid's data provider is polled lazily on filter change") {
         data class Person(var name: String)
