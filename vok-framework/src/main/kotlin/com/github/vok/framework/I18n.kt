@@ -34,7 +34,9 @@ class I18n(val locale: Locale) {
     }
 
     /**
-     * Retrieves the message stored under given [key]. If no such message exists, the key itself is returned.
+     * Retrieves the message stored under given [key]. If no such message exists, the function must not fail.
+     * Instead, it should provide a key wrapped with indicators that a message is missing, for example
+     * `!{key}!`.
      */
     operator fun get(key: String): String {
         if (customMessages.containsKey(key)) {
@@ -43,7 +45,7 @@ class I18n(val locale: Locale) {
         if (standardMessages.containsKey(key)) {
             return standardMessages.getString(key)
         }
-        return key;
+        return "!{$key}!";
     }
 
     companion object {
