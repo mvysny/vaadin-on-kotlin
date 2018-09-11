@@ -17,7 +17,7 @@ val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
  * strings in your app.
  * * If the message is not found, the standard message bundle of `com.github.vok.VokMessages*.properties` is consulted.
  *
- * Consult the standard message bundle for a list of strings.
+ * Consult the standard message bundle for the list of messages.
  *
  * Currently there is no support for parameters nor expressions in the messages.
  * @property locale the locale to use, not null.

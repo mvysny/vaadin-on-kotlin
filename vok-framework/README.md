@@ -40,3 +40,17 @@ PostgreSQL database before all tests, and kill the docker container afterwards. 
 provide a proper JDBC URL and that's it.
 
 This is the true value of simplicity.
+
+## Vaadin-on-Kotlin and I18n
+
+The internationalization/localization/i18n/l10n of strings used by VoK (e.g. error messages,
+filter component captions) can be tuned by the means of resource bundles. See
+[I18n.kt](src/main/kotlin/com/github/vok/framework/I18n.kt) for more details.
+
+The following resource bundles are searched:
+
+* The `VokMessages*.properties` bundle, located in the root package. Create one if you need to customize the localization
+  strings in your app.
+* If the message is not found, the standard message bundle of `com.github.vok.VokMessages*.properties` is consulted.
+
+Consult the [standard message bundle](src/main/resources/com/github/vok/VokMessages.properties) for the list of messages.
