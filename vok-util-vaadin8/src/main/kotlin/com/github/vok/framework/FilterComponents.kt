@@ -62,12 +62,12 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = "All"; isHideOnMouseOut = false
+            w = fillParent; minimizedValueAsHTML = voki18n["filter.all"]; isHideOnMouseOut = false
             verticalLayout {
                 w = wrapContent
                 horizontalLayout {
                     gtInput = textField {
-                        placeholder = "at least"
+                        placeholder = voki18n["filter.atleast"]
                         w = 100.px
                         bind(binder).toDouble().bind(NumberInterval<Double>::min)
                     }
@@ -75,21 +75,21 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                         w = wrapContent
                     }
                     ltInput = textField {
-                        placeholder = "at most"
+                        placeholder = voki18n["filter.atmost"]
                         w = 100.px
                         bind(binder).toDouble().bind(NumberInterval<Double>::max)
                     }
                 }
                 horizontalLayout {
                     alignment = Alignment.MIDDLE_RIGHT
-                    button("Clear") {
+                    button(voki18n["filter.clear"]) {
                         onLeftClick {
                             binder.fields.forEach { it.clear() }
                             setValue(null, true)
                             isPopupVisible = false
                         }
                     }
-                    button("Ok") {
+                    button(voki18n["filter.ok"]) {
                         onLeftClick {
                             val copy = binder.bean.copy()
                             setValue(if (copy.isUniversalSet) null else copy, true)
@@ -111,7 +111,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
         val content = content as PopupView
         val value = value
         if (value == null || value.isUniversalSet) {
-            content.minimizedValueAsHTML = "All"
+            content.minimizedValueAsHTML = voki18n["filter.all"]
         } else {
             if (value.isSingleItem) {
                 content.minimizedValueAsHTML = "[x] = ${value.max}"
@@ -188,7 +188,7 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
  * The current date range is also displayed as the caption of the button.
  */
 class DateFilterPopup: CustomField<DateInterval?>() {
-    private val formatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale ?: Locale.getDefault())
+    private val formatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale!!)
     private lateinit var fromField: InlineDateTimeField
     private lateinit var toField: InlineDateTimeField
     private lateinit var set: Button
@@ -226,7 +226,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         val content = content as PopupView
         val value = value
         if (value == null || value.isUniversalSet) {
-            content.minimizedValueAsHTML = "All"
+            content.minimizedValueAsHTML = voki18n["filter.all"]
         } else {
             content.minimizedValueAsHTML = "${format(fromField.value)} - ${format(toField.value)}"
         }
@@ -253,7 +253,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 
     override fun initContent(): Component? {
         return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = "All"; isHideOnMouseOut = false
+            w = fillParent; minimizedValueAsHTML = voki18n["filter.all"]; isHideOnMouseOut = false
             verticalLayout {
                 styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
                 horizontalLayout {
@@ -264,7 +264,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
                 horizontalLayout {
                     alignment = Alignment.BOTTOM_RIGHT
                     isSpacing = true
-                    set = button("Set") {
+                    set = button(voki18n["filter.set"]) {
                         onLeftClick {
                             value = DateInterval(
                                 truncateDate(fromField.value, resolution, true),
@@ -273,7 +273,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
                             isPopupVisible = false
                         }
                     }
-                    clear = button("Clear") {
+                    clear = button(voki18n["filter.clear"]) {
                         onLeftClick {
                             value = null
                             isPopupVisible = false

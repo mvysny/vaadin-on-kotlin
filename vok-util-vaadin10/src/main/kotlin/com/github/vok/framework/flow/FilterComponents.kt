@@ -74,17 +74,17 @@ class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, Numbe
             verticalLayout {
                 horizontalLayout {
                     gtInput = textField {
-                        placeholder = "at least"
+                        placeholder = voki18n["filter.atleast"]
                         bind(binder).toDouble().bind(NumberInterval<Double>::min)
                     }
                     text("..")
                     ltInput = textField {
-                        placeholder = "at most"
+                        placeholder = voki18n["filter.atmost"]
                         bind(binder).toDouble().bind(NumberInterval<Double>::max)
                     }
                 }
                 horizontalLayout {
-                    set = button("Set") {
+                    set = button(voki18n["filter.set"]) {
                         onLeftClick {
                             val value = binder.bean.copy()
                             setModelValue(if (value.isUniversalSet) null else value, true)
@@ -92,7 +92,7 @@ class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, Numbe
                             dialog.close()
                         }
                     }
-                    clear = button("Clear") {
+                    clear = button(voki18n["filter.clear"]) {
                         onLeftClick {
                             binder.fields.forEach { it.clear() }
                             setModelValue(null, true)
@@ -119,7 +119,7 @@ class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, Numbe
     private fun updateCaption() {
         val value = value
         if (value == null || value.isUniversalSet) {
-            content.text = "All"
+            content.text = voki18n["filter.all"]
         } else {
             if (value.isSingleItem) {
                 content.text = "[x] = ${value.max}"

@@ -9,6 +9,10 @@ import java.util.*
 import java.io.*
 import kotlin.reflect.KClass
 
+/**
+ * Closes [this] quietly - if [Closeable.close] fails, an INFO message is logged. The exception is not
+ * rethrown.
+ */
 fun Closeable.closeQuietly() {
     try {
         close()
