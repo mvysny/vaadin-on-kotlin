@@ -1,6 +1,6 @@
 buildscript {
     ext.vaadin8_version = '8.5.2'
-    ext.karibudsl_version = '0.4.8'
+    ext.karibudsl_version = '0.4.9'
     ext.kaributesting_version = '0.4.16'
     ext.vaadin10_version = '10.0.5'
     ext.hikaricp_version = '3.2.0'
