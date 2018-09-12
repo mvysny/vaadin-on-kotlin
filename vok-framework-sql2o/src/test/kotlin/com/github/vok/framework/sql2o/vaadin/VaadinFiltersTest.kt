@@ -6,7 +6,6 @@ import com.github.mvysny.dynatest.expectList
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
 import com.github.vok.karibudsl.getAll
-import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 
@@ -19,9 +18,9 @@ class VaadinFiltersTest : DynaTest({
     test("grid's data provider is polled lazily on filter change") {
         val grid = Grid<Person>(Person::class.java)
         val filterRow = grid.appendHeaderRow()
-        Person(name = "foobar", age = 5).save()
+        Person(personName = "foobar", age = 5).save()
 
-        grid.dataProvider = Person.dataProvider.withFilter { Person::name eq "foo" }
+        grid.dataProvider = Person.dataProvider.withFilter { Person::personName eq "foo" }
         expectList() { grid.dataProvider!!.getAll() }
         filterRow.generateFilterComponents(grid, Person::class)
 
@@ -29,8 +28,8 @@ class VaadinFiltersTest : DynaTest({
         grid.dataProvider = Person.dataProvider
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
-        val nameFilter = filterRow.getCell("name").component as TextField
+        val nameFilter = filterRow.getCell(Person::personName.name).component as TextField
         nameFilter.value = "foobar"
-        expectList("foobar") { grid.dataProvider!!.getAll().map { it.name } }
+        expectList("foobar") { grid.dataProvider!!.getAll().map { it.personName } }
     }
 })

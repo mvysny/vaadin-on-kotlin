@@ -65,16 +65,16 @@ class DataProvidersTest : DynaTest({
 
     group("ID retrieval") {
         test("entitydp") {
-            expect(1L) { Person.dataProvider.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { Person.dataProvider.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("entitydp with filter") {
-            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp with filter") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
     }
 
@@ -85,9 +85,9 @@ class DataProvidersTest : DynaTest({
         test("entity data provider") {
             val dp = Person.dataProvider
             ComboBox<Person>().apply {
-                setItemCaptionGenerator { it.name }
+                setItemCaptionGenerator { it.personName }
                 setDataProvider(dp, { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::name.name, searchString!!)
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString!!)
                 })
             }
         }
@@ -97,9 +97,9 @@ class DataProvidersTest : DynaTest({
         test("sql data provider") {
             val dp = sqlDataProvider(Person::class.java, "select * from Person where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
             ComboBox<Person>().apply {
-                setItemCaptionGenerator { it.name }
+                setItemCaptionGenerator { it.personName }
                 setDataProvider(dp, { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::name.name, searchString!!)
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString!!)
                 })
             }
         }

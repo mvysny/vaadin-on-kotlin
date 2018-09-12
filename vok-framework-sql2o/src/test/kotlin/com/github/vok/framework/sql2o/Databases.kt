@@ -7,7 +7,7 @@ import java.util.*
 
 @Table("Test")
 data class Person(override var id: Long? = null,
-                  var name: String,
+                  @As("name") var personName: String,
                   var age: Int,
                   @Ignore var ignored: String? = null,
                   @Transient var ignored2: Any? = null,

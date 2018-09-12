@@ -4,7 +4,6 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
 import com.github.vokorm.Filter
-import com.github.vokorm.ILikeFilter
 import com.github.vokorm.buildFilter
 import com.github.vokorm.dataloader.DataLoader
 import com.github.vokorm.dataloader.SortClause
@@ -66,16 +65,16 @@ class DataProvidersTest : DynaTest({
 
     group("ID retrieval") {
         test("entitydp") {
-            expect(1L) { Person.dataProvider.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { Person.dataProvider.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("entitydp with filter") {
-            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp with filter") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, name = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
     }
 
@@ -87,7 +86,7 @@ class DataProvidersTest : DynaTest({
         test("entity data provider") {
             val dp = Person.dataProvider
             ComboBox<Person>().apply {
-                setItemLabelGenerator { it.name }
+                setItemLabelGenerator { it.personName }
                 // currently there is no way to filter server-side based on combobox contents:
                 // https://github.com/vaadin/vaadin-combo-box-flow/issues/17
                 // https://github.com/vaadin/vaadin-combo-box-flow/issues/72
@@ -100,7 +99,7 @@ class DataProvidersTest : DynaTest({
         test("sql data provider") {
             val dp = sqlDataProvider(Person::class.java, "select * from Test where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
             ComboBox<Person>().apply {
-                setItemLabelGenerator { it.name }
+                setItemLabelGenerator { it.personName }
                 // currently there is no way to filter server-side based on combobox contents:
                 // https://github.com/vaadin/vaadin-combo-box-flow/issues/17
                 // https://github.com/vaadin/vaadin-combo-box-flow/issues/72

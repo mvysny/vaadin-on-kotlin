@@ -10,7 +10,6 @@ import com.github.vok.karibudsl.flow.getAll
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
-import com.vaadin.flow.data.provider.ListDataProvider
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
@@ -19,11 +18,11 @@ class VaadinFiltersTest : DynaTest({
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17
     test("grid's data provider is polled lazily on filter change") {
         val grid = Grid<Person>()
-        grid.addColumnFor(Person::name)
+        grid.addColumnFor(Person::personName)
 
-        Person(name = "foobar", age = 5).save()
+        Person(personName = "foobar", age = 5).save()
 
-        grid.dataProvider = Person.dataProvider.withFilter { Person::name eq "foo" }
+        grid.dataProvider = Person.dataProvider.withFilter { Person::personName eq "foo" }
         expectList() { grid.dataProvider!!.getAll() }
         val filterComponents: Map<String, Component> =
             grid.appendHeaderRow().generateFilterComponents(grid, Person::class).getFilterComponents()
@@ -32,7 +31,7 @@ class VaadinFiltersTest : DynaTest({
         grid.dataProvider = Person.dataProvider
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
-        (filterComponents["name"] as TextField).value = "foobar"
-        expectList("foobar") { grid.dataProvider!!.getAll().map { it.name } }
+        (filterComponents["personName"] as TextField).value = "foobar"
+        expectList("foobar") { grid.dataProvider!!.getAll().map { it.personName } }
     }
 })

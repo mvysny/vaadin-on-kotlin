@@ -21,14 +21,14 @@ class DataProviderUtilsTest : DynaTest({
 
     group("withFilter") {
         test("InMemoryFilters") {
-            db { (15..90).forEach { Person(name = "test$it", age = it).save() } }
+            db { (15..90).forEach { Person(personName = "test$it", age = it).save() } }
             val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
             expect(31) { ds.size(Query()) }
             expect((30..60).toList()) { ds.fetch(Query(0, 100, QuerySortOrder.asc("age").build(), null, null)).toList().map { it.age } }
         }
 
         test("can't remove filter set by the withFilter() call") {
-            db { (15..90).forEach { Person(name = "test$it", age = it).save() } }
+            db { (15..90).forEach { Person(personName = "test$it", age = it).save() } }
             val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
             ds.setFilter(null)
             expect(31) { ds.size(Query()) }
@@ -36,7 +36,7 @@ class DataProviderUtilsTest : DynaTest({
         }
 
         test("setting a filter to a DP returned by withFilter() will AND with the previous one") {
-            db { (15..90).forEach { Person(name = "test$it", age = it).save() } }
+            db { (15..90).forEach { Person(personName = "test$it", age = it).save() } }
             val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
             ds.setFilter(buildFilter { Person::age between 15..40 })
             expect(11) { ds.size(Query()) }
