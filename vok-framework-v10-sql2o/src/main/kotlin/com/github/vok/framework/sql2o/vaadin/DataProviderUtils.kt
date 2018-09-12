@@ -7,7 +7,6 @@ import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
-import com.vaadin.flow.function.SerializablePredicate
 import java.util.stream.Stream
 
 /**
@@ -36,23 +35,6 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDa
         // wrap the DP again so that nobody will change our filter.
     }.withConfigurableFilter2()
 
-// since SerializablePredicate is Vaadin-built-in interface which our Filters do not use, since Vaadin 8 has different SerializablePredicate class
-// than Vaadin 10 and we would have to duplicate filters just because a dumb interface.
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVOKFilterAdapter() : VokDataProvider<T> =
-    withConvertedFilter<Filter<T>?> {
-        f -> if (f == null) null else SerializablePredicate { f.test(it) }
-    }.withConfigurableFilter2()
-
-/**
- * Produces a new data provider with unremovable [filter] which restricts rows returned by the receiver data provider.
- *
- * Invoking this method multiple times will chain the data providers and restrict the rows further.
- * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
- */
-@JvmName("withFilterAndConvert")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
-    withVOKFilterAdapter().withFilter(other)
-
 /**
  * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
  * Allows you to write
@@ -63,12 +45,8 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Fil
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
-    withFilter(block(SqlWhereBuilder()))
-
-@JvmName("andVaadin2")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
-    withVOKFilterAdapter().withFilter(block)
+inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
+    withFilter(block(SqlWhereBuilder(T::class.java)))
 
 /**
  * Removes the original filter and sets the new filter. Allows you to write
@@ -78,8 +56,8 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: Sql
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
-    setFilter(block(SqlWhereBuilder()))
+inline fun <reified T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
+    setFilter(block(SqlWhereBuilder(T::class.java)))
 }
 
 /**

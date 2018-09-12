@@ -1,9 +1,7 @@
 package com.github.vok.framework.sql2o
 
-import com.github.vokorm.Dao
-import com.github.vokorm.Entity
-import com.github.vokorm.Ignore
-import com.github.vokorm.Table
+import com.github.mvysny.dynatest.DynaNodeGroup
+import com.github.vokorm.*
 import java.time.LocalDate
 import java.util.*
 
@@ -34,4 +32,36 @@ enum class MaritalStatus {
     Married,
     Divorced,
     Widowed
+}
+
+fun DynaNodeGroup.usingH2Database() {
+    beforeGroup {
+        VokOrm.dataSourceConfig.apply {
+            minimumIdle = 0
+            maximumPoolSize = 30
+            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+            username = "sa"
+            password = ""
+        }
+        VokOrm.init()
+        db {
+            con.createQuery(
+                """create table if not exists Test (
+                id bigint primary key auto_increment,
+                name varchar not null,
+                age integer not null,
+                dateOfBirth date,
+                created timestamp,
+                alive boolean,
+                maritalStatus varchar
+                 )"""
+            ).executeUpdate()
+        }
+    }
+
+    afterGroup { VokOrm.destroy() }
+
+    fun clearDb() = Person.deleteAll()
+    beforeEach { clearDb() }
+    afterEach { clearDb() }
 }

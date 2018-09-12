@@ -37,23 +37,6 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDa
         // wrap the DP again so that nobody will change our filter.
     }.withConfigurableFilter2()
 
-// since SerializablePredicate is Vaadin-built-in interface which our Filters do not use, since Vaadin 8 has different SerializablePredicate class
-// than Vaadin 10 and we would have to duplicate filters just because a dumb interface.
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withVoKFilterAdapter() : VokDataProvider<T> =
-    withConvertedFilter<Filter<T>?> { f ->
-        if (f == null) null else SerializablePredicate { f.test(it) }
-    }.withConfigurableFilter2()
-
-/**
- * Produces a new data provider with unremovable [filter] which restricts rows returned by the receiver data provider.
- *
- * Invoking this method multiple times will chain the data providers and restrict the rows further.
- * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
- */
-@JvmName("withFilterAndConvert")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(filter: Filter<T>) : VokDataProvider<T> =
-    withVoKFilterAdapter().withFilter(filter)
-
 /**
  * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
  * Allows you to write
@@ -64,12 +47,8 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(filter: Fi
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
-fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
-    withFilter(block(SqlWhereBuilder()))
-
-@JvmName("withFilterVaadin2")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
-    withVoKFilterAdapter().withFilter(block)
+inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
+    withFilter(block(SqlWhereBuilder(T::class.java)))
 
 /**
  * Removes the original filter and sets the new filter. Allows you to write
@@ -79,8 +58,8 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: Sql
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
-fun <T: Any> VokDataProvider<T>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
-    setFilter(block(SqlWhereBuilder()))
+inline fun <reified T: Any> VokDataProvider<T>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
+    setFilter(block(SqlWhereBuilder(T::class.java)))
 }
 
 /**
@@ -99,8 +78,8 @@ class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrder>, pr
 }
 
 /**
- * Returns a new data provider which delegates to receiver but with given list of [sort] orders appended to anything passed in to [com.vaadin.flow.data.provider.Query].
- * The [com.vaadin.flow.data.provider.Query.sortOrders] take precedence: any user-specified sorting in Grid takes precedence.
+ * Returns a new data provider which delegates to receiver but with given list of [sort] orders appended to anything passed in to [com.vaadin.data.provider.Query].
+ * The [com.vaadin.data.provider.Query.sortOrders] take precedence: any user-specified sorting in Grid takes precedence.
  *
  * This can thus be used to specify the default ordering of the data source in case when the user selected no sorting for the Grid.
  *
