@@ -9,10 +9,7 @@ import kotlin.test.expect
 
 class JPADataProviderTest : DynaTest({
 
-    beforeGroup { initVOK() }
-    fun clearDatabase() = db { em.deleteAll<TestPerson>() }
-    beforeEach { clearDatabase() }
-    afterEach { clearDatabase() }
+    usingDatabase()
 
     test("noEntities") {
         val ds = jpaDataProvider<TestPerson>()

@@ -1,5 +1,6 @@
 package com.github.vok.framework
 
+import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
 import org.flywaydb.core.Flyway
@@ -8,17 +9,24 @@ import javax.persistence.EntityManager
 import kotlin.test.expect
 import kotlin.test.fail
 
-fun initVOK() {
-    JPAVOKPlugin().init()
-    val flyway = Flyway()
-    flyway.dataSource = VaadinOnKotlin.getDataSource()
-    flyway.migrate()
+fun DynaNodeGroup.usingDatabase() {
+    beforeGroup {
+        JPAVOKPlugin().init()
+        val flyway = Flyway()
+        flyway.dataSource = VaadinOnKotlin.getDataSource()
+        flyway.migrate()
+    }
+    fun clearDatabase() {
+        db { em.deleteAll<TestHobby>() }
+        db { em.deleteAll<TestPerson>() }
+    }
+    beforeEach { clearDatabase() }
+    afterEach { clearDatabase() }
 }
 
 class DBTest : DynaTest({
 
-    beforeGroup { initVOK() }
-    beforeEach { db { em.deleteAll<TestPerson>() } }
+    usingDatabase()
 
     test("CantControlTxFromDbFun") {
         expectThrows(IllegalStateException::class) {

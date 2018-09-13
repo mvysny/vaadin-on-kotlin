@@ -5,16 +5,7 @@ import com.github.mvysny.dynatest.expectList
 
 class JpaProviderTest : DynaTest({
 
-    beforeGroup { initVOK() }
-
-    fun clearDb() {
-        db {
-            em.deleteAll<TestHobby>()
-            em.deleteAll<TestPerson>()
-        }
-    }
-    beforeEach { clearDb() }
-    afterEach { clearDb() }
+    usingDatabase()
 
     /**
      * Hibernate fails with LazyInitializationException unless we do something. Reproduces

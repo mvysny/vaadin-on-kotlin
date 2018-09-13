@@ -2,7 +2,8 @@
 
 If you prefer the evil you are accustomed to, then you can start off this example. The application demonstrates the following things:
 
-* Linking to a database. VaadinOnKotlin uses Hibernate for JPA O/R mapping when accessing the database.
+* Linking to a database. Vaadin-on-Kotlin encourages you to use the [vok-orm](../vok-example-crud-sql2o)
+  approach but you can also use the alternative approach of Hibernate for JPA O/R mapping when accessing the database.
   The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](build.gradle) the db section for more details.
   To link to the database, we use the traditional JPA
@@ -17,5 +18,5 @@ If you prefer the evil you are accustomed to, then you can start off this exampl
 * Accessing the database: just create your JPA beans
   [(example Person)](src/main/kotlin/com/github/vok/example/crud/personeditor/Person.kt) and use them in any way you see fit:
   `val allPersons = db { em.findAll<Person>() }`. The `db` is just a function defined
-  in [DB.kt](../src/main/kotlin/com/github/vok/framework/DB.kt), you can call this from anywhere, be it
+  in the JPA module in [DB.kt](../vok-framework-jpa/src/main/kotlin/com/github/vok/framework/DB.kt), you can call this from anywhere, be it
   Vaadin click listener or background thread. No injections/beans/EJBs/whatever necessary!
