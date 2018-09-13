@@ -43,3 +43,8 @@ then use the [vok-framework-sql2o](../vok-framework-sql2o) module instead.
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin8](../vok-util-vaadin8) module. You will then have to write your own data fetching
 layer; however you may find inspiration on how to do so, by checking the sources of this module.
+
+## More documentation
+
+* See the documentation of the [vok-util-vaadin8](../vok-util-vaadin8) module on how the filters work
+  in general and how to use them.

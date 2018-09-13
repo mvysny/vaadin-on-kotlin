@@ -52,3 +52,5 @@ layer; however you may find inspiration on how to do so, by checking the sources
 
 * The [Accessing Database Guide](http://www.vaadinonkotlin.eu/databases.html)
 * The [Using Grids Guide](http://www.vaadinonkotlin.eu/grids.html)
+* See the documentation of the [vok-util-vaadin8](../vok-util-vaadin8) module on how the filters work
+  in general and how to use them.
