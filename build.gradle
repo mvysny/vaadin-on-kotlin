@@ -17,7 +17,7 @@ buildscript {
 }
 
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.61"
+    id "org.jetbrains.kotlin.jvm" version "1.2.70"
     id "org.gretty" version "2.1.0"
     id "com.jfrog.bintray" version "1.8.1"
 }
