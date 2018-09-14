@@ -23,7 +23,7 @@ class SqlFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
     private val String.dbColumnName: String get() = clazz.entityMeta.getProperty(this).dbColumnName
     override fun and(filters: Set<Filter<T>>) = filters.and()
     override fun or(filters: Set<Filter<T>>) = filters.or()
-    override fun eq(propertyName: String, value: Any) = EqFilter<T>(propertyName.dbColumnName, value)
+    override fun eq(propertyName: String, value: Any?) = EqFilter<T>(propertyName.dbColumnName, value)
     override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName.dbColumnName, value as Comparable<Any>, CompareOperator.le)
     override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName.dbColumnName, value as Comparable<Any>, CompareOperator.ge)
     override fun ilike(propertyName: String, value: String) = ILikeFilter<T>(propertyName.dbColumnName, value)

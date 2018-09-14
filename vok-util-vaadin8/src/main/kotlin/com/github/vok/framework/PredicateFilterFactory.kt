@@ -1,8 +1,12 @@
 package com.github.vok.framework
 
+import com.vaadin.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.data.provider.DataProvider
 import com.vaadin.server.SerializablePredicate
 import java.beans.Introspector
+import java.io.Serializable
 import java.lang.reflect.Method
+import kotlin.reflect.KProperty1
 
 /**
  * A factory which produces predicates as filters. Intended to be used with in-memory [com.vaadin.data.provider.DataProvider]s
@@ -31,7 +35,7 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
         override fun toString(): String = filters.joinToString(" OR ", "(", ")")
     }
 
-    override fun eq(propertyName: String, value: Any): SerializablePredicate<T> = Eq(propertyName, value)
+    override fun eq(propertyName: String, value: Any?): SerializablePredicate<T> = Eq(propertyName, value)
 
     /**
      * Filters beans by comparing given [propertyName] to some expected [value]. Check out implementors for further details.
@@ -52,7 +56,7 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
         protected fun getValue(item: T): Any? = getGetter(item).invoke(item)
     }
 
-    data class Eq<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
+    data class Eq<T: Any>(override val propertyName: String, override val value: Any?) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean = getValue(t) == value
         override fun toString(): String = "$propertyName = $value"
     }
@@ -87,3 +91,83 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
         override fun toString(): String = "$propertyName ILIKE %$value%"
     }
 }
+
+/**
+ * Running block with this class as its receiver will allow you to write expressions like this:
+ * `Person::age lt 25`. Does not support joins - just use the plain old SQL 92 where syntax for that ;)
+ *
+ * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe.
+ *
+ * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic where creation only ;)
+ */
+class PredicateFilterBuilder<T: Any>() {
+    private val ff = PredicateFilterFactory<T>()
+
+    infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): SerializablePredicate<T> = ff.eq(name, value)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.le(value: R): SerializablePredicate<T> = ff.le(name, value as Comparable<Any>)
+    @Suppress("UNCHECKED_CAST")
+    infix fun <R> KProperty1<T, R?>.ge(value: R): SerializablePredicate<T> = ff.ge(name, value as Comparable<Any>)
+    @Suppress("UNCHECKED_CAST")
+
+    /**
+     * An ILIKE filter, performs case-insensitive matching. It performs the 'starts-with' matching which tends to perform quite well on indexed columns. If you need a substring
+     * matching, then you actually need to employ full text search
+     * capabilities of your database. For example [PostgreSQL full-text search](https://www.postgresql.org/docs/9.5/static/textsearch.html).
+     *
+     * There is no point in supporting substring matching: it performs a full table scan when used, regardless of whether the column contains
+     * the index or not. If you really wish for substring matching, you probably want a full-text search instead which is implemented using
+     * a different keywords.
+     * @param value the substring, automatically appended with `%` when the SQL query is constructed. The substring is matched
+     * case-insensitive.
+     */
+    infix fun KProperty1<T, String?>.ilike(value: String): SerializablePredicate<T> = ff.ilike(name, value)
+    /**
+     * Matches only values contained in given range.
+     * @param range the range
+     */
+    infix fun <R> KProperty1<T, R?>.between(range: ClosedRange<R>): SerializablePredicate<T> where R: Number, R: Comparable<R> =
+        this.ge(range.start as Number).and(this.le(range.endInclusive as Number))
+
+    val KProperty1<T, Boolean?>.isTrue: SerializablePredicate<T> get() = eq(true)
+    val KProperty1<T, Boolean?>.isFalse: SerializablePredicate<T> get() = eq(false)
+}
+
+/**
+ * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
+ * @return a new data provider which can be outfitted with a custom filter.
+ */
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilter2() : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+    withConfigurableFilter({ f1: SerializablePredicate<T>?, f2: SerializablePredicate<T>? -> when {
+        f1 == null && f2 == null -> null
+        f1 == null -> f2
+        f2 == null -> f1
+        else -> f1.and(f2)
+    } })
+
+/**
+ * Produces a new data provider which always applies given [other] filter and restricts rows returned by the original data provider to given filter.
+ *
+ * Invoking this method multiple times will chain the data providers and restrict the rows further.
+ * @param other applies this filter
+ * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
+ */
+fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+    withConfigurableFilter2().apply {
+        // wrap the current DP so that we won't change the filter
+        setFilter(other)
+        // wrap the DP again so that nobody will change our filter.
+    }.withConfigurableFilter2()
+
+/**
+ * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
+ * Allows you to write
+ * expressions like this: `Person.dataProvider.withFilter { Person::age lt 25 }`
+ * See [SqlWhereBuilder] for a complete list of applicable operators.
+ *
+ * Invoking this method multiple times will restrict the rows further.
+ * @param block the block which allows you to build the `where` expression.
+ * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
+ */
+inline fun <reified T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: PredicateFilterBuilder<T>.()-> SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+    withFilter(block(PredicateFilterBuilder()))

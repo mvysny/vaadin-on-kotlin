@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.util.*
 import kotlin.test.expect
 
-class VaadinFiltersTest : DynaTest({
+class FilterRowTest : DynaTest({
     beforeEach { MockVaadin.setup() }
 
     test("Test simple auto-generated filters") {

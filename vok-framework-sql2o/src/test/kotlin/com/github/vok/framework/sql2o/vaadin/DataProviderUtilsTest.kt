@@ -32,7 +32,7 @@ class DataProviderUtilsTest : DynaTest({
             val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
             ds.setFilter(null)
             expect(31) { ds.size(Query()) }
-            expect((30..60).toList()) { ds.getAll().toList().map { it.age } }
+            expect((30..60).toList()) { ds.getAll().map { it.age } }
         }
 
         test("setting a filter to a DP returned by withFilter() will AND with the previous one") {
@@ -40,12 +40,12 @@ class DataProviderUtilsTest : DynaTest({
             val ds = Person.dataProvider.withFilter { Person::age between 30..60 }
             ds.setFilter(buildFilter { Person::age between 15..40 })
             expect(11) { ds.size(Query()) }
-            expect((30..40).toList()) { ds.getAll().toList().map { it.age } }
+            expect((30..40).toList()) { ds.getAll().map { it.age } }
 
             // this must overwrite the previously set filter
             ds.setFilter(buildFilter { Person::age between 15..35 })
             expect(6) { ds.size(Query()) }
-            expect((30..35).toList()) { ds.getAll().toList().map { it.age } }
+            expect((30..35).toList()) { ds.getAll().map { it.age } }
         }
 
         group("sortedBy") {

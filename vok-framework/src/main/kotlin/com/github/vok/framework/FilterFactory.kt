@@ -28,7 +28,7 @@ interface FilterFactory<F> : Serializable {
     /**
      * Creates a filter which matches the value of given [propertyName] to given [value].
      */
-    fun eq(propertyName: String, value: Any): F
+    fun eq(propertyName: String, value: Any?): F
     /**
      * Creates a filter which accepts only such values of given [propertyName] which are less than or equal to given [value].
      */
