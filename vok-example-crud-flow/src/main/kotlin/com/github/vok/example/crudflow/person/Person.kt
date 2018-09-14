@@ -1,5 +1,6 @@
 package com.github.vok.example.crudflow.person
 
+import com.github.vokorm.As
 import com.github.vokorm.Dao
 import com.github.vokorm.Entity
 import java.time.LocalDate
@@ -27,6 +28,7 @@ data class Person(
 
         @field:NotNull
         @field:Size(min = 1, max = 200)
+        @As("PERSON_NAME")
         var name: String? = null,
 
         @field:NotNull

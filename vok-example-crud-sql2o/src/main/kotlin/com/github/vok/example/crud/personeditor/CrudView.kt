@@ -52,7 +52,7 @@ class CrudView: VerticalLayout(), View {
 
             // a sample of how to reconfigure a column
             addColumnFor(Person::id) { isSortable = false }
-            addColumnFor(Person::name) {
+            addColumnFor(Person::personName) {
                 setEditorComponent(TextField())
             }
             addColumnFor(Person::age) {
@@ -89,7 +89,7 @@ class CrudView: VerticalLayout(), View {
     private fun generateTestingData() {
         db {
             (0..85).forEach {
-                Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true).save()
+                Person(personName = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true).save()
             }
         }
         personGrid.refresh()

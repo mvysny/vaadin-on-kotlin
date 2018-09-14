@@ -1,5 +1,6 @@
 package com.github.vok.example.crud.personeditor
 
+import com.github.vokorm.As
 import com.github.vokorm.Dao
 import com.github.vokorm.Entity
 import java.time.Instant
@@ -28,7 +29,8 @@ data class Person(
 
         @field:NotNull
         @field:Size(min = 1, max = 200)
-        var name: String? = null,
+        @As("name")
+        var personName: String? = null,
 
         @field:NotNull
         @field:Min(15)

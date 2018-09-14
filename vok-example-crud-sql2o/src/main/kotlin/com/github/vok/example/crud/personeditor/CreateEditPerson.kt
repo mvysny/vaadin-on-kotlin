@@ -33,7 +33,7 @@ internal class CreateEditPerson(val person: Person) : Window() {
                 w = wrapContent
                 textField("Name:") {
                     focus()
-                    bind(binder).trimmingConverter().bind(Person::name)
+                    bind(binder).trimmingConverter().bind(Person::personName)
                 }
                 textField("Age:") {
                     bind(binder).toInt().bind(Person::age)

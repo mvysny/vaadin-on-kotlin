@@ -20,12 +20,15 @@ import java.util.stream.Stream
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+class DataLoaderAdapter<T : Any>(val clazz: Class<T>, private val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
     override fun toString() = "DataLoaderAdapter($loader)"
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = loader.getCount(query?.filter?.orElse(null))
     override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> {
-        val sortBy: List<SortClause> = query?.sortOrders?.map { SortClause(it.sorted, it.direction == SortDirection.ASCENDING) } ?: listOf()
+        val sortBy: List<SortClause> = query?.sortOrders?.map {
+            val dbColumnName = clazz.entityMeta.getProperty(it.sorted).dbColumnName
+            SortClause(dbColumnName, it.direction == SortDirection.ASCENDING)
+        } ?: listOf()
         val offset = query?.offset ?: 0
         val limit = query?.limit ?: Int.MAX_VALUE
         var endInclusive = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
@@ -43,7 +46,7 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
     get() {
-        val entityDataProvider = DataLoaderAdapter(EntityDataLoader(T::class.java), { it.id!! })
+        val entityDataProvider = DataLoaderAdapter(T::class.java, EntityDataLoader(T::class.java), { it.id!! })
         return entityDataProvider.withConfigurableFilter2()
     }
 
@@ -89,4 +92,4 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
-        = DataLoaderAdapter(SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
+        = DataLoaderAdapter(clazz, SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
