@@ -47,7 +47,7 @@ class CrudViewTest : DynaTest({
 
     test("the grid lists all personnel properly") {
         val created = Instant.ofEpochMilli(0)
-        Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = created).save()
+        Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = created).save()
         CrudView.navigateTo()
 
         val grid = _get<Grid<*>>()
@@ -56,7 +56,7 @@ class CrudViewTest : DynaTest({
     }
 
     test("edit one person") {
-        Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+        Person(personName = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         CrudView.navigateTo()
 
         val grid = _get<Grid<*>>()
@@ -67,6 +67,6 @@ class CrudViewTest : DynaTest({
         _get<Button> { caption = "Save" }._click()
 
         // assert the updated person
-        expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.name } }
+        expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.personName } }
     }
 })
