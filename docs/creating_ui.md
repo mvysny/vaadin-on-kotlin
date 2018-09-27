@@ -53,9 +53,9 @@ With VoK, we create UIs by creating component hierarchies. We will now show how 
 > The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
 programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
 
-## Creating Views
+## Creating Component Hierarchies
 
-Please git clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app.
+Please git-clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app.
 
 If you open the [WelcomeView.kt](https://github.com/mvysny/vok-helloworld-app/blob/master/web/src/main/kotlin/com/example/vok/WelcomeView.kt)
 file, you'll notice that it extends from the `VerticalLayout`. In Vaadin, `VerticalLayout` and `HorizontalLayout` are two most commonly
@@ -78,10 +78,21 @@ class WelcomeView: VerticalLayout(), View {
 
 The `button()` function simply creates the Vaadin `Button`, sets a caption into it, inserts it into the parent layout (in this case,
 the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for that button. The configuration block adds a left click
-listener.
+listener. The definition of the `button()` function looks very cryptic:
 
-> Note: to read the technical explanation how this exactly works, please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
-article.
+```kotlin
+fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDsl Button).() -> Unit = {})
+        = init(Button(caption), block)
+```
+
+This is a definition which allows us to build UIs in a structured way, by employing so-called DSLs. Don't worry if
+this doesn't make any sense right now - we will explain this in a great detail later on.
+
+> **Note**: A technique called DSL (domain-specific language) is used in the Kotlin language to construct
+hierarchical structures. Since the UI is a hierarchical structure with components nested inside layouts, we can
+use the DSL approach here. In VoK we have constructed a set of functions which will allow you to construct Vaadin UIs
+in a hierarchical manner. Please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
+article on why a hierarchical code beats plain Java code.
 
 Let us add a simple form, consisting of two text fields:
 
@@ -126,6 +137,199 @@ class WelcomeView: VerticalLayout(), View {
                 Notification.show("Hello, ${nameField.value} of age ${ageField.value}")
             }
         }
+    }
+}
+```
+
+## DSLs Explained
+
+> **Note**: Please feel free to skip this chapter if you're new to VoK and you're not yet looking for nitty-gritty technical
+details on how things work under the hood.
+
+Let's focus on the following code:
+```kotlin
+class MyView : VerticalLayout() {
+    init {
+        formLayout {
+            textField("Name:")
+            textField("Age:")
+        }
+    }
+}
+```
+
+It is equivalent to the following code in a sense that it produces the same UI component hierarchy:
+```kotlin
+class MyView : VerticalLayout() {
+    init {
+        val fl = FormLayout()
+        val nameField = TextField("Name:")
+        fl.addComponent(nameField)
+        val ageField = TextField("Age:")
+        fl.addComponent(ageField)
+    }
+}
+```
+
+The produced hierarchy in both cases is as follows:
+```
+VerticalLayout
+  \---- FormLayout
+          |----- TextField
+          \----- TextField
+```
+
+It's clear that the DSL code above has advantage over the plain flat code since it reflects the produced hierarchy.
+Let's now try to write the `formLayout()` function in a way that will:
+
+* Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
+* Provide a block which would make all functions called from this block insert components into the `FormLayout`.
+
+The first item can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
+Here, the receiver would simply be the parent `VerticalLayout` (or rather `HasComponents` which is a supertype of all
+layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`).
+
+An example of such function would be:
+```kotlin
+fun HasComponents.formLayout() {
+    val fl = FormLayout()
+    this.add(fl)
+}
+fun HasComponents.textField() {
+    val fl = TextField()
+    this.add(fl)
+}
+```
+
+> **Note**: Technically `HasComponents` doesn't have the `add()` method, but it's possible to implement such method
+in a way which works with all Vaadin component containers. Let's skip this detail for now.
+
+Kotlin will automatically pick the proper receiver:
+* In the `init{}` block of the `MyView` the receiver would be the
+`MyView` itself (which extends `VerticalLayout`). Calling `formLayout()` in the `init{}` block will therefore
+cause `FormLayout` to be added into `MyView`
+* Exactly the same situation occurs within the function defined on `MyView`
+* However, when the `textField()` function is called from `formLayout()`'s block, the nearest receiver is
+the `FormLayout` itself, which takes precedence over `MyView`. Hence, the `TextField` will be nested inside of the
+`FormLayout` as opposed of nesting inside of the `MyView`. Yet, we haven't defined such a block in the `formLayout()` yet! Let's fix that.
+
+To satisfy the second item, we need the `formLayout()` function to be able to run a block. We need to declare the block
+in a special way so that any DSL functions invoked from the block will add components into this `FormLayout`. Hence, we need
+to provide a *receiver* to the block which is then picked by the DSL functions such as `textField()`.
+
+We will therefore modify the `formLayout()` function accordingly:
+```kotlin
+fun HasComponents.formLayout(block: FormLayout.()->Unit) {
+    val fl = FormLayout()
+    this.add(fl)
+    fl.block()
+}
+```
+
+That will allow us to call the `textField()` function from `formLayout()`'s block as follows:
+```kotlin
+...
+formLayout({  // here the receiver is the newly constructed FormLayout
+    this.textField()    // 'this' is the FormLayout
+})
+...
+```
+
+`this.` is explicit and can be dropped. Also, when the `block` is the last parameter of a Kotlin function,
+it goes after them parenthesis:
+
+```kotlin
+...
+formLayout() {  // here the receiver is the newly constructed FormLayout
+    textField()    // 'this' is the FormLayout and has been omitted
+}
+...
+```
+
+If a Kotlin function takes `block` as the only parameter, the empty parentheses can be omitted too:
+
+```kotlin
+...
+formLayout {  // here the receiver is the newly constructed FormLayout
+    textField()    // 'this' is the FormLayout and has been omitted
+}
+...
+```
+
+### Specifying properties for the TextField
+
+It is handy to make the `textField()` function also take a block, so that we can specify the properties
+of the newly constructed `TextField` right next to the `TextField` creation itself. We will therefore add `block`
+to the `textField()` function as well:
+
+```kotlin
+fun HasComponents.textField(block: TextField.()->Unit) {
+    val fl = TextField(caption)
+    this.add(fl)
+    fl.block()
+}
+```
+
+This will allow us to write the following code:
+```kotlin
+textField {
+    caption = "Name"
+    width = "30em"
+    style = "big"
+}
+```
+
+However, this will introduce an intriguing problem: now we are able to write the following code:
+```kotlin
+formLayout {
+    textField {
+        textField()
+    }
+}
+```
+
+Which apparently makes no sense, since `TextField` is not a `HasComponents` and cannot take children, yet
+it still compiles happily and it will actually add two text fields into the form layout!
+
+The problem here is that Kotlin will look up the nearest `HasComponents` as the receiver for the `textField()`
+function; since `TextField` is not `HasComponents` Kotlin will hop level up and will take the `FormLayout`.
+
+Note that if we rewrite the code as follows, it no longer compiles:
+```kotlin
+formLayout {
+    textField {
+        this.textField()  // doesn't compile since 'this' is TextField and the textField() function only works on HasComponents
+    }
+}
+```
+
+Yet writing `this.` to guard ourselves from this issue is highly annoying. Therefore we will use another technique:
+the [DSL markers](https://kotlinlang.org/docs/reference/type-safe-builders.html#scope-control-dslmarker-since-11).
+If we mark both `textField()`, `formLayout()` and `HasComponents` with a single DSL Marker annotation, that would
+prevent Kotlin from crossing to the outer receiver. However, we can't add annotation to `HasComponents` since it's built-in
+in Vaadin!
+
+The solution is to annotate `HasComponents` not in its definition place, but in the DSL function definition. And
+hence the DSL function becomes like follows:
+
+```kotlin
+fun (@VaadinDsl HasComponents).formLayout(block: (@VaadinDsl FormLayout).()->Unit) {
+    val fl = FormLayout()
+    this.add(fl)
+    fl.block()
+}
+fun (@VaadinDsl HasComponents).textField(block: (@VaadinDsl TextField).()->Unit) {
+    val fl = TextField(caption)
+    this.add(fl)
+    fl.block()
+}
+```
+
+And now the following code doesn't compile anymore:
+```kotlin
+formLayout {
+    textField {
+        textField()   // compilation error: a member of outer receiver
     }
 }
 ```
