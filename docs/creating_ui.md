@@ -8,22 +8,32 @@ You add components such as Button and TextField into the page, nesting them in l
 
 ## Introduction
 
-Web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>`. Therefore,
-web frameworks typically focus on letting you compose the web page out of elements. In this regard, Vaadin is different.
+The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>`.
+Typical web frameworks focus on rendering HTML pages, requiring you to build the page out of HTML elements.
+In this regard, Vaadin is different.
 
-With Vaadin, instead of composing HTML elements we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
-The component renders as one or more HTML elements, controlled by the means of JavaScript functionality self-enclosed in the
-component. The JavaScript is typically compiled from Java via GWT, but it is possible to write components directly by using JavaScript.
+Instead of composing HTML elements, in Vaadin we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
+Every Vaadin component consists of two parts:
 
-The components are typically rich - for example `ComboBox` does not render into the HTML `<input>` element but it instead renders
+* The client-side part renders one or more HTML elements and controls them by the means of JavaScript. For example a Google Map
+  component would fetch individual tiles and produce a mesh of `<div>`s which then lay out the tiles to show the map itself.
+* The server-side part then exposes a high-level API. A Google Map component allows you to set zoom, to focus on particular
+  GPS coordinates, to add markers etc.
+
+> **Note**: The client-side is typically written in Java and compiled to the JavaScript by the means of GWT.
+It is however also possible to write components directly by using JavaScript. There are great resources on how to write
+Vaadin client-side component, for example the [Client-side Development Guide](https://vaadin.com/docs/v8/framework/clientside/clientside-overview.html).
+In this guide we will not focus on the client-side part; instead we will focus on how to compose the server-side components.
+
+The components are typically rich in functionality. For example `ComboBox` does not render into the HTML `<input>` element but it instead renders
 a rich `<div>` hierarchy which allows features not possible with the `<input>` element such as auto-completion.
+There is a big palette of pre-made components which we compose and nest in the server-side Java code. Vaadin
+then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
+process is typically self-contained, implemented in the component client-side code and typically can not be controlled from server-side Java.
 
-> Note: Vaadin 8 components are not to be
+> **Note:** Vaadin 8 components are not to be
 confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
 Vaadin 8 implements its components in GWT; Vaadin 8 components can be thought of as predecessors of the Web Component standard.
-
-In server-side Java, we compose and nest components, which they render as a bunch of HTML elements in the browser. The rendering
-process is typically self-contained, defined by the component code and typically can not be controlled from server-side Java.
 
 For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
 `ComboBox` components. The code on server-side would look like this:
@@ -35,12 +45,12 @@ layout.addComponent(new CheckBox("Internal employee"));
 layout.addComponent(new DatePicker("Date of birth:"));
 ```
 
-This code builds a component *hierarchy* (a tree of components, with fields nested in a form layout). The components'
+This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
 client-side code then renders themselves as HTML elements.
 
 With VoK, we create UIs by creating component hierarchies. We will now show how that is done in Kotlin.
 
-> The following text expects no familiarity with the Vaadin framework, but it is best to have at least basic understanding of the Kotlin
+> The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
 programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
 
 ## Creating Views
