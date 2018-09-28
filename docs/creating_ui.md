@@ -258,7 +258,7 @@ Every field has a different purpose which we will not document here; for further
 resources:
 
 * The [Vaadin Documentation on Components](https://vaadin.com/docs/v8/framework/components/components-overview.html)
-* The [Vaadin Sampler]
+* The [Vaadin Sampler](https://demo.vaadin.com/sampler/#ui/data-input) shows all (input) components.
 
 ## Referencing Components
 
