@@ -149,8 +149,89 @@ the flexbox, yet Vaadin's layouts use JavaScript to position children and thus f
 case of setting the proper alignment to the child:
 
 ```kotlin
-TBD
+@AutoView("")
+class WelcomeView: VerticalLayout(), View {
+    init {
+        setSizeFull()
+        verticalLayout {
+            w = 200.px; h = 100.px; isMargin = false
+            button("centered") {
+                alignment = Alignment.MIDDLE_CENTER
+            }
+        }
+    }
+}
 ```
+
+The result is as follows:
+
+![Button Centered](images/creating_ui/button_centered.png)
+
+> From now on we'll just paste the contents of the `init{}` block for brevity.
+
+Another case would be a button bar, having a bunch of buttons both on the left side and on the right side.
+There is a `CSSLayout` acting as an spacer; since it's expanded it consumes all of the available space,
+pushing follow-up buttons to the right:
+
+```kotlin
+setSizeFull()
+horizontalLayout {
+    w = 300.px; isSpacing = false
+    button { icon = VaadinIcons.TRASH; styleName = ValoTheme.BUTTON_BORDERLESS }
+    button { icon = VaadinIcons.ADD_DOCK; styleName = ValoTheme.BUTTON_BORDERLESS }
+    cssLayout { isExpanded = true }
+    button { icon = VaadinIcons.QUESTION; styleName = ValoTheme.BUTTON_BORDERLESS }
+}
+```
+
+![Button Bar Example](images/creating_ui/button_bar.png)
+
+The same effect can be achieved even without the spacer component. In the following example, the "question" button
+will act as the spacer; it will be positioned to the right in its slot to appear as right-centered:
+
+```kotlin
+setSizeFull()
+horizontalLayout {
+    w = 300.px; isSpacing = false
+    button { icon = VaadinIcons.TRASH; styleName = ValoTheme.BUTTON_BORDERLESS }
+    button { icon = VaadinIcons.ADD_DOCK; styleName = ValoTheme.BUTTON_BORDERLESS }
+    button { isExpanded = true; icon = VaadinIcons.QUESTION; styleName = ValoTheme.BUTTON_BORDERLESS; alignment = Alignment.MIDDLE_RIGHT }
+    button { icon = VaadinIcons.AIRPLANE; styleName = ValoTheme.BUTTON_BORDERLESS }
+}
+```
+
+You can use the same approach for building the application frame. We're going to have the main menu to the right,
+and expand the left area so that the views can be nested inside of it:
+
+```kotlin
+@PushStateNavigation
+class MyUI : UI(), ViewDisplay {
+    private lateinit var viewContainer: CssLayout
+    override fun init(request: VaadinRequest?) {
+        navigator = Navigator(this, this as ViewDisplay)
+        navigator.addProvider(autoViewProvider)
+        horizontalLayout {
+            setSizeFull()
+            verticalLayout {
+                setSizeUndefined(); isSpacing = false; isMargin = false
+                button("About") { icon = VaadinIcons.QUESTION; styleName = ValoTheme.BUTTON_BORDERLESS }
+                button("Users") { icon = VaadinIcons.USERS; styleName = ValoTheme.BUTTON_BORDERLESS }
+                button("Log Out") { icon = VaadinIcons.USERS; styleName = ValoTheme.BUTTON_BORDERLESS }
+            }
+            viewContainer = cssLayout {
+                setSizeFull(); isExpanded = true
+            }
+        }
+    }
+
+    override fun showView(view: View?) {
+        viewContainer.removeAllComponents()
+        viewContainer.addComponent(view as Component)
+    }
+}
+```
+
+![Main Application Frame](images/creating_ui/appframe.png)
 
 ## Fields
 
