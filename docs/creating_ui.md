@@ -20,6 +20,20 @@ Every Vaadin component consists of two parts:
 * The server-side part then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
   GPS coordinates, to add markers etc.
 
+This kind of approach makes it incredibly easy to add Google Maps to your site. You just write the following Java code and you don't
+have to care about what the HTML will look like, or how exactly it will fetch the data:
+
+```java
+class MyView : VerticalLayout {
+  init {
+    setSizeFull()
+    val maps = GoogleMaps()
+    maps.setSizeFull()
+    addComponent(maps)
+  }
+}
+```
+
 > *Info*: The client-side is typically written in Java and compiled to the JavaScript by the means of GWT.
 It is however also possible to write components directly by using JavaScript. There are great resources on how to write
 Vaadin client-side component, for example the [Client-side Development Guide](https://vaadin.com/docs/v8/framework/clientside/clientside-overview.html).
