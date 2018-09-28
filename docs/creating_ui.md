@@ -491,6 +491,12 @@ but it causes Intellij Kotlin plugin to highlight DSL functions with a different
 The abovementioned method is used in VoK. The DSL function handles the actual creation of the component; then it
 passes the created component to the `init()` method which then adds the component into the parent layout.
 
+If you need to only create the component, without adding it to the parent just yet, you can not use DSLs -
+just construct the component directly, using the component's constructor.
+
+DSLs do not contain the functionality needed to remove the component. If you need this kind of functionality, you will
+have to resort to Vaadin's built-in methods, or use Karibu-DSL's `removeFromParent()` function.
+
 ## Creating reusable components
 
 The core principle of Vaadin is that it is very easy to create reusable components. For example, in order to create a reusable form,
