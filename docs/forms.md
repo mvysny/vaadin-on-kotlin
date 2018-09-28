@@ -1,4 +1,4 @@
-# Creating forms
+# Creating Forms
 
 When creating UI for forms, we typically solve two separate tasks:
 
@@ -135,7 +135,7 @@ if (!violations.isEmpty()) {
 }
 ```
 
-> **Note**: If you're using VoK entities, just call `person.validate()`). More on that in the database guide.
+> **Note**: If you're using VoK entities, just call `person.validate()`. More on that in the database guide.
 
 In order to properly validate the bean in the Vaadin UI, you must use a special binder: the `BeanValidationBinder`:
 
