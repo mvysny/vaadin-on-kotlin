@@ -107,6 +107,7 @@ fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDs
 
 This is a Kotlin function definition which allows us to build UIs in a structured way, by employing so-called DSLs. Don't worry if
 this doesn't make any sense right now - we will explain this in a great detail later on.
+What the function does is that it creates a button, adds it to the parent layout and allows the button to be configured further.
 
 > *Info*: A technique called DSL (domain-specific language) is used in the Kotlin language to construct
 hierarchical structures. Since the UI is a hierarchical structure with components nested inside layouts, we can
@@ -137,6 +138,24 @@ The `formLayout()` function creates Vaadin `FormLayout` component and adds it in
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
+## Layouts
+
+Since the `VerticalLayout`, `HorizontalLayout` and `FormLayout` are the most used components, let's start with them. There is a great writeup
+about the features at the Vaadin page: [VerticalLayout and HorizontalLayout](https://vaadin.com/docs/v8/framework/layout/layout-orderedlayout.html),
+so instead of repeating the same stuff we'll list some examples instead.
+
+The first example is a classical example of doing a perfect centering of a component inside of its parent. It was impossible to do with CSS prior
+the flexbox, yet Vaadin's layouts use JavaScript to position children and thus follow their own logic. Centering of a child is thus a simple
+case of setting the proper alignment to the child:
+
+```kotlin
+TBD
+```
+
+## Fields
+
+TBD
+
 ## Referencing Components
 
 The `textField()` function also returns the newly created `TextField`. This is handy if we want to reference those text fields later, for
@@ -160,6 +179,9 @@ class WelcomeView: VerticalLayout(), View {
     }
 }
 ```
+
+You can therefore simply store the reference to the newly created component in a local variable, or a (lateinit) field, or pass it to a function -
+you can do anything you want, since DSL is just a program in Kotlin after all.
 
 ## DSLs Explained
 
@@ -400,3 +422,7 @@ To learn Vaadin:
 
 * [Official Vaadin website](https://www.vaadin.com)
 * [Vaadin Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
+
+To learn about Kotlin DSLs:
+
+* [Type-safe builders](https://kotlinlang.org/docs/reference/type-safe-builders.html)
