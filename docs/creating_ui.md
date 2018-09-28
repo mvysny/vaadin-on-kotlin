@@ -9,8 +9,7 @@ You add components such as Button and TextField into the page, nesting them in l
 ## Introduction
 
 The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>` or `<a>`.
-Typical web frameworks require you focus on HTML elements as the building blocks, hence you typically create the page by writing HTML.
-In this regard, Vaadin is different.
+Typical web frameworks require you to use HTML elements to build the pages. In this regard, Vaadin is different.
 
 Instead of composing HTML elements, in Vaadin we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
 Every Vaadin component consists of two parts:
@@ -20,8 +19,8 @@ Every Vaadin component consists of two parts:
 * The server-side part then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
   GPS coordinates, to add markers etc.
 
-This kind of approach makes it incredibly easy to add Google Maps to your site. You just write the following Java code and you don't
-have to care about what the HTML will look like, or how exactly it will fetch the data:
+This kind of approach makes it incredibly easy to add Google Maps to your site. You just use the components' server-side Java API and you don't
+have to care about what the HTML will look like, or how exactly it will fetch the data. The code looks like follows:
 
 ```java
 class MyView : VerticalLayout {
