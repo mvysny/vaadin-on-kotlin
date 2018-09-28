@@ -40,8 +40,8 @@ Vaadin client-side component, for example the [Client-side Development Guide](ht
 In this guide we will not focus on the client-side part; instead we will focus on how to compose the server-side components.
 
 The components are typically rich in functionality. For example `ComboBox` does not render into the HTML `<input>` element but it instead renders
-a rich `<div>` hierarchy which allows features not possible with the `<input>` element such as auto-completion.
-There is a big palette of pre-made components which we compose and nest in the server-side Java code. Vaadin
+a rich `<div>` hierarchy which allows for features which are not possible with the `<input>` element, such as auto-completion.
+There is a big palette of pre-made components, and we use server-side Java code to we compose and nest them. Vaadin
 then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
 process is typically self-contained, implemented in the component client-side code and typically can not be controlled from server-side Java.
 
@@ -61,7 +61,7 @@ layout.addComponent(new DatePicker("Date of birth:"));
 ```
 
 This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
-client-side code then renders themselves as HTML elements.
+client-side code then renders itself as HTML elements.
 
 With VoK, we create UIs by creating component hierarchies. We will now show how that is done in VoK in a minute.
 
