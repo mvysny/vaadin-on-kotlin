@@ -415,7 +415,7 @@ to the `textField()` function as well:
 ```kotlin
 fun HasComponents.textField(block: TextField.()->Unit) {
     val fl = TextField(caption)
-    this.add(fl)
+    this.addChild(fl)
     fl.block()
 }
 ```
@@ -464,12 +464,12 @@ hence the DSL function becomes like follows:
 ```kotlin
 fun (@VaadinDsl HasComponents).formLayout(block: (@VaadinDsl FormLayout).()->Unit) {
     val fl = FormLayout()
-    this.add(fl)
+    this.addChild(fl)
     fl.block()
 }
 fun (@VaadinDsl HasComponents).textField(block: (@VaadinDsl TextField).()->Unit) {
     val fl = TextField(caption)
-    this.add(fl)
+    this.addChild(fl)
     fl.block()
 }
 ```
@@ -485,6 +485,11 @@ formLayout {
 
 A final touch would be to mark the `formLayout()` function itself with the `@VaadinDsl` annotation. It doesn't do anything on its own,
 but it causes Intellij Kotlin plugin to highlight DSL functions with a different color. That makes them stand out in the code and be easy to spot.
+
+### DSLs in VoK
+
+The abovementioned method is used in VoK. The DSL function handles the actual creation of the component; then it
+passes the created component to the `init()` method which then adds the component into the parent layout.
 
 ## Creating reusable components
 
