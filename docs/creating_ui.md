@@ -138,6 +138,9 @@ The `formLayout()` function creates Vaadin `FormLayout` component and adds it in
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
+> **Important**: the notation is that the DSL function for a component starts with a lower-case letter. For example,
+the function which creates `FormLayout` is called `formLayout()`, the same goes for `label()`, `verticalLayout()`.
+
 ## Layouts
 
 Since the `VerticalLayout`, `HorizontalLayout` and `FormLayout` are the most used components, let's start with them. There is a great writeup
@@ -167,20 +170,23 @@ The result is as follows:
 
 ![Button Centered](images/creating_ui/button_centered.png)
 
-> From now on we'll just paste the contents of the `init{}` block for brevity.
-
 Another case would be a button bar, having a bunch of buttons both on the left side and on the right side.
 There is a `CSSLayout` acting as an spacer; since it's expanded it consumes all of the available space,
 pushing follow-up buttons to the right:
 
 ```kotlin
-setSizeFull()
-horizontalLayout {
-    w = 300.px; isSpacing = false
-    button { icon = VaadinIcons.TRASH; styleName = ValoTheme.BUTTON_BORDERLESS }
-    button { icon = VaadinIcons.ADD_DOCK; styleName = ValoTheme.BUTTON_BORDERLESS }
-    cssLayout { isExpanded = true }
-    button { icon = VaadinIcons.QUESTION; styleName = ValoTheme.BUTTON_BORDERLESS }
+@AutoView("")
+class WelcomeView: VerticalLayout(), View {
+    init {
+        setSizeFull()
+        horizontalLayout {
+            w = 300.px; isSpacing = false
+            button { icon = VaadinIcons.TRASH; styleName = ValoTheme.BUTTON_BORDERLESS }
+            button { icon = VaadinIcons.ADD_DOCK; styleName = ValoTheme.BUTTON_BORDERLESS }
+            cssLayout { isExpanded = true }
+            button { icon = VaadinIcons.QUESTION; styleName = ValoTheme.BUTTON_BORDERLESS }
+        }
+    }
 }
 ```
 
@@ -200,6 +206,9 @@ horizontalLayout {
 }
 ```
 
+> *Info*: you can use the following [Vaadin Icons](https://pro.vaadin.com/icons) page to search for available Vaadin icons, or you can simply use IDE's
+autocompletion feature for available `VaadinIcons` enum constants.
+
 You can use the same approach for building the application frame. We're going to have the main menu to the right,
 and expand the left area so that the views can be nested inside of it:
 
@@ -207,7 +216,7 @@ and expand the left area so that the views can be nested inside of it:
 @PushStateNavigation
 class MyUI : UI(), ViewDisplay {
     private lateinit var viewContainer: CssLayout
-    override fun init(request: VaadinRequest?) {
+    override fun init(request: VaadinRequest) {
         navigator = Navigator(this, this as ViewDisplay)
         navigator.addProvider(autoViewProvider)
         horizontalLayout {
@@ -224,7 +233,7 @@ class MyUI : UI(), ViewDisplay {
         }
     }
 
-    override fun showView(view: View?) {
+    override fun showView(view: View) {
         viewContainer.removeAllComponents()
         viewContainer.addComponent(view as Component)
     }
@@ -233,9 +242,23 @@ class MyUI : UI(), ViewDisplay {
 
 ![Main Application Frame](images/creating_ui/appframe.png)
 
+The layouts in Vaadin 8 are very powerful, you can use them in a wide range of use cases. In case you do not
+understand what the layout does, always inspect the vertical layout and its slots in your browser's developer tools
+(accessible via `F12`). You can also see the [VerticalLayout in Vaadin Sampler](https://demo.vaadin.com/sampler/#ui/layout/vertical-layout).
+Here you can experiment with the various VerticalLayout sizes (explicit height vs undefined height) - you can see
+how the slot size changes, how the slots themselves are positioned and how the components are positioned inside
+of those slots.
+
 ## Fields
 
-TBD
+Another very important set of components are those that handle user input. All of the input components are documented
+on the Vaadin site, for example on the [TextField documentation page](https://vaadin.com/docs/v8/framework/components/components-textfield.html).
+
+Every field has a different purpose which we will not document here; for further questions please take a look at the following
+resources:
+
+* The [Vaadin Documentation on Components](https://vaadin.com/docs/v8/framework/components/components-overview.html)
+* The [Vaadin Sampler]
 
 ## Referencing Components
 
