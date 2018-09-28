@@ -108,9 +108,9 @@ This is a Kotlin function definition which allows us to build UIs in a structure
 this doesn't make any sense right now - we will explain this in a great detail later on.
 What the function does is that it creates a button, adds it to the parent layout and allows the button to be configured further.
 
-> *Info*: A technique called DSL (domain-specific language) is used in the Kotlin language to construct
-hierarchical structures. Since the UI is a hierarchical structure with components nested inside layouts, we can
-use the DSL approach here. In VoK we have constructed a set of functions which will allow you to construct Vaadin UIs
+> *Info*: A technique called DSL (domain-specific language) is used to construct hierarchical structures using
+just the Kotlin language features. Since the UI is a hierarchical structure with components nested inside layouts,
+the DSL approach is applicable. In VoK we have constructed a set of functions which will allow you to construct Vaadin UIs
 in a hierarchical manner. Please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
 article on why a hierarchical code beats plain Java code.
 
