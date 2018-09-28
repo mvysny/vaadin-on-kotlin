@@ -139,7 +139,8 @@ block, acting as a parent layout in that block. This is very important since tha
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
 
 > **Important**: the notation is that the DSL function for a component starts with a lower-case letter. For example,
-the function which creates `FormLayout` is called `formLayout()`, the same goes for `label()`, `verticalLayout()`.
+the function which creates `FormLayout` is called `formLayout()`, the same goes for `label()`, `verticalLayout()` and all
+other built-in Vaadin components. To add DSL function for add-ons and custom components, please read below.
 
 ## Layouts
 
@@ -259,6 +260,8 @@ resources:
 
 * The [Vaadin Documentation on Components](https://vaadin.com/docs/v8/framework/components/components-overview.html)
 * The [Vaadin Sampler](https://demo.vaadin.com/sampler/#ui/data-input) shows all (input) components.
+
+Also please read the [Creating Forms](forms.md) article for more information on how to build forms in VoK.
 
 ## Referencing Components
 
