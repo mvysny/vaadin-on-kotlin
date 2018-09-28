@@ -9,7 +9,7 @@ You add components such as Button and TextField into the page, nesting them in l
 ## Introduction
 
 The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>`.
-Typical web frameworks focus on rendering HTML pages, requiring you to build the page out of HTML elements.
+Typical web frameworks requires you to build the page out of HTML elements.
 In this regard, Vaadin is different.
 
 Instead of composing HTML elements, in Vaadin we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
@@ -17,10 +17,10 @@ Every Vaadin component consists of two parts:
 
 * The client-side part renders one or more HTML elements and controls them by the means of JavaScript. For example a Google Map
   component would fetch individual tiles and produce a mesh of `<div>`s which then lay out the tiles to show the map itself.
-* The server-side part then exposes a high-level API. A Google Map component allows you to set zoom, to focus on particular
+* The server-side part then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
   GPS coordinates, to add markers etc.
 
-> **Note**: The client-side is typically written in Java and compiled to the JavaScript by the means of GWT.
+> *Info*: The client-side is typically written in Java and compiled to the JavaScript by the means of GWT.
 It is however also possible to write components directly by using JavaScript. There are great resources on how to write
 Vaadin client-side component, for example the [Client-side Development Guide](https://vaadin.com/docs/v8/framework/clientside/clientside-overview.html).
 In this guide we will not focus on the client-side part; instead we will focus on how to compose the server-side components.
@@ -33,7 +33,8 @@ process is typically self-contained, implemented in the component client-side co
 
 > **Note:** Vaadin 8 components are not to be
 confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
-Vaadin 8 implements its components in GWT; Vaadin 8 components can be thought of as predecessors of the Web Component standard.
+Vaadin 8 uses GWT/JavaScript to implement the components and doesn't require the Web Component Standard to be supported
+by the browser. Vaadin 8 components can be thought of as a predecessors of the Web Component standard.
 
 For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
 `ComboBox` components. The code on server-side would look like this:
@@ -48,14 +49,19 @@ layout.addComponent(new DatePicker("Date of birth:"));
 This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
 client-side code then renders themselves as HTML elements.
 
-With VoK, we create UIs by creating component hierarchies. We will now show how that is done in Kotlin.
+With VoK, we create UIs by creating component hierarchies. We will now show how that is done in VoK in a minute.
 
 > The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
 programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
 
 ## Creating Component Hierarchies
 
-Please git-clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app.
+Please git-clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app. You can
+do that by running this in your terminal:
+
+```bash
+git clone https://github.com/mvysny/vok-helloworld-app
+```
 
 If you open the [WelcomeView.kt](https://github.com/mvysny/vok-helloworld-app/blob/master/web/src/main/kotlin/com/example/vok/WelcomeView.kt)
 file, you'll notice that it extends from the `VerticalLayout`. In Vaadin, `VerticalLayout` and `HorizontalLayout` are two most commonly
@@ -78,17 +84,17 @@ class WelcomeView: VerticalLayout(), View {
 
 The `button()` function simply creates the Vaadin `Button`, sets a caption into it, inserts it into the parent layout (in this case,
 the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for that button. The configuration block adds a left click
-listener. The definition of the `button()` function looks very cryptic:
+listener. When you ctrl+click the `button()` function, the definition of the function looks very cryptic:
 
 ```kotlin
 fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDsl Button).() -> Unit = {})
         = init(Button(caption), block)
 ```
 
-This is a definition which allows us to build UIs in a structured way, by employing so-called DSLs. Don't worry if
+This is a Kotlin function definition which allows us to build UIs in a structured way, by employing so-called DSLs. Don't worry if
 this doesn't make any sense right now - we will explain this in a great detail later on.
 
-> **Note**: A technique called DSL (domain-specific language) is used in the Kotlin language to construct
+> *Info*: A technique called DSL (domain-specific language) is used in the Kotlin language to construct
 hierarchical structures. Since the UI is a hierarchical structure with components nested inside layouts, we can
 use the DSL approach here. In VoK we have constructed a set of functions which will allow you to construct Vaadin UIs
 in a hierarchical manner. Please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
@@ -163,6 +169,7 @@ It is equivalent to the following code in a sense that it produces the same UI c
 class MyView : VerticalLayout() {
     init {
         val fl = FormLayout()
+        addComponent(fl)
         val nameField = TextField("Name:")
         fl.addComponent(nameField)
         val ageField = TextField("Age:")
@@ -180,7 +187,7 @@ VerticalLayout
 ```
 
 It's clear that the DSL code above has advantage over the plain flat code since it reflects the produced hierarchy.
-Let's now try to write the `formLayout()` function in a way that will:
+Let's thus write the DSL function for constructing the `FormLayout` component. This `formLayout()` function must perform two tasks:
 
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
 * Provide a block which would make all functions called from this block insert components into the `FormLayout`.
@@ -193,15 +200,15 @@ An example of such function would be:
 ```kotlin
 fun HasComponents.formLayout() {
     val fl = FormLayout()
-    this.add(fl)
+    this.addChild(fl)
 }
 fun HasComponents.textField() {
     val fl = TextField()
-    this.add(fl)
+    this.addChild(fl)
 }
 ```
 
-> **Note**: Technically `HasComponents` doesn't have the `add()` method, but it's possible to implement such method
+> *Info*: Technically `HasComponents` doesn't have the `addChild()` method, but it's possible to implement such method
 in a way which works with all Vaadin component containers. Let's skip this detail for now.
 
 Kotlin will automatically pick the proper receiver:
@@ -221,7 +228,7 @@ We will therefore modify the `formLayout()` function accordingly:
 ```kotlin
 fun HasComponents.formLayout(block: FormLayout.()->Unit) {
     val fl = FormLayout()
-    this.add(fl)
+    this.addChild(fl)
     fl.block()
 }
 ```
@@ -236,7 +243,7 @@ formLayout({  // here the receiver is the newly constructed FormLayout
 ```
 
 `this.` is explicit and can be dropped. Also, when the `block` is the last parameter of a Kotlin function,
-it goes after them parenthesis:
+it goes after the parenthesis:
 
 ```kotlin
 ...
@@ -288,10 +295,9 @@ formLayout {
 }
 ```
 
-Which apparently makes no sense, since `TextField` is not a `HasComponents` and cannot take children, yet
-it still compiles happily and it will actually add two text fields into the form layout!
-
-The problem here is that Kotlin will look up the nearest `HasComponents` as the receiver for the `textField()`
+The code compiles but it apparently makes no sense, since `TextField` is not a `HasComponents` and cannot take any children! Yet
+it still compiles happily and it will actually add two text fields into the form layout. The problem here is
+that Kotlin will look up the nearest `HasComponents` as the receiver for the `textField()`
 function; since `TextField` is not `HasComponents` Kotlin will hop level up and will take the `FormLayout`.
 
 Note that if we rewrite the code as follows, it no longer compiles:
@@ -333,6 +339,9 @@ formLayout {
     }
 }
 ```
+
+A final touch would be to mark the `formLayout()` function itself with the `@VaadinDsl` annotation. It doesn't do anything on its own,
+but it causes Intellij Kotlin plugin to highlight DSL functions with a different color. That makes them stand out in the code and be easy to spot.
 
 ## Creating reusable components
 
