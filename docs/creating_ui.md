@@ -8,8 +8,8 @@ You add components such as Button and TextField into the page, nesting them in l
 
 ## Introduction
 
-The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>`.
-Typical web frameworks requires you to build the page out of HTML elements.
+The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>` or `<a>`.
+Typical web frameworks require you focus on HTML elements as the building blocks, hence you typically create the page by writing HTML.
 In this regard, Vaadin is different.
 
 Instead of composing HTML elements, in Vaadin we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
