@@ -42,14 +42,16 @@ The components are typically rich in functionality. For example `ComboBox` does 
 a rich `<div>` hierarchy which allows for features which are not possible with the `<input>` element, such as auto-completion.
 There is a big palette of pre-made components, and we use server-side Java code to we compose and nest them. Vaadin
 then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
-process is typically self-contained, implemented in the component client-side code and typically can not be controlled from server-side Java.
+process is typically self-contained, implemented in the component client-side code and typically can not be controlled directly from server-side Java.
 
 For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
 `ComboBox` components. The code on server-side would look like this:
 
 ```java
 FormLayout layout = new FormLayout("New Employee Form");
-layout.addComponent(new TextField("Name:"));
+TextField nameField = new TextField("Name:");
+nameField.setValue("Donald Knuth");
+layout.addComponent(nameField);
 layout.addComponent(new CheckBox("Internal employee"));
 layout.addComponent(new DatePicker("Date of birth:"));
 ```
@@ -57,7 +59,7 @@ layout.addComponent(new DatePicker("Date of birth:"));
 This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
 client-side code then renders itself as HTML elements.
 
-With VoK, we create UIs by creating component hierarchies. We will now show how that is done in VoK in a minute.
+With VoK, we create component hierarchies by employing the DSL Kotlin language feature. We will now show how that is done in VoK in a minute.
 
 > **Note:** Vaadin 8 components are not to be
 confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
@@ -136,8 +138,10 @@ class WelcomeView: VerticalLayout(), View {
 ```
 
 The `formLayout()` function creates Vaadin `FormLayout` component and adds it into the root `VerticalLayout`. Then it runs the configuration
-block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
+block, acting as a parent layout in that block. This is very important since that will make the `textField()` function to correctly insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
+This "magic" is actually just a feature of Kotlin. Kotlin simply passes current layout as a [receiver](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver)
+to the `textField()` function. But more on that later.
 
 > **Important**: the notation is that the DSL function for a component starts with a lower-case letter. For example,
 the function which creates `FormLayout` is called `formLayout()`, the same goes for `label()`, `verticalLayout()` and all
