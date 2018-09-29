@@ -343,7 +343,7 @@ It's clear that the DSL code above has advantage over the plain flat code since 
 Let's thus write the DSL function for constructing the `FormLayout` component. This `formLayout()` function must perform two tasks:
 
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
-* Provide a block which would make all functions called from this block insert components into the `FormLayout`.
+* Provide a block which would make all functions, called from this block, insert components into the `FormLayout`.
 
 The first item can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
 Here, the receiver would simply be the parent `VerticalLayout` (or rather `HasComponents` which is a supertype of all
@@ -361,8 +361,9 @@ fun HasComponents.textField() {
 }
 ```
 
-> *Info*: Technically `HasComponents` doesn't have the `addChild()` method, but it's possible to implement such method
-in a way which works with all Vaadin component containers. Let's skip this detail for now.
+> *Info*: Technically `HasComponents` doesn't have the `addChild()` method, but it's possible to implement such (extension) method
+in a way which works with all Vaadin component containers. Let's skip this detail for now; you can always check out the sources of this
+method in the Karibu-DSL project.
 
 Kotlin will automatically pick the proper receiver:
 * In the `init{}` block of the `MyView` the receiver would be the
@@ -416,6 +417,9 @@ formLayout {  // here the receiver is the newly constructed FormLayout
 ...
 ```
 
+We have constructed functions in a way that allows us to write hierarchical code. Since Kotlin allows us to omit syntactic sugar
+we can now define UIs in a way that is both concise and hierarchical.
+
 ### Specifying properties for the TextField
 
 It is handy to make the `textField()` function also take a block, so that we can specify the properties
@@ -448,8 +452,8 @@ formLayout {
 }
 ```
 
-The code compiles but it apparently makes no sense, since `TextField` is not a `HasComponents` and cannot take any children! Yet
-it still compiles happily and it will actually add two text fields into the form layout. The problem here is
+The code compiles but it apparently makes no sense, since `TextField` is not a `HasComponents` and cannot take any children! Still,
+the code compiles happily and it will actually add two text fields into the form layout. The problem here is
 that Kotlin will look up the nearest `HasComponents` as the receiver for the `textField()`
 function; since `TextField` is not `HasComponents` Kotlin will hop level up and will take the `FormLayout`.
 
@@ -464,11 +468,11 @@ formLayout {
 
 Yet writing `this.` to guard ourselves from this issue is highly annoying. Therefore we will use another technique:
 the [DSL markers](https://kotlinlang.org/docs/reference/type-safe-builders.html#scope-control-dslmarker-since-11).
-If we mark both `textField()`, `formLayout()` and `HasComponents` with a single DSL Marker annotation, that would
-prevent Kotlin from crossing to the outer receiver. However, we can't add annotation to `HasComponents` since it's built-in
-in Vaadin!
+If we mark both `textField()`, `formLayout()` and `HasComponents` with a particular DSL Marker annotation (in our case, `@VaadinDsl` annotation), that would
+prevent Kotlin from crossing to the outer receiver. However, we can't add annotation to the `HasComponents` interface since it's bundled in the Vaadin jar and
+hence we can't modify its sources!
 
-The solution is to annotate `HasComponents` not in its definition place, but in the DSL function definition. And
+The solution is to add the `@VaadinDsl` annotation not to the `HasComponents` interface .java source, but into our DSL function definition sources. And
 hence the DSL function becomes like follows:
 
 ```kotlin
