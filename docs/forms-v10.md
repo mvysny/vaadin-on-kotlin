@@ -1,6 +1,6 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-# Creating forms
+# Creating Forms
 
 When creating UI for forms, we typically solve two separate tasks:
 
@@ -35,6 +35,19 @@ and you can even nest multiple levels of layouts, in order for your form to prov
 
 The `FormLayout` supports responsive layout. Such a layout lays out fields in a grid fashion, yet it is able to reduce
 columns when the screen space is narrow. Please read more on this feature at the [Form Layout Documentation](https://vaadin.com/components/vaadin-form-layout).
+
+There is a Kotlin syntax to specify the responsive steps in a much more condensed form:
+
+```kotlin
+class PersonForm : FormLayout() {
+    init {
+        w = wrapContent
+        responsiveSteps { "0px"(1, top); "30em"(2, aside) }
+
+        textField("Name:") { focus() }
+        textField("Age:")
+        ...
+```
 
 ## Binding Values
 
