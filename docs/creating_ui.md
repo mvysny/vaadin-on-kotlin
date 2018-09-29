@@ -14,9 +14,9 @@ Typical web frameworks require you to use HTML elements to build the pages. In t
 Instead of composing HTML elements, in Vaadin we compose *components*, such as `Button`, `ComboBox` and `VerticalLayout`.
 Every Vaadin component consists of two parts:
 
-* The client-side part renders one or more HTML elements and controls them by the means of JavaScript. For example a Google Map
+* The client-side part of the component renders as one or more HTML elements and controls them by the means of JavaScript. For example a Google Map
   component would fetch individual tiles and produce a mesh of `<div>`s which then lay out the tiles to show the map itself.
-* The server-side part then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
+* The server-side part of the component then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
   GPS coordinates, to add markers etc.
 
 This kind of approach makes it incredibly easy to add Google Maps to your site. You just use the components' server-side Java API and you don't
@@ -44,11 +44,6 @@ There is a big palette of pre-made components, and we use server-side Java code 
 then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
 process is typically self-contained, implemented in the component client-side code and typically can not be controlled from server-side Java.
 
-> **Note:** Vaadin 8 components are not to be
-confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
-Vaadin 8 uses GWT/JavaScript to implement the components and doesn't require the Web Component Standard to be supported
-by the browser. Vaadin 8 components can be thought of as a predecessors of the Web Component standard.
-
 For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
 `ComboBox` components. The code on server-side would look like this:
 
@@ -64,7 +59,14 @@ client-side code then renders itself as HTML elements.
 
 With VoK, we create UIs by creating component hierarchies. We will now show how that is done in VoK in a minute.
 
-> The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
+> **Note:** Vaadin 8 components are not to be
+confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
+Vaadin 8's Components are in fact GWT widgets which are in essence just plain HTML elements controlled by JavaScript. GWT widgets
+do not require the Web Component Standard to be supported
+by the browser, however they also don't benefit from e.g. Shadow DOM isolation.
+Vaadin 8 components can be thought of as a "predecessors" of the Web Component standard.
+
+The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
 programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
 
 ## Creating Component Hierarchies
