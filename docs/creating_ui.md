@@ -150,10 +150,15 @@ other built-in Vaadin components. To add DSL function for add-ons and custom com
 ## Layouts
 
 Since the `VerticalLayout`, `HorizontalLayout` and `FormLayout` are the most used components, let's start with them. There is a great writeup
-about the features at the Vaadin page: [VerticalLayout and HorizontalLayout](https://vaadin.com/docs/v8/framework/layout/layout-orderedlayout.html),
-so instead of repeating the same stuff we'll list some examples instead.
+about the features at the Vaadin page: [VerticalLayout and HorizontalLayout](https://vaadin.com/docs/v8/framework/layout/layout-orderedlayout.html) -
+please make sure to read that page first, before going further with this documentation. The most important bits are:
 
-The first example is a classical example of doing a perfect centering of a component inside of its parent. It was impossible to do with CSS prior
+* The Layout positions "slots"; the children components are then positioned (aligned) inside of those slots.
+* The Layout uses two different algorithms to position+size slots: the first one when the Layout's width is set to undefined (=wrap contents),
+  the second one when the Layout's width is set to a concrete value (either absolute or percentage, =fill parent).
+
+Now that you understand the concepts, let us list some examples. The first example is a classical example of doing
+a perfect centering of a component inside of its parent. It was impossible to do with CSS prior
 the flexbox, yet Vaadin's layouts use JavaScript to position children and thus follow their own logic. Centering of a child is thus a simple
 case of setting the proper alignment to the child:
 
