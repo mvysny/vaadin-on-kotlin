@@ -345,7 +345,7 @@ Let's thus write the DSL function for constructing the `FormLayout` component. T
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
 * Provide a block which would make all functions, called from this block, insert components into the `FormLayout`.
 
-The first item can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
+The first task can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
 The receiver for the `formLayout()` function would simply be the `VerticalLayout` type (or rather `HasComponents` which is a supertype of all
 layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`). Kotlin will then auto-fill the closest `this` which matches
 the receiver type. In this example the receiver will be the `MyView` class itself (since it extends from `VerticalLayout` which implements `HasComponents`).
@@ -375,9 +375,10 @@ cause `FormLayout` to be added into `MyView`
 the `FormLayout` itself, which takes precedence over `MyView`. Hence, the `TextField` will be nested inside of the
 `FormLayout` as opposed of nesting inside of the `MyView`. Yet, we haven't defined such a block in the `formLayout()` yet! Let's fix that.
 
-To satisfy the second item, we need the `formLayout()` function to be able to run a block. We need to declare the block
+To implement the second task, we need the `formLayout()` function to be able to run a block. We need to declare the block
 in a special way so that any DSL functions invoked from the block will add components into this `FormLayout`. Hence, we need
-to provide a *receiver* to the block which is then picked by the DSL functions such as `textField()`.
+to make the block run with a *receiver* being the `FormLayout`. That would make Kotlin to run all nested DSL functions such as
+`textField()` in the context of that receiver (`FormLayout` in this example).
 
 We will therefore modify the `formLayout()` function accordingly:
 ```kotlin
@@ -489,7 +490,7 @@ fun (@VaadinDsl HasComponents).textField(block: (@VaadinDsl TextField).()->Unit)
 }
 ```
 
-And now the following code doesn't compile anymore:
+And now the confusing code doesn't compile anymore:
 ```kotlin
 formLayout {
     textField {
@@ -503,13 +504,21 @@ but it causes Intellij Kotlin plugin to highlight DSL functions with a different
 
 ### DSLs in VoK
 
-The abovementioned method is used in VoK. The DSL function handles the actual creation of the component; then it
+The above-mentioned DSL approach is employed in VoK to define the UIs. The DSL function handles the actual creation of the component; then it
 passes the created component to the `init()` method which then adds the component into the parent layout.
 
 If you need to only create the component, without adding it to the parent just yet, you can not use DSLs -
-just construct the component directly, using the component's constructor.
+just construct the component directly, using the component's constructor. You can then use `.apply{}` to use the DSL to define
+the contents if need be:
 
-DSLs do not contain the functionality needed to remove the component. If you need this kind of functionality, you will
+```kotlin
+val form = FormLayout().apply {
+  textField("Name:")
+  checkBox("Employed")
+}
+```
+
+DSLs do not contain the functionality needed to *remove* the component from its parent. If you need this kind of functionality, you will
 have to resort to Vaadin's built-in methods, or use Karibu-DSL's `removeFromParent()` function.
 
 ## Creating reusable components
