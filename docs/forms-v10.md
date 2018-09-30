@@ -172,6 +172,26 @@ The `binder.validate()` will mark invalid components visually with a red border 
 as a tooltip. The `binder.writeBeanIfValid(person)` will write the data from the UI components into the `person`
 instance, but only if all the data passes the validator.
 
+## Inserting Your Form Into The UI
+
+The simplest way on how to insert your form into the UI is to write the DSL function for it:
+
+```kotlin
+@VaadinDsl
+fun (@VaadinDsl HasComponents).personForm(block: (@VaadinDsl PersonForm).()->Unit = {}): PersonForm = init(PersonForm(), block)
+```
+
+Then you can embed it into your view:
+
+```kotlin
+class MyView : VerticalLayout() {
+  private lateinit var form: PersonForm
+  init {
+    form = personForm()
+  }
+}
+```
+
 ## More Information
 
 You can read more information on the binder itself in the [Binding Data to Forms](https://vaadin.com/docs/v10/flow/binding-data/tutorial-flow-components-binder.html)

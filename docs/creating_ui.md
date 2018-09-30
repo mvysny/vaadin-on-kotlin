@@ -538,7 +538,8 @@ This class is a form layout with two text fields nested inside of it. However, w
 the integration function is missing:
 
 ```kotlin
-fun HasComponents.nameAgeForm(block: NameAgeForm.()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
+@VaadinDsl
+fun (@VaadinDsl HasComponents).nameAgeForm(block: (@VaadinDsl NameAgeForm).()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
 ```
 
 The function instantiates the form and calls the `init()` method which will add the newly created form into the parent layout and then
