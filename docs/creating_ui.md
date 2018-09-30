@@ -298,7 +298,7 @@ class WelcomeView: VerticalLayout(), View {
 ```
 
 You can therefore simply store the reference to the newly created component in a local variable, or a (lateinit) field, or pass it to a function -
-you can do anything you want, since DSL is just a program in Kotlin after all.
+you can do anything you want, since DSL is nothing more but a program in Kotlin, albeit with a fancy syntax.
 
 ## DSLs Explained
 
