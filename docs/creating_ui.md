@@ -346,14 +346,15 @@ Let's thus write the DSL function for constructing the `FormLayout` component. T
 * Provide a block which would make all functions, called from this block, insert components into the `FormLayout`.
 
 The first item can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
-Here, the receiver would simply be the parent `VerticalLayout` (or rather `HasComponents` which is a supertype of all
-layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`).
+The receiver for the `formLayout()` function would simply be the `VerticalLayout` type (or rather `HasComponents` which is a supertype of all
+layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`). Kotlin will then auto-fill the closest `this` which matches
+the receiver type. In this example the receiver will be the `MyView` class itself (since it extends from `VerticalLayout` which implements `HasComponents`).
 
-An example of such function would be:
+An example of an (so-called extension) function with such receiver would be:
 ```kotlin
 fun HasComponents.formLayout() {
     val fl = FormLayout()
-    this.addChild(fl)
+    this.addChild(fl)  // "this" is HasComponents
 }
 fun HasComponents.textField() {
     val fl = TextField()
@@ -367,7 +368,7 @@ method in the Karibu-DSL project.
 
 Kotlin will automatically pick the proper receiver:
 * In the `init{}` block of the `MyView` the receiver would be the
-`MyView` itself (which extends `VerticalLayout`). Calling `formLayout()` in the `init{}` block will therefore
+`MyView` class itself (which extends `VerticalLayout`). Calling `formLayout()` in the `init{}` block will therefore
 cause `FormLayout` to be added into `MyView`
 * Exactly the same situation occurs within the function defined on `MyView`
 * However, when the `textField()` function is called from `formLayout()`'s block, the nearest receiver is
