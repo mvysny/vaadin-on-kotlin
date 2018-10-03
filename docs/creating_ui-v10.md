@@ -11,6 +11,86 @@ You add components such as Button and TextField into the page, nesting them in l
 > * [Official Vaadin website](https://www.vaadin.com)
 > * [Vaadin Documentation](https://vaadin.com/docs/v10/index.html) - we recommend to read the Vaadin Flow documentation.
 
+## Introduction
+
+The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>` or `<a>`.
+However, with the advent of [Web Components](https://en.wikipedia.org/wiki/Web_Components) the paradigm is shifted - you compose
+the page by using the Web Components such as [Paper Input](https://www.webcomponents.org/element/@polymer/paper-input)
+or [Vaadin Grid](https://www.webcomponents.org/element/vaadin/vaadin-grid), which then host the necessary HTML elements themselves.
+
+The web has been reinventing itself, pushing typical Java frameworks such as JSF away and bringing JavaScript
+frameworks such as Angular and React to the front, reducing Java server side to a REST endpoint service.
+In this regard, Vaadin is different.
+
+Instead of being a mere REST directory, Vaadin provides means to control the Web Components from Server side. It employs
+so-called Vaadin Flow to synchronize a subset of Web Component properties (the Web component state) between client-side and server-side.
+Every Vaadin component then consists of two parts:
+
+* The client-side part of the component is a standard Web Component. The web component is typically implemented in Polymer
+  (this enables value change observers and Polymer model templates integration with Vaadin), but web components based on other JavaScript libraries (or
+  plain web components based on no library at all) are also supported.
+* The server-side part of the component is a Java class that extends from Flow Component and uses APIs provided by Flow to
+  catch events (such as button click events) and allows to control the underlying web component via Polymer properties, plain HTML attributes
+  or via calls to JavaScript functions exposed on the web component itself.
+
+This kind of approach makes it incredibly easy to add e.g. Google Maps to your site. You just use the components' server-side Java API and you don't
+have to care about what the HTML will look like, or how exactly it will fetch the data. The code looks like follows:
+
+```java
+class MyView : VerticalLayout {
+  init {
+    setSizeFull()
+    val maps = GoogleMaps()
+    maps.setSizeFull()
+    addComponent(maps)
+  }
+}
+```
+
+> *Info*: There are great resources on how to write a web component using Polymer 2,
+for example the [Getting Started With Polymer 2](https://www.polymer-project.org/2.0/start/).
+In this guide we will not focus on the client-side part; instead we will focus on how to compose the server-side components.
+
+The components are typically rich in functionality. For example `ComboBox` does not render into the HTML `<input>` element but it instead renders
+a rich `<div>` hierarchy which allows for features which are not possible with the `<input>` element, such as auto-completion.
+There is a big palette of pre-made components, and we use server-side Java code to we compose and nest them. Vaadin
+then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
+process is typically self-contained, implemented in the component client-side code and typically can not be controlled directly from server-side Java.
+
+For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
+`ComboBox` components. The code on server-side would look like this:
+
+```java
+FormLayout layout = new FormLayout("New Employee Form");
+TextField nameField = new TextField("Name:");
+nameField.setValue("Donald Knuth");
+layout.addComponent(nameField);
+layout.addComponent(new CheckBox("Internal employee"));
+layout.addComponent(new DatePicker("Date of birth:"));
+```
+
+This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
+client-side code then renders itself as HTML elements.
+
+With VoK, we create component hierarchies by employing the DSL Kotlin language feature. We will now show how that is done in VoK in a minute.
+
+The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
+programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
+
+## Available Components
+
+Lots of components are already built-in. You can [browse built-in Vaadin 10 components](https://vaadin.com/components/browse).
+You can also visit [Vaadin 10 Documentation on Components](https://vaadin.com/docs/v10/flow/components/tutorial-flow-components-setup.html) to read about all of the available
+components.
+
+You can find additional components at the [Vaadin Directory](https://vaadin.com/directory); just make sure to search for components intended for Vaadin 10 since
+Vaadin 8/7 components won't work with Vaadin 10.
+
+It is also possible to integrate a standalone Web Component into Vaadin. Just find a (preferably Polymer 2-based)
+component at the [webcomponents.org](https://www.webcomponents.org/) page, then find and include appropriate [webjar](https://www.webjars.org/)
+to include the web component into your project. Then, read the [Integrating a Web Component](https://vaadin.com/docs/v10/flow/web-components/integrating-a-web-component.html)
+Vaadin 10 documentation on how to integrate web component into Vaadin 10.
+
 ## Creating Views
 
 Please git clone the [VoK Hello World App Vaadin 10](https://github.com/mvysny/vok-helloworld-app-v10) - we're going to experiment on that app.

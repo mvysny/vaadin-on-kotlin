@@ -71,6 +71,18 @@ Vaadin 8 components can be thought of as a "predecessors" of the Web Component s
 The following text doesn't expect you to be familiar with the Vaadin framework. However, it is best to have at least basic understanding of the Kotlin
 programming language. If you feel lost in the following text, please take your time to learn of the Kotlin language features first.
 
+## Available Components
+
+Lots of components are already built-in. You can use e.g. [Vaadin Sampler](https://demo.vaadin.com/sampler/) to check out the built-in components;
+you can also visit [Vaadin 8 Documentation on Components](https://vaadin.com/docs/v8/framework/components/components-overview.html) to read about all of the available
+components.
+
+You can find additional components at the [Vaadin Directory](https://vaadin.com/directory); just make sure to search for components intended for Vaadin 8 since
+Vaadin 10 components won't work with Vaadin 8.
+
+It is also possible to integrate a standalone GWT component into Vaadin; you can find out more at the [Integrating an existing GWT widget](https://vaadin.com/docs/v8/framework/articles/IntegratingAnExistingGWTWidget.html)
+page.
+
 ## Creating Component Hierarchies
 
 Please git-clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app. You can
