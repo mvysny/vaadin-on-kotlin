@@ -65,8 +65,8 @@ layout.addComponent(new CheckBox("Internal employee"));
 layout.addComponent(new DatePicker("Date of birth:"));
 ```
 
-This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The components'
-client-side code then renders itself as HTML elements.
+This code builds a component *hierarchy* (a tree of components, in this case fields nested in a form layout). The Vaadin Flow then takes care
+to render appropriate web components and control them from server-side.
 
 With VoK, we create component hierarchies by employing the DSL Kotlin language feature. We will now show how that is done in VoK in a minute.
 
