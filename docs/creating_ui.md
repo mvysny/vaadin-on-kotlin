@@ -571,7 +571,7 @@ class WelcomeView: VerticalLayout(), View {
 }
 ```
 
-## More resources
+## More Resources
 
 To learn Vaadin:
 

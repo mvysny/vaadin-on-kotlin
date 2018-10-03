@@ -6,11 +6,6 @@ Vaadin-on-Kotlin uses the [Vaadin Framework](https://vaadin.com/docs/v10/flow/Ov
 Vaadin lets you forget the web and develop user interfaces much like you would develop a desktop application with conventional Java toolkits such as AWT, Swing, or SWT.
 You add components such as Button and TextField into the page, nesting them in layouts which then position the components.
 
-> To learn Vaadin:
->
-> * [Official Vaadin website](https://www.vaadin.com)
-> * [Vaadin Documentation](https://vaadin.com/docs/v10/index.html) - we recommend to read the Vaadin Flow documentation.
-
 ## Introduction
 
 The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>` or `<a>`.
@@ -251,3 +246,14 @@ class NameAgeForm : FormLayout() {
 }
 fun HasComponents.nameAgeForm(block: NameAgeForm.()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
 ```
+
+## More Resources
+
+To learn Vaadin:
+
+* [Official Vaadin website](https://www.vaadin.com)
+* [Vaadin Documentation](https://vaadin.com/docs/v10/index.html) - we recommend to read the Vaadin Flow documentation.
+
+To learn about Kotlin DSLs:
+
+* [Type-safe builders](https://kotlinlang.org/docs/reference/type-safe-builders.html)
