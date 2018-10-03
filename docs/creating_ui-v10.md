@@ -24,7 +24,7 @@ Every Vaadin component thus consists of two parts:
 * The client-side part of the component is a standard Web Component. The web component is typically implemented in Polymer
   (this enables value change observers and Polymer model templates integration with Vaadin), but web components based on other JavaScript libraries (or
   plain web components based on no library at all) are also supported.
-* The server-side part of the component is a Java class that extends from Flow Component and uses APIs provided by Flow to
+* The server-side part of the component is a Java class that extends from the Vaadin Flow `Component` class and uses APIs provided by Flow to
   catch events (such as button click events) and allows to control the underlying web component via Polymer properties, plain HTML attributes
   or via calls to JavaScript functions exposed on the web component itself.
 
