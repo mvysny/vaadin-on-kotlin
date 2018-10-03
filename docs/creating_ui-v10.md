@@ -25,7 +25,8 @@ Every Vaadin component thus consists of two parts:
   (this enables value change observers and Polymer model templates integration with Vaadin), but web components based on other JavaScript libraries (or
   plain web components based on no library at all) are also supported.
 * The server-side part of the component is a Java class that extends from the Vaadin Flow `Component` class and uses APIs provided by Flow to
-  catch events (such as button click events) and allows to control the underlying web component via Polymer properties, plain HTML attributes
+  transmit events (such as button click events) server-side; it also allows you to control the underlying web component by setting
+   values to particular Polymer properties, to plain HTML attributes,
   or via calls to JavaScript functions exposed on the web component itself.
 
 This kind of approach makes it incredibly easy to add e.g. Google Maps to your site. You just use the components' server-side Java API and you don't
