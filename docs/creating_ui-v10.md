@@ -14,7 +14,7 @@ the page by using the Web Components such as [Paper Input](https://www.webcompon
 or [Vaadin Grid](https://www.webcomponents.org/element/vaadin/vaadin-grid), which then host the necessary HTML elements themselves.
 
 The web has been reinventing itself, pushing typical Java frameworks such as JSF away and bringing JavaScript
-frameworks such as Angular and React to the front, reducing Java server side to a REST endpoint service.
+frameworks such as Angular and React to the front, reducing Java server side to a mere directory of REST endpoints.
 In this regard, Vaadin is different.
 
 Instead of being a mere REST directory, Vaadin provides means to control the Web Components from Server side. It employs
