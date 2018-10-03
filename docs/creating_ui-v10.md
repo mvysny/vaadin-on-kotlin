@@ -19,7 +19,7 @@ In this regard, Vaadin is different.
 
 Instead of being a mere REST directory, Vaadin provides means to control the Web Components from Server side. It employs
 so-called Vaadin Flow to synchronize a subset of Web Component properties (the Web component state) between client-side and server-side.
-Every Vaadin component then consists of two parts:
+Every Vaadin component thus consists of two parts:
 
 * The client-side part of the component is a standard Web Component. The web component is typically implemented in Polymer
   (this enables value change observers and Polymer model templates integration with Vaadin), but web components based on other JavaScript libraries (or
