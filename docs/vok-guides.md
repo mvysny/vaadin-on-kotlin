@@ -16,6 +16,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 * [Creating Forms](forms.md) walks you through the forms - how to create UI for them and how to validate the data.
 * [Navigating](navigating.md) allows you to create multiple pages and explains how to navigate between them
 * [Using Grids](grids.md) shows best practices on how to display a lazy-loaded tabular list of data.
+* [DSLs: Explained](dsl_explained.md) explains how exactly VoK takes advantage of the DSL Kotlin language feature.
 
 ## Database access guides
 
@@ -57,6 +58,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 * [Navigating](https://vaadin.com/docs/v10/flow/routing/tutorial-routing-annotation.html)
   allows you to create multiple pages and explains how to navigate between them.
 * [Using Grids](grids-v10.md) shows best practices on how to display a lazy-loaded tabular list of data.
+* [DSLs: Explained](dsl_explained-v10.md) explains how exactly VoK takes advantage of the DSL Kotlin language feature.
 
 ## Database access guides
 
