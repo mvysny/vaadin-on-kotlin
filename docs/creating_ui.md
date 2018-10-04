@@ -113,7 +113,7 @@ class WelcomeView: VerticalLayout(), View {
 
 The `button()` function simply creates the Vaadin `Button`, sets a caption into it, inserts it into the parent layout (in this case,
 the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for that button. The configuration block adds a left click
-listener. When you ctrl+click the `button()` function, the definition of the function looks very cryptic:
+listener. You can ctrl+click to see the sources of the `button()` function; the definition of the function looks very cryptic:
 
 ```kotlin
 fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDsl Button).() -> Unit = {})

@@ -126,10 +126,22 @@ class WelcomeView: VerticalLayout() {
 
 The `button()` function simply creates the Vaadin `Button`, sets a caption for it, inserts it into the parent layout (in this case,
 the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for that button. The configuration block adds a left click
-listener.
+listener. You can ctrl+click to see the sources of the `button()` function; the definition of the function looks very cryptic:
 
-> Note: to read the technical explanation how this exactly works, please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
-article.
+```kotlin
+fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDsl Button).() -> Unit = {})
+        = init(Button(caption), block)
+```
+
+This is a Kotlin function definition which allows us to build UIs in a structured way, by employing so-called DSLs. Don't worry if
+this doesn't make any sense right now - we will explain this in a great detail later on.
+What the function does is that it creates a button, adds it to the parent layout and allows the button to be configured further.
+
+> *Info*: A technique called DSL (domain-specific language) is used to construct hierarchical structures using
+just the Kotlin language features. Since the UI is a hierarchical structure with components nested inside layouts,
+the DSL approach is applicable. In VoK we have constructed a set of functions which will allow you to construct Vaadin UIs
+in a hierarchical manner. Please read the [Using DSL to write structured UI code](http://mavi.logdown.com/posts/7073786)
+article on why a hierarchical code beats plain Java code.
 
 Let us add a simple form, consisting of two text fields:
 
@@ -160,9 +172,17 @@ class WelcomeView: VerticalLayout() {
 The `formLayout()` function creates Vaadin `FormLayout` component and adds it into the root `VerticalLayout`. Then it runs the configuration
 block, acting as a parent layout in that block. This is very important since that will correctly allow the `textField()` function to insert
 the newly created `TextField` class into the `FormLayout` itself, and not into the root `VerticalLayout`.
+This "magic" is actually just a feature of Kotlin. Kotlin simply passes current layout as a [receiver](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver)
+to the `textField()` function. But more on that later.
 
-> The `FormLayout` is a powerful responsive layout which can change the number of columns depending on its width. Please find out more
+> **Important**: the notation is that the DSL function for a component starts with a lower-case letter. For example,
+the function which creates `FormLayout` is called `formLayout()`, the same goes for `label()`, `verticalLayout()` and all
+other built-in Vaadin components. To add DSL function for add-ons and custom components, please read below.
+
+> *Info*: The `FormLayout` is a powerful responsive layout which can change the number of columns depending on its width. Please find out more
 at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) documentation page.
+
+TODO
 
 ## Referencing Components
 
