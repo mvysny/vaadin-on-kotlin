@@ -215,7 +215,16 @@ You can learn more in the [VerticalLayout and HorizontalLayout blogpost](http://
 
 ## Fields
 
-TODO
+Another very important set of components are those that handle user input. All of the input components are documented
+on the Vaadin site, for example on the [TextField documentation page](https://vaadin.com/components/vaadin-text-field).
+
+Every field has a different purpose which we will not document here; for further questions please take a look at the following
+resources:
+
+* The [Vaadin Documentation on Components](https://vaadin.com/docs/v10)
+* The [Vaadin Components List](https://vaadin.com/components/browse) shows all (input) components.
+
+Also please read the [Creating Forms](forms-v10.md) article for more information on how to build forms in VoK.
 
 ## Referencing Components
 
