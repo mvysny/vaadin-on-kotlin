@@ -182,6 +182,39 @@ other built-in Vaadin components. To add DSL function for add-ons and custom com
 > *Info*: The `FormLayout` is a powerful responsive layout which can change the number of columns depending on its width. Please find out more
 at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) documentation page.
 
+## Layouts
+
+When Vaadin 8 was introduced, CSS positioning rules were not powerful enough and hence Vaadin 8 had to
+introduce layout components which used JavaScript to position their children. However, the situation changed
+with the introduction of CSS flexbox and CSS grid positioning standards which are now powerful enough to
+cater for all layouting needs. Therefore, Vaadin 10 no longer introduces customized layout components - it leaves the entire
+layout process to the browser and the CSS.
+
+In order to position the components, it's encouraged to nest the components inside the `FlexLayout` layout (which translates to `<div style="display: flex">`)
+and position the components using the CSS flexbox.
+You can read more about flexbox at [A Complete Guide To Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/).
+
+You can then control the flexbox algorithm from your server-side Kotlin code, via the following properties:
+
+* `flexLayout.alignContent`
+* `flexLayout.flexWrap`
+* `flexLayout.justifyContent`
+* There is currently no support for `flex-direction` so just call `flexLayout.elemment.style.put("flexDirection", "row-reverse")`
+* `child.flexGrow` or `child.isExpand`
+* `child.flexShrink`
+* `child.flexBasis`
+* `child.alignSelf`
+
+### VerticalLayout and HorizontalLayout
+
+Coming from Vaadin 8 or Android, it may be easier for you to use familiar language to define the layouts.
+You can then use `VerticalLayout` and `HorizontalLayout` classes. They still use flexbox underneath, but they translate
+flexbox properties to a more familiar terminology.
+
+You can learn more in the [VerticalLayout and HorizontalLayout blogpost](http://mavi.logdown.com/posts/6855605).
+
+## Fields
+
 TODO
 
 ## Referencing Components
