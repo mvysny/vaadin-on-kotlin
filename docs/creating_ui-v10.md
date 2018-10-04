@@ -9,7 +9,8 @@ You add components such as Button and TextField into the page, nesting them in l
 ## Introduction
 
 The web is composed of HTML pages. The basic building block of a HTML page is the *HTML element*, such as `<div>` or `<a>`.
-However, with the advent of [Web Components](https://en.wikipedia.org/wiki/Web_Components) the paradigm is shifted - you compose
+However, with the advent of [Web Components](https://en.wikipedia.org/wiki/Web_Components) the paradigm is shifted - along
+with the HTML elements, you compose
 the page by using the Web Components such as [Paper Input](https://www.webcomponents.org/element/@polymer/paper-input)
 or [Vaadin Grid](https://www.webcomponents.org/element/vaadin/vaadin-grid), which then host the necessary HTML elements themselves.
 
