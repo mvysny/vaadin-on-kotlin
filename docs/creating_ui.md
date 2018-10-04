@@ -23,7 +23,7 @@ This kind of approach makes it incredibly easy to add Google Maps to your site. 
 have to care about what the HTML will look like, or how exactly it will fetch the data. The code looks like follows:
 
 ```java
-class MyView : VerticalLayout {
+class MyView : VerticalLayout() {
   init {
     setSizeFull()
     val maps = GoogleMaps()
@@ -452,8 +452,8 @@ This will allow us to write the following code:
 ```kotlin
 textField {
     caption = "Name"
-    width = "30em"
-    style = "big"
+    w = 30.em             // type-safe way of calling setWidth("30em")
+    addStyleName("big")
 }
 ```
 
