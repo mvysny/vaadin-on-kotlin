@@ -2,7 +2,7 @@
 
 # Creating UIs
 
-Vaadin-on-Kotlin uses the [Vaadin Framework](https://vaadin.com/docs/v10/flow/Overview.html) to deliver the UI.
+Vaadin-on-Kotlin uses the [Vaadin Platform](https://vaadin.com/docs/v10/flow/Overview.html) to deliver the UI.
 Vaadin lets you forget the web and develop user interfaces much like you would develop a desktop application with conventional Java toolkits such as AWT, Swing, or SWT.
 You add components such as Button and TextField into the page, nesting them in layouts which then position the components.
 
