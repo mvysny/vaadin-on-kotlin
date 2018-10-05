@@ -184,11 +184,9 @@ at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) do
 
 ## Layouts
 
-When Vaadin 8 was introduced, CSS positioning rules were not powerful enough and hence Vaadin 8 had to
-introduce layout components which used JavaScript to position their children. However, the situation changed
-with the introduction of CSS flexbox and CSS grid positioning standards which are now powerful enough to
-cater for all layouting needs. Therefore, Vaadin 10 no longer introduces customized layout components - it leaves the entire
-layout process to the browser and the CSS.
+Vaadin 10 delegates all layout work to CSS. There are no JavaScript-based layouts like in Vaadin 8 - there is no need
+for that since we have CSS flexbox and CSS grid positioning standards which are now powerful enough to
+cater for all layouting needs.
 
 In order to position the components, it's encouraged to nest the components inside the `FlexLayout` layout (which translates to `<div style="display: flex">`)
 and position the components using the CSS flexbox.
@@ -212,6 +210,23 @@ You can then use `VerticalLayout` and `HorizontalLayout` classes. They still use
 flexbox properties to a more familiar terminology.
 
 You can learn more in the [VerticalLayout and HorizontalLayout blogpost](http://mavi.logdown.com/posts/6855605).
+
+In order to position the child components inside of the `VerticalLayout`, you need to call the `align()` function inside of the
+`content{}` block, as follows:
+
+```kotlin
+verticalLayout {
+    content { align(stretch, top) }
+    width = "300px"; height = "100px"
+
+    button("Click me")
+}
+```
+
+The VerticalLayout uses flexbox flex-direction column to lay out components vertically downwards. The `align(stretch, top)` will make all
+child components match VerticalLayout's width, and will position them to the top of the VerticalLayout. It will make the button wide, even though
+the button's width is undefined (wrap the caption). Please consult the documentation on the `align()` function and the `stretch`/`top`
+constants for more info.
 
 ### Examples
 
