@@ -223,7 +223,6 @@ case of setting the proper alignment to the child:
 ```kotlin
 @Route("")
 class MainView : VerticalLayout() {
-    private lateinit var template: ExampleTemplate
     init {
         flexLayout {
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
@@ -246,7 +245,6 @@ in the `content{}` block:
 ```kotlin
 @Route("")
 class MainView : VerticalLayout() {
-    private lateinit var template: ExampleTemplate
     init {
         verticalLayout {
             content { align(center, middle) }
@@ -257,6 +255,59 @@ class MainView : VerticalLayout() {
     }
 }
 ```
+
+Another case would be a button bar, having a bunch of buttons both on the left side and on the right side.
+There is a `Div` acting as an spacer; since it's expanded it consumes all of the available space,
+pushing follow-up buttons to the right:
+
+![Button Bar Example](images/creating_ui-v10/button_bar.png)
+
+> *Info*: you can use the following [Vaadin Icons](https://vaadin.com/components/vaadin-icons/html-examples/icons-basic-demos) page to search for available Vaadin icons, or you can simply use IDE's
+autocompletion feature for available `VaadinIcons` enum constants.
+
+You can use the same approach for building the application frame. We're going to have the main menu to the right,
+and expand the left area so that the views can be nested inside of it:
+
+```kotlin
+@BodySize(width = "100vw", height = "100vh")
+@HtmlImport("frontend://styles.html")
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+@Theme(Lumo::class)
+class RootLayout : HorizontalLayout(), RouterLayout {
+    private val viewContainer: Div
+    init {
+        setSizeFull()
+        verticalLayout {
+            width = null; height = "100%"; isSpacing = false; isMargin = false
+            button("About", icon = Icon(VaadinIcon.QUESTION)) { themes.add("tertiary") }
+            button("Users", icon = Icon(VaadinIcon.USERS)) { themes.add("tertiary") }
+            button("Log Out", icon = Icon(VaadinIcon.USERS)) { themes.add("tertiary") }
+        }
+        viewContainer = div {
+            isExpand = true
+        }
+    }
+
+    override fun showRouterLayoutContent(content: HasElement) {
+        viewContainer.removeAll()
+        viewContainer.element.appendChild(content.element)
+    }
+}
+
+/**
+ * The main view contains a button and a template element.
+ */
+@Route("", layout = RootLayout::class)
+class MainView : VerticalLayout() {
+    init {
+        div {
+            text("Hello world!")
+        }
+    }
+}
+```
+
+![Main Application Frame](images/creating_ui-v10/appframe.png)
 
 ## Fields
 
