@@ -222,7 +222,7 @@ case of setting the proper alignment to the child:
 
 ```kotlin
 @Route("")
-class MainView : VerticalLayout() {
+class WelcomeView : VerticalLayout() {
     init {
         flexLayout {
             justifyContentMode = FlexComponent.JustifyContentMode.CENTER
@@ -244,7 +244,7 @@ in the `content{}` block:
 
 ```kotlin
 @Route("")
-class MainView : VerticalLayout() {
+class WelcomeView : VerticalLayout() {
     init {
         verticalLayout {
             content { align(center, middle) }
@@ -298,7 +298,7 @@ class RootLayout : HorizontalLayout(), RouterLayout {
  * The main view contains a button and a template element.
  */
 @Route("", layout = RootLayout::class)
-class MainView : VerticalLayout() {
+class WelcomeView : VerticalLayout() {
     init {
         div {
             text("Hello world!")
