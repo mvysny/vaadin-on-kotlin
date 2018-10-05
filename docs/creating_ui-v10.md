@@ -213,6 +213,51 @@ flexbox properties to a more familiar terminology.
 
 You can learn more in the [VerticalLayout and HorizontalLayout blogpost](http://mavi.logdown.com/posts/6855605).
 
+### Examples
+
+Now that you understand the concepts, let us list some examples. The first example is a classical example of doing
+a perfect centering of a component inside of its parent. It was impossible to do with CSS prior
+the flexbox, yet Vaadin's layouts use JavaScript to position children and thus follow their own logic. Centering of a child is thus a simple
+case of setting the proper alignment to the child:
+
+```kotlin
+@Route("")
+class MainView : VerticalLayout() {
+    private lateinit var template: ExampleTemplate
+    init {
+        flexLayout {
+            justifyContentMode = FlexComponent.JustifyContentMode.CENTER
+            alignItems = FlexComponent.Alignment.CENTER
+            width = "300px"; height = "100px"
+
+            button("Click me")
+        }
+    }
+}
+```
+
+The result is as follows:
+
+![Button Centered](images/creating_ui-v10/button_centered.png)
+
+The same can be achieved by using the `VerticalLayout`, albeit with a different API. Note how we specify the alignment of the content
+in the `content{}` block:
+
+```kotlin
+@Route("")
+class MainView : VerticalLayout() {
+    private lateinit var template: ExampleTemplate
+    init {
+        verticalLayout {
+            content { align(center, middle) }
+            width = "300px"; height = "100px"
+
+            button("Click me")
+        }
+    }
+}
+```
+
 ## Fields
 
 Another very important set of components are those that handle user input. All of the input components are documented
