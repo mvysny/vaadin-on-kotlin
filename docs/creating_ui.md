@@ -229,7 +229,7 @@ horizontalLayout {
 }
 ```
 
-> *Info*: you can use the following [Vaadin Icons](https://pro.vaadin.com/icons) page to search for available Vaadin icons, or you can simply use IDE's
+> *Info*: you can use the [Vaadin Icons](https://pro.vaadin.com/icons) page to search for available Vaadin icons, or you can simply use IDE's
 autocompletion feature for available `VaadinIcons` enum constants.
 
 You can use the same approach for building the application frame. We're going to have the main menu to the right,

@@ -217,7 +217,7 @@ You can learn more in the [VerticalLayout and HorizontalLayout blogpost](http://
 
 Now that you understand the concepts, let us list some examples. The first example is a classical example of doing
 a perfect centering of a component inside of its parent. It was impossible to do with CSS prior
-the flexbox, yet Vaadin's layouts use JavaScript to position children and thus follow their own logic. Centering of a child is thus a simple
+the flexbox, yet with flexbox it's just a simple
 case of setting the proper alignment to the child:
 
 ```kotlin
@@ -262,7 +262,7 @@ pushing follow-up buttons to the right:
 
 ![Button Bar Example](images/creating_ui-v10/button_bar.png)
 
-> *Info*: you can use the following [Vaadin Icons](https://vaadin.com/components/vaadin-icons/html-examples/icons-basic-demos) page to search for available Vaadin icons, or you can simply use IDE's
+> *Info*: you can use the [Vaadin Icons](https://vaadin.com/components/vaadin-icons/html-examples/icons-basic-demos) page to search for available Vaadin icons, or you can simply use IDE's
 autocompletion feature for available `VaadinIcons` enum constants.
 
 You can use the same approach for building the application frame. We're going to have the main menu to the right,
@@ -307,7 +307,7 @@ class WelcomeView : VerticalLayout() {
 }
 ```
 
-![Main Application Frame](images/creating_ui-v10/appframe.png)
+![Main Application Frame](images/creating_ui-v10/applayout.png)
 
 ## Fields
 
