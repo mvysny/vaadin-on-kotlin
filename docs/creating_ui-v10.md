@@ -260,6 +260,21 @@ Another case would be a button bar, having a bunch of buttons both on the left s
 There is a `Div` acting as an spacer; since it's expanded it consumes all of the available space,
 pushing follow-up buttons to the right:
 
+```kotlin
+@Route("")
+class WelcomeView: VerticalLayout() {
+    init {
+        flexLayout {
+            width = "300px"
+            icon(VaadinIcon.EDIT)
+            icon(VaadinIcon.TRASH)
+            div { isExpand = true }
+            icon(VaadinIcon.AIRPLANE)
+        }
+    }
+}
+```
+
 ![Button Bar Example](images/creating_ui-v10/button_bar.png)
 
 > *Info*: you can use the [Vaadin Icons](https://vaadin.com/components/vaadin-icons/html-examples/icons-basic-demos) page to search for available Vaadin icons, or you can simply use IDE's
