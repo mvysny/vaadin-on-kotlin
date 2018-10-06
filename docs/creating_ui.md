@@ -40,8 +40,8 @@ In this guide we will not focus on the client-side part; instead we will focus o
 
 The components are typically rich in functionality. For example `ComboBox` does not render into the HTML `<input>` element but it instead renders
 a rich `<div>` hierarchy which allows for features which are not possible with the `<input>` element, such as auto-completion.
-There is a big palette of pre-made components, and we use server-side Java code to we compose and nest them. Vaadin
-then makes sure to call the client-side of every component, to render the proper HTML elements. The rendering
+There is a big palette of pre-made components, and we use server-side Java code to create them and add them into layouts. Vaadin
+then makes sure to create the client-side GWT widget for every component and inserts it into the HTML into appropriate location. The rendering
 process is typically self-contained, implemented in the component client-side code and typically can not be controlled directly from server-side Java.
 
 For example, a typical Vaadin form uses the `FormLayout` component and adds a couple of `CheckBox`, `TextField` and
