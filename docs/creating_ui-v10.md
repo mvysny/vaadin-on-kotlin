@@ -26,7 +26,7 @@ Every Vaadin component thus consists of two parts:
   including web components based on no library at all. There is additional support for Polymer-based web components
   (observing value changes of Polymer properties, direct support for Polymer data binding
   with Vaadin `PolymerTemplate`s).
-* The server-side part of the component is a Java class, having API that mirrors the
+* The server-side part of the component is a Java class, having API that typically mirrors the
   API of the client-side web component. Server-side component extends from the Vaadin Flow's `Component` class and uses
   APIs provided by the `Component` class, such as support for transmitting events (such as button click events);
   it also allows you to control the underlying web component by setting
