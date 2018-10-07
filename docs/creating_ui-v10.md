@@ -22,12 +22,15 @@ Instead of being a mere REST directory, Vaadin provides means to control the Web
 so-called Vaadin Flow to synchronize a subset of Web Component properties (the Web component state) between client-side and server-side.
 Every Vaadin component thus consists of two parts:
 
-* The client-side part of the component is a standard Web Component. The web component is typically implemented in Polymer
-  (this enables value change observers and Polymer model templates integration with Vaadin), but web components based on other JavaScript libraries (or
-  plain web components based on no library at all) are also supported.
-* The server-side part of the component is a Java class that extends from the Vaadin Flow `Component` class and uses APIs provided by Flow to
-  transmit events (such as button click events) server-side; it also allows you to control the underlying web component by setting
-   values to particular Polymer properties, to plain HTML attributes,
+* The client-side part of the component is a standard Web Component. Vaadin supports web components based on any framework,
+  including web components based on no library at all. There is additional support for Polymer-based web components
+  (observing value changes of Polymer properties, direct support for Polymer data binding
+  with Vaadin `PolymerTemplate`s).
+* The server-side part of the component is a Java class, having API that mirrors the
+  API of the client-side web component. Server-side component extends from the Vaadin Flow's `Component` class and uses
+  APIs provided by the `Component` class, such as support for transmitting events (such as button click events);
+  it also allows you to control the underlying web component by setting
+   values either to particular Polymer properties, to plain HTML attributes,
   or via calls to JavaScript functions exposed on the web component itself.
 
 This kind of approach makes it incredibly easy to add e.g. Google Maps to your site. You just use the components' server-side Java API and you don't
