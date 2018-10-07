@@ -17,7 +17,8 @@ Every Vaadin component consists of two parts:
 * The client-side part of the component renders as one or more HTML elements and controls them by the means of JavaScript. For example a Google Map
   component would fetch individual tiles and produce a mesh of `<div>`s which then lay out the tiles to show the map itself.
 * The server-side part of the component then exposes a high-level API. The Google Map component example would allow you to set zoom, to focus on particular
-  GPS coordinates, to add markers etc.
+  GPS coordinates, to add markers etc. Vaadin then provides the connector API which transmits
+  events and component state from client-side to server-side and back again.
 
 This kind of approach makes it incredibly easy to add Google Maps to your site. You just use the components' server-side Java API and you don't
 have to care about what the HTML will look like, or how exactly it will fetch the data. The code looks like follows:
@@ -116,6 +117,7 @@ the root `VerticalLayout`/`WelcomeView`) and runs the configuration block for th
 listener. You can ctrl+click to see the sources of the `button()` function; the definition of the function looks very cryptic:
 
 ```kotlin
+@VaadinDsl
 fun (@VaadinDsl HasComponents).button(caption: String? = null, block: (@VaadinDsl Button).() -> Unit = {})
         = init(Button(caption), block)
 ```
