@@ -4,7 +4,7 @@ buildscript {
     ext.kaributesting_version = '0.4.16'
     ext.vaadin10_version = '10.0.5'
     ext.hikaricp_version = '3.2.0'
-    ext.flyway_version = '5.1.4'
+    ext.flyway_version = '5.2.0'
     ext.dynatest_version = "0.9"
     ext.logback_version = "1.2.3"
     ext.h2_version = "1.4.197"
