@@ -2,7 +2,7 @@ buildscript {
     ext.vaadin8_version = '8.5.2'
     ext.karibudsl_version = '0.4.10'
     ext.kaributesting_version = '0.4.17'
-    ext.vaadin10_version = '10.0.5'
+    ext.vaadin10_version = '11.0.1'
     ext.hikaricp_version = '3.2.0'
     ext.flyway_version = '5.2.0'
     ext.dynatest_version = "0.9"
@@ -39,11 +39,8 @@ allprojects {
 
 subprojects {
     repositories {
-        mavenCentral()
         jcenter()
         maven { url 'https://maven.vaadin.com/vaadin-addons' }
-        maven { url 'https://maven.vaadin.com/vaadin-prereleases' }
-        maven { url 'https://dl.bintray.com/mvysny/github' }
     }
 
     apply plugin: 'kotlin'
