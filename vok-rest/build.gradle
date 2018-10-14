@@ -40,7 +40,7 @@ bintray {
     user = local.getProperty('bintray.user')
     key = local.getProperty('bintray.key')
     pkg {
-        repo = 'vaadin-on-kotlin'
+        repo = 'github'
         name = 'vaadin-on-kotlin'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/mvysny/vaadin-on-kotlin'

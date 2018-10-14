@@ -30,8 +30,8 @@ repositories {
 defaultTasks 'clean', 'build'
 
 allprojects {
-    group 'com.github.vok'
-    version '0.4.16-SNAPSHOT'
+    group 'com.github.vaadinonkotlin'
+    version '0.5.0'
 
     // Heroku
     task stage(dependsOn: ['build'])
