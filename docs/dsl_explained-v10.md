@@ -51,8 +51,11 @@ Let's thus write the DSL function for constructing the `FormLayout` component. T
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
 * Provide a block which would make all functions, called from this block, insert components into the `FormLayout`.
 
+## The First Task: Pick Proper Parent To Insert The Component Into
+
 The first task can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
-The receiver for the `formLayout()` function would simply be the `VerticalLayout` type (or rather `HasComponents` which is a supertype of all
+The receiver for the `formLayout()` function will denote the parent where the `FormLayout` will be inserted. It will be of the `VerticalLayout` type
+(or rather `HasComponents` which is a supertype of all
 layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`). Kotlin will then auto-fill the closest `this` which matches
 the receiver type. In this example the receiver will be the `MyView` class itself (since it extends from `VerticalLayout` which implements `HasComponents`).
 
@@ -77,10 +80,13 @@ cause `FormLayout` to be added into `MyView`
 the `FormLayout` itself, which takes precedence over `MyView`. Hence, the `TextField` will be nested inside of the
 `FormLayout` as opposed of nesting inside of the `MyView`. Yet, we haven't defined such a block in the `formLayout()` yet! Let's fix that.
 
+## The Second Task: Make Sure All Children Are Inserted Into Us
+
 To implement the second task, we need the `formLayout()` function to be able to run a block. We need to declare the block
 in a special way so that any DSL functions invoked from the block will add components into this `FormLayout`. Hence, we need
-to make the block run with a *receiver* being the `FormLayout`. That would make Kotlin to run all nested DSL functions such as
-`textField()` in the context of that receiver (`FormLayout` in this example).
+to make the block run with a *receiver* being the `FormLayout` itself. That would make Kotlin to run all nested DSL functions such as
+`textField()` in the context of that receiver (`FormLayout` in this example). Since we have defined the `textField()` function to insert
+the newly created `TextField` into the receiver, it will be inserted into the `FormLayout`.
 
 We will therefore modify the `formLayout()` function accordingly:
 ```kotlin
