@@ -9,6 +9,7 @@ ext.jettyVer = '9.4.2.v20170220'
 
 gretty {
     contextPath = '/'
+    servletContainer = 'jetty9.4'
 }
 
 dependencies {

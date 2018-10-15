@@ -4,6 +4,7 @@ apply plugin: "org.gretty"
 
 gretty {
     contextPath = '/'
+    servletContainer = 'jetty9.4'
 }
 
 dependencies {
