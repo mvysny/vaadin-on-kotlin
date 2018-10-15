@@ -24,7 +24,7 @@ between the client-side facade and server-side component part. For example the c
 the tabular data from the server-side part of the Grid component; it configures Vaadin to pass the data properly from server-side Grid
 part to the client-side Grid part. For us, this process is completely transparent.
 We develop our apps using the server-side component API, in pure server-side Kotlin code; the components then handle
-server-client communication transparently.
+client-server communication transparently.
 
 Because of that, VoK feels more of a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
 
