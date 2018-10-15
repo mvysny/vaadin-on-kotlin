@@ -29,7 +29,7 @@ between the client-side front and server-side part.
 Let's take the Grid component as an example. Grid is basically a scrollable table which shows tabular data
 (see [example demo](https://vok-crud.herokuapp.com/crud); just press the "Generate test data" button at the top to see some data).
 
-The client-side front of the Grid component is able poll
+The client-side front of the Grid component is able fetch
 the tabular data from the server-side part of the Grid component. Grid configures Vaadin to pass the data properly from server-side Grid
 part to the client-side Grid front. For you, this process is completely transparent.
 You develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
