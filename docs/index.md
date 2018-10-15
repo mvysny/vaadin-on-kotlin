@@ -21,7 +21,7 @@ VoK is not just yet another REST library, or HTTP route mapping library. On the 
 All components have two parts:
 
 * Rich JavaScript front which runs in the browser and provides the UI with which the user interacts; and
-* The server-side part providing API we use to develop our webapps.
+* The server-side part providing API you use to develop our webapps.
 
 The components then use Vaadin to handle the communication
 between the client-side front and server-side part.
@@ -31,8 +31,8 @@ Let's take the Grid component as an example. Grid is basically a scrollable tabl
 
 The client-side front of the Grid component is able poll
 the tabular data from the server-side part of the Grid component. Grid configures Vaadin to pass the data properly from server-side Grid
-part to the client-side Grid part. For us, this process is completely transparent.
-We develop our apps using the server-side component API only, in pure server-side Kotlin code; the components then handle
+part to the client-side Grid front. For you, this process is completely transparent.
+You develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
 client-server communication transparently.
 
 Because of that, VoK feels more of a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
