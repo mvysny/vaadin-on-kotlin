@@ -18,10 +18,15 @@ to style up your application and/or write your own custom rich component.
 
 VoK is not just yet another REST library, or HTTP route mapping library. On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
 [wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders.
-All components have rich JavaScript facade which provides rich functionality. The components then use Vaadin to handle the communication
-between the client-side facade and server-side component part. For example the client-side facade of the Grid component
-(a table which shows tabular data with a scrollbar) is able poll
-the tabular data from the server-side part of the Grid component; it configures Vaadin to pass the data properly from server-side Grid
+All components have rich JavaScript facade which provides rich functionality, and the server-side part which we use to develop our apps.
+The components then use Vaadin to handle the communication
+between the client-side facade and server-side component part.
+
+Let's take the Grid component as an example. Grid is basically a scrollable table which shows tabular data
+(see [example demo](https://vok-crud.herokuapp.com/crud); just press the "Generate test data" button at the top).
+
+The client-side facade of the Grid component is able poll
+the tabular data from the server-side part of the Grid component. Grid configures Vaadin to pass the data properly from server-side Grid
 part to the client-side Grid part. For us, this process is completely transparent.
 We develop our apps using the server-side component API, in pure server-side Kotlin code; the components then handle
 client-server communication transparently.
