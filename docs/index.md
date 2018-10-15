@@ -21,7 +21,7 @@ VoK is not just yet another REST library, or HTTP route mapping library. On the 
 All components have two parts:
 
 * Rich JavaScript front which runs in the browser and provides the UI with which the user interacts; and
-* The server-side part providing API you use to develop our webapps.
+* The server-side part providing API you use to develop your webapps.
 
 The components then use Vaadin to handle the communication
 between the client-side front and server-side part.
