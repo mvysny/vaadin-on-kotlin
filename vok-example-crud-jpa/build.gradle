@@ -14,7 +14,7 @@ gretty {
 
 dependencies {
     compile(project(":vok-framework-jpa"))
-    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${dynatest_version}")
 
     // logging
     // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration

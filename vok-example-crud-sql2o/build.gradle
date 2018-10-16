@@ -32,7 +32,7 @@ dependencies {
     compile(project(":vok-rest"))
 
     // testing
-    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${dynatest_version}")
     testCompile "com.github.kaributesting:karibu-testing-v8:$kaributesting_version"
 
     // heroku app runner

@@ -1,11 +1,11 @@
 buildscript {
     ext.vaadin8_version = '8.5.2'
-    ext.karibudsl_version = '0.4.10'
+    ext.karibudsl_version = '0.4.11'
     ext.kaributesting_version = '0.4.17'
     ext.vaadin10_version = '11.0.1'
     ext.hikaricp_version = '3.2.0'
     ext.flyway_version = '5.2.0'
-    ext.dynatest_version = "0.9"
+    ext.dynatest_version = "0.11"
     ext.logback_version = "1.2.3"
     ext.h2_version = "1.4.197"
     ext.slf4j_version = "1.7.25"
@@ -22,26 +22,23 @@ plugins {
     id "com.jfrog.bintray" version "1.8.1"
 }
 
-repositories {
-    jcenter()
-}
-
 defaultTasks 'clean', 'build'
 
 allprojects {
     group 'com.github.vaadinonkotlin'
     version '0.5.1-SNAPSHOT'
 
+    repositories {
+        jcenter()
+        maven { url "https://dl.bintray.com/mvysny/github" }
+        maven { url 'https://maven.vaadin.com/vaadin-addons' }
+    }
+
     // Heroku
     task stage(dependsOn: ['build'])
 }
 
 subprojects {
-    repositories {
-        jcenter()
-        maven { url 'https://maven.vaadin.com/vaadin-addons' }
-    }
-
     apply plugin: 'kotlin'
     compileKotlin {
         kotlinOptions {

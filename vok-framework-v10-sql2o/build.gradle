@@ -15,7 +15,7 @@ dependencies {
     compile(project(':vok-db'))
     compile(project(':vok-util-vaadin10'))
 
-    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${dynatest_version}")
 
     testCompile "ch.qos.logback:logback-classic:$logback_version"
     testCompile "com.h2database:h2:$h2_version"

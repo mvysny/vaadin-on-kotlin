@@ -18,7 +18,7 @@ dependencies {
     compile 'javax.servlet:javax.servlet-api:3.1.0'
 
     // testing
-    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${dynatest_version}")
     testCompile "com.github.kaributesting:karibu-testing-v10:$kaributesting_version"
     testCompile "ch.qos.logback:logback-classic:$logback_version"
 }

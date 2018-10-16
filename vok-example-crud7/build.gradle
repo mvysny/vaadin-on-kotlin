@@ -11,7 +11,7 @@ dependencies {
 
     compile(project(":vok-framework-jpa-compat7"))
     compile "org.jetbrains.kotlin:kotlin-stdlib"
-    testCompile("com.github.mvysny.dynatest:dynatest:${dynatest_version}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${dynatest_version}")
 
     // logging
     compile "ch.qos.logback:logback-classic:$logback_version"
