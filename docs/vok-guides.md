@@ -33,6 +33,12 @@ Security is an important part of any web-based application. Please check the fol
 
 * The [vok-security](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md) module description.
 
+## Translating Your App
+
+You can target broader audience if you offer your app in multiple languages.
+
+* The [Translating Your App](i18n.md) Guide.
+
 ## Testing
 
 * The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing)
@@ -74,6 +80,12 @@ Continue reading here to understand how exactly VoK accesses the database.
 Security is an important part of any web-based application. Please check the following resources for more information:
 
 * The [vok-security](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md) module description.
+
+## Translating Your App
+
+You can target broader audience if you offer your app in multiple languages.
+
+* The [Translating Your App](i18n.md) Guide.
 
 ## Testing
 
