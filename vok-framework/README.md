@@ -54,3 +54,5 @@ The following resource bundles are searched:
 * If the message is not found, the standard message bundle of `com.github.vok.VokMessages*.properties` is consulted.
 
 Consult the [standard message bundle](src/main/resources/com/github/vok/VokMessages.properties) for the list of messages.
+
+Consult the [Translating Your App](http://www.vaadinonkotlin.eu/i18n.html) Guide for more details.
