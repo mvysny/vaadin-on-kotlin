@@ -12,6 +12,8 @@ import com.vaadin.flow.data.provider.ListDataProvider
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
+
     data class Person(var name: String, var age: Int)
 
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17

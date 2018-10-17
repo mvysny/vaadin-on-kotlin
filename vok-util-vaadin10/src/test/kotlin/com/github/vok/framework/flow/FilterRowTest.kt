@@ -16,6 +16,7 @@ import kotlin.test.expect
 
 class FilterRowTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
 
     test("Test simple auto-generated filters") {
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
