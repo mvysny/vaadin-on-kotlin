@@ -8,6 +8,7 @@ import kotlin.test.fail
 
 class NumberFilterPopupTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
     lateinit var component: NumberFilterPopup
     beforeEach { component = NumberFilterPopup(); UI.getCurrent().content = component }
 

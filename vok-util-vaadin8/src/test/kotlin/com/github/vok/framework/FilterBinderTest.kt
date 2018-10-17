@@ -8,8 +8,10 @@ import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 
-class VaadinFiltersTest : DynaTest({
+class FilterBinderTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
+
     data class Person(var name: String, var age: Int)
 
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17

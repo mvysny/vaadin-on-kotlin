@@ -139,4 +139,4 @@ infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
  * @return the UI instance, not null.
  * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
  */
-fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
+fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not called in the UI thread")

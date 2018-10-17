@@ -48,6 +48,7 @@ class VokSecurityTest : DynaTest({
         autoDiscoverViews("com.github.vok")
         MockVaadin.setup({ MySecuredUI() })
     }
+    afterEach { MockVaadin.tearDown() }
     group("test no user / anonymous") {
         beforeGroup { DummyUserResolver.userWithRoles = null }
         test("unsecured succeeds") {

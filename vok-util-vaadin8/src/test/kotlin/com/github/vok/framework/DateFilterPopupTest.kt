@@ -5,6 +5,8 @@ import com.github.mvysny.dynatest.DynaTest
 
 class DateFilterPopupTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
+
     test("smoke test") {
         DateFilterPopup()
     }

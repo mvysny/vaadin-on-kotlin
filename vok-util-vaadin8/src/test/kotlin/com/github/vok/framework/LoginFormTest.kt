@@ -22,6 +22,7 @@ class LoginFormTest : DynaTest({
             }
         }
     }
+    afterEach { MockVaadin.tearDown() }
 
     test("blank username") {
         _get<Button> { caption = "Sign In" } ._click()
