@@ -1,6 +1,6 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-# Navigating in your app
+# Navigating In Your App
 
 The Vaadin `Navigator` resolves http paths to views, in order to show different parts of the app to the user. For example,
 when the user navigates to `http://localhost:8080/invoices` the Navigator makes sure that the `InvoicesView` UI component is created
@@ -66,7 +66,7 @@ the map maps key to a list of values. That's why the `"lang"` key will be mapped
 The `parameterList` is a `Map<Int, String>` of unnamed parameters, mapping from 0-based parameter index to the parameter value. The first
 parameter will be stored under the key of `0`, the second under the key of `1` etc.
 
-## Navigating to views
+## Navigating To Views
 
 To navigate to a view named `PersonView`, just call `navigateToView<PersonView>()`.
 The `navigateToView()` function accepts a list of String parameters which will then be passed into the function, for example:
