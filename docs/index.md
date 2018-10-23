@@ -1,6 +1,6 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-![VoK Logo](images/vok_logo_small.png)
+![VoK Logo](iconography/vok_logo_small.svg)
 
 Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
 
