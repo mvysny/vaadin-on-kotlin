@@ -14,7 +14,7 @@ After reading this guide, you will know:
 
 > **Note:** To skip the introduction and dive straight into the code, just skip to [Chapter 3.2](#3_2)
 
-## 1 Guide Assumptions
+## Guide Assumptions
 
 This guide is designed for beginners who want to get started with a VoK application from scratch.
 It does not assume that you have any prior experience with Vaadin. However, to get the most out of it,
@@ -41,7 +41,7 @@ Feel free to experiment on the [Karibu-DSL Hello World Example](https://github.c
 VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
 be applicable in the VoK-based apps later on.
 
-## 2 What is Vaadin-on-Kotlin?
+## What is Vaadin-on-Kotlin?
 
 VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
 It is designed to make the art of programming of web applications easier by making assumptions about what 
@@ -86,13 +86,13 @@ more easily digestable packages.
 does not make that much sense: for example it will usually leave you with nearly empty Views. We thus believe that using MVC does 
 more harm than good since it adds unnecessary complexity. Therefore this tutorial will not use MVC.
 
-## 3 Creating a New VoK Project
+## Creating a New VoK Project
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
 
 By following along with this guide, you'll create a VoK project called blog, a (very) simple weblog.
 Before you can start building the application, you need to make sure that you have Java 8 JDK installed.
 
-### 3.1 Prerequisites
+### Prerequisites
 
 Vaadin-on-Kotlin only requires Java 8 JDK to be installed. The example application has Gradle bundled in;
 Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
@@ -107,7 +107,7 @@ Kotlin support including auto-completion. You can use IDEA Community edition, wh
 gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
 servers, and also offers awesome database integration tools.
 
-### 3.2 Creating the Blog Application<a name="3_2"></a>
+### Creating the Blog Application<a name="3_2"></a>
 
 Getting the example application is really easy. If you have Git installed, just open a command line and run the
 following command:
@@ -143,11 +143,11 @@ folders:
 | `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
 | .gitignore        | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files. |
 
-## 4 Hello, Vaadin-on-Kotlin!<a name="4"></a>
+## Hello, Vaadin-on-Kotlin!<a name="4"></a>
 
 To begin with, let's get some text up on screen quickly. To do this, you need to get a web server running.
 
-### 4.1 Starting up the Web Server
+### Starting up the Web Server
 
 You actually have a functional VoK application already. To see it, you need to start a web server on your development machine.
 You can do this by running the following in the `vok-helloworld-app` directory:
@@ -174,7 +174,7 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 The "Welcome aboard" page is the smoke test for a new VoK application: it makes sure that you
 have your software configured correctly enough to serve a page.
 
-### 4.2 Say "Hello", Vaadin
+### Say "Hello", Vaadin
 
 To get VoK saying "Hello", you need to create a View.
 
@@ -220,7 +220,7 @@ class MyWelcomeView: VerticalLayout(), View {
 }
 ```
 
-### 4.3 Setting the Application Home Page
+### Setting the Application Home Page
 Now that we have made the view, we need to tell VoK when we want "Hello, Vaadin-on-Kotlin!" 
 to show up. In our case, we want it to show up when we navigate to the root URL of our site, 
 [http://localhost:8080](http://localhost:8080). At the moment, "Welcome aboard" is occupying that spot.
@@ -317,7 +317,7 @@ In the next section, you will add the ability to create new articles in your app
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
 
-### 5.1 Laying down the groundwork
+### Laying down the groundwork
 
 Firstly, you need a place within the application to create a new article. A great place for that 
 would be at `create-article`. Navigate to [http://localhost:8080/create-article](http://localhost:8080/create-article) and you'll see a general error:
@@ -326,7 +326,7 @@ would be at `create-article`. Navigate to [http://localhost:8080/create-article]
 
 This happens because there is no View yet, mapped to the `create-article` route. 
 
-### 5.2 The first form
+### The first form
 
 The solution to this particular problem is simple:
 create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleView.kt` as follows:
@@ -362,7 +362,7 @@ Building forms in VoK is really just that easy!
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
 Currently, the click listener is empty, we will need to add the database code to save the article.
 
-### 5.3 Creating articles
+### Creating articles
 
 To make the "Save Article" button do something, just change the class as follows:
 ```kotlin
@@ -401,7 +401,7 @@ class CreateArticleView: VerticalLayout(), View {
 Now when you click the "Save Article" button, you'll see the good old Oops error - it's because we haven't
 created the database table for Article yet.
 
-### 5.4 Creating the Article model
+### Creating the Article model
 
 Luckily, we have already created the model - it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
@@ -422,7 +422,7 @@ create table Article(
 This is a SQL data definition (DDL) script which will create a table named Article with three columns. We are using the H2 database
 SQL dialect here.
 
-### 5.5 Running a Migration
+### Running a Migration
 
 As we've just seen, migrations are simple SQL scripts which create and modify database tables. The database migration is done automatically,
 on the web app startup, by the `Bootstrap` class.  You can also reconfigure your app to do the migrations manually instead,
@@ -441,7 +441,7 @@ Since we are currently using an in-memory H2 database, its contents are gone whe
 and since we are starting with a fresh database, all migrations will run. When we'll use a persistent database,
 Flyway will make sure that only a newly defined migrations are run.
 
-### 5.6 Saving data in the CreateArticleView
+### Saving data in the CreateArticleView
 
 Back in `CreateArticleView` view, everything is ready. Try clicking the "Save Article" button - seemingly nothing
 will happen, but the article will be saved into the database. To actually see the article,
@@ -453,7 +453,7 @@ Class names in Kotlin must begin with a capital letter.
 
 > **Note:** As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whether the article was saved or not.
 
-### 5.7 Showing Articles
+### Showing Articles
 
 If you submit the form again now, VoK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
 
@@ -522,7 +522,7 @@ With this change, you should finally be able to create new articles. Visit
 
 ![Show Article](images/show_article.png)
 
-### 5.8 Listing all articles
+### Listing all articles
 
 We still need a way to list all our articles, so let's do that. We'll create the `web/src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
 following contents:
@@ -561,7 +561,7 @@ Now if you go to [http://localhost:8080/articles](http://localhost:8080/articles
 Note that we have used the Grid component. Grid is a powerful tabular component which supports paging and lazy-loading of the data,
 including sorting and filtering.
 
-### 5.9 Adding links
+### Adding links
 You can now create, show, and list articles. Now let's add some links to navigate through pages.
 
 Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init {}` contents as follows:
@@ -614,7 +614,7 @@ Finally, add a link to the `ArticleView` view to go back to the index action as 
 > **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
 or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
 
-### 5.10 Adding Some Validation
+### Adding Some Validation
 
 The entity file, `Article.kt` is about as simple as it can get.
 
@@ -675,7 +675,7 @@ VoK will send you back to the form, with the invalid fields marked red; also the
 The `binder.validate().isOk` call will mark invalid fields, while `binder.writeBeanIfValid(article)` will write the values to
 the `article` entity, but only if everything is valid.
 
-### 5.11 Updating Articles
+### Updating Articles
 
 We've covered the "CR" part of CRUD. Now let's focus on the "U" part, updating articles.
 
@@ -808,7 +808,7 @@ And here's how our app looks so far:
 
 ![Article List View](images/article_list_view.png)
 
-### 5.12 Creating components to clean up duplication in views
+### Creating components to clean up duplication in views
 
 Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact, 
 they both share the same code for displaying the form. 
@@ -933,7 +933,7 @@ class EditArticleView : VerticalLayout(), View {
 }
 ```
 
-### 5.13 Deleting Articles
+### Deleting Articles
 
 We're now ready to cover the "D" part of CRUD, deleting articles from the database. To delete the article, all that's
 needed is to call `delete()` in the article from appropriate place. 
@@ -1000,11 +1000,11 @@ just open up Intellij IDEA and click your mouse on the `confirmDialog` function 
 
 Congratulations, you can now create, show, list, update and destroy articles.
 
-## 6 Adding a Second Database Entity
+## Adding a Second Database Entity
 
 It's time to add a second database table to the application. The second database table will handle comments on articles.
 
-### 6.1 Creating the 'Comments' Entity
+### Creating the 'Comments' Entity
 
 We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
@@ -1070,7 +1070,7 @@ Since we are running an embedded database which starts in a clear state, all mig
 
 However, if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not already been run against the current database.
 
-### 6.2 Associating Models
+### Associating Models
 
 Vaadin on Kotlin associations let you easily declare the relationship between two entities. In the case of
 comments and articles, you could write out the relationships this way:
@@ -1122,7 +1122,7 @@ appear in `Article.toString()`, so that logging a newly created article (which c
 Computed properties also do not appear in the JSON output as returned by the REST services - this way we can prevent polluting of the REST JSON
 article output with all comments.
 
-### 6.3 Exposing Comments via REST
+### Exposing Comments via REST
 
 You can expose the comments via the REST interface. This is completely optional and is not used by Vaadin in any way,
 it may just be handy to check your database status via the `curl` tool. Edit `ArticleRest.kt`:
@@ -1160,7 +1160,7 @@ $ curl localhost:8080/rest/articles/1/comments
 [{"id":1,"commenter":"A buddy programmer","body":"I like Vaadin-on-Kotlin, too!"}]
 ```
 
-### 6.4 Writing a View
+### Writing a View
 
 Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
 
@@ -1260,12 +1260,12 @@ Now you can add articles and comments to your blog and have them show up in the 
 in the `Article.comments` field. If you need to access the comment list multiple times, it is best to store the list of comments
 into a variable.
 
-## 7 Refactoring
+## Refactoring
 
 Now that we have articles and comments working, take a look at the `web/src/main/kotlin/com/example/vok/ArticleView.kt` view.
 It is getting long and awkward. We can create reusable components to clean it up.
 
-### 7.1 The Comments Component
+### The Comments Component
 
 First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
 in the future, the `Label` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
@@ -1306,7 +1306,7 @@ the DSL extension method as well. The extension function simply calls the `init(
                                   
 You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin Part 4](http://mavi.logdown.com/posts/1493730) tutorial.
 
-### 7.2 Converting the Comments Form to a component
+### Converting the Comments Form to a component
 
 Let us also move that new comment section out to its own component. Create the file named
 `web/src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
@@ -1410,7 +1410,7 @@ class ArticleView: VerticalLayout(), View {
 }
 ```
 
-## 8 Deleting Comments
+## Deleting Comments
 
 Another important feature of a blog is being able to delete spam comments. To do this, we need to implement a link of some sort in the `CommentsComponent`.
 
@@ -1450,7 +1450,7 @@ fun HasComponents.commentsComponent(block: CommentsComponent.()->Unit = {}) = in
 
 Clicking the "Delete comment" button will delete the comment and refresh the component, to show the rest of the comments.
 
-### 8.1 Deleting Associated Objects
+### Deleting Associated Objects
 
 If you delete an article, its associated comments will also need to be deleted, otherwise they would simply occupy space in the database. 
 Or even worse, since we have the foreign constraint set up, the database would fail to delete the article. We will need to modify the
@@ -1464,7 +1464,7 @@ Modify the `Article.kt` file and add the `delete` function right below the `comm
     }
 ```
 
-## 9 Security
+## Security
 
 If you were to publish your blog online, anyone would be able to add, edit and delete articles or delete comments.
 
@@ -1568,13 +1568,15 @@ edit `MyUI.kt` and change the `init()` method as follows:
 
 ```
 
-### 9.2 Other Security Considerations
+### Other Security Considerations
 
 Security, especially in web applications, is a broad and detailed area. You can decide not to use the login dialog at all,
 and instead use the HTTP Basic Auth, thus letting the web server handle the security completely. You can also employ
 other security options. This is however out of scope of this tutorial.
 
-## 10 What's Next?
+Please see the [Vaadin-on-Kotlin Security Demo](https://github.com/mvysny/vok-security-demo) sample project for more details.
+
+## What's Next?
 
 Now that you've seen your first VoK application, you should feel free to update it and experiment on your own.
 
