@@ -18,7 +18,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 * [Using Grids](grids.md) shows best practices on how to display a lazy-loaded tabular list of data.
 * [DSLs: Explained](dsl_explained.md) explains how exactly VoK takes advantage of the DSL Kotlin language feature.
 
-## Database access guides
+## Database Access Guides
 
 Continue reading here to understand how exactly VoK accesses the database.
 
@@ -51,7 +51,7 @@ tends to differ a bit from Vaadin 8, and that's why there is a separate set of g
 for Vaadin 8 and for Vaadin 10. Don't worry though - Vaadin 10 still uses the
 component-oriented approach we love from Vaadin 8.
 
-## Getting started Guides
+## Getting Started Guides
 
 When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 
@@ -66,7 +66,7 @@ When you are not familiar with Vaadin-on-Kotlin (or VoK for short), start here:
 * [Using Grids](grids-v10.md) shows best practices on how to display a lazy-loaded tabular list of data.
 * [DSLs: Explained](dsl_explained-v10.md) explains how exactly VoK takes advantage of the DSL Kotlin language feature.
 
-## Database access guides
+## Database Access Guides
 
 Continue reading here to understand how exactly VoK accesses the database.
 

@@ -1,6 +1,6 @@
 [Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
 
-# Accessing SQL databases with Vaadin-on-Kotlin
+# Accessing SQL Databases With Vaadin-on-Kotlin
 
 Vaadin-on-Kotlin provides first-class support for the following SQL databases out-of-the-box:
 
@@ -34,7 +34,7 @@ The ORM stands for Object-Relational Mapping and stands for mapping database row
 for easier use from within your application. VoK does not use JPA but instead features
 a new, vastly simplified database access layer called `vok-orm`.
 
-## About vok-orm
+## About `vok-orm`
 
 `vok-orm` is a very simple object-relational mapping library, built around the following ideas:
 
@@ -56,7 +56,7 @@ but it allows mapping of any complex SELECT with joins and everything, even VIEW
 Naturally this allows you to use any SELECT inside of a Vaadin Grid component which is a
 very powerful combination. 
 
-## Persisting simple objects into tables
+## Persisting Simple Objects Into Tables
 
 Please read the [Usage examples](https://github.com/mvysny/vok-orm#usage-examples) chapter of
 the `vok-orm` documentation on how to write Kotlin classes that correspond to a particular SQL database
@@ -332,7 +332,7 @@ instead to the field, and `beanValidationBinder` would ignore it.
 Now, typing in incorrect values will make the field go red and show the validation errors; the "Save" button will also not create a Person
 instance if the values are invalid.
 
-## Using `vok-orm` with Vaadin Grid
+## Using `vok-orm` With Vaadin Grid
 
 Vaadin Grid is a very powerful component which allows you to show a lazy-loaded list of rows
 on a web page. It allows the user to:
@@ -345,7 +345,7 @@ on a web page. It allows the user to:
 
 You can find more information about how to use Vaadin Grid with Vaadin-on-Kotlin at the [Using Grids](grids.md) guide page.
 
-### Showing entities in Grid
+### Showing Entities In Grid
 
 We will start with the most basic Grid which will show the list of `Person`. By default the Grid shows all columns,
 therefore we need to restrict the columns a bit:
@@ -410,7 +410,7 @@ The unremovable filter will be ANDed with any additional filters set by the filt
   takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
   to the old one but always ANDs given filter with any filters set by the `setFilter()`.
 
-### Showing an arbitrary output of any SQL SELECT command
+### Showing An Arbitrary Output of Any `SQL SELECT` Command
 
 Say that we have a join which joins Persons with their departments. Something like the following:
 
@@ -565,7 +565,7 @@ Following is a full example code which demonstrates this technique:
  }
  ```
  
-## Exporting data from DataProviders
+## Exporting Data From DataProviders
 
 You can simply call `DataProvider.getAll()` which will fetch all beans from the
 data provider satisfying filters set by the `setFilter()` or `withFilter()`. You need to be

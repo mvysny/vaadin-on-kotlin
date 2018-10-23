@@ -32,7 +32,7 @@ instances - you can't just instantiate the bean yourself since Spring wouldn't i
 and provide them for all data-bound UI components, or turn all of your UI components into beans. All of these solutions have
 disadvantages, and therefore VoK is not using DI and is using a much simpler approach.
 
-## The stateless service
+## The Stateless Service
 
 The fictional booking system above is just a set of steps to be performed. The process does not have any state, at most couple of
 local variables. We don't have any preparation steps which need to be followed in order
@@ -88,7 +88,7 @@ BookingService().book()
 
 Creating a new instance of an object is very cheap on current JVMs so there is no worry for performance.
 
-## A repository of services
+## A Repository of Services
 
 Having `BookingService` as a simple POJO is great since there is no dark injection/enhancement magic going on. However,
 it has couple of disadvantages:
@@ -141,7 +141,7 @@ Services.booking.book()
 ...
 ```
 
-## The stateful service
+## The Stateful Service
 
 Sometimes services need to have a state. For example we could have a `LoginService` which would deal with user
 logins, logouts and would provide access to the currently logged-in user.
