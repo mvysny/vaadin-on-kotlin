@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32.834717mm"
+   width="31.431551mm"
    height="5.3844051mm"
-   viewBox="0 0 32.834717 5.384405"
+   viewBox="0 0 31.431551 5.384405"
    version="1.1"
    id="svg5577"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="3.959798"
      inkscape:cx="88.904432"
-     inkscape:cy="71.453445"
+     inkscape:cy="71.453425"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -56,22 +56,22 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-0.81492001,-272.83991)">
+     transform="translate(-0.81492001,-272.8399)">
+    <rect
+       style="opacity:0.95;fill:#0d0d0d;fill-opacity:1;stroke:none;stroke-width:0.06695205;stroke-opacity:1"
+       id="rect5308-7-5"
+       width="31.431551"
+       height="5.3844051"
+       x="0.81492001"
+       y="272.8399"
+       ry="2.6922026" />
     <g
-       id="g6436"
-       transform="matrix(0.95270968,0,0,0.95270968,0.81492004,12.902687)">
-      <rect
-         ry="2.8258374"
-         y="272.8399"
-         x="-3.5982417e-08"
-         height="5.6516747"
-         width="34.464558"
-         id="rect5308-7-5"
-         style="opacity:0.95;fill:#0d0d0d;fill-opacity:1;stroke:none;stroke-width:0.07182689;stroke-opacity:1" />
+       id="g6483"
+       transform="matrix(0.93692497,0,0,0.93692497,0.91792779,17.332054)">
       <g
          id="flowRoot5456"
          style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         transform="matrix(0.07422071,0,0,0.08626983,-3.6656756,221.63796)"
+         transform="matrix(0.07071079,0,0,0.0821901,-2.6774046,224.05932)"
          aria-label="powered by">
         <path
            id="path6206"
@@ -120,7 +120,7 @@
            inkscape:connector-curvature="0" />
       </g>
       <g
-         transform="matrix(0.91394623,0,0,0.91394623,2.0903935,23.722074)"
+         transform="matrix(0.87072542,0,0,0.87072542,2.8064582,35.502937)"
          id="g6417">
         <path
            inkscape:connector-curvature="0"
