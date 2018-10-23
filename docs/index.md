@@ -150,8 +150,8 @@ The following is a complete list of all example projects demonstrating vok or it
 * [vaadin-coroutines-demo](https://github.com/mvysny/vaadin-coroutines-demo): Karibu-DSL, Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
 * [vaadin-kotlin-pwa](https://github.com/mvysny/vaadin-coroutines-demo): VoK, Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
 * [vaadin10-sqldataprovider-example](https://github.com/mvysny/vaadin10-sqldataprovider-example): Vaadin 10, Java, Maven, Karibu-Testing, JUnit 5
-* [vaadin8-jpadataprovider-example](https://github.com/mvysny/vaadin10-jpadataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
-* [vaadin8-sqldataprovider-example](https://github.com/mvysny/vaadin10-sqldataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
+* [vaadin8-jpadataprovider-example](https://github.com/mvysny/vaadin8-jpadataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
+* [vaadin8-sqldataprovider-example](https://github.com/mvysny/vaadin8-sqldataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
 * [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app): Vaadin 8, Kotlin, Gradle
 * [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10): Vaadin 10, Kotlin, Gradle
 * [vok-security-demo](https://github.com/mvysny/vok-security-demo): Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
