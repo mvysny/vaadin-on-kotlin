@@ -38,8 +38,9 @@ class Bootstrap: ServletContextListener {
         log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Running DB migrations")
-        val flyway = Flyway()
-        flyway.dataSource = VaadinOnKotlin.dataSource
+        val flyway = Flyway.configure()
+            .dataSource(VaadinOnKotlin.dataSource)
+            .load()
         flyway.migrate()
         log.info("Initialization complete")
     }
