@@ -12,8 +12,9 @@ import kotlin.test.fail
 fun DynaNodeGroup.usingDatabase() {
     beforeGroup {
         JPAVOKPlugin().init()
-        val flyway = Flyway()
-        flyway.dataSource = VaadinOnKotlin.getDataSource()
+        val flyway = Flyway.configure()
+            .dataSource(VaadinOnKotlin.getDataSource())
+            .load()
         flyway.migrate()
     }
     fun clearDatabase() {

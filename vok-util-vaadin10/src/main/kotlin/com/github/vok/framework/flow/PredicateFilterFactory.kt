@@ -66,6 +66,7 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
 
     data class Le<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean {
+            @Suppress("UNCHECKED_CAST")
             val value = getValue(t) as Comparable<Any>? ?: return false
             return value < this.value
         }
@@ -76,6 +77,7 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
 
     data class Ge<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean {
+            @Suppress("UNCHECKED_CAST")
             val value = getValue(t) as Comparable<Any>? ?: return false
             return value > this.value
         }

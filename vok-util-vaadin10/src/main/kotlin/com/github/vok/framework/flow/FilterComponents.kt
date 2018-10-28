@@ -56,6 +56,7 @@ data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
 class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, NumberInterval<Double>>(null) {
     private lateinit var ltInput: TextField
     private lateinit var gtInput: TextField
+    @Suppress("UNCHECKED_CAST")
     private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = NumberInterval(null, null) }
     private lateinit var set: Button
     private lateinit var clear: Button
