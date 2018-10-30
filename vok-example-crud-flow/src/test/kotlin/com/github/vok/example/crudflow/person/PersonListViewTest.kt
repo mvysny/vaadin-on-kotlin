@@ -48,7 +48,7 @@ class PersonListViewTest : DynaTest({
     test("edit one person") {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
 
-        val grid = _get<Grid<*>>()
+        _get<Grid<*>>()
         // currently not possible: https://github.com/mvysny/karibu-testing/issues/2
 /*
         grid._clickRenderer(0, "edit")

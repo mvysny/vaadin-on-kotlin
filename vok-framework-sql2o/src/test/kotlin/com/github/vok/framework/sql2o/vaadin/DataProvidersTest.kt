@@ -86,9 +86,9 @@ class DataProvidersTest : DynaTest({
             val dp = Person.dataProvider
             ComboBox<Person>().apply {
                 setItemCaptionGenerator { it.personName }
-                setDataProvider(dp, { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString!!)
-                })
+                setDataProvider(dp) { searchString: String? ->
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString)
+                }
             }
         }
         // tests that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
@@ -98,9 +98,9 @@ class DataProvidersTest : DynaTest({
             val dp = sqlDataProvider(Person::class.java, "select * from Person where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
             ComboBox<Person>().apply {
                 setItemCaptionGenerator { it.personName }
-                setDataProvider(dp, { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString!!)
-                })
+                setDataProvider(dp) { searchString: String? ->
+                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString)
+                }
             }
         }
     }
