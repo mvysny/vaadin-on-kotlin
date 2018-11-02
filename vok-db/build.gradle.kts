@@ -1,6 +1,6 @@
 dependencies {
     compile(project(":vok-framework"))
-    compile("com.github.vokorm:vok-orm:0.11")
+    compile("com.github.vokorm:vok-orm:0.12")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
