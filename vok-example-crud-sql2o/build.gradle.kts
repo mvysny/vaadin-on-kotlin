@@ -32,7 +32,11 @@ dependencies {
     compile("com.h2database:h2:${ext["h2_version"]}")
 
     // REST
-    compile(project(":vok-rest"))
+    compile("io.javalin:javalin:2.4.0") {
+        exclude(mapOf("group" to "org.eclipse.jetty"))
+        exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
+    }
+    compile("com.google.code.gson:gson:2.8.5")
 
     // testing
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
