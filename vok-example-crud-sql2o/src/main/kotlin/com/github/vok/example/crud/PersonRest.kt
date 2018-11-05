@@ -109,6 +109,10 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
         checkAllowsModification()
         val entity = ctx.bodyAsClass(entityClass)
         entity.id = idConverter.convert(resourceId)
-        entity.save()
+        db {
+            val exists = con.findById(entityClass, entity.id!!) != null
+            if (!exists) throw NotFoundResponse("No such entity with ID $resourceId")
+            entity.save()
+        }
     }
 }

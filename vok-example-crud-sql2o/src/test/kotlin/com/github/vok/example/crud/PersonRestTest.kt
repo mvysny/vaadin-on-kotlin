@@ -6,6 +6,7 @@ import com.github.mvysny.dynatest.expectThrows
 import com.github.vok.example.crud.personeditor.MaritalStatus
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.example.crud.personeditor.usingApp
+import com.github.vokorm.Entity
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.Gson
@@ -56,15 +57,21 @@ class PersonRestTest : DynaTest({
             expectList(p) { client.personCrud.getAll() }
         }
 
-        test("getOne") {
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-            p.save()
-            expect(p) { client.personCrud.getOne(p.id!!.toString()) }
-            expectThrows(IOException::class, "404: No such entity with ID 555") {
-                client.personCrud.getOne("555")
+        group("getOne") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                expect(p) { client.personCrud.getOne(p.id!!.toString()) }
             }
-            expectThrows(IOException::class, "Malformed ID: foobar") {
-                client.personCrud.getOne("foobar")
+            test("non-existing") {
+                expectThrows(IOException::class, "404: No such entity with ID 555") {
+                    client.personCrud.getOne("555")
+                }
+            }
+            test("malformed id") {
+                expectThrows(IOException::class, "Malformed ID: foobar") {
+                    client.personCrud.getOne("foobar")
+                }
             }
         }
 
@@ -75,10 +82,44 @@ class PersonRestTest : DynaTest({
             p.id = actual[0].id!!
             expectList(p) { actual }
         }
+
+        group("delete") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                client.personCrud.delete(p.id!!.toString())
+                expectList() { Person.findAll() }
+            }
+            test("non-existing") {
+                // never fail with 404: http://www.tugberkugurlu.com/archive/http-delete-http-200-202-or-204-all-the-time
+                client.personCrud.delete("555")
+            }
+            test("invalid id") {
+                expectThrows(IOException::class, "404: Malformed ID") {
+                    client.personCrud.delete("invalid_id")
+                }
+            }
+        }
+
+        group("update") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                p.personName = "Leto Atreides"
+                client.personCrud.update(p)
+                expectList(p) { Person.findAll() }
+            }
+            test("non-existing") {
+                val p = Person(id = 45, personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+                expectThrows(IOException::class, "404: No such entity with ID 45") {
+                    client.personCrud.update(p)
+                }
+            }
+        }
     }
 })
 
-class CrudClient<T>(val baseUrl: String, val beanClass: Class<T>, val gson: Gson = GsonBuilder().create()) {
+class CrudClient<T: Entity<*>>(val baseUrl: String, val beanClass: Class<T>, val gson: Gson = GsonBuilder().create()) {
     init {
         require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
     }
@@ -96,5 +137,14 @@ class CrudClient<T>(val baseUrl: String, val beanClass: Class<T>, val gson: Gson
 
     fun create(entity: T) {
         khttp.post(baseUrl, data = gson.toJson(entity)).checkOk()
+    }
+
+    fun update(entity: T) {
+        require(entity.id != null) { "entity has null ID" }
+        khttp.patch("$baseUrl/${entity.id!!}", data = gson.toJson(entity)).checkOk()
+    }
+
+    fun delete(id: String) {
+        khttp.delete("$baseUrl/$id").checkOk()
     }
 }
