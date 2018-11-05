@@ -61,6 +61,6 @@ class Bootstrap: ServletContextListener {
     }
 }
 
-@WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
+@WebServlet(urlPatterns = ["/*"], name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet()
