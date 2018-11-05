@@ -6,24 +6,21 @@ import com.github.mvysny.dynatest.expectThrows
 import com.github.vok.example.crud.personeditor.MaritalStatus
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.example.crud.personeditor.usingApp
+import com.github.vokorm.db
+import com.github.vokorm.findAll
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.javalin.Javalin
 import khttp.responses.Response
 import java.io.IOException
-import java.io.Reader
+import java.time.Instant
 import java.time.LocalDate
 import kotlin.test.expect
 
 fun Response.checkOk(): Response {
     if (statusCode !in 200..299) throw IOException("$statusCode: $text ($url)")
     return this
-}
-
-val Response.reader: Reader get() {
-    val e = encoding
-    return raw.reader(e).buffered()
 }
 
 class PersonRestClient2(val baseUrl: String) {
@@ -38,7 +35,6 @@ class PersonRestTest : DynaTest({
     lateinit var javalin: Javalin
     beforeGroup {
         javalin = Javalin.create().disableStartupBanner()
-        GsonBuilder().create().configureToJavalin()
         javalin.configureRest().start(9876)
     }
     afterGroup { javalin.stop() }
@@ -71,6 +67,14 @@ class PersonRestTest : DynaTest({
                 client.personCrud.getOne("foobar")
             }
         }
+
+        test("create") {
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+            client.personCrud.create(p)
+            val actual = db { Person.findAll() }
+            p.id = actual[0].id!!
+            expectList(p) { actual }
+        }
     }
 })
 
@@ -88,5 +92,9 @@ class CrudClient<T>(val baseUrl: String, val beanClass: Class<T>, val gson: Gson
     fun getOne(id: String): T {
         val text = khttp.get("$baseUrl/$id").checkOk().text
         return gson.fromJson(text, beanClass)
+    }
+
+    fun create(entity: T) {
+        khttp.post(baseUrl, data = gson.toJson(entity)).checkOk()
     }
 }

@@ -25,12 +25,6 @@ import javax.servlet.http.HttpServletResponse
  */
 @WebServlet(urlPatterns = ["/rest/*"], name = "JavalinRestServlet", asyncSupported = false)
 class JavalinRestServlet : HttpServlet() {
-    val gson = GsonBuilder().create()
-
-    init {
-        gson.configureToJavalin()
-    }
-
     val javalin = EmbeddedJavalin()
             .configureRest()
             .createServlet()
@@ -41,8 +35,10 @@ class JavalinRestServlet : HttpServlet() {
 }
 
 fun Javalin.configureRest(): Javalin {
+    val gson = GsonBuilder().create()
+    gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-    crud("/rest/person", Person.getCrudHandler(false))
+    crud("/rest/person", Person.getCrudHandler(true))
     return this
 }
 
