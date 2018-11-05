@@ -10,6 +10,11 @@ import io.javalin.apibuilder.CrudHandler
 import io.javalin.json.FromJsonMapper
 import io.javalin.json.JavalinJson
 import io.javalin.json.ToJsonMapper
+import org.sql2o.converters.Converter
+import org.sql2o.converters.IntegerConverter
+import org.sql2o.converters.LongConverter
+import org.sql2o.converters.StringConverter
+import java.lang.Long
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -60,18 +65,32 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
     return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification)
 }
 
-class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(val idClass: Class<ID>, val entityClass: Class<E>, val allowModification: Boolean) : CrudHandler {
-    private fun checkAllowModification() {
-        if (!allowModification) throw UnauthorizedResponse()
+class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>, val allowsModification: Boolean) : CrudHandler {
+    private val idConverter = when (idClass) {
+        String::class.java -> StringConverter() as Converter<ID>
+        Long::class.java -> LongConverter(false) as Converter<ID>
+        Integer::class.java -> IntegerConverter(false) as Converter<ID>
+        else -> throw IllegalStateException("Can't provide converter for $idClass")
     }
+
+    private fun checkAllowsModification() {
+        if (!allowsModification) throw UnauthorizedResponse()
+    }
+
+    private fun convertID(resourceId: String): ID = try {
+        idConverter.convert(resourceId)
+    } catch (e: NumberFormatException) {
+        throw NotFoundResponse("Unparsable ID: $resourceId")
+    }
+
     override fun create(ctx: Context) {
-        checkAllowModification()
+        checkAllowsModification()
         ctx.bodyAsClass(entityClass).save()
     }
 
     override fun delete(ctx: Context, resourceId: String) {
-        checkAllowModification()
-        db { con.deleteById(entityClass, resourceId) }
+        checkAllowsModification()
+        db { con.deleteById(entityClass, convertID(resourceId)) }
     }
 
     override fun getAll(ctx: Context) {
@@ -79,15 +98,14 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(val idClass: Class<ID>, val enti
     }
 
     override fun getOne(ctx: Context, resourceId: String) {
-        val obj = db { con.findById(entityClass, resourceId) } ?: throw NotFoundResponse()
+        val obj = db { con.findById(entityClass, convertID(resourceId)) } ?: throw NotFoundResponse("No such entity with ID $resourceId")
         ctx.json(obj)
     }
 
     override fun update(ctx: Context, resourceId: String) {
-        checkAllowModification()
+        checkAllowsModification()
         val entity = ctx.bodyAsClass(entityClass)
-        TODO("unimplemented")
-//        entity.id = resourceId
-//        entity.save()
+        entity.id = idConverter.convert(resourceId)
+        entity.save()
     }
 }
