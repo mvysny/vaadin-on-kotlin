@@ -32,13 +32,18 @@ class JavalinRestServlet : HttpServlet() {
     }
 
     val javalin = EmbeddedJavalin()
-            .get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-            .crud("/rest/person", Person.getCrudHandler(false))
+            .configureRest()
             .createServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
         javalin.service(req, resp)
     }
+}
+
+fun Javalin.configureRest(): Javalin {
+    get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+    crud("/rest/person", Person.getCrudHandler(false))
+    return this
 }
 
 fun Gson.configureToJavalin() {
@@ -90,7 +95,8 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
 
     override fun delete(ctx: Context, resourceId: String) {
         checkAllowsModification()
-        db { con.deleteById(entityClass, convertID(resourceId)) }
+        val id = convertID(resourceId)
+        db { con.deleteById(entityClass, id) }
     }
 
     override fun getAll(ctx: Context) {
@@ -98,7 +104,8 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
     }
 
     override fun getOne(ctx: Context, resourceId: String) {
-        val obj = db { con.findById(entityClass, convertID(resourceId)) } ?: throw NotFoundResponse("No such entity with ID $resourceId")
+        val id = convertID(resourceId)
+        val obj = db { con.findById(entityClass, id) } ?: throw NotFoundResponse("No such entity with ID $resourceId")
         ctx.json(obj)
     }
 
