@@ -47,12 +47,13 @@ class CrudViewTest : DynaTest({
 
     test("the grid lists all personnel properly") {
         val created = Instant.ofEpochMilli(0)
-        Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = created).save()
+        val person = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = created)
+        person.save()
         CrudView.navigateTo()
 
         val grid = _get<Grid<*>>()
         grid.expectRows(1)
-        grid.expectRow(0, "1", "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", VaadinIcons.EXTERNAL_LINK.html, VaadinIcons.EDIT.html, VaadinIcons.TRASH.html)
+        grid.expectRow(0, person.id!!.toString(), "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", VaadinIcons.EXTERNAL_LINK.html, VaadinIcons.EDIT.html, VaadinIcons.TRASH.html)
     }
 
     test("edit one person") {

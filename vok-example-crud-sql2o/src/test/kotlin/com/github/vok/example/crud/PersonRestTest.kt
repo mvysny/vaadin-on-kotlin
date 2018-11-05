@@ -2,6 +2,8 @@ package com.github.vok.example.crud
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
+import com.github.mvysny.dynatest.expectThrows
+import com.github.vok.example.crud.personeditor.MaritalStatus
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.example.crud.personeditor.usingApp
 import com.google.gson.Gson
@@ -11,6 +13,7 @@ import io.javalin.Javalin
 import khttp.responses.Response
 import java.io.IOException
 import java.io.Reader
+import java.time.LocalDate
 import kotlin.test.expect
 
 fun Response.checkOk(): Response {
@@ -52,6 +55,21 @@ class PersonRestTest : DynaTest({
     group("crud") {
         test("getAll()") {
             expectList() { client.personCrud.getAll() }
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+            p.save()
+            expectList(p) { client.personCrud.getAll() }
+        }
+
+        test("getOne") {
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+            p.save()
+            expect(p) { client.personCrud.getOne(p.id!!.toString()) }
+            expectThrows(IOException::class, "404: No such entity with ID 555") {
+                client.personCrud.getOne("555")
+            }
+            expectThrows(IOException::class, "Malformed ID: foobar") {
+                client.personCrud.getOne("foobar")
+            }
         }
     }
 })
@@ -62,10 +80,13 @@ class CrudClient<T>(val baseUrl: String, val beanClass: Class<T>, val gson: Gson
     }
 
     fun getAll(): List<T> {
-        val response = khttp.get(baseUrl).checkOk()
+        val text = khttp.get(baseUrl).checkOk().text
         val type = TypeToken.getParameterized(List::class.java, beanClass).type
-//        val text = response.reader.readText()
-        val text = response.text
         return gson.fromJson<List<T>>(text, type)
+    }
+
+    fun getOne(id: String): T {
+        val text = khttp.get("$baseUrl/$id").checkOk().text
+        return gson.fromJson(text, beanClass)
     }
 }

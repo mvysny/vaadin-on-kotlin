@@ -85,7 +85,7 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
     private fun convertID(resourceId: String): ID = try {
         idConverter.convert(resourceId)
     } catch (e: NumberFormatException) {
-        throw NotFoundResponse("Unparsable ID: $resourceId")
+        throw NotFoundResponse("Malformed ID: $resourceId")
     }
 
     override fun create(ctx: Context) {
