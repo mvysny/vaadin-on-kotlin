@@ -3,7 +3,7 @@
 # VoK REST support
 
 This module makes it easy to export your objects via REST. The aim here is to use as lightweight libraries as possible,
-that's why we're using [RESTEasy](http://resteasy.jboss.org/) instead of Jersey, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
+that's why we're using [Javalin](https://javalin.io/) for REST endpoint definition, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
 Jackson.
 
 > Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
@@ -20,6 +20,20 @@ dependencies {
 ```
 
 > Note: to obtain the newest version see above for the most recent tag
+
+
+
+
+### Old Way With RESTEasy and Annotations
+
+This way of exposing REST services is now deprecated and superseded by the Javalin functional way. This will go away; if you still need this you need to add a dependency
+to [RESTEasy](http://resteasy.jboss.org/) in addition to vok-rest:
+
+```groovy
+dependencies {
+    compile("org.jboss.resteasy:resteasy-servlet-initializer:3.6.1.Final")
+}
+```
 
 To activate the REST service you will need to create the following class:
 

@@ -32,4 +32,8 @@ dependencies {
     // testing
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
     testCompile("com.github.kaributesting:karibu-testing-v10:${ext["kaributesting_version"]}")
+    testCompile("khttp:khttp:0.1.0") {
+        exclude(mapOf("group" to "org.json"))
+    }
+    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }

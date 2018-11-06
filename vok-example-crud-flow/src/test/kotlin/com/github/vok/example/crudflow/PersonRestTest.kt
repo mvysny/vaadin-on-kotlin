@@ -1,10 +1,10 @@
-package com.github.vok.example.crud
+package com.github.vok.example.crudflow
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import com.github.vok.example.crud.personeditor.MaritalStatus
-import com.github.vok.example.crud.personeditor.Person
-import com.github.vok.example.crud.personeditor.usingApp
+import com.github.vok.example.crudflow.person.MaritalStatus
+import com.github.vok.example.crudflow.person.Person
+import com.github.vok.example.crudflow.person.usingApp
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -12,6 +12,7 @@ import io.javalin.Javalin
 import khttp.responses.Response
 import java.io.IOException
 import java.time.LocalDate
+import java.util.*
 import kotlin.test.expect
 
 fun Response.checkOk(): Response {
@@ -51,8 +52,10 @@ class PersonRestTest : DynaTest({
 
     test("get all users") {
         expectList() { client.getAll() }
-        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        val p = Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
-        expectList(p) { client.getAll() }
+        val all = client.getAll()
+        p.created = all[0].created
+        expectList(p) { all }
     }
 })

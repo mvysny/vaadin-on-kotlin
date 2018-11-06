@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
 
 /**
  * Boots the app:
@@ -52,9 +50,3 @@ class Bootstrap: ServletContextListener {
         private val log = LoggerFactory.getLogger(Bootstrap::class.java)
     }
 }
-
-/**
- * RESTEasy configuration. Do not use Jersey, it has a tons of dependencies
- */
-@ApplicationPath("/rest")
-class ApplicationConfig : Application()

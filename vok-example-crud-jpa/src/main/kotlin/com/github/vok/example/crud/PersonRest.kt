@@ -3,32 +3,33 @@ package com.github.vok.example.crud
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.framework.db
 import com.github.vok.framework.findAll
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
+import com.github.vok.rest.configureToJavalin
+import com.google.gson.GsonBuilder
+import io.javalin.EmbeddedJavalin
+import io.javalin.Javalin
+import javax.servlet.annotation.WebServlet
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 /**
  * Provides access to person list. To test, just run `curl http://localhost:8080/rest/person`
  */
-@Path("/person")
-class PersonRest {
+@WebServlet(urlPatterns = ["/rest/*"], name = "JavalinRestServlet", asyncSupported = false)
+class JavalinRestServlet : HttpServlet() {
+    val javalin = EmbeddedJavalin()
+            .configureRest()
+            .createServlet()
 
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET()
-    @Path("/helloworld")
-    @Produces(MediaType.TEXT_PLAIN)
-    fun helloWorld() = "Hello World"
+    override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
+        javalin.service(req, resp)
+    }
+}
 
-    /**
-     * Uses Jackson to encode result objects as JSON.
-     * @return a list of JPAs, automatically encoded to JSON.
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun findAll(): List<Person> = db { em.findAll<Person>() }
+fun Javalin.configureRest(): Javalin {
+    val gson = GsonBuilder().create()
+    gson.configureToJavalin()
+    get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+    get("/rest/person") { ctx -> ctx.json(db { em.findAll<Person>() }) }
+    return this
 }

@@ -4,7 +4,6 @@ import com.github.vok.framework.VaadinOnKotlin
 import com.github.vok.framework.entityManagerFactory
 import com.github.vok.framework.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
-import com.vaadin.server.Constants
 import com.vaadin.server.VaadinServlet
 import org.atmosphere.util.annotation.AnnotationDetector
 import org.flywaydb.core.Flyway
@@ -13,13 +12,10 @@ import org.slf4j.LoggerFactory
 import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.persistence.Entity
 import javax.persistence.Persistence
-import javax.servlet.ServletConfig
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
 
 /**
  * Boots the app:
@@ -81,9 +77,3 @@ class Bootstrap: ServletContextListener {
 @WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet()
-
-/**
- * RESTEasy configuration. Do not use Jersey, it has a tons of dependencies
- */
-@ApplicationPath("/rest")
-class ApplicationConfig : Application()

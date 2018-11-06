@@ -10,8 +10,6 @@ import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
 import javax.servlet.annotation.WebServlet
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
 
 /**
  * Boots the app:
@@ -51,9 +49,3 @@ class Bootstrap: ServletContextListener {
 @WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet()
-
-/**
- * RESTEasy configuration. Do not use Jersey, it has a tons of dependencies
- */
-@ApplicationPath("/rest")
-class ApplicationConfig : Application()
