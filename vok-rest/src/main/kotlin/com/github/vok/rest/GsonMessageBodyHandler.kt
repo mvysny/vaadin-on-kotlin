@@ -13,11 +13,13 @@ import javax.ws.rs.ext.MessageBodyReader
 import javax.ws.rs.ext.MessageBodyWriter
 import javax.ws.rs.ext.Provider
 
+@Deprecated("Not used by Javalin. Please migrate your REST endpoints to Javalin according to the guides")
 var gsonProvider: ()->Gson = { GsonBuilder().create() }
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Deprecated("Not used by Javalin. Please migrate your REST endpoints to Javalin according to the guides")
 class GsonMessageBodyHandler : MessageBodyWriter<Any>, MessageBodyReader<Any> {
     private val gson: Gson by lazy { gsonProvider() }
 
