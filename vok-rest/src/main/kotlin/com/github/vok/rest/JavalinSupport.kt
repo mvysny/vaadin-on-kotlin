@@ -42,6 +42,7 @@ fun Gson.configureToJavalin() {
  * * `DELETE /rest/users/22` will delete an user
  * @param path the base path where the endpoints are exposed
  * @param crudHandler retrieves bean instances; you can use [getCrudHandler] to automatically provide instances of vok-orm entities.
+ * @param permittedRoles only these roles are allowed to access abovementioned endpoints. See Javalin [io.javalin.security.AccessManager] and the Javalin documentation for more details.
  */
 fun Javalin.crud(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
     val p = path.trim('/')

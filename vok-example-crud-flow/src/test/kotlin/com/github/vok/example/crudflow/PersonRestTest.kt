@@ -12,7 +12,6 @@ import io.javalin.Javalin
 import khttp.responses.Response
 import java.io.IOException
 import java.time.LocalDate
-import java.util.*
 import kotlin.test.expect
 
 fun Response.checkOk(): Response {
@@ -20,7 +19,7 @@ fun Response.checkOk(): Response {
     return this
 }
 
-class PersonRestClient2(val baseUrl: String) {
+class PersonRestClient(val baseUrl: String) {
     init {
         require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
     }
@@ -43,8 +42,8 @@ class PersonRestTest : DynaTest({
 
     usingApp()  // to bootstrap the app to have access to the database.
 
-    lateinit var client: PersonRestClient2
-    beforeEach { client = PersonRestClient2("http://localhost:9876/rest") }
+    lateinit var client: PersonRestClient
+    beforeEach { client = PersonRestClient("http://localhost:9876/rest") }
 
     test("hello world") {
         expect("Hello World") { client.helloWorld() }
