@@ -97,7 +97,14 @@ class RetrofitClientVokPlugin : VOKPlugin {
     }
 
     companion object {
+        /**
+         * All REST client calls will reuse this client. Automatically destroyed in [destroy] (triggered by [com.github.vok.framework.VaadinOnKotlin.destroy]).
+         */
         var okHttpClient: OkHttpClient? = null
+        /**
+         * The default [Gson] interface used by all serialization/deserialization methods. Simply reassign with another [Gson]
+         * instance to reconfigure. To be thread-safe, do the reassignment in your `ServletContextListener`.
+         */
         var gson: Gson = GsonBuilder().create()
     }
 }
@@ -140,8 +147,14 @@ fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T):
             responseBlock(it.checkOk().body()!!)
         }
 
+/**
+ * Parses the response as a JSON and converts it to a Java object with given [clazz] using [RetrofitClientVokPlugin.gson].
+ */
 fun <T> ResponseBody.json(clazz: Class<T>): T = RetrofitClientVokPlugin.gson.fromJson(charStream(), clazz)
 
+/**
+ * Parses the response as a JSON array and converts it into a list of Java object with given [clazz] using [RetrofitClientVokPlugin.gson].
+ */
 fun <T> ResponseBody.jsonArray(clazz: Class<T>): List<T> = RetrofitClientVokPlugin.gson.fromJsonArray(charStream(), clazz)
 
 /**

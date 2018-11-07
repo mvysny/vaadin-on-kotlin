@@ -114,6 +114,7 @@ The list of modules:
   the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 10.
   Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to expose data from your VoK app to other REST-consuming clients.
+* [vok-rest-client](vok-rest-client) - when you want to consume data in your VoK app from other REST servers.
 * [vok-db](vok-db) - Provides access to the database; uses [VoK-ORM](https://github.com/mvysny/vok-orm)
 * [vok-security](vok-security) - provides basic security support. The documentation there explains the basics and provides links to sample projects.
 

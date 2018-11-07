@@ -1,6 +1,6 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
 
-# VoK REST support
+# VoK REST Server Support
 
 This module makes it easy to export your objects via REST. The aim here is to use as lightweight libraries as possible,
 that's why we're using [Javalin](https://javalin.io/) for REST endpoint definition, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
@@ -8,8 +8,9 @@ Jackson.
 
 > Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
 Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources.html) guide for more information.
+Also visit [vok-rest-client](../vok-rest-client) for consuming REST services easily with VOK apps.
 
-## Adding REST to your app
+## Adding REST Server To Your App
 
 Include dependency on this module to your app; just add the following Gradle dependency to your `build.gradle`:
 
