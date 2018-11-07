@@ -14,9 +14,7 @@ dependencies {
 
     // testing of the CRUD interface
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
-    testCompile("khttp:khttp:0.1.0") {
-        exclude(mapOf("group" to "org.json"))
-    }
+    testCompile(project(":vok-rest-client"))
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
     testCompile("org.flywaydb:flyway-core:${ext["flyway_version"]}")
     testCompile("com.h2database:h2:${ext["h2_version"]}")
