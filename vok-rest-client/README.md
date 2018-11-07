@@ -24,6 +24,11 @@ your annotated interfaces but that's not really recommended.
 
 ## Using `okhttp`
 
+You simply use the `OkHttpClient` to make HTTP calls. See [OkHttp home page](http://square.github.io/okhttp/) for documentation on the API.
+VoK introduces the `exec` method which helps tremendously with synchronous calls. It fails automatically when the response is not in 200..299.
+
+See the example code for more details:
+
 ```kotlin
 // Demoes direct access via okhttp
 class PersonRestClient2(val baseUrl: String) {
