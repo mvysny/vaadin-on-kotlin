@@ -4,13 +4,13 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
-import com.github.vok.restclient.CrudClient
-import com.github.vok.restclient.RetrofitClientVokPlugin
-import com.github.vok.restclient.createRetrofit
+import com.github.vok.restclient.*
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder
 import io.javalin.Javalin
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.http.*
 import java.io.IOException
 import java.time.Instant
@@ -25,10 +25,28 @@ fun Javalin.configureRest(): Javalin {
     return this
 }
 
+// Demoes Retrofit + annotations client
 interface PersonRestClient {
     @GET("helloworld")
     @Throws(IOException::class)
     fun helloWorld(): String
+
+    @GET(".")
+    @Throws(IOException::class)
+    fun getAll(): List<Person>
+}
+
+// Demoes direct access via okhttp
+class PersonRestClient2(val baseUrl: String) {
+    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    fun helloWorld(): String {
+        val request = Request.Builder().url("${baseUrl}helloworld").build()
+        return client.exec(request) { response -> response.string() }
+    }
+    fun getAll(): List<Person> {
+        val request = Request.Builder().url(baseUrl).build()
+        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
+    }
 }
 
 fun DynaNodeGroup.usingRestClient() {
@@ -47,11 +65,22 @@ class PersonRestTest : DynaTest({
     usingDb()  // to have access to the database.
     usingRestClient()
 
-    lateinit var client: PersonRestClient
-    beforeEach { client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java) }
-
     test("hello world") {
+        val client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java)
         expect("Hello World") { client.helloWorld() }
+        expectList() { client.getAll() }
+        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        p.save()
+        expectList(p) { client.getAll() }
+    }
+
+    test("hello world 2") {
+        val client = PersonRestClient2("http://localhost:9876/rest/person/")
+        expect("Hello World") { client.helloWorld() }
+        expectList() { client.getAll() }
+        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        p.save()
+        expectList(p) { client.getAll() }
     }
 
     group("crud") {

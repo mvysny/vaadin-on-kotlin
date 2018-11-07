@@ -49,16 +49,18 @@ fun Response.checkOk(): Response {
 
 /**
  * This function configures [Retrofit] for synchronous clients, so that you can have interface with methods such as
- * `@GET("users") fun getUsers(): List<String>`.
+ * `@GET("users") fun getUserNames(): List<String>`.
  *
  * Usage example:
  * ```
- * val client = createRetrofit("http://localhost:8080/rest").create(YourClientInterface::class.java)
+ * val client = createRetrofit("http://localhost:8080/rest/").create(YourClientInterface::class.java)
  * ```
  *
  * Beware: uses [RetrofitClientVokPlugin.okHttpClient] under the hood, which contains a common executor service.
  * If you're not running VoK, don't forget to initialize it in [RetrofitClientVokPlugin.init] and don't forget to call [RetrofitClientVokPlugin.destroy].
  * This is called automatically in VoK apps.
+ * @param baseUrl the base URL against which relative paths from the interface are resolved. Must end with a slash.
+ * @param gson a configured Gson instance to use, defaults to [RetrofitClientVokPlugin.gson].
  */
 fun createRetrofit(baseUrl: String, gson: Gson = RetrofitClientVokPlugin.gson): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -101,7 +103,8 @@ class RetrofitClientVokPlugin : VOKPlugin {
 }
 
 /**
- * Converts the response to [Unit] (throws it away). This adds support for functions returning `Unit?`.
+ * Converts the response to [Unit] (throws it away). This adds support for functions returning `Unit?`. Unfortunately
+ * it is not possible to support functions returning just `Unit` - Retrofit will throw an exception for those.
  */
 object UnitConversionFactory : Converter.Factory() {
     override fun responseBodyConverter(type: Type, annotations: Array<Annotation>, retrofit: Retrofit): Converter<ResponseBody, *>? {
@@ -121,7 +124,7 @@ fun <T> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
 }
 
 /**
- * Parses JSON from [reader] as a list of items with class [itemClass] and returns that.
+ * Parses JSON from a [reader] as a list of items with class [itemClass] and returns that.
  */
 fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
     val type = TypeToken.getParameterized(List::class.java, itemClass).type
@@ -132,13 +135,17 @@ fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
  * Runs given [request] synchronously and then runs [responseBlock] with the response body. The [Response] is properly closed afterwards.
  * Only calls the block on success; uses [checkOk] to check for failure prior calling the block.
  */
-fun <T> OkHttpClient.run(request: Request, responseBlock: (ResponseBody) -> T): T =
+fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T): T =
         newCall(request).execute().use {
             responseBlock(it.checkOk().body()!!)
         }
 
+fun <T> ResponseBody.json(clazz: Class<T>): T = RetrofitClientVokPlugin.gson.fromJson(charStream(), clazz)
+
+fun <T> ResponseBody.jsonArray(clazz: Class<T>): List<T> = RetrofitClientVokPlugin.gson.fromJsonArray(charStream(), clazz)
+
 /**
- * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using given [gson].
+ * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [RetrofitClientVokPlugin.gson].
  * Expect the CRUD endpoint to be exposed in the following manner:
  * * `GET /rest/users` returns all users
  * * `GET /rest/users/22` returns one users
@@ -148,36 +155,36 @@ fun <T> OkHttpClient.run(request: Request, responseBlock: (ResponseBody) -> T): 
  * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
  */
 class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
-                    val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!, val gson: Gson = RetrofitClientVokPlugin.gson) {
+                    val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!) {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
 
     fun getAll(): List<T> {
         val request = Request.Builder().url(baseUrl).build()
-        return client.run(request) { response -> gson.fromJsonArray(response.charStream(), itemClass) }
+        return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
     fun getOne(id: String): T {
         val request = Request.Builder().url("$baseUrl$id").build()
-        return client.run(request) { response -> gson.fromJson(response.charStream(), itemClass) }
+        return client.exec(request) { response -> response.json(itemClass) }
     }
 
     fun create(entity: T) {
-        val body = RequestBody.create(mediaTypeJson, gson.toJson(entity))
+        val body = RequestBody.create(mediaTypeJson, RetrofitClientVokPlugin.gson.toJson(entity))
         val request = Request.Builder().post(body).url(baseUrl).build()
-        client.run(request) {}
+        client.exec(request) {}
     }
 
     fun update(id: String, entity: T) {
-        val body = RequestBody.create(mediaTypeJson, gson.toJson(entity))
+        val body = RequestBody.create(mediaTypeJson, RetrofitClientVokPlugin.gson.toJson(entity))
         val request = Request.Builder().patch(body).url("$baseUrl$id").build()
-        client.run(request) {}
+        client.exec(request) {}
     }
 
     fun delete(id: String) {
         val request = Request.Builder().delete().url("$baseUrl$id").build()
-        client.run(request) {}
+        client.exec(request) {}
     }
 
     companion object {

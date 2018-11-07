@@ -62,38 +62,47 @@ Please consult [Javalin Documentation](https://javalin.io/documentation) for mor
 
 ### Testing your REST endpoints
 
-You can easily start Javalin with Jetty which would serve your endpoints on an actual http server. You need to add the following dependencies:
+You can easily start Javalin with Jetty which allows you to test your REST endpoints on an actual http server. You need to add the following dependencies:
 
 ```gradle
 dependencies {
-    testCompile("khttp:khttp:0.1.0") {
-        exclude(mapOf("group" to "org.json"))
-    }
+    testCompile("com.github.vok:vok-rest-client:x.y.z")
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
 ```
 
-This will add Jetty for booting up a testing Javalin server; we're going to access the REST endpoints via the [khttp](https://khttp.readthedocs.io/en/latest/) library.
+This will add Jetty for booting up a testing Javalin server; we're going to access the REST endpoints via the [vok-rest-client](../vok-rest-client) VOK module.
 
 The testing file will look like this:
 
 ```kotlin
-fun Response.checkOk(): Response {
-    if (statusCode !in 200..299) throw IOException("$statusCode: $text ($url)")
-    return this
+// Demoes Retrofit + annotations client
+interface PersonRestClient {
+    @GET("helloworld")
+    @Throws(IOException::class)
+    fun helloWorld(): String
+
+    @GET(".")
+    @Throws(IOException::class)
+    fun getAll(): List<Person>
 }
 
-class PersonRestClient(val baseUrl: String) {
-    init {
-        require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
+// Demoes direct access via okhttp
+class PersonRestClient2(val baseUrl: String) {
+    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    fun helloWorld(): String {
+        val request = Request.Builder().url("${baseUrl}helloworld").build()
+        return client.exec(request) { response -> response.string() }
     }
-    val gson: Gson = GsonBuilder().create()
-    fun helloWorld(): String = khttp.get("$baseUrl/person/helloworld").checkOk().text
     fun getAll(): List<Person> {
-        val text = khttp.get("$baseUrl/person").checkOk().text
-        val type = TypeToken.getParameterized(List::class.java, Person::class.java).type
-        return gson.fromJson<List<Person>>(text, type)
+        val request = Request.Builder().url(baseUrl).build()
+        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
+}
+
+fun DynaNodeGroup.usingRestClient() {
+    beforeGroup { RetrofitClientVokPlugin().init() }
+    afterGroup { RetrofitClientVokPlugin().destroy() }
 }
 
 class PersonRestTest : DynaTest({
@@ -104,22 +113,25 @@ class PersonRestTest : DynaTest({
     }
     afterGroup { javalin.stop() }
 
-    usingApp()  // to bootstrap the app to have access to the database.
-
-    lateinit var client: PersonRestClient
-    beforeEach { client = PersonRestClient("http://localhost:9876/rest") }
+    usingDb()  // to have access to the database.
+    usingRestClient()
 
     test("hello world") {
+        val client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java)
         expect("Hello World") { client.helloWorld() }
-    }
-
-    test("get all users") {
-        expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
         expectList(p) { client.getAll() }
     }
-})
+
+    test("hello world 2") {
+        val client = PersonRestClient2("http://localhost:9876/rest/person/")
+        expect("Hello World") { client.helloWorld() }
+        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        p.save()
+        expectList(p) { client.getAll() }
+    }
+}
 ```
 
 Please consult the [vok-example-crud-sql2o](../vok-example-crud-sql2o) example project for more info.

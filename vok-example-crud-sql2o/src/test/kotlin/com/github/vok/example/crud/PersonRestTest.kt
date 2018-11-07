@@ -5,30 +5,27 @@ import com.github.mvysny.dynatest.expectList
 import com.github.vok.example.crud.personeditor.MaritalStatus
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.example.crud.personeditor.usingApp
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import com.github.vok.restclient.RetrofitClientVokPlugin
+import com.github.vok.restclient.exec
+import com.github.vok.restclient.jsonArray
 import io.javalin.Javalin
-import khttp.responses.Response
-import java.io.IOException
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.time.LocalDate
 import kotlin.test.expect
-
-fun Response.checkOk(): Response {
-    if (statusCode !in 200..299) throw IOException("$statusCode: $text ($url)")
-    return this
-}
 
 class PersonRestClient(val baseUrl: String) {
     init {
         require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
     }
-    val gson: Gson = GsonBuilder().create()
-    fun helloWorld(): String = khttp.get("$baseUrl/person/helloworld").checkOk().text
+    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    fun helloWorld(): String {
+        val request = Request.Builder().url("${baseUrl}/person/helloworld").build()
+        return client.exec(request) { response -> response.string() }
+    }
     fun getAll(): List<Person> {
-        val text = khttp.get("$baseUrl/person").checkOk().text
-        val type = TypeToken.getParameterized(List::class.java, Person::class.java).type
-        return gson.fromJson<List<Person>>(text, type)
+        val request = Request.Builder().url("${baseUrl}/person").build()
+        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
 }
 
