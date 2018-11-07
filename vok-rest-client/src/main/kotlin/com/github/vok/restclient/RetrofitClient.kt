@@ -4,8 +4,7 @@ import com.github.vok.framework.VOKPlugin
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
+import okhttp3.*
 import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Converter
@@ -39,6 +38,15 @@ object SynchronousCallSupportFactory : CallAdapter.Factory() {
     }
 }
 
+fun Response.checkOk(): Response {
+    if (!isSuccessful) {
+        val msg = "${code()}: ${body()!!.string()} (${request().url()})"
+        if (code() == 404) throw java.io.FileNotFoundException(msg)
+        throw java.io.IOException(msg)
+    }
+    return this
+}
+
 /**
  * This function configures [Retrofit] for synchronous clients, so that you can have interface with methods such as
  * `@GET("users") fun getUsers(): List<String>`.
@@ -52,7 +60,7 @@ object SynchronousCallSupportFactory : CallAdapter.Factory() {
  * If you're not running VoK, don't forget to initialize it in [RetrofitClientVokPlugin.init] and don't forget to call [RetrofitClientVokPlugin.destroy].
  * This is called automatically in VoK apps.
  */
-fun createRetrofit(baseUrl: String, gson: Gson = GsonBuilder().create()): Retrofit = Retrofit.Builder()
+fun createRetrofit(baseUrl: String, gson: Gson = RetrofitClientVokPlugin.gson): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .callFactory(RetrofitClientVokPlugin.okHttpClient!!)
         .addConverterFactory(ScalarsConverterFactory.create())
@@ -88,6 +96,7 @@ class RetrofitClientVokPlugin : VOKPlugin {
 
     companion object {
         var okHttpClient: OkHttpClient? = null
+        var gson: Gson = GsonBuilder().create()
     }
 }
 
@@ -106,16 +115,72 @@ object UnitConversionFactory : Converter.Factory() {
 /**
  * Parses [json] as a list of items with class [itemClass] and returns that.
  */
-fun <T: Any> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
+fun <T> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
     val type = TypeToken.getParameterized(List::class.java, itemClass).type
     return fromJson<List<T>>(json, type)
-
 }
 
 /**
  * Parses JSON from [reader] as a list of items with class [itemClass] and returns that.
  */
-fun <T: Any> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
+fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
     val type = TypeToken.getParameterized(List::class.java, itemClass).type
     return fromJson<List<T>>(reader, type)
+}
+
+/**
+ * Runs given [request] synchronously and then runs [responseBlock] with the response body. The [Response] is properly closed afterwards.
+ * Only calls the block on success; uses [checkOk] to check for failure prior calling the block.
+ */
+fun <T> OkHttpClient.run(request: Request, responseBlock: (ResponseBody) -> T): T =
+        newCall(request).execute().use {
+            responseBlock(it.checkOk().body()!!)
+        }
+
+/**
+ * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using given [gson].
+ * Expect the CRUD endpoint to be exposed in the following manner:
+ * * `GET /rest/users` returns all users
+ * * `GET /rest/users/22` returns one users
+ * * `POST /rest/users` will create an user
+ * * `PATCH /rest/users/22` will update an user
+ * * `DELETE /rest/users/22` will delete an user
+ * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
+ */
+class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
+                    val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!, val gson: Gson = RetrofitClientVokPlugin.gson) {
+    init {
+        require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
+    }
+
+    fun getAll(): List<T> {
+        val request = Request.Builder().url(baseUrl).build()
+        return client.run(request) { response -> gson.fromJsonArray(response.charStream(), itemClass) }
+    }
+
+    fun getOne(id: String): T {
+        val request = Request.Builder().url("$baseUrl$id").build()
+        return client.run(request) { response -> gson.fromJson(response.charStream(), itemClass) }
+    }
+
+    fun create(entity: T) {
+        val body = RequestBody.create(mediaTypeJson, gson.toJson(entity))
+        val request = Request.Builder().post(body).url(baseUrl).build()
+        client.run(request) {}
+    }
+
+    fun update(id: String, entity: T) {
+        val body = RequestBody.create(mediaTypeJson, gson.toJson(entity))
+        val request = Request.Builder().patch(body).url("$baseUrl$id").build()
+        client.run(request) {}
+    }
+
+    fun delete(id: String) {
+        val request = Request.Builder().delete().url("$baseUrl$id").build()
+        client.run(request) {}
+    }
+
+    companion object {
+        val mediaTypeJson = MediaType.parse("application/json; charset=utf-8")
+    }
 }

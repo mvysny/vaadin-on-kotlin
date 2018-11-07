@@ -4,9 +4,9 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
+import com.github.vok.restclient.CrudClient
 import com.github.vok.restclient.RetrofitClientVokPlugin
 import com.github.vok.restclient.createRetrofit
-import com.github.vokorm.Entity
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder
@@ -48,18 +48,85 @@ class PersonRestTest : DynaTest({
     usingRestClient()
 
     lateinit var client: PersonRestClient
-    lateinit var crud: PersonCrudClient
-    beforeEach {
-        val retrofit = createRetrofit("http://localhost:9876/rest/person/")
-        client = retrofit.create(PersonRestClient::class.java)
-        crud = retrofit.create(PersonCrudClient::class.java)
-    }
+    beforeEach { client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java) }
 
     test("hello world") {
         expect("Hello World") { client.helloWorld() }
     }
 
     group("crud") {
+        lateinit var crud: PersonCrudClient
+        beforeEach { crud = createRetrofit("http://localhost:9876/rest/person/").create(PersonCrudClient::class.java) }
+        test("getAll()") {
+            expectList() { crud.getAll() }
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+            p.save()
+            expectList(p) { crud.getAll() }
+        }
+
+        group("getOne") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                expect(p) { crud.getOne(p.id!!.toString()) }
+            }
+            test("non-existing") {
+                expectThrows(IOException::class, "404: No such entity with ID 555") {
+                    crud.getOne("555")
+                }
+            }
+            test("malformed id") {
+                expectThrows(IOException::class, "Malformed ID: foobar") {
+                    crud.getOne("foobar")
+                }
+            }
+        }
+
+        test("create") {
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+            crud.create(p)
+            val actual = db { Person.findAll() }
+            p.id = actual[0].id!!
+            expectList(p) { actual }
+        }
+
+        group("delete") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                crud.delete(p.id!!.toString())
+                expectList() { Person.findAll() }
+            }
+            test("non-existing") {
+                // never fail with 404: http://www.tugberkugurlu.com/archive/http-delete-http-200-202-or-204-all-the-time
+                crud.delete("555")
+            }
+            test("invalid id") {
+                expectThrows(IOException::class, "404: Malformed ID") {
+                    crud.delete("invalid_id")
+                }
+            }
+        }
+
+        group("update") {
+            test("simple") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                p.personName = "Leto Atreides"
+                crud.update(p.id!!.toString(), p)
+                expectList(p) { Person.findAll() }
+            }
+            test("non-existing") {
+                val p = Person(id = 45, personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+                expectThrows(IOException::class, "404: No such entity with ID 45") {
+                    crud.update(p.id!!.toString(), p)
+                }
+            }
+        }
+    }
+    group("crud2") {
+        lateinit var crud: CrudClient<Person>
+        beforeEach { crud = CrudClient("http://localhost:9876/rest/person/", Person::class.java) }
         test("getAll()") {
             expectList() { crud.getAll() }
             val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
