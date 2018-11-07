@@ -21,8 +21,8 @@ import org.sql2o.converters.StringConverter
 import java.lang.Long
 
 /**
- * Configures Gson [receiver] to Javalin. You need to call this on [Javalin] instance if you wish to produce JSON
- * via [Context.json].
+ * Configures Gson to Javalin. You need to call this if you wish to produce JSON
+ * via Javalin's [Context.json], or parse incoming JSON via [Context.bodyAsClass].
  */
 fun Gson.configureToJavalin() {
     JavalinJson.fromJsonMapper = object : FromJsonMapper {
@@ -60,7 +60,9 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
 }
 
 /**
- * A very simple handler that exposes instances of given [entityClass].
+ * A very simple handler that exposes instances of given [entityClass] using the `vok-orm` database access library.
+ * @param idClass the type of the Entity ID. Only `String`, `Long` and `Integer` IDs are supported as of now; all others will be rejected with an [IllegalArgumentException].
+ * @param entityClass the type of the entity for which to provide instances.
  * @param allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
  */
 class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>, val allowsModification: Boolean) : CrudHandler {
@@ -69,7 +71,7 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
         String::class.java -> StringConverter() as Converter<ID>
         Long::class.java -> LongConverter(false) as Converter<ID>
         Integer::class.java -> IntegerConverter(false) as Converter<ID>
-        else -> throw IllegalStateException("Can't provide converter for $idClass")
+        else -> throw IllegalArgumentException("Can't provide converter for $idClass")
     }
 
     private fun checkAllowsModification() {
