@@ -14,6 +14,7 @@ import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.PasswordField
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.Route
 import javax.validation.constraints.NotBlank
 
@@ -49,6 +50,10 @@ object VokSecurity {
      * @param viewClass the Vaadin 10 view. Must be a [Component] annotated with [Route].
      */
     fun checkPermissionsOfView(viewClass: Class<*>) {
+        if (viewClass == InternalServerError::class.java) {
+            // allow
+            return
+        }
         require(Component::class.java.isAssignableFrom(viewClass)) { "$viewClass is not a subclass of Component" }
         val route = requireNotNull(viewClass.getAnnotation(Route::class.java)) { "The view $viewClass is not annotated with @Route" }
         val user = checkNotNull(VaadinOnKotlin.loggedInUserResolver) { "The VaadinOnKotlin.loggedInUserResolver has not been set" }

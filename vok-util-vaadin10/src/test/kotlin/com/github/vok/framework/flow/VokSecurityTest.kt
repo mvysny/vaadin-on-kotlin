@@ -9,6 +9,7 @@ import com.github.vok.security.AllowRoles
 import com.github.vok.security.LoggedInUserResolver
 import com.github.vok.security.loggedInUserResolver
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouterLayout
 
@@ -63,6 +64,7 @@ class VokSecurityTest : DynaTest({
             expectThrows(AccessRejectedException::class, "Cannot access SalesView, you're not logged in") {
                 VokSecurity.checkPermissionsOfView(SalesView::class.java)
             }
+            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
         }
         test("admin logged in") {
             DummyUserResolver.userWithRoles = setOf("admin")
@@ -76,6 +78,7 @@ class VokSecurityTest : DynaTest({
             expectThrows(AccessRejectedException::class, "Can not access SalesView, you are not sales or user") {
                 VokSecurity.checkPermissionsOfView(SalesView::class.java)
             }
+            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
         }
         test("user logged in") {
             DummyUserResolver.userWithRoles = setOf("user")
@@ -89,6 +92,7 @@ class VokSecurityTest : DynaTest({
             expectThrows(AccessRejectedException::class, "Can not access SalesLayout, you are not sales") {
                 VokSecurity.checkPermissionsOfView(SalesView::class.java)
             }
+            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
         }
         test("sales logged in") {
             DummyUserResolver.userWithRoles = setOf("sales")
@@ -100,6 +104,7 @@ class VokSecurityTest : DynaTest({
             }
             VokSecurity.checkPermissionsOfView(SalesLayout::class.java)
             VokSecurity.checkPermissionsOfView(SalesView::class.java)
+            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
         }
     }
 })
