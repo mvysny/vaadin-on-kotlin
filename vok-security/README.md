@@ -96,6 +96,87 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
 }
 ```
 
+### Making The Annotations Work
+
+In order to enforce the rules set by the annotations, you need to hook into the navigator - before a view is rendered, we will check whether
+it can be navigated to.
+
+First step is to register the `loggedInUserResolver`. It doesn't do anything on its own, but will serve current user
+to a function which we will setup next:
+
+```kotlin
+VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
+    override fun isLoggedIn(): Boolean = Session.loginManager.isLoggedIn
+    override fun getCurrentUserRoles(): Set<String> = Session.loginManager.getCurrentUserRoles()
+}
+```
+
+Now, to the hook itself. For Vaadin 8 we simply install the security hook in the `UI.init()`:
+
+```kotlin
+class MyUI : UI() {
+
+    override fun init(request: VaadinRequest?) {
+        if (!Session.loginManager.isLoggedIn) {
+            // If no user is logged in, then simply show the LoginView (a full-screen login form) and bail out.
+            // When the user logs in, we will simply reload the page, which recreates the UI instance; since the user is stored in a session
+            // and therefore logged in, the code will skip this block and will initialize the UI properly.
+            content = LoginView()
+            return
+        }
+
+        navigator = Navigator(this, content as ViewDisplay)
+        navigator.addProvider(autoViewProvider)
+        VokSecurity.install()
+        ...
+    }
+}
+```
+
+For Vaadin 10 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
+```kotlin
+class MyUI: UI() {
+    override fun init(request: VaadinRequest) {
+        addBeforeEnterListener { enterEvent ->
+            if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
+                enterEvent.rerouteTo(LoginScreen::class.java)
+            } else {
+                VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
+            }
+        }
+    }
+}
+```
+
+If you don't and you have one root layout, you can make it implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
+```kotlin
+    override fun beforeEnter(event: BeforeEnterEvent) {
+        if (!Session.loginManager.isLoggedIn) {
+            event.rerouteTo(LoginView::class.java)
+        } else {
+            VokSecurity.checkPermissionsOfView(event.navigationTarget)
+        }
+    }
+```
+
+In the worst case you can provide your own init listener:
+
+```kotlin
+class BookstoreInitListener : VaadinServiceInitListener {
+    override fun serviceInit(initEvent: ServiceInitEvent) {
+        initEvent.source.addUIInitListener { uiInitEvent ->
+            uiInitEvent.ui.addBeforeEnterListener { enterEvent ->
+                if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
+                    enterEvent.rerouteTo(LoginScreen::class.java)
+                } else {
+                    VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
+                }
+            }
+        }
+    }
+}
+```
+
 ## VoK Authentication
 
 Authentication identifies the user and tries to prove that it's indeed the user who's
@@ -122,7 +203,7 @@ VoK also provide basic login forms and the documentation on how to integrate the
 with your app. There is also a set of example projects:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK Authorization
 
@@ -179,7 +260,7 @@ Please find example projects below. Both projects are using the username+passwor
 stored in the SQL database:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK-Security Simple
 

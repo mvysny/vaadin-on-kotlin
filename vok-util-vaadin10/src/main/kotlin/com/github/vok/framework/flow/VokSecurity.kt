@@ -69,6 +69,6 @@ object VokSecurity {
      * and will check all views.
      */
     fun install() {
-        UI.getCurrent().addBeforeEnterListener({ e -> checkPermissionsOfView(e.navigationTarget) })
+        UI.getCurrent().addBeforeEnterListener { e -> checkPermissionsOfView(e.navigationTarget) }
     }
 }
