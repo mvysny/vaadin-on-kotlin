@@ -122,6 +122,14 @@ class PersonRestTest : DynaTest({
 })
 ```
 
+In order to start Javalin with Jetty, you also need to add Jetty to your test classpath:
+
+```groovy
+dependencies {
+    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+}
+```
+
 ## Customizing JSON mapping
 
 Gson by default only export non-transient fields. It only exports actual Java fields, or only Kotlin properties that are backed by actual fields;
