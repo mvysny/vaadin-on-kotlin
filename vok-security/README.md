@@ -98,7 +98,7 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
 
 ### Making The Annotations Work
 
-In order to enforce the rules set by the annotations, you need to hook into the navigator - before a view is rendered, we will check whether
+In order to enforce the rules set by the annotations, you need to hook into the navigator: before a view is rendered, we will check whether
 it can be navigated to.
 
 First step is to register the `loggedInUserResolver`. It doesn't do anything on its own, but will serve current user
@@ -133,6 +133,8 @@ class MyUI : UI() {
 }
 ```
 
+#### Vaadin 10
+
 For Vaadin 10 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
 ```kotlin
 class MyUI: UI() {
@@ -148,8 +150,9 @@ class MyUI: UI() {
 }
 ```
 
-If you don't and you have one root layout, you can make it implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
+If you don't have the UI class but you have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
 ```kotlin
+class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
     override fun beforeEnter(event: BeforeEnterEvent) {
         if (!Session.loginManager.isLoggedIn) {
             event.rerouteTo(LoginView::class.java)
@@ -157,9 +160,10 @@ If you don't and you have one root layout, you can make it implement `BeforeEnte
             VokSecurity.checkPermissionsOfView(event.navigationTarget)
         }
     }
+}
 ```
 
-In the worst case you can provide your own init listener:
+Otherwise you can provide your own init listener:
 
 ```kotlin
 class BookstoreInitListener : VaadinServiceInitListener {
@@ -176,6 +180,9 @@ class BookstoreInitListener : VaadinServiceInitListener {
     }
 }
 ```
+
+Don't forget to register it though: create a file in your `src/main/resources/META-INF/services` named `com.vaadin.flow.server.VaadinServiceInitListener`
+containing the full class name of your `BookstoreInitListener` class.
 
 ## VoK Authentication
 
