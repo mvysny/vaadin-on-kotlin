@@ -89,6 +89,8 @@ You need to do one of these:
   and `Bootstrap().contextDestroyed(null)`.
 * Or you need to init the module manually: `RetrofitClientVokPlugin().init()` and `RetrofitClientVokPlugin().destroy()`
 
+Otherwise the OkHttpClient won't get initialized and the test will fail with NPE.
+
 Example test:
 
 ```kotlin
