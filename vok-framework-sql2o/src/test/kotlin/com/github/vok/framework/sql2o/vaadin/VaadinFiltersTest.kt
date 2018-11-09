@@ -1,8 +1,8 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.karibu.testing.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
+import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
 import com.github.vok.karibudsl.getAll
@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
 
     usingH2Database()
 

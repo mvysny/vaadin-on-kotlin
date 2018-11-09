@@ -16,7 +16,7 @@ dependencies {
 
     // testing
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
-    testCompile("com.github.kaributesting:karibu-testing-v10:${ext["kaributesting_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v10:${ext["kaributesting_version"]}")
     testCompile("ch.qos.logback:logback-classic:${ext["logback_version"]}")
 }
 

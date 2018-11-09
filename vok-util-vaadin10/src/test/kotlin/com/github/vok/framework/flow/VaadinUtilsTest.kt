@@ -1,7 +1,6 @@
 package com.github.vok.framework.flow
 
-import com.github.karibu.testing.v10.MockVaadin
-import com.github.karibu.testing.v10.caption
+import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest

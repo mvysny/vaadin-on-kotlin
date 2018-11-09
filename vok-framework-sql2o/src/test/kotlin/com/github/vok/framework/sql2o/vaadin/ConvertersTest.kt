@@ -1,7 +1,7 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.karibu.testing.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.vok.karibudsl.bind
 import com.github.vokorm.Entity
 import com.vaadin.data.BeanValidationBinder
@@ -10,6 +10,7 @@ import kotlin.test.expect
 
 class ConvertersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
     test("toId() test") {
         data class Category(override var id: Long? = null, var name: String = "") : Entity<Long>
         data class Review(override var id: Long? = null, var category: Long? = null) : Entity<Long>

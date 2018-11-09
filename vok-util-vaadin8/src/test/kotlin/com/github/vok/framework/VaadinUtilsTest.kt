@@ -1,7 +1,7 @@
 package com.github.vok.framework
 
-import com.github.karibu.testing.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.UI
 import java.util.*

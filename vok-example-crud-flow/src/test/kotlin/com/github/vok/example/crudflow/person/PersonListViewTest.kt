@@ -1,16 +1,14 @@
 package com.github.vok.example.crudflow.person
 
-import com.github.karibu.testing.v10.*
+import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crudflow.Bootstrap
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import java.time.LocalDate
-import kotlin.test.expect
 
 /**
  * When called from a dyna test, it configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.

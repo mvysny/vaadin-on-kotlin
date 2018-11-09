@@ -66,22 +66,45 @@ subprojects {
             from(java.sourceSets["main"].allSource)
         }
 
+        val javadocJar = task("javadocJar", Jar::class) {
+            val javadoc = tasks.findByName("javadoc") as Javadoc
+            javadoc.isFailOnError = false
+            dependsOn(javadoc)
+            classifier = "javadoc"
+            from(javadoc.destinationDir)
+        }
+
         publishing {
             publications {
                 create("mavenJava", MavenPublication::class.java).apply {
                     groupId = project.group.toString()
                     this.artifactId = artifactId
                     version = project.version.toString()
-                    pom.withXml {
-                        val root = asNode()
-                        root.appendNode("description", description)
-                        root.appendNode("name", artifactId)
-                        root.appendNode("url", "https://github.com/mvysny/vaadin-on-kotlin")
+                    pom {
+                        this.description.set(description)
+                        name.set(artifactId)
+                        url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                        licenses {
+                            license {
+                                name.set("The MIT License")
+                                url.set("https://opensource.org/licenses/MIT")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("mavi")
+                                name.set("Martin Vysny")
+                                email.set("martin@vysny.me")
+                            }
+                        }
+                        scm {
+                            url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                        }
                     }
                     from(components.findByName("java")!!)
-                    artifact(sourceJar) {
-                        classifier = "sources"
-                    }
+                    artifact(sourceJar)
+                    artifact(javadocJar)
                 }
             }
         }

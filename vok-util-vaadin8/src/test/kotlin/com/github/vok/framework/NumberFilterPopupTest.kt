@@ -1,7 +1,7 @@
 package com.github.vok.framework
 
-import com.github.karibu.testing.*
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.kaributesting.v8.*
 import com.vaadin.ui.*
 import kotlin.test.expect
 import kotlin.test.fail

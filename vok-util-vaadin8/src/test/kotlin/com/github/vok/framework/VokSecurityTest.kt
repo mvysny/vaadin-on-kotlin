@@ -1,8 +1,8 @@
 package com.github.vok.framework
 
-import com.github.karibu.testing.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.vok.karibudsl.AutoView
 import com.github.vok.karibudsl.autoDiscoverViews
 import com.github.vok.karibudsl.autoViewProvider

@@ -1,6 +1,6 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.karibu.testing.*
+import com.github.mvysny.kaributesting.v8.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap

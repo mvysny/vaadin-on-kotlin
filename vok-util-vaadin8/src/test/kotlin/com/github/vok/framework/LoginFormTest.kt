@@ -1,10 +1,10 @@
 package com.github.vok.framework
 
-import com.github.karibu.testing.MockVaadin
-import com.github.karibu.testing._click
-import com.github.karibu.testing._get
-import com.github.karibu.testing._value
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.kaributesting.v8.MockVaadin
+import com.github.mvysny.kaributesting.v8._click
+import com.github.mvysny.kaributesting.v8._get
+import com.github.mvysny.kaributesting.v8._value
 import com.vaadin.ui.Button
 import com.vaadin.ui.PasswordField
 import com.vaadin.ui.TextField

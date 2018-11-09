@@ -1,8 +1,8 @@
 package com.github.vok.framework.sql2o.vaadin
 
-import com.github.karibu.testing.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
+import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
 import com.github.vok.karibudsl.flow.addColumnFor
@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextField
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
+    afterEach { MockVaadin.tearDown() }
     usingH2Database()
 
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17
