@@ -1,4 +1,4 @@
-package com.github.vok.security
+package eu.vaadinonkotlin.security
 
 import com.github.vok.framework.VaadinOnKotlin
 

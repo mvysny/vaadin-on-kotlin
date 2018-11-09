@@ -1,4 +1,4 @@
-package com.github.vok.security
+package eu.vaadinonkotlin.security
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
@@ -10,11 +10,14 @@ object DummyUserResolver : LoggedInUserResolver {
 }
 
 class LoggedInUserResolverTest : DynaTest({
-    @AllowAll class MyAllowAll
-    @AllowRoles class MyAllowNobody
+    @AllowAll
+    class MyAllowAll
+    @AllowRoles
+    class MyAllowNobody
     @AllowRoles("admin") class MyAllowAdmin
     @AllowRoles("admin", "user") class MyAllowAdminOrUser
-    @AllowAllUsers class MyAllowAllUsers
+    @AllowAllUsers
+    class MyAllowAllUsers
 
     test("test logged out") {
         DummyUserResolver.userWithRoles = null

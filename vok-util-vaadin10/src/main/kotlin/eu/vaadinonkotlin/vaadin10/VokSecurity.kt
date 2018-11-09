@@ -4,7 +4,7 @@ import com.github.vok.framework.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin10.VokSecurity.checkPermissionsOfView
 import eu.vaadinonkotlin.vaadin10.VokSecurity.install
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vok.security.loggedInUserResolver
+import eu.vaadinonkotlin.security.loggedInUserResolver
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.HasSize

@@ -215,7 +215,7 @@ with your app. There is also a set of example projects:
 ## VoK Authorization
 
 The VoK API authorization API uses role-based authorization on Vaadin views. There are
-three annotations in the [AllowRoles.kt](src/main/kotlin/com/github/vok/security/AllowRoles.kt) file,
+three annotations in the [AllowRoles.kt](src/main/kotlin/eu/vaadinonkotlin/security/AllowRoles.kt) file,
 and your view must list exactly one of them otherwise it will be inaccessible:
 
 * `AllowRoles` lists roles that are allowed to visit that view; the user must be logged in and must be assigned at least one of the roles listed in the annotation
@@ -227,7 +227,7 @@ define more complex rules as a Kotlin code in the `View.enter()` which is invoke
 to that particular view. For Vaadin 10, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
 
 For example, the View may check e.g. whether given user has the right
-to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/com/github/vok/security/AccessRejectedException.kt) must be simply thrown.
+to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
 The exception is then caught by the Vaadin exception handler and either
 an error notification "access rejected" should be shown (Vaadin 8), or
 the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 10).
@@ -258,8 +258,8 @@ This module only provides basic API classes which lays out the foundation of the
 security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 10
 and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 [vok-util-vaadin10](../vok-util-vaadin10) modules:
-* For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/com/github/vok/framework/VokSecurity.kt) class;
-* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/com/github/vok/framework/flow/VokSecurity.kt) class;
+* For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/eu/vaadinonkotlin/vaadin8/VokSecurity.kt) class;
+* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
 
 ## Example projects
 

@@ -1,4 +1,4 @@
-package com.github.vok.security.simple
+package eu.vaadinonkotlin.security.simple
 
 /**
  * This mixin interface makes sure that the database-stored passwords are properly hashed and not stored in plaintext.

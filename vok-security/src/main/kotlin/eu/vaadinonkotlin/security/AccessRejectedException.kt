@@ -1,4 +1,4 @@
-package com.github.vok.security
+package eu.vaadinonkotlin.security
 
 /**
  * An exception thrown when the current user does not have access to given view.

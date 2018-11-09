@@ -4,10 +4,10 @@ import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
 import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.security.AccessRejectedException
-import com.github.vok.security.AllowRoles
-import com.github.vok.security.LoggedInUserResolver
-import com.github.vok.security.loggedInUserResolver
+import eu.vaadinonkotlin.security.AccessRejectedException
+import eu.vaadinonkotlin.security.AllowRoles
+import eu.vaadinonkotlin.security.LoggedInUserResolver
+import eu.vaadinonkotlin.security.loggedInUserResolver
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.Route

@@ -15,6 +15,7 @@ import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.server.VaadinRequest
 import com.vaadin.ui.Label
 import com.vaadin.ui.UI
+import eu.vaadinonkotlin.security.*
 
 class MySecuredUI : UI() {
     override fun init(request: VaadinRequest) {

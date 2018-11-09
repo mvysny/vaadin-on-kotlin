@@ -2,9 +2,9 @@ package eu.vaadinonkotlin.vaadin8
 
 import eu.vaadinonkotlin.vaadin8.VokSecurity.install
 import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.security.AccessRejectedException
-import com.github.vok.security.AllowRoles
-import com.github.vok.security.loggedInUserResolver
+import eu.vaadinonkotlin.security.AccessRejectedException
+import eu.vaadinonkotlin.security.AllowRoles
+import eu.vaadinonkotlin.security.loggedInUserResolver
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

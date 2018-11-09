@@ -1,4 +1,4 @@
-package com.github.vok.security.simple;
+package eu.vaadinonkotlin.security.simple;
 
 /*
  * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm).
