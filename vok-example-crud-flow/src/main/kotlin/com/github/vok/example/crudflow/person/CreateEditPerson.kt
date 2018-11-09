@@ -1,6 +1,6 @@
 package com.github.vok.example.crudflow.person
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog

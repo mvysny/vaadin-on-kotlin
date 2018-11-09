@@ -5,8 +5,8 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
-import com.github.vok.karibudsl.getAll
-import com.github.vok.karibudsl.getCell
+import com.github.mvysny.karibudsl.v8.getAll
+import com.github.mvysny.karibudsl.v8.getCell
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 

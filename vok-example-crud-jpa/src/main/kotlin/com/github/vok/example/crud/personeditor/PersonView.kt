@@ -2,7 +2,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.WelcomeView
 import com.github.vok.framework.db
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Label

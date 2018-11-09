@@ -5,7 +5,7 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.mvysny.kaributesting.v8._size
 import com.github.mvysny.kaributesting.v8._value
-import com.github.vok.karibudsl.getAll
+import com.github.mvysny.karibudsl.v8.getAll
 import com.vaadin.data.provider.ListDataProvider
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField

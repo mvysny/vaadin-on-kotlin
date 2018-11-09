@@ -3,10 +3,10 @@ package com.github.vok.framework
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.kaributesting.v8.MockVaadin
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.autoDiscoverViews
-import com.github.vok.karibudsl.autoViewProvider
-import com.github.vok.karibudsl.navigateToView
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.autoDiscoverViews
+import com.github.mvysny.karibudsl.v8.autoViewProvider
+import com.github.mvysny.karibudsl.v8.navigateToView
 import com.github.vok.security.*
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View

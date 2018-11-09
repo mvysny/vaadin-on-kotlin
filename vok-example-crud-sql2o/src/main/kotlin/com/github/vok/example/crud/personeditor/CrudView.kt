@@ -2,9 +2,9 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
-import com.github.vok.karibudsl.*
-import com.github.vok.karibudsl.ModifierKey.Alt
-import com.github.vok.karibudsl.ModifierKey.Ctrl
+import com.github.mvysny.karibudsl.v8.*
+import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
+import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
 import com.github.vokorm.db
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.icons.VaadinIcons

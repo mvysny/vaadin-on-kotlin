@@ -3,7 +3,7 @@ package com.github.vok.framework.flow
 import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.Listeners
 import com.github.vok.framework.listeners
-import com.github.vok.karibudsl.flow.getColumnBy
+import com.github.mvysny.karibudsl.v10.getColumnBy
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue

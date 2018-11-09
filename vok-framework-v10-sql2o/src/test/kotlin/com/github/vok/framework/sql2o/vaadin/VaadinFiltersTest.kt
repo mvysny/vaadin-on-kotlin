@@ -5,8 +5,8 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
-import com.github.vok.karibudsl.flow.addColumnFor
-import com.github.vok.karibudsl.flow.getAll
+import com.github.mvysny.karibudsl.v10.addColumnFor
+import com.github.mvysny.karibudsl.v10.getAll
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField

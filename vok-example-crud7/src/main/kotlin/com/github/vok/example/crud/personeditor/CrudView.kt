@@ -6,10 +6,10 @@ import com.github.vok.framework.db
 import com.github.vok.framework.deleteById
 import com.github.vok.framework.get
 import com.github.vok.framework.jpaContainer
-import com.github.vok.karibudsl.*
-import com.github.vok.karibudsl.v7.*
-import com.github.vok.karibudsl.ModifierKey.Alt
-import com.github.vok.karibudsl.ModifierKey.Ctrl
+import com.github.mvysny.karibudsl.v8.*
+import com.github.mvysny.karibudsl.v8.v7compat.*
+import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
+import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

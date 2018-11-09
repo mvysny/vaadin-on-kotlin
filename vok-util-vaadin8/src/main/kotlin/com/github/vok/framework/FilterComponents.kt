@@ -1,6 +1,6 @@
 package com.github.vok.framework
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.data.Binder
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*

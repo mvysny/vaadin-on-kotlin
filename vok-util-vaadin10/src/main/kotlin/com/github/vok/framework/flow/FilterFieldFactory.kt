@@ -1,8 +1,8 @@
 package com.github.vok.framework.flow
 
 import com.github.vok.framework.FilterFactory
-import com.github.vok.karibudsl.flow.DateInterval
-import com.github.vok.karibudsl.flow.DateRangePopup
+import com.github.mvysny.karibudsl.v10.DateInterval
+import com.github.mvysny.karibudsl.v10.DateRangePopup
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.icon.Icon

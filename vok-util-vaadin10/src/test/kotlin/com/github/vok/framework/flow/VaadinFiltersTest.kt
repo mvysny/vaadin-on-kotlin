@@ -3,8 +3,8 @@ package com.github.vok.framework.flow
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import com.github.vok.karibudsl.flow.getAll
-import com.github.vok.karibudsl.flow.getCell
+import com.github.mvysny.karibudsl.v10.getAll
+import com.github.mvysny.karibudsl.v10.getCell
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.provider.ListDataProvider

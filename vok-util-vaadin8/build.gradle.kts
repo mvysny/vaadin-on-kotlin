@@ -3,7 +3,7 @@ dependencies {
     compile(project(":vok-security"))
 
     // Vaadin
-    compile("com.github.vok.karibudsl:karibu-dsl-v8:${ext["karibudsl_version"]}")
+    compile("com.github.mvysny.karibudsl:karibu-dsl-v8:${ext["karibudsl_version"]}")
     compile("com.vaadin:vaadin-server:${ext["vaadin8_version"]}")
     compile("javax.servlet:javax.servlet-api:3.1.0")
 

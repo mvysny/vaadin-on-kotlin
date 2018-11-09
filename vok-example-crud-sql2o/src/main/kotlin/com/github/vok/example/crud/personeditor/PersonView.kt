@@ -1,9 +1,9 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.WelcomeView
-import com.github.vok.karibudsl.AutoView
-import com.github.vok.karibudsl.navigateToView
-import com.github.vok.karibudsl.parameterList
+import com.github.mvysny.karibudsl.v8.AutoView
+import com.github.mvysny.karibudsl.v8.navigateToView
+import com.github.mvysny.karibudsl.v8.parameterList
 import com.github.vokorm.findById
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

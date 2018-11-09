@@ -2,7 +2,7 @@ package com.github.vok.framework.sql2o.vaadin
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.kaributesting.v10.MockVaadin
-import com.github.vok.karibudsl.flow.bind
+import com.github.mvysny.karibudsl.v10.bind
 import com.github.vokorm.Entity
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.data.binder.BeanValidationBinder

@@ -3,7 +3,7 @@ package com.github.vok.framework.flow
 import com.github.vok.framework.VaadinOnKotlin
 import com.github.vok.framework.flow.VokSecurity.checkPermissionsOfView
 import com.github.vok.framework.flow.VokSecurity.install
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vok.security.loggedInUserResolver
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasComponents

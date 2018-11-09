@@ -1,8 +1,8 @@
 package com.github.vok.example.crudflow.person
 
-import com.github.vok.karibudsl.flow.div
-import com.github.vok.karibudsl.flow.navigateToView
-import com.github.vok.karibudsl.flow.text
+import com.github.mvysny.karibudsl.v10.div
+import com.github.mvysny.karibudsl.v10.navigateToView
+import com.github.mvysny.karibudsl.v10.text
 import com.github.vokorm.findById
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.BeforeEvent

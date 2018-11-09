@@ -11,7 +11,7 @@ dependencies {
     compile(project(":vok-security"))
 
     // Vaadin
-    compile("com.github.vok.karibudsl:karibu-dsl-v10:${ext["karibudsl_version"]}")
+    compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${ext["karibudsl_version"]}")
     compile("javax.servlet:javax.servlet-api:3.1.0")
 
     // testing

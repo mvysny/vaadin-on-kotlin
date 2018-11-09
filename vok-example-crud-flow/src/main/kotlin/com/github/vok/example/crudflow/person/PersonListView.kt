@@ -4,7 +4,7 @@ import com.github.vok.example.crudflow.MainLayout
 import com.github.vok.framework.sql2o.vaadin.dataProvider
 import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
 import com.github.vok.framework.toDate
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.db
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.Div

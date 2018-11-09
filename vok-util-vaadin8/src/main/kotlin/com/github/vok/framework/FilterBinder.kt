@@ -1,6 +1,6 @@
 package com.github.vok.framework
 
-import com.github.vok.karibudsl.getColumnBy
+import com.github.mvysny.karibudsl.v8.getColumnBy
 import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition

@@ -3,9 +3,9 @@ package com.github.vok.framework.sql2o.vaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.framework.sql2o.Person
 import com.github.vok.framework.sql2o.usingH2Database
-import com.github.vok.karibudsl.flow.asc
-import com.github.vok.karibudsl.flow.desc
-import com.github.vok.karibudsl.flow.getAll
+import com.github.mvysny.karibudsl.v10.asc
+import com.github.mvysny.karibudsl.v10.desc
+import com.github.mvysny.karibudsl.v10.getAll
 import com.github.vokorm.Filter
 import com.github.vokorm.buildFilter
 import com.github.vokorm.db

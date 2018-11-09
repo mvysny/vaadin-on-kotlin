@@ -5,7 +5,7 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.vok.example.crud.Bootstrap
 import com.github.vok.example.crud.MyUI
-import com.github.vok.karibudsl.autoDiscoverViews
+import com.github.mvysny.karibudsl.v8.autoDiscoverViews
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
 import com.vaadin.icons.VaadinIcons

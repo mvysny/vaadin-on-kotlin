@@ -1,7 +1,7 @@
 package com.github.vok.framework
 
 import com.github.vok.framework.VokSecurity.install
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vok.security.AccessRejectedException
 import com.github.vok.security.AllowRoles
 import com.github.vok.security.loggedInUserResolver

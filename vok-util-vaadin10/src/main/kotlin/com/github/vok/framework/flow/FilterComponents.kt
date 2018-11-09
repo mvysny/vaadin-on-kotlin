@@ -2,7 +2,7 @@ package com.github.vok.framework.flow
 
 import com.github.vok.framework.FilterFactory
 import com.github.vok.framework.toDate
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.AbstractCompositeField
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog

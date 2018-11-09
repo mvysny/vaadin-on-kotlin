@@ -4,7 +4,7 @@ import com.github.vok.example.crud.lastAddedPersonCache
 import com.github.vok.framework.Session
 import com.github.vok.framework.db
 import com.github.vok.framework.dbId
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment
 import com.vaadin.ui.Button

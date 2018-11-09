@@ -2,8 +2,8 @@
 
 package com.github.vok.example.crud
 
-import com.github.vok.karibudsl.*
-import com.github.vok.karibudsl.v7.*
+import com.github.mvysny.karibudsl.v8.*
+import com.github.mvysny.karibudsl.v8.v7compat.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.shared.Version

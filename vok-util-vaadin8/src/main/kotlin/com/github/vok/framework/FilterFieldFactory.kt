@@ -1,7 +1,7 @@
 package com.github.vok.framework
 
-import com.github.vok.karibudsl.fillParent
-import com.github.vok.karibudsl.w
+import com.github.mvysny.karibudsl.v8.fillParent
+import com.github.mvysny.karibudsl.v8.w
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
 import com.vaadin.server.Resource
