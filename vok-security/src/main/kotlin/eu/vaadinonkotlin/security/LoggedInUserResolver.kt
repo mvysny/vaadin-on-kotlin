@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.security
 
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 
 /**
  * Resolves various properties of the current user. Typically the currently logged-in user is stored in Vaadin session, so this function

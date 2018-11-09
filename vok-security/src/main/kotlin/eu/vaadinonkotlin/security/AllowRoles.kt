@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.security
 
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 
 /**
  * Allows any user with one of the listed roles to see the view.

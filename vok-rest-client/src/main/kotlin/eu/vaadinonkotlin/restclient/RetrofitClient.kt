@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.restclient
 
-import com.github.vok.framework.VOKPlugin
+import eu.vaadinonkotlin.VOKPlugin
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken

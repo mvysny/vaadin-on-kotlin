@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.vok.framework.FilterFactory
+import eu.vaadinonkotlin.FilterFactory
 import com.github.mvysny.karibudsl.v10.DateInterval
 import com.github.mvysny.karibudsl.v10.DateRangePopup
 import com.vaadin.flow.component.HasValue

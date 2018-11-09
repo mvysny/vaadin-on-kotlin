@@ -1,8 +1,8 @@
 package com.github.vok.example.crud
 
-import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.framework.sql2o.dataSource
-import com.github.vok.framework.sql2o.dataSourceConfig
+import eu.vaadinonkotlin.VaadinOnKotlin
+import eu.vaadinonkotlin.sql2o.sql2o.dataSource
+import eu.vaadinonkotlin.sql2o.sql2o.dataSourceConfig
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway

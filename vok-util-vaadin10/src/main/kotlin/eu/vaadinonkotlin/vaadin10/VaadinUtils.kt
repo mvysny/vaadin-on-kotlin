@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.vok.framework.I18n
-import com.github.vok.framework.getI18nProvider
+import eu.vaadinonkotlin.I18n
+import eu.vaadinonkotlin.getI18nProvider
 import com.vaadin.flow.component.UI
 
 /**
@@ -22,7 +22,8 @@ import com.vaadin.flow.component.UI
  * label(vt["createUser.caption"])
  * ```
  */
-val vt: I18n get() {
+val vt: I18n
+    get() {
     val ui = checkUIThread()
     val locale = ui.locale
     check(locale != null) { "UI.getCurrent().locale can't really return null" }

@@ -3,8 +3,8 @@ package com.github.vok.example.crud
 import com.github.vok.example.crud.personeditor.CrudView
 import eu.vaadinonkotlin.vaadin8.Session
 import eu.vaadinonkotlin.vaadin8.jpa.db
-import com.github.vok.framework.scheduleAtFixedRate
-import com.github.vok.framework.seconds
+import eu.vaadinonkotlin.scheduleAtFixedRate
+import eu.vaadinonkotlin.seconds
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.annotations.Push
 import com.vaadin.annotations.Theme

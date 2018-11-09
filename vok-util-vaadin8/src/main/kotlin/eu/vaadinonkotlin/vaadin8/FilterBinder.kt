@@ -1,9 +1,9 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.karibudsl.v8.getColumnBy
-import com.github.vok.framework.FilterFactory
-import com.github.vok.framework.Listeners
-import com.github.vok.framework.listeners
+import eu.vaadinonkotlin.FilterFactory
+import eu.vaadinonkotlin.Listeners
+import eu.vaadinonkotlin.listeners
 import com.vaadin.data.BeanPropertySet
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition

@@ -3,7 +3,7 @@ package com.github.vok.example.crudflow.person
 import com.github.vok.example.crudflow.MainLayout
 import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
 import eu.vaadinonkotlin.vaadin10.sql2o.generateFilterComponents
-import com.github.vok.framework.toDate
+import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.db
 import com.vaadin.flow.component.grid.Grid

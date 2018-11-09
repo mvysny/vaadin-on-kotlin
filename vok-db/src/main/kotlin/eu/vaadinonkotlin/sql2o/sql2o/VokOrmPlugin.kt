@@ -1,7 +1,7 @@
-package com.github.vok.framework.sql2o
+package eu.vaadinonkotlin.sql2o.sql2o
 
-import com.github.vok.framework.VOKPlugin
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VOKPlugin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import com.github.vokorm.VokOrm
 import com.zaxxer.hikari.HikariConfig
 import javax.sql.DataSource

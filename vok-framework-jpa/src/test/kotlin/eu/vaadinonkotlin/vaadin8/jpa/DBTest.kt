@@ -3,7 +3,7 @@ package eu.vaadinonkotlin.vaadin8.jpa
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import org.flywaydb.core.Flyway
 import java.io.IOException
 import javax.persistence.EntityManager

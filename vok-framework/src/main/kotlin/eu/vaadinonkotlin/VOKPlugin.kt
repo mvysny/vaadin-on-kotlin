@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin
 
 /**
  * Implement this interface to be invoked from [VaadinOnKotlin.init] and [VaadinOnKotlin.destroy]

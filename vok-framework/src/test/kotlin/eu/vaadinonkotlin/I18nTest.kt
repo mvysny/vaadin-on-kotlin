@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest

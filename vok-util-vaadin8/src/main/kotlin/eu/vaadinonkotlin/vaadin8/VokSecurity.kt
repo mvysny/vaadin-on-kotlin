@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.vaadin8
 
 import eu.vaadinonkotlin.vaadin8.VokSecurity.install
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.security.AccessRejectedException
 import eu.vaadinonkotlin.security.AllowRoles
 import eu.vaadinonkotlin.security.loggedInUserResolver

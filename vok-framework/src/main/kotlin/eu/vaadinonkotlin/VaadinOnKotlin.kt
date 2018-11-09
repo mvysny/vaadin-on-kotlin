@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin
 
 import org.slf4j.LoggerFactory
 import java.time.Duration

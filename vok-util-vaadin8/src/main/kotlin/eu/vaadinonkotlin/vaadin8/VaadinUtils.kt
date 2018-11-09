@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.vaadin8
 
-import com.github.vok.framework.I18n
-import com.github.vok.framework.getI18nProvider
+import eu.vaadinonkotlin.I18n
+import eu.vaadinonkotlin.getI18nProvider
 import com.vaadin.ui.UI
 
 /**

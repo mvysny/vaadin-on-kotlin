@@ -1,15 +1,13 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.mvysny.dynatest.DynaNodeGroup
-import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.framework.sql2o.dataSource
-import com.github.vok.framework.sql2o.dataSourceConfig
+import eu.vaadinonkotlin.VaadinOnKotlin
+import eu.vaadinonkotlin.sql2o.sql2o.dataSource
 import com.github.vokorm.*
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull

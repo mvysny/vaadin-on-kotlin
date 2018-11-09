@@ -1,6 +1,6 @@
 package com.github.vok.example.crud
 
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin8.jpa.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet

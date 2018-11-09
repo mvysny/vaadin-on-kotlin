@@ -2,7 +2,7 @@ package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.karibudsl.v8.fillParent
 import com.github.mvysny.karibudsl.v8.w
-import com.github.vok.framework.FilterFactory
+import eu.vaadinonkotlin.FilterFactory
 import com.vaadin.data.HasValue
 import com.vaadin.data.PropertyDefinition
 import com.vaadin.server.Resource

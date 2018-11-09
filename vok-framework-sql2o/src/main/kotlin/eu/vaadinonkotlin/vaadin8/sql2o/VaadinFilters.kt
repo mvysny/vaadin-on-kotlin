@@ -8,6 +8,7 @@ import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HasValueChangeMode
 import com.vaadin.ui.components.grid.HeaderRow
+import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.vaadin8.DefaultFilterFieldFactory
 import eu.vaadinonkotlin.vaadin8.FilterFieldFactory
 import eu.vaadinonkotlin.vaadin8.FilterRow

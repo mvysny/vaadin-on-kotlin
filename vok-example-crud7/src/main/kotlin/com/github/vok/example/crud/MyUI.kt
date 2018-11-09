@@ -14,6 +14,8 @@ import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
+import eu.vaadinonkotlin.scheduleAtFixedRate
+import eu.vaadinonkotlin.seconds
 import eu.vaadinonkotlin.vaadin8.Session
 import eu.vaadinonkotlin.vaadin8.jpa.db
 import java.util.concurrent.ScheduledFuture

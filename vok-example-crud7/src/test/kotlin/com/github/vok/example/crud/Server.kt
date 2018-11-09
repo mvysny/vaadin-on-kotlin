@@ -1,6 +1,6 @@
 package com.github.vok.example.crud
 
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin8.jpa.entityManagerFactory
 import org.atmosphere.util.annotation.AnnotationDetector
 import org.eclipse.jetty.annotations.AnnotationConfiguration

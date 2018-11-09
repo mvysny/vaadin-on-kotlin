@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin
 
 import java.io.Serializable
 

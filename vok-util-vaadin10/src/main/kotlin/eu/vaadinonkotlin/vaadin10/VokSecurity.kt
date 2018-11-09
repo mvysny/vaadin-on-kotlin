@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin10.VokSecurity.checkPermissionsOfView
 import eu.vaadinonkotlin.vaadin10.VokSecurity.install
 import com.github.mvysny.karibudsl.v10.*

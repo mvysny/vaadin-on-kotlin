@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin
 
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -26,7 +26,7 @@ val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
  * @property locale the locale to use, not null.
  */
 class I18n internal constructor(val locale: Locale) {
-    private val standardMessages: ResourceBundle = ResourceBundle.getBundle("com.github.vok.VokMessages", locale)
+    private val standardMessages: ResourceBundle = ResourceBundle.getBundle("eu.vaadinonkotlin.VokMessages", locale)
     private val customMessages: ResourceBundle = try {
         ResourceBundle.getBundle("VokMessages", locale)
     } catch (ex: MissingResourceException) {
@@ -62,12 +62,12 @@ class I18n internal constructor(val locale: Locale) {
  * of the i18n bundles. For production, the [I18n] instances are cached
  * so that the key lookup is very quick.
  */
-fun getI18nProvider(production: Boolean): (Locale)->I18n = when (production) {
+fun getI18nProvider(production: Boolean): (Locale)-> I18n = when (production) {
     true -> productionI18nProvider
     else -> { locale -> I18n(locale) }
 }
 
 private val productionI18nCache = ConcurrentHashMap<Locale, I18n>()
-private val productionI18nProvider: (Locale)->I18n = { locale ->
+private val productionI18nProvider: (Locale)-> I18n = { locale ->
     productionI18nCache.computeIfAbsent(locale) { l -> I18n(l) }
 }

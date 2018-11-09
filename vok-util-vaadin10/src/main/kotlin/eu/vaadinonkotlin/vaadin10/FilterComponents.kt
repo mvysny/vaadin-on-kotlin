@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.vok.framework.FilterFactory
-import com.github.vok.framework.toDate
+import eu.vaadinonkotlin.FilterFactory
+import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.AbstractCompositeField
 import com.vaadin.flow.component.button.Button

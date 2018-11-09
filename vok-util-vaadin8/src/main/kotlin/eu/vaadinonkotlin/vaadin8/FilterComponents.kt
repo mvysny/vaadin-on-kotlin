@@ -1,8 +1,8 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vok.framework.FilterFactory
-import com.github.vok.framework.toDate
+import eu.vaadinonkotlin.FilterFactory
+import eu.vaadinonkotlin.toDate
 import com.vaadin.data.Binder
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*

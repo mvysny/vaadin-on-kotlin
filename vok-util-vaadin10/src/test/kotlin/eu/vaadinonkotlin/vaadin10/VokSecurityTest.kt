@@ -3,7 +3,7 @@ package eu.vaadinonkotlin.vaadin10
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
-import com.github.vok.framework.VaadinOnKotlin
+import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.security.AccessRejectedException
 import eu.vaadinonkotlin.security.AllowRoles
 import eu.vaadinonkotlin.security.LoggedInUserResolver

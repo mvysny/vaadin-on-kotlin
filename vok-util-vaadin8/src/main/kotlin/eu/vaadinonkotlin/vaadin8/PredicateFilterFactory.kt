@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.vaadin8
 
-import com.github.vok.framework.FilterFactory
+import eu.vaadinonkotlin.FilterFactory
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.server.SerializablePredicate
