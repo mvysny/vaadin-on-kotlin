@@ -1,16 +1,10 @@
 package com.github.vok.example.crud
 
-import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.framework.entityManagerFactory
-import org.atmosphere.util.annotation.AnnotationDetector
 import org.eclipse.jetty.annotations.AnnotationConfiguration
 import org.eclipse.jetty.plus.webapp.EnvConfiguration
 import org.eclipse.jetty.plus.webapp.PlusConfiguration
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.webapp.*
-import org.hibernate.jpa.AvailableSettings
-import javax.persistence.Entity
-import javax.persistence.Persistence
 
 
 /**

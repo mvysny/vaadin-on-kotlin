@@ -1,8 +1,8 @@
 package com.github.vok.example.crud
 
 import com.github.vok.framework.VaadinOnKotlin
-import com.github.vok.framework.entityManagerFactory
-import com.github.vok.framework.getDataSource
+import eu.vaadinonkotlin.vaadin8.jpa.entityManagerFactory
+import eu.vaadinonkotlin.vaadin8.jpa.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.atmosphere.util.annotation.AnnotationDetector

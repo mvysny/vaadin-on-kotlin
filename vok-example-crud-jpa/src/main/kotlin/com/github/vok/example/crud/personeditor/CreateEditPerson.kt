@@ -2,8 +2,8 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.lastAddedPersonCache
 import eu.vaadinonkotlin.vaadin8.Session
-import com.github.vok.framework.db
-import com.github.vok.framework.dbId
+import eu.vaadinonkotlin.vaadin8.jpa.db
+import eu.vaadinonkotlin.vaadin8.jpa.dbId
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.Alignment

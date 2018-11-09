@@ -4,7 +4,7 @@ package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.lastAddedPersonCache
 import eu.vaadinonkotlin.vaadin8.Session
-import com.github.vok.framework.db
+import eu.vaadinonkotlin.vaadin8.jpa.db
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.v7compat.*
 import com.vaadin.server.UserError

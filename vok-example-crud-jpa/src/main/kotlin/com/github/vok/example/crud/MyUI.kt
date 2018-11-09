@@ -2,7 +2,7 @@ package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.CrudView
 import eu.vaadinonkotlin.vaadin8.Session
-import com.github.vok.framework.db
+import eu.vaadinonkotlin.vaadin8.jpa.db
 import com.github.vok.framework.scheduleAtFixedRate
 import com.github.vok.framework.seconds
 import com.github.mvysny.karibudsl.v8.*

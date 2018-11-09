@@ -2,10 +2,10 @@
 
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.db
-import com.github.vok.framework.deleteById
-import com.github.vok.framework.get
-import com.github.vok.framework.jpaContainer
+import eu.vaadinonkotlin.vaadin8.jpa.db
+import eu.vaadinonkotlin.vaadin8.jpa.deleteById
+import eu.vaadinonkotlin.vaadin8.jpa.get
+import eu.vaadinonkotlin.vaadin8.jpa.jpaContainer
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.v7compat.*
 import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
@@ -50,8 +50,8 @@ class CrudView: VerticalLayout(), View {
                 }
                 column(Person::name)
                 column(Person::age)
-                button("show", "Show", { PersonView.navigateTo(db { em.get<Person>(it.itemId) } ) })
-                button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
+                button("show", "Show", { PersonView.navigateTo(db { em.get<Person>(it.itemId) }) })
+                button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) }) })
                 button("delete", "Delete", { deletePerson(it.itemId as Long) })
             }
             // automatically create filters, based on the types of values present in particular columns.

@@ -1,7 +1,8 @@
 @file:Suppress("DEPRECATION")
 
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
+import eu.vaadinonkotlin.vaadin8.jpa.extendedEntityManager
 import com.vaadin.addon.jpacontainer.JPAContainer
 import com.vaadin.addon.jpacontainer.provider.CachingBatchableLocalEntityProvider
 import com.vaadin.v7.ui.AbstractSelect

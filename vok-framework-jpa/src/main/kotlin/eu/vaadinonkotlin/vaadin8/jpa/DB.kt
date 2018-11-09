@@ -5,8 +5,10 @@
  * * To obtain the data source, just read the [dataSource] global property.
  * * To obtain an Extended EntityManager, just read the [extendedEntityManager] property.
  */
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
+import com.github.vok.framework.VOKPlugin
+import com.github.vok.framework.VaadinOnKotlin
 import org.hibernate.internal.SessionImpl
 import org.slf4j.LoggerFactory
 import java.io.Closeable

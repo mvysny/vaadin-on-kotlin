@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList

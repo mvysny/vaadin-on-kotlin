@@ -1,8 +1,9 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
+import com.github.vok.framework.VaadinOnKotlin
 import org.flywaydb.core.Flyway
 import java.io.IOException
 import javax.persistence.EntityManager
@@ -55,18 +56,26 @@ class DBTest : DynaTest({
     }
 
     test("commitInNestedDbBlocks") {
-        val person = db { db { db {
-            TestPerson(name = "foo", age = 25).apply { em.persist(this) }
-        }}}
-        expect(listOf(person)) { db { em.findAll<TestPerson>() }}
+        val person = db {
+            db {
+                db {
+                    TestPerson(name = "foo", age = 25).apply { em.persist(this) }
+                }
+            }
+        }
+        expect(listOf(person)) { db { em.findAll<TestPerson>() } }
     }
 
     test("exceptionRollsBackInNestedDbBlocks") {
         try {
-            db { db { db {
-                em.persist(TestPerson(name = "foo", age = 25))
-                throw IOException("simulated")
-            }}}
+            db {
+                db {
+                    db {
+                        em.persist(TestPerson(name = "foo", age = 25))
+                        throw IOException("simulated")
+                    }
+                }
+            }
             @Suppress("UNREACHABLE_CODE")
             fail("Exception should have been thrown")
         } catch (e: IOException) {
@@ -76,9 +85,9 @@ class DBTest : DynaTest({
     }
 
     test("singleOrNull") {
-        expect(null) { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() }}
+        expect(null) { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull() } }
         db { em.persist(TestPerson(name = "Laurel", age = 50)) }
-        expect("Laurel") { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull()!!.name }}
+        expect("Laurel") { db { em.createQuery("select p from TestPerson p", TestPerson::class.java).singleOrNull()!!.name } }
     }
 
     test("singleOrNullFailsOnTwoResults") {
@@ -96,7 +105,7 @@ class DBTest : DynaTest({
 
     test("DeleteById") {
         val person = db { TestPerson(name = "Laurel", age = 50).apply { em.persist(this) } }
-        expect(listOf(person)) { db { em.findAll<TestPerson>() }}
+        expect(listOf(person)) { db { em.findAll<TestPerson>() } }
         db { em.deleteById<TestPerson>(person.id!!) }
         expect(listOf()) { db { em.findAll<TestPerson>() } }
     }

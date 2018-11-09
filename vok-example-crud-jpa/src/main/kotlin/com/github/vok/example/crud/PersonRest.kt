@@ -1,8 +1,8 @@
 package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.Person
-import com.github.vok.framework.db
-import com.github.vok.framework.findAll
+import eu.vaadinonkotlin.vaadin8.jpa.db
+import eu.vaadinonkotlin.vaadin8.jpa.findAll
 import eu.vaadinonkotlin.rest.configureToJavalin
 import com.google.gson.GsonBuilder
 import io.javalin.EmbeddedJavalin

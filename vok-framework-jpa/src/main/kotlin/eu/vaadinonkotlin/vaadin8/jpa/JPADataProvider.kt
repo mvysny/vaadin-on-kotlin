@@ -1,11 +1,10 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
 import com.vaadin.data.provider.*
 import com.vaadin.shared.data.sort.SortDirection
 import java.io.Serializable
 import java.util.stream.Stream
 import javax.persistence.criteria.*
-import javax.persistence.metamodel.EntityType
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 

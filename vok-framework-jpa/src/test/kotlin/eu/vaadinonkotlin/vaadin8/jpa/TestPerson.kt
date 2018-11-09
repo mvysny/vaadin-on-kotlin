@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
 import java.io.Serializable
 import javax.persistence.*

@@ -1,12 +1,12 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.db
-import com.github.vok.framework.deleteById
-import com.github.vok.framework.jpaDataProvider
+import eu.vaadinonkotlin.vaadin8.jpa.db
+import eu.vaadinonkotlin.vaadin8.jpa.deleteById
+import eu.vaadinonkotlin.vaadin8.jpa.jpaDataProvider
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
 import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
-import com.github.vok.framework.vaadin.generateFilterComponents
+import eu.vaadinonkotlin.vaadin8.jpa.generateFilterComponents
 import com.vaadin.event.ShortcutAction.KeyCode.C
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

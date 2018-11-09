@@ -1,4 +1,4 @@
-package com.github.vok.framework
+package eu.vaadinonkotlin.vaadin8.jpa
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
@@ -43,7 +43,7 @@ class JpaProviderTest : DynaTest({
         }
         db {
             expectList(NameAndHobby("Hardy", "Drinking beer"), NameAndHobby("Laurel", "Hiking"), NameAndHobby("Laurel", "Playing piano")) {
-                em.createQuery("select new com.github.vok.framework.NameAndHobby(p.name, h.text) from TestPerson p, TestHobby h where h.person = p", NameAndHobby::class.java).resultList.sorted()
+                em.createQuery("select new eu.vaadinonkotlin.vaadin8.jpa.NameAndHobby(p.name, h.text) from TestPerson p, TestHobby h where h.person = p", NameAndHobby::class.java).resultList.sorted()
             }
         }
     }
@@ -57,8 +57,8 @@ class JpaProviderTest : DynaTest({
         }
         db {
             em.delete(p)
-            expectList { em.findAll<TestPerson>()  }
-            expectList { em.findAll<TestHobby>()  }
+            expectList { em.findAll<TestPerson>() }
+            expectList { em.findAll<TestHobby>() }
         }
     }
 })
