@@ -79,7 +79,17 @@ handle any type of values. Retrofit doesn't support functions returning `Unit` o
 
 If you use `vok-rest-client` from within of your VoK app then VoK will take care of properly
 initializing and destroying of this module. However, if you plan to use this module for testing purposes, it's important to properly initialize it
-and destroy it after all of your tests are done:
+and destroy it after all of your tests are done.
+
+You need to do one of these:
+
+* Call `VaadinOnKotlin.init()` before all tests and `VaadinOnKotlin.destroy()` after all tests. That will
+  also properly initialize and destroy the `vok-rest-client` module. In the example below, this is
+  done via the call to `usingApp()` function, which in turn calls `Bootstrap().contextInitialized(null)`
+  and `Bootstrap().contextDestroyed(null)`.
+* Or you need to init the module manually: `RetrofitClientVokPlugin().init()` and `RetrofitClientVokPlugin().destroy()`
+
+Example test:
 
 ```kotlin
 class PersonRestTest : DynaTest({
