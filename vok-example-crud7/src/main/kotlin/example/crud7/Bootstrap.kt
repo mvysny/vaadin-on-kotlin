@@ -1,14 +1,11 @@
-package com.github.vok.example.crud
+package example.crud7
 
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.sql2o.dataSource
-import eu.vaadinonkotlin.sql2o.dataSourceConfig
+import eu.vaadinonkotlin.vaadin8.jpa.getDataSource
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
-import org.h2.Driver
 import org.slf4j.LoggerFactory
-import org.slf4j.bridge.SLF4JBridgeHandler
 import javax.servlet.ServletContextEvent
 import javax.servlet.ServletContextListener
 import javax.servlet.annotation.WebListener
@@ -27,17 +24,11 @@ import javax.servlet.annotation.WebServlet
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
-        VaadinOnKotlin.dataSourceConfig.apply {
-            driverClassName = Driver::class.java.name
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-            username = "sa"
-            password = ""
-        }
         log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Running DB migrations")
         val flyway = Flyway.configure()
-            .dataSource(VaadinOnKotlin.dataSource)
+            .dataSource(VaadinOnKotlin.getDataSource())
             .load()
         flyway.migrate()
         log.info("Initialization complete")
@@ -52,15 +43,9 @@ class Bootstrap: ServletContextListener {
 
     companion object {
         private val log = LoggerFactory.getLogger(Bootstrap::class.java)
-
-        init {
-            // let java.util.logging log to slf4j
-            SLF4JBridgeHandler.removeHandlersForRootLogger()
-            SLF4JBridgeHandler.install()
-        }
     }
 }
 
-@WebServlet(urlPatterns = ["/*"], name = "MyUIServlet", asyncSupported = true)
+@WebServlet(urlPatterns = arrayOf("/*"), name = "MyUIServlet", asyncSupported = true)
 @VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
 class MyUIServlet : VaadinServlet()

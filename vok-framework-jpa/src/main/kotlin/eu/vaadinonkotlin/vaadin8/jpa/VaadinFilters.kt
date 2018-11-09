@@ -1,6 +1,5 @@
 package eu.vaadinonkotlin.vaadin8.jpa
 
-import com.github.vok.framework.*
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.components.grid.HeaderRow

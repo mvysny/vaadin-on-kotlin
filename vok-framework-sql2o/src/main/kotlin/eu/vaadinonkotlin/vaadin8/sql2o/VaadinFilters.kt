@@ -2,7 +2,6 @@
 
 package eu.vaadinonkotlin.vaadin8.sql2o
 
-import com.github.vok.framework.*
 import com.github.vokorm.*
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid

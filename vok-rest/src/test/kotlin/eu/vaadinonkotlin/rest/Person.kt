@@ -2,7 +2,7 @@ package eu.vaadinonkotlin.rest
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.sql2o.sql2o.dataSource
+import eu.vaadinonkotlin.sql2o.dataSource
 import com.github.vokorm.*
 import org.flywaydb.core.Flyway
 import org.h2.Driver
