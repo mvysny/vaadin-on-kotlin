@@ -1,7 +1,7 @@
 package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.CrudView
-import com.github.vok.framework.Session
+import eu.vaadinonkotlin.vaadin8.Session
 import com.github.vok.framework.db
 import com.github.vok.framework.scheduleAtFixedRate
 import com.github.vok.framework.seconds

@@ -1,7 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.lastAddedPersonCache
-import com.github.vok.framework.Session
+import eu.vaadinonkotlin.vaadin8.Session
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*

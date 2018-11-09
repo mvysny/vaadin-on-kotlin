@@ -14,6 +14,7 @@ import com.vaadin.navigator.ViewDisplay
 import com.vaadin.server.VaadinRequest
 import com.vaadin.shared.ui.ui.Transport
 import com.vaadin.ui.*
+import eu.vaadinonkotlin.vaadin8.Session
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.atomic.AtomicInteger
 

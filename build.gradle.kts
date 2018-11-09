@@ -15,7 +15,7 @@ plugins {
 defaultTasks("clean", "build")
 
 allprojects {
-    group = "com.github.vaadinonkotlin"
+    group = "eu.vaadinonkotlin"
     version = "0.6.0-SNAPSHOT"
 
     repositories {
@@ -118,7 +118,7 @@ subprojects {
             key = local.getProperty("bintray.key")
             pkg(closureOf<BintrayExtension.PackageConfig> {
                 repo = "github"
-                name = "vaadin-on-kotlin"
+                name = "eu.vaadinonkotlin"
                 setLicenses("MIT")
                 vcsUrl = "https://github.com/mvysny/vaadin-on-kotlin"
                 publish = true

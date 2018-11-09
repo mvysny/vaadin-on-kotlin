@@ -4,6 +4,9 @@ import com.github.vok.framework.*
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.components.grid.HeaderRow
+import eu.vaadinonkotlin.vaadin8.DefaultFilterFieldFactory
+import eu.vaadinonkotlin.vaadin8.FilterFieldFactory
+import eu.vaadinonkotlin.vaadin8.FilterRow
 import java.io.Serializable
 import kotlin.reflect.KClass
 

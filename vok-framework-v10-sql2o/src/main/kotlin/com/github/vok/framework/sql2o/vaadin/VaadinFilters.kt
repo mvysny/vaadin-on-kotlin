@@ -3,10 +3,10 @@
 package com.github.vok.framework.sql2o.vaadin
 
 import com.github.vok.framework.FilterFactory
-import com.github.vok.framework.flow.DefaultFilterFieldFactory
-import com.github.vok.framework.flow.FilterFieldFactory
-import com.github.vok.framework.flow.FilterRow
-import com.github.vok.framework.flow.generateFilterComponents
+import eu.vaadinonkotlin.vaadin10.DefaultFilterFieldFactory
+import eu.vaadinonkotlin.vaadin10.FilterFieldFactory
+import eu.vaadinonkotlin.vaadin10.FilterRow
+import eu.vaadinonkotlin.vaadin10.generateFilterComponents
 import com.github.vokorm.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow

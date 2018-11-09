@@ -3,7 +3,7 @@
 package com.github.vok.example.crud.personeditor
 
 import com.github.vok.example.crud.lastAddedPersonCache
-import com.github.vok.framework.Session
+import eu.vaadinonkotlin.vaadin8.Session
 import com.github.vok.framework.db
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.v7compat.*

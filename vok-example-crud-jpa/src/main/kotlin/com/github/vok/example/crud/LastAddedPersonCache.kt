@@ -2,7 +2,7 @@ package com.github.vok.example.crud
 
 import com.github.vok.example.crud.LastAddedPersonCache.Companion.get
 import com.github.vok.example.crud.personeditor.Person
-import com.github.vok.framework.Session
+import eu.vaadinonkotlin.vaadin8.Session
 import org.slf4j.LoggerFactory
 import java.io.Serializable
 
