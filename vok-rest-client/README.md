@@ -2,7 +2,12 @@
 
 # VoK REST Client Support
 
-This module makes it easy to consume REST endpoint exported by another party. We're using the [okhttp](http://square.github.io/okhttp/)
+This module serves two purposes:
+
+* It makes it easy to consume REST endpoints exported by another server and process/show them in your VoK server.
+* It makes it easy to test your VoK REST server endpoints.
+
+We're using the [okhttp](http://square.github.io/okhttp/)
 library, and you can optionally use the [Retrofit](https://square.github.io/retrofit/) support though this is not recommended.
 
 > Note: to expose your objects from your app via REST please see the [vok-rest](../vok-rest) module.
@@ -22,7 +27,7 @@ dependencies {
 Now you can write the REST client. The recommended method is to use `okhttp` directly; you can also use `Retrofit` to generate REST clients out of
 your annotated interfaces but that's not really recommended.
 
-## Using `okhttp`
+### Using `okhttp`
 
 You simply use the `OkHttpClient` to make HTTP calls. See [OkHttp home page](http://square.github.io/okhttp/) for documentation on the API.
 VoK introduces the `exec` method which helps tremendously with synchronous calls. It fails automatically when the response is not in 200..299.
@@ -49,7 +54,7 @@ val client = PersonRestClient("http://localhost:8080/rest/person/")
 println(client.getAll())
 ```
 
-## Retrofit
+### Retrofit
 
 Retrofit uses okhttp under the belt but allows you to create client out of annotated interfaces. Might save you a few keystrokes, but makes it
 impossible to debug. This way is therefore not recommended.
