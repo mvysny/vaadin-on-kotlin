@@ -5,9 +5,9 @@ import com.github.mvysny.dynatest.expectList
 import com.github.vok.example.crud.personeditor.MaritalStatus
 import com.github.vok.example.crud.personeditor.Person
 import com.github.vok.example.crud.personeditor.usingApp
-import com.github.vok.restclient.RetrofitClientVokPlugin
-import com.github.vok.restclient.exec
-import com.github.vok.restclient.jsonArray
+import eu.vaadinonkotlin.restclient.RetrofitClientVokPlugin
+import eu.vaadinonkotlin.restclient.exec
+import eu.vaadinonkotlin.restclient.jsonArray
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request

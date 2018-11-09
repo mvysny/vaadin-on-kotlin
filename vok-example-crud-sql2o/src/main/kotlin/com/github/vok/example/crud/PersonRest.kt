@@ -1,9 +1,9 @@
 package com.github.vok.example.crud
 
 import com.github.vok.example.crud.personeditor.Person
-import com.github.vok.rest.configureToJavalin
-import com.github.vok.rest.crud
-import com.github.vok.rest.getCrudHandler
+import eu.vaadinonkotlin.rest.configureToJavalin
+import eu.vaadinonkotlin.rest.crud
+import eu.vaadinonkotlin.rest.getCrudHandler
 import com.google.gson.GsonBuilder
 import io.javalin.EmbeddedJavalin
 import io.javalin.Javalin
