@@ -1,7 +1,6 @@
-package com.github.vok.framework.sql2o.vaadin
+package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.vok.framework.sql2o.Person
 import com.github.vokorm.Filter
 import com.github.vokorm.ILikeFilter
 import com.github.vokorm.buildFilter
@@ -71,10 +70,10 @@ class DataProvidersTest : DynaTest({
             expect(1L) { Person.dataProvider.withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).getId(Person(id = 1L, personName = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = { it.id!! }).getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
         test("sqldp with filter") {
-            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = {it.id!!}).withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
+            expect(1L) { sqlDataProvider(Person::class.java, "foo", idMapper = { it.id!! }).withFilter { Person::age eq 25 }.getId(Person(id = 1L, personName = "foo", age = 25)) }
         }
     }
 

@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package com.github.vok.framework.sql2o.vaadin
+package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.vok.framework.*
 import com.github.vokorm.*

@@ -1,8 +1,6 @@
-package com.github.vok.framework.sql2o.vaadin
+package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.vok.framework.sql2o.Person
-import com.github.vok.framework.sql2o.usingH2Database
 import com.github.mvysny.karibudsl.v8.asc
 import com.github.mvysny.karibudsl.v8.desc
 import com.github.mvysny.karibudsl.v8.getAll

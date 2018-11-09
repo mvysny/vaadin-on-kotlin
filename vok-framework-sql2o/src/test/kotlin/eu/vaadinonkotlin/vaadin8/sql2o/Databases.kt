@@ -1,4 +1,4 @@
-package com.github.vok.framework.sql2o
+package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vokorm.*

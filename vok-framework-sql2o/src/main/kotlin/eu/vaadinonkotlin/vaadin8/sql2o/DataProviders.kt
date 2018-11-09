@@ -1,4 +1,4 @@
-package com.github.vok.framework.sql2o.vaadin
+package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.vokorm.*
 import com.github.vokorm.dataloader.DataLoader

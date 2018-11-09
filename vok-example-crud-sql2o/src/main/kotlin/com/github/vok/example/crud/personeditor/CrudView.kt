@@ -1,7 +1,7 @@
 package com.github.vok.example.crud.personeditor
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
+import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin8.sql2o.generateFilterComponents
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
 import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
