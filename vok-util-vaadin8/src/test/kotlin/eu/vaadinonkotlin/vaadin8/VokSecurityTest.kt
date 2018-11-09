@@ -8,7 +8,6 @@ import com.github.mvysny.karibudsl.v8.autoDiscoverViews
 import com.github.mvysny.karibudsl.v8.autoViewProvider
 import com.github.mvysny.karibudsl.v8.navigateToView
 import eu.vaadinonkotlin.VaadinOnKotlin
-import com.github.vok.security.*
 import com.vaadin.navigator.Navigator
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener

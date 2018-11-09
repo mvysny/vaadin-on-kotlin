@@ -4,7 +4,6 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
-import com.github.vok.restclient.*
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder
