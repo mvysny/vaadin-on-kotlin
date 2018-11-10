@@ -2,7 +2,7 @@ package example.crudflow
 
 import example.crudflow.person.Person
 import eu.vaadinonkotlin.rest.configureToJavalin
-import eu.vaadinonkotlin.rest.crud
+import eu.vaadinonkotlin.rest.crud2
 import eu.vaadinonkotlin.rest.getCrudHandler
 import com.google.gson.GsonBuilder
 import io.javalin.EmbeddedJavalin
@@ -30,6 +30,6 @@ fun Javalin.configureRest(): Javalin {
     val gson = GsonBuilder().create()
     gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-    crud("/rest/person", Person.getCrudHandler(true))
+    crud2("/rest/person", Person.getCrudHandler(true))
     return this
 }

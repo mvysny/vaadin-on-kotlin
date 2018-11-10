@@ -157,6 +157,8 @@ fun <T> ResponseBody.json(clazz: Class<T>): T = RetrofitClientVokPlugin.gson.fro
  */
 fun <T> ResponseBody.jsonArray(clazz: Class<T>): List<T> = RetrofitClientVokPlugin.gson.fromJsonArray(charStream(), clazz)
 
+val LongRange.length: Long get() = if (isEmpty()) 0 else endInclusive - start + 1
+
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [RetrofitClientVokPlugin.gson].
  * Expect the CRUD endpoint to be exposed in the following manner:
@@ -173,8 +175,14 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
 
-    fun getAll(): List<T> {
-        val request = Request.Builder().url(baseUrl).build()
+    fun getAll(range: LongRange = 0..Long.MAX_VALUE): List<T> {
+        val url = buildUrl(baseUrl) {
+            if (range != 0..Long.MAX_VALUE) {
+                addQueryParameter("offset", range.first.toString())
+                addQueryParameter("limit", range.length.toString())
+            }
+        }
+        val request = Request.Builder().url(url).build()
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
@@ -198,6 +206,11 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
     fun delete(id: String) {
         val request = Request.Builder().delete().url("$baseUrl$id").build()
         client.exec(request) {}
+    }
+
+    private fun buildUrl(baseUrl: String, block: HttpUrl.Builder.()->Unit): HttpUrl {
+        val url = requireNotNull(HttpUrl.parse(baseUrl)) { "Unparssable url: $baseUrl" }
+        return url.newBuilder().apply { block() } .build()!!
     }
 
     companion object {

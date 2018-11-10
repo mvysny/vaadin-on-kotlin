@@ -21,7 +21,7 @@ fun Javalin.configureRest(): Javalin {
     val gson = GsonBuilder().create()
     gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-    crud("/rest/person", Person.getCrudHandler(true))
+    crud2("/rest/person", Person.getCrudHandler(true))
     return this
 }
 
@@ -33,7 +33,7 @@ interface PersonRestClient {
 
     @GET(".")
     @Throws(IOException::class)
-    fun getAll(): List<Person>
+    fun getAll(@Query("offset") offset: Long? = null, @Query("limit") limit: Long? = null): List<Person>
 }
 
 // Demoes direct access via okhttp
@@ -156,11 +156,22 @@ class PersonRestTest : DynaTest({
     group("crud2") {
         lateinit var crud: CrudClient<Person>
         beforeEach { crud = CrudClient("http://localhost:9876/rest/person/", Person::class.java) }
-        test("getAll()") {
-            expectList() { crud.getAll() }
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-            p.save()
-            expectList(p) { crud.getAll() }
+        group("getAll()") {
+            test("simple") {
+                expectList() { crud.getAll() }
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                expectList(p) { crud.getAll() }
+            }
+
+            test("range") {
+                (0..80).forEach {
+                    Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+                }
+                expect((0..80).toList()) { crud.getAll().map { it.age!! - 15 } }
+                expect((10..80).toList()) { crud.getAll(range = 10L..1000L).map { it.age!! - 15 } }
+                expect((10..20).toList()) { crud.getAll(range = 10L..20L).map { it.age!! - 15} }
+            }
         }
 
         group("getOne") {

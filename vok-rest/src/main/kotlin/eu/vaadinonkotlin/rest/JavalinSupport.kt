@@ -3,11 +3,9 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
+import com.github.vokorm.dataloader.EntityDataLoader
 import com.google.gson.Gson
-import io.javalin.Context
-import io.javalin.Javalin
-import io.javalin.NotFoundResponse
-import io.javalin.UnauthorizedResponse
+import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.CrudHandler
 import io.javalin.json.FromJsonMapper
@@ -18,7 +16,6 @@ import org.sql2o.converters.Converter
 import org.sql2o.converters.IntegerConverter
 import org.sql2o.converters.LongConverter
 import org.sql2o.converters.StringConverter
-import java.lang.Long
 
 /**
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
@@ -44,7 +41,7 @@ fun Gson.configureToJavalin() {
  * @param crudHandler retrieves bean instances; you can use [getCrudHandler] to automatically provide instances of vok-orm entities.
  * @param permittedRoles only these roles are allowed to access abovementioned endpoints. See Javalin [io.javalin.security.AccessManager] and the Javalin documentation for more details.
  */
-fun Javalin.crud(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
+fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
     val p = path.trim('/')
     if (p.contains('/')) {
         ApiBuilder.path(p.substringBeforeLast('/')) {
@@ -55,21 +52,46 @@ fun Javalin.crud(path: String, crudHandler: CrudHandler, permittedRoles: Set<Rol
     }
 }
 
-inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allowModification: Boolean = false): CrudHandler {
-    return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification)
+/**
+ * Creates a CRUD Handler for this entity, providing instances of this entity over REST. You should simply pass the CRUD Handler into
+ * the [crud2] function.
+ * @param allowModification if false then POST/PATCH/DELETE will fail with 401 UNAUTHORIZED
+ * @param maxLimit the maximum number of items permitted to be returned by the `getAll()` fetch. If the client attempts to request more
+ * items then 400 BAD REQUEST is returned. Defaults to [Long.MAX_VALUE], definitely change this in production!
+ * @param defaultLimit if `limit` is unspecified in `getAll()` request, then return at most this number of items. By default equals to [maxLimit].
+ */
+inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allowModification: Boolean = false,
+                                                                           maxLimit: Long = Long.MAX_VALUE,
+                                                                           defaultLimit: Long = maxLimit): CrudHandler {
+    return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification, maxLimit, defaultLimit)
 }
 
 /**
  * A very simple handler that exposes instances of given [entityClass] using the `vok-orm` database access library.
+ *
+ * The [getAll] honors the following query parameters:
+ * * `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than [maxLimit]
+ * * TBD sorting
+ * * TBD filters
+ *
  * @param idClass the type of the Entity ID. Only `String`, `Long` and `Integer` IDs are supported as of now; all others will be rejected with an [IllegalArgumentException].
  * @param entityClass the type of the entity for which to provide instances.
  * @param allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
+ * @param maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
+ * items then 400 BAD REQUEST is returned. Defaults to [Int.MAX_VALUE], definitely change this in production!
+ * @param defaultLimit if `limit` is unspecified in [getAll] request, then return at most this number of items. By default equals to [maxLimit].
  */
-class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>, val allowsModification: Boolean) : CrudHandler {
+class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
+                                                val allowsModification: Boolean,
+                                                val maxLimit: Long = Long.MAX_VALUE,
+                                                val defaultLimit: Long = maxLimit) : CrudHandler {
+
+    private val dataLoader = EntityDataLoader(entityClass)
+
     @Suppress("UNCHECKED_CAST")
     private val idConverter = when (idClass) {
         String::class.java -> StringConverter() as Converter<ID>
-        Long::class.java -> LongConverter(false) as Converter<ID>
+        java.lang.Long::class.java -> LongConverter(false) as Converter<ID>
         Integer::class.java -> IntegerConverter(false) as Converter<ID>
         else -> throw IllegalArgumentException("Can't provide converter for $idClass")
     }
@@ -96,7 +118,14 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
     }
 
     override fun getAll(ctx: Context) {
-        ctx.json(db { con.findAll(entityClass) })
+        val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
+        if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
+        val offset = ctx.queryParam("offset")?.toLong() ?: 0
+        if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
+        val fetchRange = offset.toInt2() until (offset + limit).toInt2()
+
+        val result = dataLoader.fetch(range = fetchRange)
+        ctx.json(db { result })
     }
 
     override fun getOne(ctx: Context, resourceId: String) {
@@ -116,3 +145,5 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
         }
     }
 }
+
+fun Long.toInt2() = coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
