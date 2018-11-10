@@ -4,6 +4,7 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
+import com.github.vokorm.dataloader.SortClause
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder
@@ -177,8 +178,8 @@ class PersonRestTest : DynaTest({
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
-                expect((0..80).toList()) { crud.getAll(listOf("age")).map { it.age!! - 15 } }
-                expect((0..80).toList().reversed()) { crud.getAll(listOf("-age")).map { it.age!! - 15 } }
+                expect((0..80).toList()) { crud.getAll(listOf(SortClause("age", true))).map { it.age!! - 15 } }
+                expect((0..80).toList().reversed()) { crud.getAll(listOf(SortClause("age", false))).map { it.age!! - 15 } }
             }
 
             test("count") {

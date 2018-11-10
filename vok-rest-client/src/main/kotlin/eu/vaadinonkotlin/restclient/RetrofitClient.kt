@@ -1,5 +1,8 @@
 package eu.vaadinonkotlin.restclient
 
+import com.github.vokorm.Filter
+import com.github.vokorm.dataloader.DataLoader
+import com.github.vokorm.dataloader.SortClause
 import eu.vaadinonkotlin.VOKPlugin
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -167,10 +170,13 @@ val LongRange.length: Long get() = if (isEmpty()) 0 else endInclusive - start + 
  * * `POST /rest/users` will create an user
  * * `PATCH /rest/users/22` will update an user
  * * `DELETE /rest/users/22` will delete an user
+ *
+ * Since this client is also a [DataLoader], you can use the [DataLoaderAdapter] class from the `vok-framework-sql2o`/`vok-framework-v10-sql2o`
+ * module to turn it into a `DataProvider` which you can feed into Vaadin Grid.
  * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
  */
-class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
-                    val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!) {
+class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
+                    val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!) : DataLoader<T> {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
@@ -184,14 +190,14 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
      * @param range offset and limit to fetch
      * @return a list of items matching the query, may be empty.
      */
-    fun getAll(sortBy: List<String> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
+    fun getAll(sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
         val url = buildUrl(baseUrl) {
             if (range != 0..Long.MAX_VALUE) {
                 addQueryParameter("offset", range.first.toString())
                 addQueryParameter("limit", range.length.toString())
             }
             if (!sortBy.isEmpty()) {
-                addQueryParameter("sort_by", sortBy.joinToString(","))
+                addQueryParameter("sort_by", sortBy.joinToString(",") { "${if(it.asc)"+" else "-"}${it.columnName}" })
             }
         }
         val request = Request.Builder().url(url).build()
@@ -233,4 +239,8 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
     companion object {
         val mediaTypeJson = MediaType.parse("application/json; charset=utf-8")
     }
+
+    override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: IntRange): List<T> = getAll(sortBy, range.first.toLong()..range.endInclusive.toLong())
+
+    override fun getCount(filter: Filter<T>?): Int = getCount().toInt()
 }
