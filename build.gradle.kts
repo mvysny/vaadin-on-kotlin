@@ -20,7 +20,6 @@ allprojects {
 
     repositories {
         jcenter()
-        maven { setUrl("https://dl.bintray.com/mvysny/github") }
         maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
     }
 
