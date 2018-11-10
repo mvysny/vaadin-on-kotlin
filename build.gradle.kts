@@ -16,7 +16,7 @@ defaultTasks("clean", "build")
 
 allprojects {
     group = "eu.vaadinonkotlin"
-    version = "0.6.0"
+    version = "0.6.1-SNAPSHOT"
 
     repositories {
         jcenter()
