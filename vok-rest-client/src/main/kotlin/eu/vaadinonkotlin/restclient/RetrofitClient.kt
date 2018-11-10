@@ -166,6 +166,8 @@ val LongRange.length: Long get() = if (isEmpty()) 0 else endInclusive - start + 
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [RetrofitClientVokPlugin.gson].
  * Expect the CRUD endpoint to be exposed in the following manner:
  * * `GET /rest/users` returns all users
+ * * `GET /rest/users?select=count` returns a single number - the count of all users. This is only necessary for [getCount]
+ * or if you plan to use this client as a backend for Vaadin Grid.
  * * `GET /rest/users/22` returns one users
  * * `POST /rest/users` will create an user
  * * `PATCH /rest/users/22` will update an user
