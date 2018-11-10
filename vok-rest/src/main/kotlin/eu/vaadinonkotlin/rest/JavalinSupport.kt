@@ -4,6 +4,7 @@ package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
 import com.github.vokorm.dataloader.EntityDataLoader
+import com.github.vokorm.dataloader.SortClause
 import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
@@ -59,11 +60,13 @@ fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Ro
  * @param maxLimit the maximum number of items permitted to be returned by the `getAll()` fetch. If the client attempts to request more
  * items then 400 BAD REQUEST is returned. Defaults to [Long.MAX_VALUE], definitely change this in production!
  * @param defaultLimit if `limit` is unspecified in `getAll()` request, then return at most this number of items. By default equals to [maxLimit].
+ * @param allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null.
  */
 inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allowModification: Boolean = false,
                                                                            maxLimit: Long = Long.MAX_VALUE,
-                                                                           defaultLimit: Long = maxLimit): CrudHandler {
-    return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification, maxLimit, defaultLimit)
+                                                                           defaultLimit: Long = maxLimit,
+                                                                           allowSortColumns: Set<String>? = null): CrudHandler {
+    return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification, maxLimit, defaultLimit, allowSortColumns)
 }
 
 /**
@@ -71,20 +74,22 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
  *
  * The [getAll] honors the following query parameters:
  * * `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than [maxLimit]
- * * TBD sorting
+ * * `sort_by=-last_modified,+email,first_name` - a list of sorting clauses. Only those which appear in [allowSortColumns] are allowed.
  * * TBD filters
  *
  * @param idClass the type of the Entity ID. Only `String`, `Long` and `Integer` IDs are supported as of now; all others will be rejected with an [IllegalArgumentException].
- * @param entityClass the type of the entity for which to provide instances.
- * @param allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
- * @param maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
+ * @property entityClass the type of the entity for which to provide instances.
+ * @property allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
+ * @property maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
  * items then 400 BAD REQUEST is returned. Defaults to [Int.MAX_VALUE], definitely change this in production!
- * @param defaultLimit if `limit` is unspecified in [getAll] request, then return at most this number of items. By default equals to [maxLimit].
+ * @property defaultLimit if `limit` is unspecified in [getAll] request, then return at most this number of items. By default equals to [maxLimit].
+ * @property allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null.
  */
 class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
                                                 val allowsModification: Boolean,
                                                 val maxLimit: Long = Long.MAX_VALUE,
-                                                val defaultLimit: Long = maxLimit) : CrudHandler {
+                                                val defaultLimit: Long = maxLimit,
+                                                val allowSortColumns: Set<String>? = null) : CrudHandler {
 
     private val dataLoader = EntityDataLoader(entityClass)
 
@@ -118,13 +123,30 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
     }
 
     override fun getAll(ctx: Context) {
+        // grab fetchRange from the query
         val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
         if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
         val offset = ctx.queryParam("offset")?.toLong() ?: 0
         if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
         val fetchRange = offset.toInt2() until (offset + limit).toInt2()
 
-        val result = dataLoader.fetch(range = fetchRange)
+        fun parseSortClause(sortQuery: String): SortClause = when {
+            sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
+            sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
+            else -> SortClause(sortQuery, true)
+        }
+
+        // grab sorting from the query
+        val sortByParam = ctx.queryParam("sort_by") ?: ""
+        val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { parseSortClause(it) }
+        if (allowSortColumns != null) {
+            sortBy.forEach {
+                if (!allowSortColumns.contains(it.columnName)) throw BadRequestResponse("Cannot sort by ${it.columnName}, only these are allowed: $allowSortColumns")
+            }
+        }
+
+        // fetch the data
+        val result = dataLoader.fetch(sortBy = sortBy, range = fetchRange)
         ctx.json(db { result })
     }
 
@@ -144,6 +166,6 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
             entity.save()
         }
     }
-}
 
-fun Long.toInt2() = coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+    private fun Long.toInt2() = coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+}

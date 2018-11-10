@@ -175,11 +175,23 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
 
-    fun getAll(range: LongRange = 0..Long.MAX_VALUE): List<T> {
+    /**
+     * Fetches data from the back end. The items must match given [filter]
+     * @param filter optional filter which defines filtering to be used for counting the
+     * number of items. If null all items are considered.
+     * @param sortBy optionally sort the beans according to given fields. By default sorts ASC; if you prepend the field with the "-"
+     * character the sorting will be DESC.
+     * @param range offset and limit to fetch
+     * @return a list of items matching the query, may be empty.
+     */
+    fun getAll(sortBy: List<String> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
         val url = buildUrl(baseUrl) {
             if (range != 0..Long.MAX_VALUE) {
                 addQueryParameter("offset", range.first.toString())
                 addQueryParameter("limit", range.length.toString())
+            }
+            if (!sortBy.isEmpty()) {
+                addQueryParameter("sort_by", sortBy.joinToString(","))
             }
         }
         val request = Request.Builder().url(url).build()

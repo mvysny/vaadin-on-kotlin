@@ -172,6 +172,14 @@ class PersonRestTest : DynaTest({
                 expect((10..80).toList()) { crud.getAll(range = 10L..1000L).map { it.age!! - 15 } }
                 expect((10..20).toList()) { crud.getAll(range = 10L..20L).map { it.age!! - 15} }
             }
+
+            test("sort") {
+                (0..80).forEach {
+                    Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+                }
+                expect((0..80).toList()) { crud.getAll(listOf("age")).map { it.age!! - 15 } }
+                expect((0..80).toList().reversed()) { crud.getAll(listOf("-age")).map { it.age!! - 15 } }
+            }
         }
 
         group("getOne") {
