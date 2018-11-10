@@ -198,6 +198,11 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
+    fun getCount(): Long {
+        val request = Request.Builder().url("$baseUrl?select=count").build()
+        return client.exec(request) { response -> response.string().toLong() }
+    }
+
     fun getOne(id: String): T {
         val request = Request.Builder().url("$baseUrl$id").build()
         return client.exec(request) { response -> response.json(itemClass) }
@@ -221,7 +226,7 @@ class CrudClient<T>(val baseUrl: String, val itemClass: Class<T>,
     }
 
     private fun buildUrl(baseUrl: String, block: HttpUrl.Builder.()->Unit): HttpUrl {
-        val url = requireNotNull(HttpUrl.parse(baseUrl)) { "Unparssable url: $baseUrl" }
+        val url = requireNotNull(HttpUrl.parse(baseUrl)) { "Unparsable url: $baseUrl" }
         return url.newBuilder().apply { block() } .build()!!
     }
 

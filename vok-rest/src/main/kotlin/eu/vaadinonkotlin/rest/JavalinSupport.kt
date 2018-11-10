@@ -146,8 +146,13 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
         }
 
         // fetch the data
-        val result = dataLoader.fetch(sortBy = sortBy, range = fetchRange)
-        ctx.json(db { result })
+        if (ctx.queryParam("select") == "count") {
+            val count = dataLoader.getCount()
+            ctx.result(count.toString())
+        } else {
+            val result = dataLoader.fetch(sortBy = sortBy, range = fetchRange)
+            ctx.json(db { result })
+        }
     }
 
     override fun getOne(ctx: Context, resourceId: String) {

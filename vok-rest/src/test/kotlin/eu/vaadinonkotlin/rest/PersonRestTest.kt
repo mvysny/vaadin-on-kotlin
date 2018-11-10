@@ -180,6 +180,14 @@ class PersonRestTest : DynaTest({
                 expect((0..80).toList()) { crud.getAll(listOf("age")).map { it.age!! - 15 } }
                 expect((0..80).toList().reversed()) { crud.getAll(listOf("-age")).map { it.age!! - 15 } }
             }
+
+            test("count") {
+                expect(0) { crud.getCount() }
+                (0..80).forEach {
+                    Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+                }
+                expect(81) { crud.getCount() }
+            }
         }
 
         group("getOne") {
