@@ -16,7 +16,7 @@ Include dependency on this module to your app; just add the following Gradle dep
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-rest:x.y.z"
+    compile "eu.vaadinonkotlin:vok-rest:x.y.z"
 }
 ```
 
@@ -46,7 +46,7 @@ fun Javalin.configureRest(): Javalin {
     gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     get("/rest/person/helloworld2") { ctx -> ctx.json(Person.findAll()) }  // uses Gson
-    crud("/rest/person", Person.getCrudHandler(true))
+    crud2("/rest/person", Person.getCrudHandler(true))
     return this
 }
 ```

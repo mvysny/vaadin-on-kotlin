@@ -51,7 +51,7 @@ The following resource bundles are searched:
 
 * The `VokMessages*.properties` bundle, located in the root package. Create one if you need to customize the localization
   strings in your app.
-* If the message is not found, the standard message bundle of `com.github.vok.VokMessages*.properties` is consulted.
+* If the message is not found, the standard message bundle of `eu.vaadinonkotlin.VokMessages*.properties` is consulted.
 
 Consult the [standard message bundle](src/main/resources/eu/vaadinonkotlin/VokMessages.properties) for the list of messages.
 

@@ -222,8 +222,8 @@ grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFil
 #### Keyboard shortcuts via operator overloading
 
 ```kotlin
-import com.github.vok.framework.vaadin.ModifierKey.Alt
-import com.github.vok.framework.vaadin.ModifierKey.Ctrl
+import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
+import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 
 button("Create New Person (Ctrl+Alt+C)") {
