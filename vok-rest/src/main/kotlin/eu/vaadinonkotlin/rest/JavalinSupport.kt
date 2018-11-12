@@ -239,7 +239,7 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
         val entity = ctx.bodyAsClass(entityClass)
         entity.id = idConverter.convert(resourceId)
         db {
-            val exists = con.findById(entityClass, entity.id!!) != null
+            val exists = con.existsById(entityClass, entity.id!!)
             if (!exists) throw NotFoundResponse("No such entity with ID $resourceId")
             entity.save()
         }
