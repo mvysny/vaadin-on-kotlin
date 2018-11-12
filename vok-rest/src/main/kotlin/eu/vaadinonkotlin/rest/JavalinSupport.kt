@@ -17,6 +17,11 @@ import org.sql2o.converters.Converter
 import org.sql2o.converters.IntegerConverter
 import org.sql2o.converters.LongConverter
 import org.sql2o.converters.StringConverter
+import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 
 /**
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
@@ -109,7 +114,7 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
  * @property allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  * @property allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
+open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
                                                 val allowsModification: Boolean,
                                                 val maxLimit: Long = Long.MAX_VALUE,
                                                 val defaultLimit: Long = maxLimit,
@@ -172,8 +177,6 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
 
         // construct filters
 
-        fun String.nullify(): String? = if (this == "null") null else this
-
         val fields = entityClass.entityMeta.properties
                 .filter { it.name != "limit" && it.name != "offset" && it.name != "sort_by" && it.name != "select" }
                 .associateBy { it.name }
@@ -186,16 +189,16 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
                 }
                 val dbname = prop.dbColumnName
                 val filter: Filter<E> = when {
-                    value.startsWith("eq:") -> OpFilter(dbname, value.substring(3).nullify() as Comparable<Any>, CompareOperator.eq)
-                    value.startsWith("lte:") -> OpFilter(dbname, value.substring(4).nullify() as Comparable<Any>, CompareOperator.le)
-                    value.startsWith("gte:") -> OpFilter(dbname, value.substring(4).nullify() as Comparable<Any>, CompareOperator.ge)
-                    value.startsWith("gt:") -> OpFilter(dbname, value.substring(3).nullify() as Comparable<Any>, CompareOperator.gt)
-                    value.startsWith("lt:") -> OpFilter(dbname, value.substring(3).nullify() as Comparable<Any>, CompareOperator.lt)
+                    value.startsWith("eq:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.eq)
+                    value.startsWith("lte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.valueType) as Comparable<Any>, CompareOperator.le)
+                    value.startsWith("gte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.valueType) as Comparable<Any>, CompareOperator.ge)
+                    value.startsWith("gt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.gt)
+                    value.startsWith("lt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.lt)
                     value.startsWith("isnull:") -> IsNullFilter(dbname)
                     value.startsWith("isnotnull:") -> IsNotNullFilter(dbname)
                     value.startsWith("like:") -> LikeFilter(dbname, value.substring(5))
                     value.startsWith("ilike:") -> ILikeFilter(dbname, value.substring(6))
-                    else -> EqFilter(prop.dbColumnName, value.nullify())
+                    else -> EqFilter(prop.dbColumnName, convertToDatabase(value, prop.valueType))
                 }
                 filters.add(filter)
             }
@@ -210,6 +213,19 @@ class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val 
             val result = dataLoader.fetch(filter, sortBy, fetchRange)
             ctx.json(db { result })
         }
+    }
+
+    protected fun convertToDatabase(value: String, expectedClass: Class<*>): Any? {
+        fun String.nullify(): String? = if (this == "null") null else this
+
+        val nvalue = value.nullify() ?: return null
+        val convertedValue: Any? = when {
+            Number::class.java.isAssignableFrom(expectedClass) -> BigDecimal(nvalue)
+            Date::class.java.isAssignableFrom(expectedClass) -> Instant.ofEpochMilli(nvalue.toLong())
+            expectedClass == LocalDate::class.java || expectedClass == LocalDateTime::class.java || expectedClass == Instant::class.java -> Instant.ofEpochMilli(nvalue.toLong())
+            else -> nvalue
+        }
+        return convertedValue
     }
 
     override fun getOne(ctx: Context, resourceId: String) {

@@ -201,6 +201,7 @@ class PersonRestTest : DynaTest({
                 expect(0) { crud.getCount(buildFilter { Person::personName like "duke " })}
                 expect(81) { crud.getCount(buildFilter { Person::personName ilike "duke " })}
                 expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
+                expect(81) { crud.getCount(buildFilter { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
             }
         }
 
