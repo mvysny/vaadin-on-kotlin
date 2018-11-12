@@ -4,6 +4,7 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
+import com.github.vokorm.buildFilter
 import com.github.vokorm.dataloader.SortClause
 import com.github.vokorm.db
 import com.github.vokorm.findAll
@@ -178,8 +179,8 @@ class PersonRestTest : DynaTest({
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
-                expect((0..80).toList()) { crud.getAll(listOf(SortClause("age", true))).map { it.age!! - 15 } }
-                expect((0..80).toList().reversed()) { crud.getAll(listOf(SortClause("age", false))).map { it.age!! - 15 } }
+                expect((0..80).toList()) { crud.getAll(null, listOf(SortClause("age", true))).map { it.age!! - 15 } }
+                expect((0..80).toList().reversed()) { crud.getAll(null, listOf(SortClause("age", false))).map { it.age!! - 15 } }
             }
 
             test("count") {
@@ -188,6 +189,18 @@ class PersonRestTest : DynaTest({
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
                 expect(81) { crud.getCount() }
+            }
+
+            test("filter") {
+                (0..80).forEach {
+                    Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+                }
+                expect(0) { crud.getCount(buildFilter { Person::age ge 130 })}
+                expect(5) { crud.getCount(buildFilter { Person::age lt 20 })}
+                expect(81) { crud.getCount(buildFilter { Person::personName eq "Duke Leto Atreides" })}
+                expect(0) { crud.getCount(buildFilter { Person::personName like "duke " })}
+                expect(81) { crud.getCount(buildFilter { Person::personName ilike "duke " })}
+                expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
             }
         }
 
