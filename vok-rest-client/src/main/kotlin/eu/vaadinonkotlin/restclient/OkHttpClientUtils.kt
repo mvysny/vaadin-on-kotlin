@@ -89,6 +89,7 @@ fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
 /**
  * Runs given [request] synchronously and then runs [responseBlock] with the response body. The [Response] is properly closed afterwards.
  * Only calls the block on success; uses [checkOk] to check for failure prior calling the block.
+ * @param responseBlock run on success.
  */
 fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T): T =
         newCall(request).execute().use {
