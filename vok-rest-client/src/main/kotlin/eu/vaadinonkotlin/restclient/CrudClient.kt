@@ -4,7 +4,12 @@ import com.github.vokorm.*
 import com.github.vokorm.dataloader.DataLoader
 import com.github.vokorm.dataloader.SortClause
 import okhttp3.*
+import retrofit2.Converter
 import java.lang.IllegalArgumentException
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.time.*
+import java.util.*
 
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [OkHttpClientVokPlugin.gson].
@@ -30,9 +35,12 @@ import java.lang.IllegalArgumentException
  * Since this client is also a [DataLoader], you can use the `DataLoaderAdapter` class from the `vok-framework-sql2o`/`vok-framework-v10-sql2o`
  * module to turn this client into a Vaadin `DataProvider` which you can then feed into Vaadin Grid or ComboBox etc.
  * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
+ * @param converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
+ * zone; it is pretty much recommended to set a specific time zone.
  */
 class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
-                    val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!) : DataLoader<T> {
+                         val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!,
+                         val converter: Converter<in Any, String> = QueryParameterConverter()) : DataLoader<T> {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
@@ -82,13 +90,14 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
             require(propName != "limit" && propName != "offset" && propName != "sort_by" && propName != "select") {
                 "cannot filter on reserved query parameter name $propName"
             }
+            val value = if (filter.value == null) null else converter.convert(filter.value!!)
             val restValue = when (filter) {
-                is EqFilter -> filter.value.toString()
+                is EqFilter -> value
                 is IsNotNullFilter -> "isnotnull:"
                 is IsNullFilter -> "isnull:"
-                is LikeFilter -> "like:${filter.value}"
-                is ILikeFilter ->  "ilike:${filter.value}"
-                is OpFilter -> "${opToRest(filter.operator)}:${filter.value}"
+                is LikeFilter -> "like:$value"
+                is ILikeFilter ->  "ilike:$value"
+                is OpFilter -> "${opToRest(filter.operator)}:$value"
                 else -> throw IllegalArgumentException("Unsupported filter $filter")
             }
             addQueryParameter(propName, restValue)
@@ -141,5 +150,34 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         }
         val request = Request.Builder().url(url).build()
         return client.exec(request) { response -> response.string().toInt() }
+    }
+}
+
+/**
+ * Converts values of different types properly to String, so that they can be consumed by the REST endpoints.
+ * The default implementation uses the following algorithm:
+ * * Converts all [Number] to their decimal format with comma as the decimal separator, e.g. "54" or "2.25"
+ * * Convert all Date-like objects such as [Date], [LocalDate] and [LocalDateTime] to the UTC Epoch long (number of milliseconds since January 1, 1970, 00:00:00 GMT in UTC).
+ * * Fails for everything else.
+ * @param zoneId used to convert [LocalDate] and [LocalDateTime] to UTC Epoch.
+ */
+open class QueryParameterConverter(val zoneId: ZoneId = ZoneId.systemDefault()) : Converter<Any, String> {
+    protected fun convertNumber(number: Number): String = when(number) {
+        is Int, is Short, is Byte, is Long, is BigInteger -> number.toString()
+        is BigDecimal -> number.stripTrailingZeros().toPlainString()
+        is Float -> convertNumber(number.toDouble())
+        is Double -> convertNumber(number.toBigDecimal())
+        else -> throw IllegalArgumentException("$number of type ${number.javaClass} is not supported")
+    }
+
+    override fun convert(value: Any): String = when(value) {
+        is String -> value
+        is Number -> convertNumber(value)
+        is Date -> value.time.toString()
+        is LocalDate -> convert(LocalDateTime.of(value, LocalTime.MIN))
+        is LocalDateTime -> convert(value.atZone(zoneId))
+        is ZonedDateTime -> convert(value.toInstant())
+        is Instant -> value.toEpochMilli().toString()
+        else -> throw IllegalArgumentException("$value of type ${value.javaClass} is not supported")
     }
 }
