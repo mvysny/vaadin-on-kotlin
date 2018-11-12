@@ -1,1 +1,1 @@
-eu.vaadinonkotlin.restclient.RetrofitClientVokPlugin
+eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin

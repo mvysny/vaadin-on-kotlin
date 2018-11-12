@@ -5,7 +5,7 @@ import com.github.mvysny.dynatest.expectList
 import example.crudflow.person.MaritalStatus
 import example.crudflow.person.Person
 import example.crudflow.person.usingApp
-import eu.vaadinonkotlin.restclient.RetrofitClientVokPlugin
+import eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin
 import eu.vaadinonkotlin.restclient.exec
 import eu.vaadinonkotlin.restclient.jsonArray
 import io.javalin.Javalin
@@ -18,7 +18,7 @@ class PersonRestClient(val baseUrl: String) {
     init {
         require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
     }
-    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
     fun helloWorld(): String {
         val request = Request.Builder().url("${baseUrl}/person/helloworld").build()
         return client.exec(request) { response -> response.string() }

@@ -40,7 +40,7 @@ interface PersonRestClient {
 
 // Demoes direct access via okhttp
 class PersonRestClient2(val baseUrl: String) {
-    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
     fun helloWorld(): String {
         val request = Request.Builder().url("${baseUrl}helloworld").build()
         return client.exec(request) { response -> response.string() }
@@ -52,8 +52,8 @@ class PersonRestClient2(val baseUrl: String) {
 }
 
 fun DynaNodeGroup.usingRestClient() {
-    beforeGroup { RetrofitClientVokPlugin().init() }
-    afterGroup { RetrofitClientVokPlugin().destroy() }
+    beforeGroup { OkHttpClientVokPlugin().init() }
+    afterGroup { OkHttpClientVokPlugin().destroy() }
 }
 
 class PersonRestTest : DynaTest({
