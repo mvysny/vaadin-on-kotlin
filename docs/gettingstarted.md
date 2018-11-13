@@ -627,13 +627,14 @@ Finally, add a link to the `ArticleView` view to go back to the index action as 
 > **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
 or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
 
-TODO
-
 ### Adding Some Validation
 
 The entity file, `Article.kt` is about as simple as it can get.
 
-There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of functionality to your entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
+There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of
+functionality to your entities for free, including basic database CRUD
+(Create, Read, Update, Destroy) operations, data validation, as well as
+sophisticated search support and the ability to relate multiple models to one another.
 
 Vaadin-on-Kotlin includes methods to help you validate the data that you send to models.
 Open the `Article.kt` file and edit it:
@@ -641,8 +642,8 @@ Open the `Article.kt` file and edit it:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vokorm.*
+import eu.vaadinonkotlin.vaadin8.sql2o.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -699,7 +700,7 @@ The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/Edi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
@@ -779,7 +780,7 @@ And we'll also add one to the `ArticleView.kt` template as well, so that there's
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -824,6 +825,8 @@ And here's how our app looks so far:
 ![Article List View](images/article_list_view.png)
 
 ### Creating components to clean up duplication in views
+
+TODO
 
 Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact, 
 they both share the same code for displaying the form. 
