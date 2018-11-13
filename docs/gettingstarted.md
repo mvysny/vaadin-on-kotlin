@@ -238,7 +238,7 @@ Launch the web server again and navigate to [http://localhost:8080](http://local
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
 that this new Navigator route is indeed going to `MyWelcomeView` and is rendering the view correctly.
 
-## 5 Getting Up and Running
+## Getting Up and Running
 
 Now that you've seen how to create a view, let's create something with a bit more substance.
 
