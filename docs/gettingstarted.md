@@ -36,10 +36,11 @@ To learn Vaadin:
 * [Vaadin 8 Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
 
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
-the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
-Feel free to experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
-VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
-be applicable in the VoK-based apps later on.
+the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first.
+You can learn Kotlin by doing the [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html); you can learn Vaadin by reading the
+[Vaadin 8 Documentation](https://vaadin.com/docs/v8). You can then experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
+VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the _Karibu-DSL Hello World_ example will
+be very useful in the VoK-based apps later on.
 
 ## What is Vaadin-on-Kotlin?
 
@@ -47,11 +48,6 @@ VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to wr
 It is designed to make the art of programming of web applications easier by making assumptions about what 
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
-
-> **Note:** Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
-But, with the advent of the Kotlin programming language,
-we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
-We believe that Kotlin can replace the traditional approach of using the Dependency Injection to glue stuff together.
 
 VoK is opinionated software. It makes the assumption that there is a "best" way to do things,
 and it's designed to encourage that way - and in some cases to discourage alternatives.
@@ -62,13 +58,21 @@ The VoK philosophy includes three major guiding principles:
   and MVC are deliberately left out.
 * Components as basic building blocks - Vaadin is a single-page web component framework as opposed to
   the traditional multiple page frameworks. As such, it resembles the traditional fat client
-  Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
+  Swing/JavaFX programming and is closer to GUI software development than the traditional web development with HTML and JavaScript.
   VoK promotes code/UI reuse by means of reusing components (your components will range from basic ones
-  to a complex containers, even forms) instead of creating page templates.
+  to a complex containers, even forms) instead of creating page templates. It is a predecessor to the Web Components technology.
 * No magic - No proxies, interceptors, reflection. VoK introduces explicit functions which you can easily
   browse for sources in your Intellij IDEA.
 
-While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
+### Notes For Java Programmers
+
+Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
+But, with the advent of the Kotlin programming language,
+we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
+We believe that the era of traditional approach of using the Dependency Injection, Annotations and auto-discovery magic is over and
+the Kotlin programming language itself is all that's needed to glue stuff together.
+
+While the Dependency Injection (DI) itself is not hard to understand, it comes with unfortunate consequences:
 * The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services may be a desirable
 practice in larger project, it is overkill for simple projects.
 * The DI requires you to run on a DI container, such as a JavaEE server, or tons of Spring libraries. While that's nothing
