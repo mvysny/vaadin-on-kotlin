@@ -330,8 +330,6 @@ In the next section, you will add the ability to create new articles in your app
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
 
-TODO
-
 ### Laying down the groundwork
 
 Firstly, you need a place within the application to create a new article. A great place for that 
@@ -349,7 +347,7 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -383,7 +381,7 @@ To make the "Save Article" button do something, just change the class as follows
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -477,7 +475,7 @@ Vaadin Navigator supports adding parameters after the view name. This way, we ca
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -545,8 +543,8 @@ following contents:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.*
+import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -628,6 +626,8 @@ Finally, add a link to the `ArticleView` view to go back to the index action as 
 
 > **Note:** remember, when you are running the server via `./gradlew web:appRun`, you will either need to kill the server and re-run again,
 or you'll need to run `./gradlew build` in another terminal, to actually see the outcome of your changes.
+
+TODO
 
 ### Adding Some Validation
 
