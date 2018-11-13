@@ -223,8 +223,6 @@ class MyWelcomeView: VerticalLayout(), View {
 }
 ```
 
-TODO
-
 ### Setting the Application Home Page
 Now that we have made the view, we need to tell VoK when we want "Hello, Vaadin-on-Kotlin!" 
 to show up. In our case, we want it to show up when we navigate to the root URL of our site, 
@@ -281,31 +279,43 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which wi
 ```kotlin
 package com.example.vok
 
+import com.github.mvysny.karibudsl.v8.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
+    get("/rest/articles/:id/comments") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        val article = Article.findById(id) ?: throw NotFoundResponse("No article with id $id")
+        ctx.json(article.comments.getAll())
+    }
 }
 ```
 
-This will add the possibility to retrieve the articles via a REST call. Just try
+In order to take these REST endpoints into use, in the `Bootstrap.kt`, edit the `configureRest()` function at the end of the file and make sure it calls our `articleRest()` function:
 
-```bash
-$ wget localhost:8080/rest/articles
+```kotlin
+fun Javalin.configureRest(): Javalin {
+    val gson = GsonBuilder().create()
+    gson.configureToJavalin()
+    articleRest()
+    return this
+}
 ```
 
-You will get 500 internal server error; the server log will show a long stacktrace, with the most interesting
+This will add the possibility to retrieve the articles via a REST call. Just restart the server and try
+
+```bash
+$ curl localhost:8080/rest/articles
+```
+
+You will get `Internal server error`; the server log will show a long stacktrace, with the most interesting
 part being
 ```
 Caused by: org.h2.jdbc.JdbcSQLException: Table "ARTICLE" not found; SQL statement:
@@ -321,6 +331,8 @@ In the next section, you will add the ability to create new articles in your app
 ![Create Article Screenshot](images/create_article.png)
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
+
+TODO
 
 ### Laying down the groundwork
 
