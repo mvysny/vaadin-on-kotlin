@@ -362,15 +362,13 @@ Building forms in VoK is really just that easy!
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
 Currently, the click listener is empty, we will need to add the database code to save the article.
 
-TODO
-
 ### Creating articles
 
 To make the "Save Article" button do something, just change the class as follows:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
@@ -402,11 +400,14 @@ created the database table for Article yet.
 
 ### Creating the Article model
 
-Luckily, we have already created the model - it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
+Luckily, we have already created the model - it's the `Article` entity class.
+We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map
+the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
 > **Note:** Sql2o is smart enough to automatically map column names to the Article class properties,
-which means you don't have to provide the database name for every property inside entities, as that will be done automatically by Sql2o.
+which means you don't have to provide the database name for every property
+inside entities, as that will be done automatically by Sql2o.
 
 To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
 
@@ -446,7 +447,8 @@ Back in `CreateArticleView` view, everything is ready. Try clicking the "Save Ar
 will happen, but the article will be saved into the database. To actually see the article,
 we will redirect to an `ArticleView` which we'll define later.
 
-> **Note:** You might be wondering why the A in Article is capitalized above, whereas most other references to articles in this guide have used lowercase.
+> **Note:** You might be wondering why the A in Article is capitalized
+above, whereas most other references to articles in this guide have used lowercase.
 In this context, we are referring to the class named Article that is defined in `web/src/main/kotlin/com/example/vok/Article.kt`.
 Class names in Kotlin must begin with a capital letter.
 
@@ -454,14 +456,17 @@ Class names in Kotlin must begin with a capital letter.
 
 ### Showing Articles
 
-If you submit the form again now, VoK will just stay on the form. That's not very useful though, so let's add the show action before proceeding.
+If you submit the form again now, VoK will just stay on the form. That's
+not very useful though, so let's add the show action before proceeding.
 
-Vaadin 10 supports adding parameters after the view name. This way, we can pass the Article ID to the `ArticleView` as follows:
-[http://localhost:8080/article/12](http://localhost:8080/article/12). As we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
+Vaadin 10 supports adding parameters after the view name. This way, we
+can pass the Article ID to the `ArticleView` as follows:
+[http://localhost:8080/article/12](http://localhost:8080/article/12). As
+we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -523,7 +528,7 @@ With this change, you should finally be able to create new articles. Visit
 
 ![Show Article](images/show_article_v10.png)
 
-### Listing all articles
+### Listing All Articles
 
 We still need a way to list all our articles, so let's do that. We'll create the `web/src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
 following contents:
@@ -531,11 +536,11 @@ following contents:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
+import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
 
 @Route("articles")
 class ArticlesView: VerticalLayout(), AfterNavigationObserver {
@@ -669,7 +674,7 @@ The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/Edi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
@@ -732,7 +737,7 @@ Just change the `grid {}` block as follows:
         }
 ```
 
-> **Note**: The `ButtonRenderer` will be marked red; you will need to import the class. You can do that simply by pressing `Alt+Enter`
+> **Note**: The `NativeButtonRenderer` will be marked red; you will need to import the class. You can do that simply by pressing `Alt+Enter`
 and choosing *Import* from the menu.
 
 And we'll also add one to the `ArticleView.kt` template as well, so that there's also an "Edit" link on an article's page. Modify the class to look as follows:
@@ -740,7 +745,7 @@ And we'll also add one to the `ArticleView.kt` template as well, so that there's
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -792,7 +797,7 @@ Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with th
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
@@ -850,7 +855,7 @@ Now, let's update the `CreateArticleView.kt` view to use this new component, rew
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
@@ -871,7 +876,7 @@ Then do the same for the `EditArticleView.kt` view:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
@@ -904,12 +909,12 @@ We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything t
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.router.*
+import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
 
 @Route("articles")
 class ArticlesView: VerticalLayout(), AfterNavigationObserver {
@@ -1047,9 +1052,10 @@ You'll need to edit `Article.kt` to add the other side of the association:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vokorm.*
-import com.vaadin.data.provider.DataProvider
+import eu.vaadinonkotlin.vaadin10.sql2o.VokDataProvider
+import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin10.sql2o.withFilter
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1087,27 +1093,22 @@ it may just be handy to check your database status via the `curl` tool. Edit `Ar
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.getAll
+import com.github.mvysny.karibudsl.v10.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
-
-    @GET
-    @Path("/{id}/comments")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments.getAll()
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
+    get("/rest/articles/:id/comments") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        val article = Article.findById(id) ?: throw NotFoundResponse("No article with id $id")
+        ctx.json(article.comments.getAll())
+    }
 }
 ```
 
@@ -1126,7 +1127,7 @@ So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.component.button.Button
@@ -1224,7 +1225,7 @@ in the future, the `div` component will no longer suffice. Create the `web/src/m
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -1271,7 +1272,7 @@ Let us also move that new comment section out to its own component. Create the f
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -1315,11 +1316,9 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
-import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
@@ -1371,7 +1370,7 @@ Let's add a link button to the `CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -1454,6 +1453,8 @@ object LoginService {
     }
 }
 ```
+
+TODO
 
 This is how the `LoginForm` component looks like:
 
