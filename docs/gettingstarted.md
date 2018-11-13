@@ -1529,9 +1529,9 @@ class LoginView : VerticalLayout() {
 }
 ```
 
-The code is a bit longer, but the result is worth it. This is how the `LoginForm` component looks like:
+The code is a bit longer, but the result is worth it. This is how the `LoginView` component looks like:
 
-![Login Form](images/login_form.png)
+![Login View](images/login_form.png)
 
 The `LoginService` class handles the process of login/logout. Upon login,
 we will store the information about the currently logged-in

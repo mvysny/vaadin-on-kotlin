@@ -1523,7 +1523,7 @@ class MyUI : UI() {
 
 This is how the `LoginView` component looks like:
 
-![Login Form](images/login_form-v10.png)
+![Login View](images/login_form-v10.png)
 
 The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
 user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
