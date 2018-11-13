@@ -1167,16 +1167,16 @@ $ curl localhost:8080/rest/articles/1/comments
 
 ### Writing a View
 
-TODO
-
-Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
+Like with any blog, our readers will create their comments directly after
+reading the article, and once they have added their comment, will be sent
+back to the article show page to see their comment now listed.
 
 So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
@@ -1273,6 +1273,8 @@ Now that we have articles and comments working, take a look at the `web/src/main
 It is getting long and awkward. We can create reusable components to clean it up.
 
 ### The Comments Component
+
+TODO
 
 First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
 in the future, the `Label` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
