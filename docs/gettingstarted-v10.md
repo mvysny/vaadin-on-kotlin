@@ -1466,7 +1466,7 @@ val Session.loginService: LoginService get() = getOrPut { LoginService() }
 
 This will handle user log in and will store current user along with the `LoginService` into the session.
 
-Next is the `LoginForm`: just create the `web/src/main/kotlin/com/example/vok/LoginService.kt` file:
+Next is the `LoginView`: just create the `web/src/main/kotlin/com/example/vok/LoginView.kt` file:
 
 ```kotlin
 package com.example.vok
@@ -1521,7 +1521,7 @@ class MyUI : UI() {
 }
 ```
 
-This is how the `LoginForm` component looks like:
+This is how the `LoginView` component looks like:
 
 ![Login Form](images/login_form-v10.png)
 
