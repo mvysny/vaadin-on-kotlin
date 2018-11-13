@@ -288,11 +288,6 @@ fun Javalin.articleRest() {
         ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
     }
     get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
-    get("/rest/articles/:id/comments") { ctx ->
-        val id = ctx.pathParam("id").toLong()
-        val article = Article.findById(id) ?: throw NotFoundResponse("No article with id $id")
-        ctx.json(article.comments.getAll())
-    }
 }
 ```
 
@@ -1022,8 +1017,6 @@ It's time to add a second database table to the application. The second database
 
 ### Creating the 'Comments' Entity
 
-TODO
-
 We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
 ```kotlin
@@ -1108,9 +1101,8 @@ You'll need to edit `Article.kt` to add the other side of the association:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vokorm.*
-import com.vaadin.data.provider.DataProvider
+import eu.vaadinonkotlin.vaadin8.sql2o.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1148,27 +1140,22 @@ it may just be handy to check your database status via the `curl` tool. Edit `Ar
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.getAll
+import com.github.mvysny.karibudsl.v8.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
-
-    @GET
-    @Path("/{id}/comments")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments.getAll()
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
+    get("/rest/articles/:id/comments") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        val article = Article.findById(id) ?: throw NotFoundResponse("No article with id $id")
+        ctx.json(article.comments.getAll())
+    }
 }
 ```
 
@@ -1179,6 +1166,8 @@ $ curl localhost:8080/rest/articles/1/comments
 ```
 
 ### Writing a View
+
+TODO
 
 Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
 
