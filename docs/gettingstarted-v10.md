@@ -1441,24 +1441,89 @@ import java.io.Serializable
 
 data class User(val name: String) : Serializable
 
-object LoginService {
-    fun login(user: User) {
-        Session[User::class] = user
+class LoginService : Serializable {
+
+    fun login(username: String, password: String): Boolean {
+        currentUser = User(username)
         UI.getCurrent().page.reload()
+        return true
     }
-    val currentUser: User? get() = Session[User::class]
+
+    var currentUser: User? = null
+        private set
+
     fun logout() {
         VaadinSession.getCurrent().close()
+        UI.getCurrent().navigate("")
         UI.getCurrent().page.reload()
+    }
+
+    val isLoggedIn get() = currentUser != null
+}
+
+val Session.loginService: LoginService get() = getOrPut { LoginService() }
+```
+
+This will handle user log in and will store current user along with the `LoginService` into the session.
+
+Next is the `LoginForm`: just create the `web/src/main/kotlin/com/example/vok/LoginService.kt` file:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.*
+import eu.vaadinonkotlin.vaadin10.*
+
+@Route("login")
+class LoginView : VerticalLayout(), BeforeEnterObserver {
+
+    override fun beforeEnter(event: BeforeEnterEvent) {
+        if (Session.loginService.isLoggedIn) {
+            event.rerouteTo("")
+        }
+    }
+
+    private val loginForm: LoginForm
+    init {
+        setSizeFull(); isPadding = false; content { center() }
+
+        loginForm = loginForm("Hello!") {
+            classNames.add("loginform")
+            text("Log in as user/user or admin/admin")
+            onLogin { username, password ->
+                if (!Session.loginService.login(username, password)) {
+                    usernameField.isInvalid = true
+                    usernameField.errorMessage = "No such user or invalid password"
+                    passwordField.isInvalid = true
+                    passwordField.errorMessage = "No such user or invalid password"
+                }
+            }
+        }
     }
 }
 ```
 
-TODO
+Now we need to intercept every navigation event and check whether the user is logged in,
+redirecting to the `LoginView` if it isn't. Open the `Bootstrap.kt` class, find the line
+`class MyUI : UI()` and replace it as follows:
+
+```kotlin
+class MyUI : UI() {
+    override fun init(request: VaadinRequest) {
+        addBeforeEnterListener { event ->
+            if (event.navigationTarget != LoginView::class.java && !Session.loginService.isLoggedIn) {
+                event.rerouteTo(LoginView::class.java)
+            }
+        }
+    }
+}
+```
 
 This is how the `LoginForm` component looks like:
 
-![Login Form](images/login_form.png)
+![Login Form](images/login_form-v10.png)
 
 The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
 user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this

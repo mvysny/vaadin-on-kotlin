@@ -152,6 +152,7 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
         db { con.deleteById(entityClass, id) }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun getAll(ctx: Context) {
         // grab fetchRange from the query
         val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
