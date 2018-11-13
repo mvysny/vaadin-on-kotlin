@@ -826,9 +826,7 @@ And here's how our app looks so far:
 
 ### Creating components to clean up duplication in views
 
-TODO
-
-Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact, 
+Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact,
 they both share the same code for displaying the form. 
 Let's remove this duplication by using a common component.
 
@@ -837,7 +835,7 @@ Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with th
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -887,13 +885,13 @@ When you press the "Save Article" button, the `ArticleEditor` component will eit
 The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to 
 build Vaadin UIs in a structured way, using purely Kotlin code.
 This technique is called DSL (Domain Specific Language). The name fits - in a way we have constructed
-a 'language' used to create Vaadin UIs. You can find more information about the Kotlin DSL at the [Kotlin Type-Safe Builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
+a 'language' used to create Vaadin UIs. You can find more information about the DSLs at the [DSLs: Explained](http://www.vaadinonkotlin.eu/dsl_explained.html) article.
 
 Using type-safe builders or DSL has the advantage that the Kotlin compiler will check
 for typos, and the Kotlin IDEA plugin will help us with the auto-completion.
 
 > **Note:** The [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library actually defines such builder functions for every Vaadin component.
-You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/vok/karibudsl/Basic.kt) file
+You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/mvysny/karibudsl/v8/Basic.kt) file
 for the definitions of the sources for the `button` and `textField` builder methods.
 
 Now, let's update the `CreateArticleView.kt` view to use this new component, rewriting it completely:
@@ -901,7 +899,7 @@ Now, let's update the `CreateArticleView.kt` view to use this new component, rew
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -925,7 +923,7 @@ Then do the same for the `EditArticleView.kt` view:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
@@ -961,12 +959,12 @@ We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything t
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.themes.ValoTheme
+import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
 
 @AutoView
 class ArticlesView: VerticalLayout(), View {
@@ -1023,6 +1021,8 @@ Congratulations, you can now create, show, list, update and destroy articles.
 It's time to add a second database table to the application. The second database table will handle comments on articles.
 
 ### Creating the 'Comments' Entity
+
+TODO
 
 We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
