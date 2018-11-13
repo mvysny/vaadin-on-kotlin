@@ -90,3 +90,7 @@ You can target broader audience if you offer your app in multiple languages.
 ## Testing
 
 * The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing)
+
+## Contributing
+
+* [Contributing To Vaadin On Kotlin](contributing.md)

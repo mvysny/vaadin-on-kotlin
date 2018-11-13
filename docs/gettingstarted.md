@@ -1274,14 +1274,12 @@ It is getting long and awkward. We can create reusable components to clean it up
 
 ### The Comments Component
 
-TODO
-
 First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
 in the future, the `Label` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.ui.*
 
@@ -1323,7 +1321,7 @@ Let us also move that new comment section out to its own component. Create the f
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
 
@@ -1369,7 +1367,7 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -1428,7 +1426,7 @@ Let's add a link button to the `CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -1488,12 +1486,12 @@ We will implement a login service and a login form. Just create the `web/src/mai
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.Session
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
+import eu.vaadinonkotlin.vaadin8.Session
 import java.io.Serializable
 
 data class User(val name: String) : Serializable
@@ -1601,7 +1599,7 @@ Remember you don't have to do everything without help. As you need assistance ge
 You're encouraged to help improve the quality of this guide.
 
 Please contribute if you see any typos or factual errors. To get started, you can read our 
-[documentation contributions](todo) section.
+[documentation contributions](contributing.md) section.
 
 You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
 Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.
