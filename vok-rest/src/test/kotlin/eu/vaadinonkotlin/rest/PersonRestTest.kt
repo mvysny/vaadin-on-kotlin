@@ -203,6 +203,15 @@ class PersonRestTest : DynaTest({
                 expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
                 expect(81) { crud.getCount(buildFilter { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
             }
+
+            test("bind client to non-Entity class") {
+                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+                p.save()
+                val p2 = Person2(p.id, 45, "Duke Leto Atreides")
+                val client = CrudClient("http://localhost:9876/rest/person/", Person2::class.java)
+                val all = client.getAll()
+                expectList(p2) { all }
+            }
         }
 
         group("getOne") {
@@ -288,3 +297,5 @@ interface PersonCrudClient {
     @Throws(IOException::class)
     fun delete(@Path("id") id: String): Unit?
 }
+
+data class Person2(var id: Long? = null, var age: Int? = null, var personName: String? = null)
