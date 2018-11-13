@@ -1434,9 +1434,9 @@ We will implement a login service and a login form. Just create the `web/src/mai
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.flow.Session
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinSession
+import eu.vaadinonkotlin.vaadin10.Session
 import java.io.Serializable
 
 data class User(val name: String) : Serializable
