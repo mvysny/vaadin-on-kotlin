@@ -38,7 +38,7 @@ To learn Vaadin:
 > **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
 the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first.
 You can learn Kotlin by doing the [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html); you can learn Vaadin by reading the
-[Vaadin 8 Documentation](https://vaadin.com/docs/v8). You can then experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
+[Vaadin 10 Documentation](https://vaadin.com/docs/v10/flow/Overview.html). You can then experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
 VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the _Karibu-DSL Hello World_ example will
 be very useful in the VoK-based apps later on.
 
@@ -203,7 +203,7 @@ Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
@@ -272,21 +272,28 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which wi
 ```kotlin
 package com.example.vok
 
+import com.github.mvysny.karibudsl.v10.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
+}
+```
 
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
+In order to take these REST endpoints into use, in the `Bootstrap.kt`, edit the `configureRest()` function at the end of the file and make sure it calls our `articleRest()` function:
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
+```kotlin
+fun Javalin.configureRest(): Javalin {
+    val gson = GsonBuilder().create()
+    gson.configureToJavalin()
+    articleRest()
+    return this
 }
 ```
 
@@ -330,7 +337,7 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.flow.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
@@ -354,6 +361,8 @@ Building forms in VoK is really just that easy!
 
 There is a problem with the form though - when you click the "Save Article" button, nothing will happen.
 Currently, the click listener is empty, we will need to add the database code to save the article.
+
+TODO
 
 ### Creating articles
 
