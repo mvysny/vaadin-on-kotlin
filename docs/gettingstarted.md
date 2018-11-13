@@ -170,7 +170,7 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 
 > **Note:** changes in theme files will only be propagated when you are running `./gradlew clean web:appRun` and there is no 
 `styles.css` file. If there is, your changes will be ignored until you compile the theme again, by running
-`./gradlew vaadinThemeCompile`.
+`./gradlew vaadinThemeCompile`. Just delete the `styles.css` file, to apply changes to your styles immediately as you edit them.
 >
 > Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
  running `./gradlew build`.
@@ -183,7 +183,7 @@ have your software configured correctly enough to serve a page.
 To get VoK saying "Hello", you need to create a View.
 
 A View's purpose is to provide a Vaadin Component (usually a Layout containing other components), which then interacts with the user.
-The Navigator decides which View receives which requests. Usually there is exactly one route to a View. You can collect the data
+The Navigator decides which View receives which requests. There is exactly one route to a View. You can collect the data
 to be displayed right in the View itself (for small applications), or you can define so-called Service layer
 (a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
 VoK however does not enforce this, and we will not use this pattern in the tutorial.
@@ -208,9 +208,8 @@ Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -223,6 +222,8 @@ class MyWelcomeView: VerticalLayout(), View {
     }
 }
 ```
+
+TODO
 
 ### Setting the Application Home Page
 Now that we have made the view, we need to tell VoK when we want "Hello, Vaadin-on-Kotlin!" 
