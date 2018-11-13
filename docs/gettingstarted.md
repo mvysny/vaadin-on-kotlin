@@ -1487,67 +1487,44 @@ We will implement a login service and a login form. Just create the `web/src/mai
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.vaadin.icons.VaadinIcons
 import com.vaadin.server.*
 import com.vaadin.ui.*
-import com.vaadin.ui.themes.ValoTheme
 import eu.vaadinonkotlin.vaadin8.Session
+import eu.vaadinonkotlin.vaadin8.loginForm
 import java.io.Serializable
 
 data class User(val name: String) : Serializable
 
-object LoginService {
-    fun login(user: User) {
-        Session[User::class] = user
+class LoginService : Serializable {
+    fun login(username: String, password: String): Boolean {
+        currentUser = User(username)
         Page.getCurrent().reload()
+        return true
     }
-    val currentUser: User? get() = Session[User::class]
+    var currentUser: User? = null
+    private set
+
     fun logout() {
         VaadinSession.getCurrent().close()
         Page.getCurrent().reload()
     }
+
+    val isLoggedIn get() = currentUser != null
 }
 
-class LoginForm : VerticalLayout() {
-    private lateinit var username: TextField
-    private lateinit var password: TextField
+val Session.loginService: LoginService get() = getOrPut { LoginService() }
+
+class LoginView : VerticalLayout() {
     init {
         setSizeFull()
-        panel {
-            w = 500.px; alignment = Alignment.MIDDLE_CENTER
-            verticalLayout {
-                w = fillParent
-                horizontalLayout {
-                    w = fillParent
-                    label("Welcome") {
-                        alignment = Alignment.BOTTOM_LEFT
-                        addStyleNames(ValoTheme.LABEL_H4, ValoTheme.LABEL_COLORED)
-                    }
-                    label("Vaadin-on-Kotlin Sample App") {
-                        alignment = Alignment.BOTTOM_RIGHT; styleName = ValoTheme.LABEL_H3; expandRatio = 1f
-                    }
-                }
-                horizontalLayout {
-                    w = fillParent
-                    username = textField("Username") {
-                        expandRatio = 1f; w = fillParent
-                        icon = VaadinIcons.USER; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
-                    }
-                    password = passwordField("Password") {
-                        expandRatio = 1f; w = fillParent
-                        icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
-                    }
-                    button("Sign In") {
-                        alignment = Alignment.BOTTOM_RIGHT; setPrimary()
-                        onLeftClick { login() }
-                    }
+        loginForm("Vaadin-on-Kotlin Sample App") {
+            alignment = Alignment.MIDDLE_CENTER
+            onLogin { username, password ->
+                if (!Session.loginService.login(username, password)) {
+                    usernameField.componentError = UserError("The user does not exist or invalid password")
                 }
             }
         }
-    }
-
-    private fun login() {
-        LoginService.login(User(username.value))
     }
 }
 ```
@@ -1556,15 +1533,18 @@ The code is a bit longer, but the result is worth it. This is how the `LoginForm
 
 ![Login Form](images/login_form.png)
 
-The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
-user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
-will reinstantiate the `MyUI`. We will now configure `MyUI` to show a login form if there's nobody logged in yet. Just
+The `LoginService` class handles the process of login/logout. Upon login,
+we will store the information about the currently logged-in
+user into the session. This will serve as a marker that there is someone
+logged in. We will also tell the browser to reload the page - this
+will reinstantiate the `MyUI`. We will now configure `MyUI` to show a
+login form if there's nobody logged in yet. Just
 edit `MyUI.kt` and change the `init()` method as follows:
 
 ```kotlin
     override fun init(request: VaadinRequest?) {
-        if (LoginService.currentUser == null) {
-            setContent(LoginForm())
+        if (!Session.loginService.isLoggedIn) {
+            setContent(LoginView())
             return
         }
         setContent(content)
