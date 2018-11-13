@@ -1481,7 +1481,7 @@ Remember you don't have to do everything without help. As you need assistance ge
 You're encouraged to help improve the quality of this guide.
 
 Please contribute if you see any typos or factual errors. To get started, you can read our
-[documentation contributions](todo) section.
+[documentation contributions](contributing.html) section.
 
 You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
 Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.
