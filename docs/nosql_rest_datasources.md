@@ -122,7 +122,7 @@ particular data provider, you need to:
 This is a lot of manual work. Fortunately, if your data provider support full filter logic, you
 can use VoK's provided filtering components.
 
-#### FilterFactory
+## Filter Factory
 
 If your filters support all logic as required by the `FilterFactory` interface, then
 you can use the `FilterFieldFactory` class to automatically create the filtering UI components
@@ -133,7 +133,7 @@ your needs (e.g. make `createField()` return null for columns you don't want to 
 Then, in your code just call
 
 ```kotlin
-grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFactory)
+grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFactory, filterFieldFactory)
 ```
 
 to create the filter row and populate it with filter components.
@@ -141,3 +141,12 @@ to create the filter row and populate it with filter components.
 Please read the documentation for the [vok-util-vaadin8](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin8)
 or [vok-util-vaadin10](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
 module for more information on generating filters.
+
+If you're using the standard `Filter` hierarchy as provided by VOK (which
+all of VOK's `DataProvider` do), it is already compatible with `FilterFactory` via the
+`SqlFilterFactory` implementor. In that case you can use the more simplified generator which
+will also use `DefaultFilterFieldFactory` by default:
+
+```kotlin
+grid.appendHeaderRow().generateFilterComponents(grid, itemClass)
+```
