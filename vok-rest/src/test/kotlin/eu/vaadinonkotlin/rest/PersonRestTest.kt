@@ -14,14 +14,9 @@ import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.http.*
-import java.io.Closeable
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
-import kotlin.properties.ReadOnlyProperty
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty0
 import kotlin.test.expect
 
 fun Javalin.configureRest(): Javalin {
@@ -272,7 +267,9 @@ class PersonRestTest : DynaTest({
     }
     group("bind client to non-Entity class") {
         group("get all") {
-            val client: CrudClient<Person2> by createBeforeEach { CrudClient("http://localhost:9876/rest/person/", Person2::class.java) }
+            lateinit var client: CrudClient<Person2>
+            beforeEach { client = CrudClient("http://localhost:9876/rest/person/", Person2::class.java) }
+
             test("simple smoke test") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
@@ -295,15 +292,6 @@ class PersonRestTest : DynaTest({
         }
     }
 })
-
-fun <T> DynaNodeGroup.createBeforeEach(factory: ()->T): ReadOnlyProperty<Nothing?, T> = object : ReadOnlyProperty<Nothing?, T> {
-    private var instance: T? = null
-    override fun getValue(thisRef: Nothing?, property: KProperty<*>): T = instance!!
-    init {
-        beforeEach { instance = factory() }
-        afterEach { (instance as? Closeable)?.close(); instance = null }
-    }
-}
 
 interface PersonCrudClient {
     @GET(".")
