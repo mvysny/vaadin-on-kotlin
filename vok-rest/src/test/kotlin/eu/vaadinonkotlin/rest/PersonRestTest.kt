@@ -181,6 +181,7 @@ class PersonRestTest : DynaTest({
                 }
                 expect((0..80).toList()) { crud.getAll(null, listOf(SortClause("age", true))).map { it.age!! - 15 } }
                 expect((0..80).toList().reversed()) { crud.getAll(null, listOf(SortClause("age", false))).map { it.age!! - 15 } }
+                expect((0..80).toSet()) { crud.getAll(null, listOf(SortClause(Person::personName.name, true))).map { it.age!! - 15 } .toSet() }
             }
 
             test("count") {
