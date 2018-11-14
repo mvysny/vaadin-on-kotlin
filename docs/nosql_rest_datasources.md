@@ -5,9 +5,39 @@
 VoK provides no out-of-the-box support for accessing external NoSQL or REST data
 sources and polling them for data. To access data from a NoSQL database you should use appropriate NoSQL
 database Java driver; to access data from a REST endpoint you can use a REST client
-library such as [Retrofit](https://square.github.io/retrofit/).
+library such as [OkHttp](http://square.github.io/okhttp/).
 
-## Feeding Grid with data
+## VoK REST Support
+
+VoK provides full support for publishing and consuming entities in a CRUD
+fashion over REST, with all features like paging, sorting and filtering. VoK
+even provides an implementation of Vaadin Grid's `DataProvider` which fetches
+data over REST.
+
+There are two modules on VoK providing REST support:
+
+* [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) when you need to publish data
+from your VoK server to the world;
+* [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
+when you need to consume REST endpoints published elsewhere, maybe displaying the
+data in a Grid.
+
+Please click the links to read the module documentation - it should contain
+all information necessary for you to get started.
+
+There is also an example project which exposes a list of entities over REST server,
+then self-consumes them via REST client connected to localhost:8080 and exposes
+them in a Grid:
+
+TBD LINK
+
+## The 'Behind The Scenes' Info
+
+This chapter documents the general information what you need to write a custom `DataProvider`
+for your particular type of data source. It is important to understand the basics,
+before you start using whatever VoK provides for you.
+
+### Feeding Grid With Data
 
 In order to feed the Vaadin Grid with data, you need to have two things:
 
@@ -38,7 +68,7 @@ Grid will never attempt to pass in any filters on its own (it will always set
 `Query.filter` to `null`). If you need filtering, you need to create
 a filter bar and implement it yourself to do that. We'll go through this in a minute.
 
-### Adding support for sorting
+### Adding Support For Sorting
 
 If you need certain columns in the Grid to be sortable, you need to support
 sorting clauses in your data provider implementation - you need to pay attention
@@ -58,7 +88,7 @@ It is best for your `DataProvider` to throw `IllegalArgumentException` in `Abstr
 any unsupported sort clause it encounters in the `Query.sortOrders` field. Then, document all supported sorting criteria
 in the kdoc for your `DataProvider`, so that you'll know which columns to mark as non-sortable in the Grid.
 
-### Adding support for filtering
+### Adding Support For Filtering
 
 To add support for filters, both of your `sizeInBackEnd()` and `fetchFromBackEnd()` implementations
 must take the `Query.filter` field into consideration.
@@ -108,4 +138,4 @@ to create the filter row and populate it with filter components.
 
 Please read the documentation for the [vok-util-vaadin8](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin8)
 or [vok-util-vaadin10](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
-module for more information.
+module for more information on generating filters.

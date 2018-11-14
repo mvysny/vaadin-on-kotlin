@@ -9,7 +9,9 @@ This module serves two purposes:
 * It makes it easy to test your VoK REST server endpoints.
 
 We're using the [okhttp](http://square.github.io/okhttp/)
-library, and you can optionally use the [Retrofit](https://square.github.io/retrofit/) support though this is not recommended.
+library, and you can optionally use the [Retrofit](https://square.github.io/retrofit/)
+support though this is not recommended: it is based on annotation magic which tends
+to fail with mysterious ways.
 
 > Note: to expose your objects from your app via REST please see the [vok-rest](../vok-rest) module.
 

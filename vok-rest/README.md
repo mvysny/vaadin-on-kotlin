@@ -47,7 +47,7 @@ fun Javalin.configureRest(): Javalin {
     gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     get("/rest/person/helloworld2") { ctx -> ctx.json(Person.findAll()) }  // uses Gson
-    crud2("/rest/person", Person.getCrudHandler(true))
+    crud2("/rest/person", Person.getCrudHandler(true))  // a full-blown CRUD Handler
     return this
 }
 ```
@@ -61,6 +61,33 @@ curl http://localhost:8080/rest/person
 This should hit the route defined via the `crud("/rest/person")` and should print all personnel in your database.
 
 Please consult [Javalin Documentation](https://javalin.io/documentation) for more details on how to configure REST endpoints.
+
+### CRUD Handler
+
+VoK provides a full-blown REST CRUD handler for any vok-orm Entity, which exposes given entity in a standard way over REST. Attaching the CRUD handler to, say, `/rest/users` will
+export the following endpoints:
+
+* `GET /rest/users` returns all users
+* `GET /rest/users/22` returns one users
+* `POST /rest/users` will create an user
+* `PATCH /rest/users/22` will update an user
+* `DELETE /rest/users/22` will delete an user
+
+The Handler will automatically use vok-orm's `EntityDataProvider` to fetch instances of the entity.
+
+The `get all` endpoint supports the following query parameters:
+
+* `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than `maxLimit`
+* `sort_by=-last_modified,+email,first_name` - a list of sorting clauses.
+Only those which appear in `allowSortColumns` are allowed. Prepending a column name with
+`-` will sort DESC.
+* To define filters, simply pass in column names with the values, for example `age=81`. You can also specify operators: one of
+`eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. You can pass single column name
+multiple times to AND additional clauses, for example `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`. OR filters are not supported.
+* `select=count` - if this is passed in, then instead of a list of matching objects a single number will be returned: the number of
+records matching given filters.
+
+All column names are expected to be Kotlin property names of the entity in question.
 
 ### Testing your REST endpoints
 
