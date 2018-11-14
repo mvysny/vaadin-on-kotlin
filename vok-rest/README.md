@@ -69,7 +69,7 @@ exposes given entity in a standard way over REST (the `crud2()` function as seen
 Attaching the CRUD handler to, say, `/rest/users` will export the following endpoints:
 
 * `GET /rest/users` returns all users
-* `GET /rest/users/22` returns one users
+* `GET /rest/users/22` returns one user
 * `POST /rest/users` will create an user
 * `PATCH /rest/users/22` will update an user
 * `DELETE /rest/users/22` will delete an user

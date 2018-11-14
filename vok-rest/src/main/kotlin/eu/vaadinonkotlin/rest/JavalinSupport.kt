@@ -39,7 +39,7 @@ fun Gson.configureToJavalin() {
 /**
  * Configures a CRUD handler to a particular endpoint, e.g. `javalin.crud("/rest/users", User.getCrudHandler(false))`. The following endpoints are published:
  * * `GET /rest/users` returns all users
- * * `GET /rest/users/22` returns one users
+ * * `GET /rest/users/22` returns one user
  * * `POST /rest/users` will create an user
  * * `PATCH /rest/users/22` will update an user
  * * `DELETE /rest/users/22` will delete an user
