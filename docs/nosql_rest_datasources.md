@@ -4,8 +4,10 @@
 
 VoK provides no out-of-the-box support for accessing external NoSQL or REST data
 sources and polling them for data. To access data from a NoSQL database you should use appropriate NoSQL
-database Java driver; to access data from a REST endpoint you can use a REST client
-library such as [OkHttp](http://square.github.io/okhttp/).
+database Java driver; to access data from a REST endpoint you can use the
+[vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
+VOK module which uses the [OkHttp](http://square.github.io/okhttp/) REST client
+library and adds couple of useful functionality on top of that.
 
 ## VoK REST Support
 
