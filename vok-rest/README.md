@@ -64,8 +64,9 @@ Please consult [Javalin Documentation](https://javalin.io/documentation) for mor
 
 ### CRUD Handler
 
-VoK provides a full-blown REST CRUD handler for any vok-orm Entity, which exposes given entity in a standard way over REST. Attaching the CRUD handler to, say, `/rest/users` will
-export the following endpoints:
+VoK provides a full-blown REST CRUD handler for any vok-orm entity, which
+exposes given entity in a standard way over REST (the `crud2()` function as seen above).
+Attaching the CRUD handler to, say, `/rest/users` will export the following endpoints:
 
 * `GET /rest/users` returns all users
 * `GET /rest/users/22` returns one users
