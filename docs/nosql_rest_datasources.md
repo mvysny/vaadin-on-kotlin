@@ -21,7 +21,7 @@ There are two modules on VoK providing REST support:
 * [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) when you need to publish data
 from your VoK server to the world;
 * [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
-when you need to consume REST endpoints published elsewhere, maybe displaying the
+when you need to consume REST endpoints published elsewhere, and maybe displaying the fetched
 data in a Grid.
 
 Please click the links to read the module documentation - it should contain
