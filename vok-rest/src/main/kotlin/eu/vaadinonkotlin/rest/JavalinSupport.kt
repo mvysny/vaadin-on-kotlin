@@ -163,14 +163,26 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
         if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
         val fetchRange = offset.toInt2() until (offset + limit).toInt2()
 
-        fun parseSortClause(sortQuery: String): SortClause = when {
-            sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
-            sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
-            else -> SortClause(sortQuery, true)
-        }
+        // maps Kotlin Bean property name to PropertyMeta which will help us getting the actual column database name.
+        val fields = entityClass.entityMeta.properties
+                .filter { it.name != "limit" && it.name != "offset" && it.name != "sort_by" && it.name != "select" }
+                .associateBy { it.name }
+
 
         // grab sorting from the query
         val sortByParam = ctx.queryParam("sort_by") ?: ""
+        // converts the sort_by parameter piece into a SortClause
+        fun parseSortClause(sortQuery: String): SortClause {
+            val sortClause = when {
+                sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
+                sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
+                else -> SortClause(sortQuery, true)
+            }
+            // beware: sortClause.columnName is not yet an actual DB column name, but rather a property name. We need to convert it to the column name first.
+            if (allowSortColumns != null && !allowSortColumns.contains(sortClause.columnName)) throw BadRequestResponse("Cannot sort by ${sortClause.columnName}, only these are allowed: $allowSortColumns")
+            val meta = fields[sortClause.columnName] ?: throw BadRequestResponse("Invalid property name: ${sortClause.columnName}. Available properties: ${fields.keys}")
+            return SortClause(meta.dbColumnName, sortClause.asc)
+        }
         val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { parseSortClause(it) }
         if (allowSortColumns != null) {
             sortBy.forEach {
@@ -178,11 +190,8 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
             }
         }
 
-        // construct filters
 
-        val fields = entityClass.entityMeta.properties
-                .filter { it.name != "limit" && it.name != "offset" && it.name != "sort_by" && it.name != "select" }
-                .associateBy { it.name }
+        // construct filters
         val filters = mutableSetOf<Filter<E>>()
         for ((name, prop) in fields.entries) {
             val value = ctx.queryParam(name)
