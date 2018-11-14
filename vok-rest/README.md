@@ -58,7 +58,7 @@ To test it out, just run the following in your command line:
 curl http://localhost:8080/rest/person
 ```
 
-This should hit the route defined via the `crud("/rest/person")` and should print all personnel in your database.
+This should hit the route defined via the `crud2("/rest/person")` and should print all personnel in your database.
 
 Please consult [Javalin Documentation](https://javalin.io/documentation) for more details on how to configure REST endpoints.
 
