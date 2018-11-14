@@ -29,9 +29,8 @@ all information necessary for you to get started.
 
 There is also an example project which exposes a list of entities over REST server,
 then self-consumes them via REST client connected to localhost:8080 and exposes
-them in a Grid:
-
-TBD LINK
+them in a Grid: [vaadin8-restdataprovider-example](https://github.com/mvysny/vaadin8-restdataprovider-example)
+and [vaadin10-restdataprovider-example](https://github.com/mvysny/vaadin10-restdataprovider-example).
 
 ## The 'Behind The Scenes' Info
 
