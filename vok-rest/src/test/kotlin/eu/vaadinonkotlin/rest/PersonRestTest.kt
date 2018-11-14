@@ -204,6 +204,14 @@ class PersonRestTest : DynaTest({
                 expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
                 expect(81) { crud.getCount(buildFilter { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
             }
+
+            test("filter on same fields") {
+                (0..80).forEach {
+                    Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+                }
+                expect(0) { crud.getCount(buildFilter { Person::age lt 20 and (Person::age gt 30) })}
+                expectList() { crud.getAll(buildFilter { Person::age lt 20 and (Person::age gt 30) })}
+            }
         }
 
         group("getOne") {

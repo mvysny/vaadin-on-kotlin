@@ -194,8 +194,7 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
         // construct filters
         val filters = mutableSetOf<Filter<E>>()
         for ((name, prop) in fields.entries) {
-            val value = ctx.queryParam(name)
-            if (value != null) {
+            ctx.queryParams(name).forEach { value ->
                 if (allowFilterColumns != null) {
                     require(allowFilterColumns.contains(name)) { "Cannot filter by $name: only the following columns are allowed to be sorted upon: $allowFilterColumns" }
                 }
