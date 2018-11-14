@@ -19,8 +19,8 @@ allprojects {
     version = "0.6.1-SNAPSHOT"
 
     repositories {
-        jcenter()
-        maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
+        mavenCentral()
+        maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
     }
 
     tasks {
