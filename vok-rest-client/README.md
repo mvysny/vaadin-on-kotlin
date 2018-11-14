@@ -57,6 +57,51 @@ val client = PersonRestClient("http://localhost:8080/rest/person/")
 println(client.getAll())
 ```
 
+The `RetrofitClientVokPlugin.okHttpClient` is constructed automatically by the
+VOK module loading mechanism in `RetrofitClientVokPlugin.init()`. You can
+create and configure it yourself, then simply assign your http client to
+`RetrofitClientVokPlugin.okHttpClient` - it will not be overwritten by `init()`.
+
+### Polling CRUD Endpoint For Data
+
+You can use the `CrudClient` class to access CRUD REST endpoints:
+
+```kotlin
+val crud = CrudClient("http://localhost:8080/rest/person/", Person::class.java)
+println(crud.getAll())
+```
+
+The CRUD client supports filtering, paging and sorting. It also implements the `DataLoader` interface
+which is very easy to turn into Vaadin 8 or Vaadin 10's `DataProvider` which can
+then be fed directly to the Vaadin `Grid` component, making it easy to display
+CRUD contents in a tabular fashion:
+
+```kotlin
+val crud = CrudClient("http://localhost:8080/rest/person/", Person::class.java)
+val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurableFilter2()
+grid.dataProvider = dp
+```
+
+The CRUD Client expects the CRUD endpoint to expose data in the following fashion:
+
+* `GET /rest/users` returns all users
+* `GET /rest/users?select=count` returns a single number - the count of all users. This is only necessary for `getCount()`
+or if you plan to use this client as a backend for Vaadin Grid.
+* `GET /rest/users/22` returns one users
+* `POST /rest/users` will create an user
+* `PATCH /rest/users/22` will update an user
+* `DELETE /rest/users/22` will delete an user
+
+Paging/sorting/filtering is supported: the following query parameters will simply be added to the "get all" URL request:
+
+* `limit` and `offset` for result paging. Both must be 0 or greater. The server may impose max value limit on the `limit` parameter.
+* `sort_by=-last_modified,+email,first_name` - a list of sorting clauses. The server may restrict sorting by only a selected subset of properties.
+* The filters are simply converted to query parameters, for example `age=81`. `OpFilter`s are also supported: the value will be prefixed with a special operator prefix:
+`eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. A full example is `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`.
+OR filters are not supported - passing `OrFilter` will cause `getAll()` to throw `IllegalArgumentException`.
+
+All column names are expected to be Kotlin property name of the bean.
+
 ### Retrofit
 
 Retrofit uses okhttp under the belt but allows you to create client out of annotated interfaces. Might save you a few keystrokes, but makes it

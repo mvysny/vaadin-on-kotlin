@@ -33,7 +33,12 @@ import java.util.*
  * All column names are expected to be Kotlin [kotlin.reflect.KProperty1.name] of the entity in question.
  *
  * Since this client is also a [DataLoader], you can use the `DataLoaderAdapter` class from the `vok-framework-sql2o`/`vok-framework-v10-sql2o`
- * module to turn this client into a Vaadin `DataProvider` which you can then feed into Vaadin Grid or ComboBox etc.
+ * module to turn this client into a Vaadin `DataProvider` which you can then feed into Vaadin Grid or ComboBox etc:
+ * ```
+ * val crud = CrudClient("http://localhost:8080/rest/person/", Person::class.java)
+ * val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurableFilter2()
+ * grid.dataProvider = dp
+ * ```
  * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
  * @param converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
  * zone; it is pretty much recommended to set a specific time zone.
