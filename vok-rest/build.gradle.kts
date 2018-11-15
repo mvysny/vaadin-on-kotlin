@@ -18,7 +18,7 @@ dependencies {
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
     testCompile("org.flywaydb:flyway-core:${ext["flyway_version"]}")
     testCompile("com.h2database:h2:${ext["h2_version"]}")
-    testCompile("ch.qos.logback:logback-classic:${ext["logback_version"]}")
+    testCompile("org.slf4j:slf4j-simple:${ext["slf4j_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
