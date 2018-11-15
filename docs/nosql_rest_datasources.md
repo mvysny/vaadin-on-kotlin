@@ -55,7 +55,7 @@ In order to feed the Vaadin Grid with data, you need to have two things:
 To implement the `DataProvider` interface it's easiest to extend the
 `AbstractBackEndDataProvider` class.
 Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit?`
-as the `F` generic parameter to not to support any filters.
+as the `<F>` generic parameter to not to support any filters.
 
 There are two things you need to implement:
 * Implement the `AbstractBackEndDataProvider.sizeInBackEnd()` function which queries how many rows
