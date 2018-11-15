@@ -13,7 +13,7 @@ library, and you can optionally use the [Retrofit](https://square.github.io/retr
 support though this is not recommended: it is based on annotation magic which tends
 to fail with mysterious ways.
 
-> Note: to expose your objects from your app via REST please see the [vok-rest](../vok-rest) module.
+> Note: If you wish to _expose_ your objects from your app, rather than _consume_ objects from some other service, please see the [vok-rest](../vok-rest) module.
 
 ## Adding REST Client To Your App
 
@@ -53,14 +53,15 @@ class PersonRestClient(val baseUrl: String) {
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
 }
-val client = PersonRestClient("http://localhost:8080/rest/person/")
+val client = PersonRestClient("http://localhost:8080/rest/person")
 println(client.getAll())
 ```
 
 The `RetrofitClientVokPlugin.okHttpClient` is constructed automatically by the
-VOK module loading mechanism in `RetrofitClientVokPlugin.init()`. You can
-create and configure it yourself, then simply assign your http client to
-`RetrofitClientVokPlugin.okHttpClient` - it will not be overwritten by `init()`.
+VOK module loading mechanism in `RetrofitClientVokPlugin.init()`. Alternatively, if you
+need to customize/configure the `OkHttpClient` instance, you can simply assign your
+own `OkHttpClient` instance to `RetrofitClientVokPlugin.okHttpClient` before
+the VoK is initialized. Your instance will not be overwritten by `init()`.
 
 ### Polling CRUD Endpoint For Data
 
