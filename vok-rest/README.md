@@ -79,9 +79,9 @@ The Handler will automatically use vok-orm's `EntityDataProvider` to fetch insta
 The `get all` endpoint supports the following query parameters:
 
 * `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than `maxLimit`
-* `sort_by=-last_modified,+email,first_name` - a list of sorting clauses.
+* `sort_by=-lastModified,+email,firstName` - a list of sorting clauses.
 Only those which appear in `allowSortColumns` are allowed. Prepending a column name with
-`-` will sort DESC.
+`-` will sort DESC. Prepending the column name with `+` is optional and can be omitted.
 * To define filters, simply pass in column names with the values, for example `age=81`. You can also specify operators: one of
 `eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. You can pass single column name
 multiple times to AND additional clauses, for example `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`. OR filters are not supported.
