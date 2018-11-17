@@ -2,9 +2,13 @@
 
 # Getting started with Vaadin-on-Kotlin Vaadin 8
 
-This guide covers getting up and running with Vaadin On Kotlin (VoK).
+VoK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language.
+Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT; Kotlin allows you to write clean understandable and save code.
 
-> **Note:** This tutorial is heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html). 
+This guide teaches you how to get Vaadin On Kotlin (VoK) up and running and introduces
+the basic concepts needed to create your own applications.
+
+> **Tribute:** I got heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html).
 
 After reading this guide, you will know:
 
@@ -12,32 +16,25 @@ After reading this guide, you will know:
 * The general layout of a VoK application.
 * How to quickly write the starting pieces of a VoK application.
 
-> **Note:** To skip the introduction and dive straight into the code, just skip to [Chapter 3.2](#3_2)
+> **Note:** To skip the introduction and dive straight into the code, go to [Chapter 3.2](#3_2)
 
 ## Guide Assumptions
 
-This guide is designed for beginners who want to get started with a VoK application from scratch.
-It does not assume that you have any prior experience with Vaadin. However, to get the most out of it,
-you need to have some prerequisites installed:
+I assume you have no prior knowledge of VoK and your goal is to create a VoK application from scratch.
+Though you don't need to be a seasoned programmer to follow through,
+I assume a basic working knowledge of Kotlin and Vaadin.
 
-* Java 8 JDK or newer.
+If you have no prior experience with Kotlin or Vaadin, you might get overwhelmed
+by the sheer amount of the new information. Therefore, I recommend to take it slow
+and get familiar with both Vaadin and Kotlin first. 
+* To learn about Kotlin, consider the following materials:
+  * [Official Kotlin Programming Language website](https://kotlinlang.org/)
+  * [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
+* If you have no prior experience with Vaadin, take a look at the official documentation:
+  * [Official Vaadin website](https://www.vaadin.com)
+  * [Vaadin 8 Documentation](https://vaadin.com/docs/v8)
 
-VoK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language. If you have no 
-prior experience with Kotlin, you will find a very steep learning curve diving straight 
-into VoK. There are several curated lists of online resources for learning Kotlin:
-
-* [Official Kotlin Programming Language website](https://kotlinlang.org/)
-* [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
-
-Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT. But easier.
-To learn Vaadin:
-
-* [Official Vaadin website](https://www.vaadin.com)
-* [Vaadin 8 Documentation](https://vaadin.com/docs/v8) - we recommend to download and read the Vaadin Book PDF.
-
-> **Note:** If you have no prior experience with Kotlin nor Vaadin, you might get overwhelmed by the sheer amount of 
-the new stuff we will learn. Therefore, we recommend to take slow steps and get familiar with both Vaadin and Kotlin first. 
-Feel free to experiment on the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application) at any time:
+At any point, I encourage you to experiment with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application):
 VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
 be applicable in the VoK-based apps later on.
 
@@ -94,7 +91,9 @@ Before you can start building the application, you need to make sure that you ha
 
 ### Prerequisites
 
-Vaadin-on-Kotlin only requires Java 8 JDK to be installed. The example application has Gradle bundled in;
+Make sure you have Java 8 JDK installed.
+
+The example application has Gradle bundled in;
 Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
 This makes VoK applications really portable
 since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
