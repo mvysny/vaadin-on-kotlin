@@ -4,8 +4,8 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
-import com.github.vokorm.buildFilter
-import com.github.vokorm.dataloader.SortClause
+import com.github.mvysny.vokdataloader.SortClause
+import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
 import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder

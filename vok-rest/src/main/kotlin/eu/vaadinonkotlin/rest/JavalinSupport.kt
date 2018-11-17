@@ -2,9 +2,9 @@
 
 package eu.vaadinonkotlin.rest
 
+import com.github.mvysny.vokdataloader.*
 import com.github.vokorm.*
 import com.github.vokorm.dataloader.EntityDataLoader
-import com.github.vokorm.dataloader.SortClause
 import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
@@ -17,6 +17,8 @@ import org.sql2o.converters.Converter
 import org.sql2o.converters.IntegerConverter
 import org.sql2o.converters.LongConverter
 import org.sql2o.converters.StringConverter
+import java.beans.Introspector
+import java.beans.PropertyDescriptor
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.LocalDate
@@ -93,6 +95,119 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
 }
 
 /**
+ * A read-only CRUD Handler that only provides instances of beans. Rejects all mutation operations with 401 UNAUTHORIZED.
+ *
+ * The [getAll] honors the following query parameters:
+ * * `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than [maxLimit]
+ * * `sort_by=-last_modified,+email,first_name` - a list of sorting clauses. Only those which appear in [allowSortColumns] are allowed.
+ * Prepending a column name with `-` will sort DESC.
+ * * To define filters, simply pass in column names with the values, for example `age=81`. You can also specify operators: one of
+ * `eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. You can pass single column name
+ * multiple times to AND additional clauses, for example `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`. OR filters are not supported.
+ * * `select=count` - if this is passed in, then instead of a list of matching objects a single number will be returned: the number of
+ * records matching given filters.
+ *
+ * All column names are expected to be Kotlin [kotlin.reflect.KProperty1.name] of the entity in question. Currently there is
+ * no way to override this.
+ *
+ * @property itemClass the type of items fetched from the [dataLoader]
+ * @property dataLoader the data provider used to fetch items.
+ * @property maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
+ * items then 400 BAD REQUEST is returned. Defaults to [Int.MAX_VALUE], definitely change this in production!
+ * @property defaultLimit if `limit` is unspecified in [getAll] request, then return at most this number of items. By default equals to [maxLimit].
+ * @property allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
+ * @property allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
+ */
+open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader: DataLoader<T>,
+                                         val maxLimit: Long = Long.MAX_VALUE,
+                                         val defaultLimit: Long = maxLimit,
+                                         val allowSortColumns: Set<DataLoaderPropertyName>? = null,
+                                         val allowFilterColumns: Set<DataLoaderPropertyName>? = null) : CrudHandler {
+    @Suppress("UNCHECKED_CAST")
+    override fun getAll(ctx: Context) {
+        // grab fetchRange from the query
+        val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
+        if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
+        val offset = ctx.queryParam("offset")?.toLong() ?: 0
+        if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
+        val fetchRange = offset until (offset + limit)
+
+        // maps Kotlin Bean property name to PropertyDescriptor which will help us getting the actual column database name.
+        val fields: Map<String, PropertyDescriptor> = Introspector.getBeanInfo(itemClass).propertyDescriptors
+                .filter { it.name != "limit" && it.name != "offset" && it.name != "sort_by" && it.name != "select" }
+                .associateBy { it.name }
+
+
+        // grab sorting from the query
+        val sortByParam = ctx.queryParam("sort_by") ?: ""
+        // converts the sort_by parameter piece into a SortClause
+        fun parseSortClause(sortQuery: String): SortClause {
+            val sortClause = when {
+                sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
+                sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
+                else -> SortClause(sortQuery, true)
+            }
+            if (allowSortColumns != null && !allowSortColumns.contains(sortClause.propertyName)) throw BadRequestResponse("Cannot sort by ${sortClause.propertyName}, only these are allowed: $allowSortColumns")
+            return sortClause
+        }
+        val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { parseSortClause(it) }
+
+
+        // construct filters
+        val filters = mutableSetOf<Filter<T>>()
+        for ((name, prop) in fields.entries) {
+            ctx.queryParams(name).forEach { value ->
+                if (allowFilterColumns != null) {
+                    require(allowFilterColumns.contains(name)) { "Cannot filter by $name: only the following columns are allowed to be sorted upon: $allowFilterColumns" }
+                }
+                val dbname = name
+                val filter: Filter<T> = when {
+                    value.startsWith("eq:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.eq)
+                    value.startsWith("lte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.le)
+                    value.startsWith("gte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.ge)
+                    value.startsWith("gt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.gt)
+                    value.startsWith("lt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.lt)
+                    value.startsWith("isnull:") -> IsNullFilter(dbname)
+                    value.startsWith("isnotnull:") -> IsNotNullFilter(dbname)
+                    value.startsWith("like:") -> LikeFilter(dbname, value.substring(5))
+                    value.startsWith("ilike:") -> ILikeFilter(dbname, value.substring(6))
+                    else -> EqFilter(dbname, convertToDatabase(value, prop.propertyType))
+                }
+                filters.add(filter)
+            }
+        }
+        val filter: Filter<T>? = filters.and()
+
+        // fetch the data
+        if (ctx.queryParam("select") == "count") {
+            val count = dataLoader.getCount(filter)
+            ctx.result(count.toString())
+        } else {
+            val result = dataLoader.fetch(filter, sortBy, fetchRange)
+            ctx.json(db { result })
+        }
+    }
+
+    protected fun convertToDatabase(value: String, expectedClass: Class<*>): Any? {
+        fun String.nullify(): String? = if (this == "null") null else this
+
+        val nvalue = value.nullify() ?: return null
+        val convertedValue: Any? = when {
+            Number::class.java.isAssignableFrom(expectedClass) -> BigDecimal(nvalue)
+            Date::class.java.isAssignableFrom(expectedClass) -> Instant.ofEpochMilli(nvalue.toLong())
+            expectedClass == LocalDate::class.java || expectedClass == LocalDateTime::class.java || expectedClass == Instant::class.java -> Instant.ofEpochMilli(nvalue.toLong())
+            else -> nvalue
+        }
+        return convertedValue
+    }
+
+    override fun create(ctx: Context) = throw UnauthorizedResponse()
+    override fun delete(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
+    override fun getOne(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
+    override fun update(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
+}
+
+/**
  * A very simple handler that exposes instances of given [entityClass] using the `vok-orm` database access library.
  *
  * The [getAll] honors the following query parameters:
@@ -118,12 +233,11 @@ inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allow
  */
 open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
                                                 val allowsModification: Boolean,
-                                                val maxLimit: Long = Long.MAX_VALUE,
-                                                val defaultLimit: Long = maxLimit,
-                                                val allowSortColumns: Set<String>? = null,
-                                                val allowFilterColumns: Set<String>? = null) : CrudHandler {
-
-    private val dataLoader = EntityDataLoader(entityClass)
+                                                maxLimit: Long = Long.MAX_VALUE,
+                                                defaultLimit: Long = maxLimit,
+                                                allowSortColumns: Set<String>? = null,
+                                                allowFilterColumns: Set<String>? = null,
+                                                val getAllHandler: CrudHandler = DataLoaderCrudHandler(entityClass, EntityDataLoader(entityClass), maxLimit, defaultLimit, allowSortColumns, allowFilterColumns)) : CrudHandler {
 
     @Suppress("UNCHECKED_CAST")
     private val idConverter = when (idClass) {
@@ -154,90 +268,7 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
         db { con.deleteById(entityClass, id) }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun getAll(ctx: Context) {
-        // grab fetchRange from the query
-        val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
-        if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
-        val offset = ctx.queryParam("offset")?.toLong() ?: 0
-        if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
-        val fetchRange = offset.toInt2() until (offset + limit).toInt2()
-
-        // maps Kotlin Bean property name to PropertyMeta which will help us getting the actual column database name.
-        val fields = entityClass.entityMeta.properties
-                .filter { it.name != "limit" && it.name != "offset" && it.name != "sort_by" && it.name != "select" }
-                .associateBy { it.name }
-
-
-        // grab sorting from the query
-        val sortByParam = ctx.queryParam("sort_by") ?: ""
-        // converts the sort_by parameter piece into a SortClause
-        fun parseSortClause(sortQuery: String): SortClause {
-            val sortClause = when {
-                sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
-                sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
-                else -> SortClause(sortQuery, true)
-            }
-            // beware: sortClause.columnName is not yet an actual DB column name, but rather a property name. We need to convert it to the column name first.
-            if (allowSortColumns != null && !allowSortColumns.contains(sortClause.columnName)) throw BadRequestResponse("Cannot sort by ${sortClause.columnName}, only these are allowed: $allowSortColumns")
-            val meta = fields[sortClause.columnName] ?: throw BadRequestResponse("Invalid property name: ${sortClause.columnName}. Available properties: ${fields.keys}")
-            return SortClause(meta.dbColumnName, sortClause.asc)
-        }
-        val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { parseSortClause(it) }
-        if (allowSortColumns != null) {
-            sortBy.forEach {
-                if (!allowSortColumns.contains(it.columnName)) throw BadRequestResponse("Cannot sort by ${it.columnName}, only these are allowed: $allowSortColumns")
-            }
-        }
-
-
-        // construct filters
-        val filters = mutableSetOf<Filter<E>>()
-        for ((name, prop) in fields.entries) {
-            ctx.queryParams(name).forEach { value ->
-                if (allowFilterColumns != null) {
-                    require(allowFilterColumns.contains(name)) { "Cannot filter by $name: only the following columns are allowed to be sorted upon: $allowFilterColumns" }
-                }
-                val dbname = prop.dbColumnName
-                val filter: Filter<E> = when {
-                    value.startsWith("eq:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.eq)
-                    value.startsWith("lte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.valueType) as Comparable<Any>, CompareOperator.le)
-                    value.startsWith("gte:") -> OpFilter(dbname, convertToDatabase(value.substring(4), prop.valueType) as Comparable<Any>, CompareOperator.ge)
-                    value.startsWith("gt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.gt)
-                    value.startsWith("lt:") -> OpFilter(dbname, convertToDatabase(value.substring(3), prop.valueType) as Comparable<Any>, CompareOperator.lt)
-                    value.startsWith("isnull:") -> IsNullFilter(dbname)
-                    value.startsWith("isnotnull:") -> IsNotNullFilter(dbname)
-                    value.startsWith("like:") -> LikeFilter(dbname, value.substring(5))
-                    value.startsWith("ilike:") -> ILikeFilter(dbname, value.substring(6))
-                    else -> EqFilter(prop.dbColumnName, convertToDatabase(value, prop.valueType))
-                }
-                filters.add(filter)
-            }
-        }
-        val filter: Filter<E>? = if (filters.isEmpty()) null else AndFilter(filters)
-
-        // fetch the data
-        if (ctx.queryParam("select") == "count") {
-            val count = dataLoader.getCount(filter)
-            ctx.result(count.toString())
-        } else {
-            val result = dataLoader.fetch(filter, sortBy, fetchRange)
-            ctx.json(db { result })
-        }
-    }
-
-    protected fun convertToDatabase(value: String, expectedClass: Class<*>): Any? {
-        fun String.nullify(): String? = if (this == "null") null else this
-
-        val nvalue = value.nullify() ?: return null
-        val convertedValue: Any? = when {
-            Number::class.java.isAssignableFrom(expectedClass) -> BigDecimal(nvalue)
-            Date::class.java.isAssignableFrom(expectedClass) -> Instant.ofEpochMilli(nvalue.toLong())
-            expectedClass == LocalDate::class.java || expectedClass == LocalDateTime::class.java || expectedClass == Instant::class.java -> Instant.ofEpochMilli(nvalue.toLong())
-            else -> nvalue
-        }
-        return convertedValue
-    }
+    override fun getAll(ctx: Context) = getAllHandler.getAll(ctx)
 
     override fun getOne(ctx: Context, resourceId: String) {
         val id = convertID(resourceId)

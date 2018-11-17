@@ -4,8 +4,8 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.karibudsl.v8.asc
 import com.github.mvysny.karibudsl.v8.desc
 import com.github.mvysny.karibudsl.v8.getAll
-import com.github.vokorm.Filter
-import com.github.vokorm.buildFilter
+import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
 import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query

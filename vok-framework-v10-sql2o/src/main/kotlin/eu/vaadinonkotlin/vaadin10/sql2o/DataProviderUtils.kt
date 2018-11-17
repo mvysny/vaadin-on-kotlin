@@ -1,8 +1,8 @@
 package eu.vaadinonkotlin.vaadin10.sql2o
 
-import com.github.vokorm.Filter
-import com.github.vokorm.SqlWhereBuilder
-import com.github.vokorm.and
+import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.SqlWhereBuilder
+import com.github.mvysny.vokdataloader.and
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.Query
@@ -20,7 +20,7 @@ typealias VokDataProvider<T> = ConfigurableFilterDataProvider<T, Filter<T>?, Fil
  * @return data provider which can be configured to always apply given filter.
  */
 fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : VokDataProvider<T> =
-    withConfigurableFilter({ f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() })
+    withConfigurableFilter { f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() }
 
 /**
  * Produces a new data provider which restricts rows returned by the original data provider to given filter.

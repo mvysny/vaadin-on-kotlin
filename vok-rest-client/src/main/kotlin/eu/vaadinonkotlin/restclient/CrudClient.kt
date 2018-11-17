@@ -1,8 +1,6 @@
 package eu.vaadinonkotlin.restclient
 
-import com.github.vokorm.*
-import com.github.vokorm.dataloader.DataLoader
-import com.github.vokorm.dataloader.SortClause
+import com.github.mvysny.vokdataloader.*
 import okhttp3.*
 import retrofit2.Converter
 import java.lang.IllegalArgumentException
@@ -50,8 +48,6 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
 
-    private val dbFieldNameToPropertyName = itemClass.entityMeta.properties.associate { it.dbColumnName to it.name }
-
     /**
      * Fetches data from the back end. The items must match given [filter]. This function does exactly the same as [fetch].
      * @param filter optional filter which defines filtering to be used for counting the
@@ -68,7 +64,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
                 addQueryParameter("limit", range.length.toString())
             }
             if (!sortBy.isEmpty()) {
-                addQueryParameter("sort_by", sortBy.joinToString(",") { "${if(it.asc)"+" else "-"}${it.columnName}" })
+                addQueryParameter("sort_by", sortBy.joinToString(",") { "${if(it.asc)"+" else "-"}${it.propertyName}" })
             }
             if (filter != null) {
                 addFilterQueryParameters(filter)
@@ -89,9 +85,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         }
 
         if (filter is BeanFilter) {
-            val propName = requireNotNull(dbFieldNameToPropertyName[filter.databaseColumnName]) {
-                "Unknown dbFieldName ${filter.databaseColumnName} for $itemClass, available properties: ${itemClass.entityMeta.properties}"
-            }
+            val propName = filter.propertyName
             require(propName != "limit" && propName != "offset" && propName != "sort_by" && propName != "select") {
                 "cannot filter on reserved query parameter name $propName"
             }
@@ -145,16 +139,16 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         val mediaTypeJson = MediaType.parse("application/json; charset=utf-8")
     }
 
-    override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: IntRange): List<T> = getAll(filter, sortBy, range.first.toLong()..range.endInclusive.toLong())
+    override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T> = getAll(filter, sortBy, range.first..range.endInclusive)
 
-    override fun getCount(filter: Filter<T>?): Int {
+    override fun getCount(filter: Filter<T>?): Long {
         val url = buildUrl("$baseUrl?select=count") {
             if (filter != null) {
                 addFilterQueryParameters(filter)
             }
         }
         val request = Request.Builder().url(url).build()
-        return client.exec(request) { response -> response.string().toInt() }
+        return client.exec(request) { response -> response.string().toLong() }
     }
 }
 

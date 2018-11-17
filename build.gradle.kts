@@ -21,6 +21,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
+        maven { setUrl("https://dl.bintray.com/mvysny/github") }
     }
 
     tasks {

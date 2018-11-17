@@ -1,9 +1,10 @@
 package eu.vaadinonkotlin.vaadin10.sql2o
 
+import com.github.mvysny.vokdataloader.DataLoader
+import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.SortClause
 import com.github.vokorm.*
-import com.github.vokorm.dataloader.DataLoader
 import com.github.vokorm.dataloader.EntityDataLoader
-import com.github.vokorm.dataloader.SortClause
 import com.github.vokorm.dataloader.SqlDataLoader
 import com.vaadin.flow.data.provider.*
 import java.util.stream.Stream
@@ -21,7 +22,10 @@ import java.util.stream.Stream
 class DataLoaderAdapter<T : Any>(val clazz: Class<T>, private val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
     override fun toString() = "DataLoaderAdapter($loader)"
-    override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int = loader.getCount(query?.filter?.orElse(null))
+    override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int {
+        val count: Long = loader.getCount(query?.filter?.orElse(null))
+        return count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+    }
     override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> {
         val sortBy: List<SortClause> = query?.sortOrders?.map {
             val dbColumnName = clazz.entityMeta.getProperty(it.sorted).dbColumnName
@@ -31,7 +35,7 @@ class DataLoaderAdapter<T : Any>(val clazz: Class<T>, private val loader: DataLo
         val limit = query?.limit ?: Int.MAX_VALUE
         var endInclusive = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         if (endInclusive == Int.MAX_VALUE - 1) endInclusive = Int.MAX_VALUE
-        val list = loader.fetch(query?.filter?.orElse(null), sortBy, offset..endInclusive)
+        val list = loader.fetch(query?.filter?.orElse(null), sortBy, offset.toLong()..endInclusive.toLong())
         return list.stream()
     }
 }

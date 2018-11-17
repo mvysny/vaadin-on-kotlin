@@ -6,7 +6,6 @@ dependencies {
         exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
     }
     compile("com.google.code.gson:gson:2.8.5")
-    // @todo mavi mark as optional once https://github.com/gradle/gradle/issues/867 is resolved
     compile(project(":vok-db"))
 
     // RESTEasy is deprecated and is replaced by Javalin. Don't use this!

@@ -1,22 +1,15 @@
 package eu.vaadinonkotlin.vaadin10.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.vokorm.Filter
-import com.github.vokorm.buildFilter
-import com.github.vokorm.dataloader.DataLoader
-import com.github.vokorm.dataloader.SortClause
+import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
-import eu.vaadinonkotlin.vaadin10.sql2o.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
-import eu.vaadinonkotlin.vaadin10.sql2o.sqlDataProvider
-import eu.vaadinonkotlin.vaadin10.sql2o.withFilter
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({
     test("fetch with empty query") {
-        val loader = AssertingDataLoader(null, listOf(), 0..Int.MAX_VALUE)
+        val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
         val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
         adapter.size(Query())
         adapter.fetch(Query())
@@ -25,7 +18,7 @@ class DataProvidersTest : DynaTest({
 
     group("offset/limit") {
         test("fetch with offset=0 limit=Int.MAX_VALUE") {
-            val loader = AssertingDataLoader(null, listOf(), 0..Int.MAX_VALUE)
+            val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
             val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(0, Int.MAX_VALUE, null, null, null))
@@ -33,7 +26,7 @@ class DataProvidersTest : DynaTest({
         }
 
         test("fetch with offset=30 limit=30") {
-            val loader = AssertingDataLoader(null, listOf(), 30..59)
+            val loader = AssertingDataLoader(null, listOf(), 30L..59)
             val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(30, 30, null, null, null))
@@ -41,7 +34,7 @@ class DataProvidersTest : DynaTest({
         }
 
         test("fetch with offset=100 limit=Int.MAX_VALUE") {
-            val loader = AssertingDataLoader(null, listOf(), 100..Int.MAX_VALUE)
+            val loader = AssertingDataLoader(null, listOf(), 100L..Int.MAX_VALUE)
             val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(100, Int.MAX_VALUE, null, null, null))
@@ -50,7 +43,7 @@ class DataProvidersTest : DynaTest({
     }
 
     test("fetch with sort orders") {
-        val loader = AssertingDataLoader(null, listOf("name".asc, "age".desc), 0..Int.MAX_VALUE)
+        val loader = AssertingDataLoader(null, listOf("name".asc, "age".desc), 0L..Int.MAX_VALUE)
         val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
         adapter.size(Query())
         adapter.fetch(Query(0, Int.MAX_VALUE, QuerySortOrder.asc("personName").thenDesc("age").build(), null, null))
@@ -58,7 +51,7 @@ class DataProvidersTest : DynaTest({
     }
 
     test("fetch with filter") {
-        val loader = AssertingDataLoader(buildFilter { Person::age eq "foo" }, listOf(), 0..Int.MAX_VALUE)
+        val loader = AssertingDataLoader(buildFilter { Person::age eq "foo" }, listOf(), 0L..Int.MAX_VALUE)
         val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
         adapter.size(Query(buildFilter { Person::age eq "foo" }))
         adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, buildFilter { Person::age eq "foo" }))
@@ -111,22 +104,20 @@ class DataProvidersTest : DynaTest({
     }
 })
 
-val String.desc get() = SortClause(this, false)
-val String.asc get() = SortClause(this, true)
 internal class AssertingDataLoader(val expectedFilter: Filter<Person>?,
                                    val expectedSortBy: List<SortClause>,
-                                   val expectedRange: IntRange
+                                   val expectedRange: LongRange
 ) : DataLoader<Person> {
     private var fetchCalled: Boolean = false
     private var getCountCalled: Boolean = false
-    override fun fetch(filter: Filter<Person>?, sortBy: List<SortClause>, range: IntRange): List<Person> {
+    override fun fetch(filter: Filter<Person>?, sortBy: List<SortClause>, range: LongRange): List<Person> {
         expect(expectedFilter) { filter }
         expect(expectedSortBy) { sortBy }
         expect(expectedRange) { range }
         fetchCalled = true
         return listOf()
     }
-    override fun getCount(filter: Filter<Person>?): Int {
+    override fun getCount(filter: Filter<Person>?): Long {
         expect(expectedFilter) { filter }
         getCountCalled = true
         return 0

@@ -1,13 +1,12 @@
 package eu.vaadinonkotlin.vaadin8.sql2o
 
-import com.github.vokorm.Filter
-import com.github.vokorm.SqlWhereBuilder
-import com.github.vokorm.and
+import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.SqlWhereBuilder
+import com.github.mvysny.vokdataloader.and
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
-import com.vaadin.server.SerializablePredicate
 import java.util.stream.Stream
 
 /**

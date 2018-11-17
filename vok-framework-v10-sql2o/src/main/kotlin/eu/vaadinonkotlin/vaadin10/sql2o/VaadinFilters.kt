@@ -2,6 +2,7 @@
 
 package eu.vaadinonkotlin.vaadin10.sql2o
 
+import com.github.mvysny.vokdataloader.*
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.vaadin10.DefaultFilterFieldFactory
 import eu.vaadinonkotlin.vaadin10.FilterFieldFactory

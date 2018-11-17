@@ -4,9 +4,7 @@ dependencies {
     compile("com.google.code.gson:gson:2.8.5")
     compile("com.squareup.retrofit2:converter-scalars:2.4.0")
     compile("com.squareup.retrofit2:converter-gson:2.4.0")
-
-    // @todo mavi mark as optional once https://github.com/gradle/gradle/issues/867 is resolved
-    compile(project(":vok-db"))
+    compile("com.github.mvysny.vokdataloader:vok-dataloader:${ext["vok_dataloader_version"]}")
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
