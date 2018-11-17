@@ -73,7 +73,8 @@ it to the Grid directly? Unfortunately we can't, for the following reasons:
    would have to depend on the Vaadin 8 and Vaadin 10 API, which is simply too heavyweight dependency.
 2. The `DataLoader` API is simpler than the `DataProvider`.
 3. The `DataLoader` API library ([vok-dataloader](https://github.com/mvysny/vok-dataloader))
-   comes with a filter hierarchy, so you don't have to write your own hierarchy.
+   comes with filter classes provided (`EqFilter`, `LikeFilter` etc), so you don't have to
+   write your own filter classes.
 
 ## Implementing Data Loader
 
