@@ -10,6 +10,8 @@ dependencies {
     compile(project(":vok-framework"))
     compile(project(":vok-security"))
 
+    compile("com.github.mvysny.vokdataloader:vok-dataloader:${ext["vok_dataloader_version"]}")
+
     // Vaadin
     compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${ext["karibudsl_version"]}")
     compile("javax.servlet:javax.servlet-api:3.1.0")

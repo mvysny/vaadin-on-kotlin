@@ -83,6 +83,9 @@ val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurab
 grid.dataProvider = dp
 ```
 
+Just add dependency on either [vok-util-vaadin8](../vok-util-vaadin8) or
+[vok-util-vaadin10](../vok-util-vaadin10) to get access to the `DataLoaderAdapter` class.
+
 The CRUD Client expects the CRUD endpoint to expose data in the following fashion:
 
 * `GET /rest/users` returns all users
