@@ -174,6 +174,11 @@ grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFact
 
 to create the filter row and populate it with filter components.
 
+## More Resources
+
 Please read the documentation for the [vok-util-vaadin8](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin8)
 or [vok-util-vaadin10](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
 module for more information on generating filters.
+
+Please find all technical details on how to implement the data loader in the
+[vok-dataloader](https://github.com/mvysny/vok-dataloader) page.
