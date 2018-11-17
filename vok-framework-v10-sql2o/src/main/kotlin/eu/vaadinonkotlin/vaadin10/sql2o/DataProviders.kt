@@ -5,6 +5,8 @@ import com.github.vokorm.Entity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
 import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
+import eu.vaadinonkotlin.vaadin10.VokDataProvider
+import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
 
 /**
  * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering

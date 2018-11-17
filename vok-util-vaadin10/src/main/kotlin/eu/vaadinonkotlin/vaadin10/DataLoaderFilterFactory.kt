@@ -11,8 +11,9 @@ import com.vaadin.flow.data.value.ValueChangeMode
 import kotlin.reflect.KClass
 
 /**
- * Produces filters defined by the `VoK-ORM` library. This will allow us to piggyback on the ability of `VoK-ORM` filters to produce
- * SQL92 WHERE clause. See [sqlDataProvider] and [Dao.dataProvider] for more details.
+ * Produces filters defined by the `VoK-DataLoader` library. This will allow Vaadin Grid to piggyback on the DataLoader API
+ * which provides access to REST (via the `vok-rest-client` module), the ability to use `VoK-ORM` to access SQL databases
+ * (via the `vok-db` module). See the `vok-framework-v10-sql2o`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param clazz the type of the entity, not null.
  */
 class DataLoaderFilterFactory<F: Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {

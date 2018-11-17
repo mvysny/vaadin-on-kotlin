@@ -1,10 +1,8 @@
 package eu.vaadinonkotlin.vaadin10.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.component.combobox.ComboBox
-import com.vaadin.flow.data.provider.Query
-import com.vaadin.flow.data.provider.QuerySortOrder
+import eu.vaadinonkotlin.vaadin10.withFilter
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({

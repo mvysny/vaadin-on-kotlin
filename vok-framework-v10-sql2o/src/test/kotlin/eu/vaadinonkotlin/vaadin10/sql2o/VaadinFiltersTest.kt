@@ -9,6 +9,7 @@ import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import eu.vaadinonkotlin.vaadin10.generateFilterComponents
+import eu.vaadinonkotlin.vaadin10.withFilter
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }

@@ -2,7 +2,6 @@ package example.crudflow.person
 
 import example.crudflow.MainLayout
 import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
-import eu.vaadinonkotlin.vaadin10.sql2o.generateFilterComponents
 import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.db
@@ -13,6 +12,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.data.renderer.Renderer
 import com.vaadin.flow.router.Route
+import eu.vaadinonkotlin.vaadin10.generateFilterComponents
 import java.time.LocalDate
 
 /**
