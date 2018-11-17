@@ -62,11 +62,12 @@ let VoK auto-generate filter bar for you.
 
 ### Why Not Use DataProvider API Directly?
 
-Why we need the data loaders? Can't we simply implement `DataProvider` API and assign
+Why we need the data loaders? Can't we simply implement Vaadin's `DataProvider` API and pass
 it to the Grid directly? Unfortunately we can't, for the following reasons:
 
-1. There are actually two `DataProvider` interfaces (they are identical but the class name
-   is different): one for Vaadin 8, one for Vaadin 10. We would thus have to provide
+1. There are actually two `DataProvider` interfaces: `com.vaadin.data.provider.DataProvider` for Vaadin 8,
+  `com.vaadin.flow.data.provider.DataProvider` for Vaadin 10. They are identical but the class name
+   is different. We would thus have to provide
    an implementation of the same thing two times, both for Vaadin 8 and Vaadin 10. Also,
    the data-fetching library like `vok-orm`
    would have to depend on the Vaadin 8 and Vaadin 10 API, which is simply too heavyweight dependency.
