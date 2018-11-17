@@ -39,9 +39,11 @@ converting rows into Java Beans. The data loader then can be plugged into Vaadin
 in order to show the data.
 
 For example, the REST client class `CrudClient` is a data loader since it
-implements the `DataLoader` interface. Since Vaadin Grid works with `DataProvider`s,
-you need to use `DataLoaderAdapter` to convert `CrudClient` into `DataProvider`,
-which you can then assign to the Grid. It's always wise to call `.withConfigurableFilter2()`
+implements the `DataLoader` interface. It fetches lists of JSON maps and
+converts them into Java Beans with the help of Gson. In order to connect
+`CrudClient` into Vaadin Grid,
+you need to use `DataLoaderAdapter` to convert `CrudClient` into `DataProvider`.
+It's always wise to call `.withConfigurableFilter2()`
 on the adapter which enables the filter row to set filters to the data provider.
 
 Another example is the SQL database access via the `vok-orm`. vok-orm provides
