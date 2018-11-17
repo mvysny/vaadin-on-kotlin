@@ -2,9 +2,9 @@
 
 # Accessing NoSQL or REST data sources
 
-VoK provides no out-of-the-box support for accessing external NoSQL or REST data
-sources and polling them for data. To access data from a NoSQL database you should use appropriate NoSQL
-database Java driver; to access data from a REST endpoint you can use the
+VoK provides no out-of-the-box support for accessing NoSQL databases;
+to access data from a NoSQL database you should use appropriate NoSQL
+database Java driver. VoK however does support REST REST endpoints: you can use the
 [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
 VOK module which uses the [OkHttp](http://square.github.io/okhttp/) REST client
 library and adds couple of useful functionality on top of that.
@@ -31,6 +31,40 @@ There is also an example project which exposes a list of entities over REST serv
 then self-consumes them via REST client connected to localhost:8080 and exposes
 them in a Grid: [vaadin8-restdataprovider-example](https://github.com/mvysny/vaadin8-restdataprovider-example)
 and [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restdataprovider-example).
+
+## Data Loaders
+
+VoK uses the concept of a _Data Loader_. The data loader is responsible for loading
+pages of data from arbitrary data source, sorting and filtering it as necessary,
+converting rows into Java Beans. The data loader then can be plugged into Vaadin Grid,
+in order to show the data.
+
+For example, the REST client class `CrudClient` is a data loader since it
+implements the `DataLoader` interface. Since Vaadin Grid works with `DataProvider`s,
+you need to use `DataLoaderAdapter` to convert `CrudClient` into `DataProvider`,
+which you can then assign to the Grid. It's always wise to call `.withConfigurableFilter2()`
+on the adapter which enables the filter row to set filters to the data provider.
+
+Another example is the SQL database access via the `vok-orm`. vok-orm provides
+data loader for every entity which is able to load instances of that entity.
+VoK then provides convenience extension method on vok-orm `Dao` (the `Dao.dataProvider`)
+which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
+
+### Why Not Use DataProvider API Directly?
+
+Why we need the data loaders? Can't we simply implement `DataProvider` API and assign
+it to the Grid directly? Unfortunately we can't, for the following reasons:
+
+1. There are two different `DataProvider` interfaces (they are identical but the class name
+   is different): one for Vaadin 8, one for Vaadin 10. We would have to implement
+   every provider two times, one for Vaadin 8, other for Vaadin 10. And the vok-orm
+   would have to depend on the Vaadin 8 and Vaadin 10 API, which doesn't make any sense.
+2. The `DataLoader` API is vastly simpler than the `DataProvider`.
+3. The `DataLoader` API library ([vok-dataloader](https://github.com/mvysny/vok-dataloader))
+   comes with a filter hierarchy, so you don't have to write your own hierarchy.
+
+
+TBD more
 
 ## The 'Behind The Scenes' Info
 

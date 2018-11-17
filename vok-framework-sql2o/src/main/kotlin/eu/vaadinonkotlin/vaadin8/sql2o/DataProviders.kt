@@ -16,7 +16,7 @@ import eu.vaadinonkotlin.vaadin8.withConfigurableFilter2
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
     get() {
-        val entityDataProvider = DataLoaderAdapter(T::class.java, EntityDataLoader(T::class.java), { it.id!! })
+        val entityDataProvider = DataLoaderAdapter(EntityDataLoader(T::class.java), { it.id!! })
         return entityDataProvider.withConfigurableFilter2()
     }
 

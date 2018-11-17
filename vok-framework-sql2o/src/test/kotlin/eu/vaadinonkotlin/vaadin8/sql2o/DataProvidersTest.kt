@@ -2,10 +2,7 @@ package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.vokdataloader.*
-import com.vaadin.data.provider.Query
-import com.vaadin.data.provider.QuerySortOrder
 import com.vaadin.ui.ComboBox
-import eu.vaadinonkotlin.vaadin8.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin8.withFilter
 import kotlin.test.expect
 
