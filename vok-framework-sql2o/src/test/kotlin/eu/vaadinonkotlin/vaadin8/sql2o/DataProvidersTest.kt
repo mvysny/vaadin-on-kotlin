@@ -6,6 +6,7 @@ import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import com.vaadin.ui.ComboBox
 import eu.vaadinonkotlin.vaadin8.DataLoaderAdapter
+import eu.vaadinonkotlin.vaadin8.withFilter
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({

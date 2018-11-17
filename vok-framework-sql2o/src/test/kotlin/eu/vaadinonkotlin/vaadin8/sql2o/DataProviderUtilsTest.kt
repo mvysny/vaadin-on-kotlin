@@ -10,6 +10,7 @@ import com.github.vokorm.db
 import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
+import eu.vaadinonkotlin.vaadin8.withFilter
 import java.util.stream.Stream
 import kotlin.streams.toList
 import kotlin.test.expect
@@ -44,37 +45,6 @@ class DataProviderUtilsTest : DynaTest({
             ds.setFilter(buildFilter { Person::age between 15..35 })
             expect(6) { ds.size(Query()) }
             expect((30..35).toList()) { ds.getAll().map { it.age } }
-        }
-
-        group("sortedBy") {
-            class FetchAssert(val expectedSortOrders: List<QuerySortOrder>) : AbstractBackEndDataProvider<Person, Filter<Person>?>() {
-                override fun sizeInBackEnd(query: Query<Person, Filter<Person>?>?): Int = 0
-                override fun fetchFromBackEnd(query: Query<Person, Filter<Person>?>): Stream<Person> {
-                    expect(expectedSortOrders.joinToString { "${it.sorted}${it.direction}" }) { query.sortOrders.joinToString { "${it.sorted}${it.direction}" } }
-                    return listOf<Person>().stream()
-                }
-            }
-
-            test("null Query.sortOrders") {
-                FetchAssert(listOf(Person::age.desc))
-                    .withConfigurableFilter2()
-                    .sortedBy(Person::age.desc)
-                    .fetch(Query(0, 0, null, null, null))
-            }
-
-            test("empty Query.sortOrders") {
-                FetchAssert(listOf(Person::age.desc))
-                    .withConfigurableFilter2()
-                    .sortedBy(Person::age.desc)
-                    .fetch(Query(0, 0, listOf(), null, null))
-            }
-
-            test("Query.sortOrders take priority") {
-                FetchAssert(listOf(Person::created.asc, Person::age.desc))
-                    .withConfigurableFilter2()
-                    .sortedBy(Person::age.desc)
-                    .fetch(Query(0, 0, listOf(Person::created.asc), null, null))
-            }
         }
     }
 })

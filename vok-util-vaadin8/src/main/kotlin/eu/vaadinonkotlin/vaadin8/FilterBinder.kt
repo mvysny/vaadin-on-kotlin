@@ -198,6 +198,9 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
 /**
  * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
  * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ *
+ * Only use this function if you wish to use your custom filter hierarchy. However, typically you use [VokDataProvider] which
+ * uses `vok-dataprovider` filters and then you should use _the other_ `generateFilterComponents()` function.
  * @param T the type of items in the grid.
  * @param grid the owner grid.
  * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.

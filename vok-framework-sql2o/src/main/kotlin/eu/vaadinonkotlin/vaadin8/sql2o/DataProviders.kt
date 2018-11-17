@@ -5,9 +5,11 @@ import com.github.vokorm.Entity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
 import eu.vaadinonkotlin.vaadin8.DataLoaderAdapter
+import eu.vaadinonkotlin.vaadin8.VokDataProvider
+import eu.vaadinonkotlin.vaadin8.withConfigurableFilter2
 
 /**
- * Provides instances of entities of given [clazz] from a database. Does not support joins on any of the like; supports filtering
+ * Provides instances of this entity from a database. Does not support joins on any of the like; supports filtering
  * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [sqlDataProvider].
  *
  * Example of use: `grid.dataProvider = Person.dataProvider`.

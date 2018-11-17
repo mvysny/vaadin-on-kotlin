@@ -1,18 +1,13 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package eu.vaadinonkotlin.vaadin8.sql2o
+package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.vokdataloader.*
-import com.github.vokorm.*
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HasValueChangeMode
 import com.vaadin.ui.components.grid.HeaderRow
 import eu.vaadinonkotlin.FilterFactory
-import eu.vaadinonkotlin.vaadin8.DefaultFilterFieldFactory
-import eu.vaadinonkotlin.vaadin8.FilterFieldFactory
-import eu.vaadinonkotlin.vaadin8.FilterRow
-import eu.vaadinonkotlin.vaadin8.generateFilterComponents
 import kotlin.reflect.KClass
 
 /**
@@ -20,19 +15,21 @@ import kotlin.reflect.KClass
  * SQL92 WHERE clause. See [sqlDataProvider] and [entityDataProvider] for more details.
  * @param clazz the type of the entity, not null.
  */
-class SqlFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
-    private val String.dbColumnName: String get() = clazz.entityMeta.getProperty(this).dbColumnName
+class DataLoaderFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
     override fun and(filters: Set<Filter<T>>) = filters.and()
     override fun or(filters: Set<Filter<T>>) = filters.or()
-    override fun eq(propertyName: String, value: Any?) = EqFilter<T>(propertyName.dbColumnName, value)
-    override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName.dbColumnName, value as Comparable<Any>, CompareOperator.le)
-    override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName.dbColumnName, value as Comparable<Any>, CompareOperator.ge)
-    override fun ilike(propertyName: String, value: String) = ILikeFilter<T>(propertyName.dbColumnName, value)
+    override fun eq(propertyName: String, value: Any?) = EqFilter<T>(propertyName, value)
+    override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.le)
+    override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.ge)
+    override fun ilike(propertyName: String, value: String) = ILikeFilter<T>(propertyName, value)
 }
 
 /**
  * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
  * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ *
+ * This function automatically generates `vok-dataloader` [Filter]s and this is what you typically want to use (since you're
+ * using [VokDataProvider]).
  * @param T the type of items in the grid.
  * @param grid the owner grid.
  * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
@@ -43,7 +40,7 @@ class SqlFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(SqlFilterFactory<T>(itemClass.java)),
+                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(DataLoaderFilterFactory<T>(itemClass.java)),
                                                 valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
-    return generateFilterComponents(grid, itemClass, SqlFilterFactory<T>(itemClass.java), filterFieldFactory, valueChangeMode)
+    return generateFilterComponents(grid, itemClass, DataLoaderFilterFactory<T>(itemClass.java), filterFieldFactory, valueChangeMode)
 }

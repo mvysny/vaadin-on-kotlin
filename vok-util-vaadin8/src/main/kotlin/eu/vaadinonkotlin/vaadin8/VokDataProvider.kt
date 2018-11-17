@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin8.sql2o
+package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.SqlWhereBuilder

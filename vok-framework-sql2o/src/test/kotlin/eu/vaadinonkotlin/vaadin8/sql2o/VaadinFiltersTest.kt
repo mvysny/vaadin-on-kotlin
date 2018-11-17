@@ -7,6 +7,8 @@ import com.github.mvysny.karibudsl.v8.getAll
 import com.github.mvysny.karibudsl.v8.getCell
 import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
+import eu.vaadinonkotlin.vaadin8.generateFilterComponents
+import eu.vaadinonkotlin.vaadin8.withFilter
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
