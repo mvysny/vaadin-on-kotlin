@@ -1,7 +1,6 @@
 package example.crud_sql2o.personeditor
 
 import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
-import eu.vaadinonkotlin.vaadin8.sql2o.generateFilterComponents
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
 import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
@@ -15,6 +14,7 @@ import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.renderers.ClickableRenderer
 import com.vaadin.ui.renderers.LocalDateRenderer
 import com.vaadin.ui.renderers.TextRenderer
+import eu.vaadinonkotlin.vaadin8.generateFilterComponents
 
 /**
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
