@@ -43,7 +43,6 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
                                          val defaultLimit: Long = maxLimit,
                                          val allowSortColumns: Set<DataLoaderPropertyName>? = null,
                                          val allowFilterColumns: Set<DataLoaderPropertyName>? = null) : CrudHandler {
-    @Suppress("UNCHECKED_CAST")
     override fun getAll(ctx: Context) {
         // grab fetchRange from the query
         val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
@@ -60,17 +59,12 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
 
         // grab sorting from the query
         val sortByParam = ctx.queryParam("sort_by") ?: ""
-        // converts the sort_by parameter piece into a SortClause
-        fun parseSortClause(sortQuery: String): SortClause {
-            val sortClause = when {
-                sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
-                sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
-                else -> SortClause(sortQuery, true)
+        val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { restSortQueryToSortClause(it) }
+        if (allowSortColumns != null) {
+            for (sortClause in sortBy) {
+                if (!allowSortColumns.contains(sortClause.propertyName)) throw BadRequestResponse("Cannot sort by ${sortClause.propertyName}, only these are allowed: $allowSortColumns")
             }
-            if (allowSortColumns != null && !allowSortColumns.contains(sortClause.propertyName)) throw BadRequestResponse("Cannot sort by ${sortClause.propertyName}, only these are allowed: $allowSortColumns")
-            return sortClause
         }
-        val sortBy: List<SortClause> = sortByParam.split(",").filter { it.isNotBlank() }.map { parseSortClause(it) }
 
 
         // construct filters
@@ -80,18 +74,7 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
                 if (allowFilterColumns != null) {
                     require(allowFilterColumns.contains(name)) { "Cannot filter by $name: only the following columns are allowed to be sorted upon: $allowFilterColumns" }
                 }
-                val filter: Filter<T> = when {
-                    value.startsWith("eq:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.eq)
-                    value.startsWith("lte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.le)
-                    value.startsWith("gte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.ge)
-                    value.startsWith("gt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.gt)
-                    value.startsWith("lt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.lt)
-                    value.startsWith("isnull:") -> IsNullFilter(name)
-                    value.startsWith("isnotnull:") -> IsNotNullFilter(name)
-                    value.startsWith("like:") -> LikeFilter(name, value.substring(5))
-                    value.startsWith("ilike:") -> ILikeFilter(name, value.substring(6))
-                    else -> EqFilter(name, convertToDatabase(value, prop.propertyType))
-                }
+                val filter: Filter<T> = restFilterToDataLoaderFilter(value, prop)
                 filters.add(filter)
             }
         }
@@ -107,7 +90,43 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
         }
     }
 
-    protected fun convertToDatabase(value: String, expectedClass: Class<*>): Any? {
+    /**
+     * Converts the `sort_by` REST parameter piece in [sortQuery] into a [SortClause].
+     * @param sortQuery e.g. `+name` or `name` or `-name`.
+     */
+    protected open fun restSortQueryToSortClause(sortQuery: String): SortClause = when {
+        sortQuery.startsWith("+") -> SortClause(sortQuery.substring(1), true)
+        sortQuery.startsWith("-") -> SortClause(sortQuery.substring(1), false)
+        else -> SortClause(sortQuery, true)
+    }
+
+    /**
+     * Converts the REST filter String [value] to a `vok-dataloader` [Filter]. Use [prop] as a hint for which Java Bean
+     * Property this filter applies.
+     */
+    @Suppress("UNCHECKED_CAST")
+    protected open fun restFilterToDataLoaderFilter(value: String, prop: PropertyDescriptor): Filter<T> {
+        val name = prop.name
+        return when {
+            value.startsWith("eq:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.eq)
+            value.startsWith("lte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.le)
+            value.startsWith("gte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.ge)
+            value.startsWith("gt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.gt)
+            value.startsWith("lt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.lt)
+            value.startsWith("isnull:") -> IsNullFilter(name)
+            value.startsWith("isnotnull:") -> IsNotNullFilter(name)
+            value.startsWith("like:") -> LikeFilter(name, value.substring(5))
+            value.startsWith("ilike:") -> ILikeFilter(name, value.substring(6))
+            else -> EqFilter(name, convertToDatabase(value, prop.propertyType))
+        }
+    }
+
+    /**
+     * Converts the REST filter String [value] to a Java object that is fit to pass to the JDBC as a WHERE clause parameter.
+     * The [expectedClass] tells what kind of type we expect; the function may honor that or may return something else
+     * or may even return the original String if the JDBC driver can handle that.
+     */
+    protected open fun convertToDatabase(value: String, expectedClass: Class<*>): Any? {
         fun String.nullify(): String? = if (this == "null") null else this
 
         val nvalue = value.nullify() ?: return null
