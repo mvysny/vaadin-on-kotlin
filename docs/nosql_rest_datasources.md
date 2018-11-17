@@ -40,14 +40,15 @@ in order to show the data.
 
 For example, the REST client class `CrudClient` is a data loader since it
 implements the `DataLoader` interface. It fetches lists of JSON maps and
-converts them into Java Beans with the help of Gson. In order to connect
+converts them into Java Beans with the help of [Gson](https://github.com/google/gson). In order to connect
 `CrudClient` into Vaadin Grid,
 you need to use `DataLoaderAdapter` to convert `CrudClient` into `DataProvider`.
 It's always wise to call `.withConfigurableFilter2()`
 on the adapter which enables the filter row to set filters to the data provider.
 
 Another example is the SQL database access via the `vok-orm`. vok-orm provides
-data loader for every entity which is able to load instances of that entity.
+data loader which fetches instances of entities from the database, with the help
+of the [Sql2o](https://www.sql2o.org/) library.
 VoK then provides convenience extension method on vok-orm `Dao` - the `Dao.dataProvider` -
 which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
 VoK also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs.
