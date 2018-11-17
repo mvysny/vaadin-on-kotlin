@@ -198,13 +198,17 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
 /**
  * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
  * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
+ *
+ * Note that this function expects that you're using your own custom filter hierarchy. That is rarely the case since most often
+ * you use filters from `vok-dataloader`. In such case please use [generateFilterComponents].
  * @param T the type of items in the grid.
  * @param grid the owner grid.
+ * @param filterFactory
  * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
  * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
  * typically only applies to inline filter
- * components (most importantly [com.vaadin.ui.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])
- * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
+ * components (most importantly [com.vaadin.flow.component.textfield.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])
+ * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.EAGER].
  */
 @Suppress("UNCHECKED_CAST")
 fun <T: Any, F: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,

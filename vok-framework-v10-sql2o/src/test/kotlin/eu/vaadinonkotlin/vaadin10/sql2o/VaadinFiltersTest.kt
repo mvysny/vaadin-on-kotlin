@@ -8,9 +8,7 @@ import com.github.mvysny.karibudsl.v10.getAll
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
-import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
-import eu.vaadinonkotlin.vaadin10.sql2o.generateFilterComponents
-import eu.vaadinonkotlin.vaadin10.sql2o.withFilter
+import eu.vaadinonkotlin.vaadin10.generateFilterComponents
 
 class VaadinFiltersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
