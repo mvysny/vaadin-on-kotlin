@@ -85,6 +85,7 @@ grid.dataProvider = dp
 
 Just add dependency on either [vok-util-vaadin8](../vok-util-vaadin8) or
 [vok-util-vaadin10](../vok-util-vaadin10) to get access to the `DataLoaderAdapter` class.
+Please read more about this in the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources.html).
 
 The CRUD Client expects the CRUD endpoint to expose data in the following fashion:
 
