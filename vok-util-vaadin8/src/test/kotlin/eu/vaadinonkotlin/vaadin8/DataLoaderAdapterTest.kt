@@ -47,7 +47,7 @@ class DataLoaderAdapterTest : DynaTest({
         val loader = AssertingDataLoader(null, listOf("name".asc, "age".desc), 0L..Int.MAX_VALUE)
         val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
         adapter.size(Query())
-        adapter.fetch(Query(0, Int.MAX_VALUE, QuerySortOrder.asc("personName").thenDesc("age").build(), null, null))
+        adapter.fetch(Query(0, Int.MAX_VALUE, QuerySortOrder.asc("name").thenDesc("age").build(), null, null))
         loader.checkCalled()
     }
 
