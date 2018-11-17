@@ -66,7 +66,7 @@ Why we need the data loaders? Can't we simply implement Vaadin's `DataProvider` 
 it to the Grid directly? Unfortunately we can't, for the following reasons:
 
 1. There are actually two `DataProvider` interfaces: `com.vaadin.data.provider.DataProvider` for Vaadin 8,
-  `com.vaadin.flow.data.provider.DataProvider` for Vaadin 10. They are identical but the class name
+  `com.vaadin.flow.data.provider.DataProvider` for Vaadin 10. The methods are identical but the class name
    is different. We would thus have to provide
    an implementation of the same thing two times, both for Vaadin 8 and Vaadin 10. Also,
    the data-fetching library like `vok-orm`
