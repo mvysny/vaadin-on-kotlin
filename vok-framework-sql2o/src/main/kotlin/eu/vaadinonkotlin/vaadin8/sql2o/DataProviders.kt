@@ -62,4 +62,4 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
-        = DataLoaderAdapter(clazz, SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
+        = DataLoaderAdapter(SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()

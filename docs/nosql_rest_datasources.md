@@ -48,7 +48,8 @@ on the adapter which enables the filter row to set filters to the data provider.
 Another example is the SQL database access via the `vok-orm`. vok-orm provides
 data loader for every entity which is able to load instances of that entity.
 VoK then provides convenience extension method on vok-orm `Dao` (the `Dao.dataProvider`)
-which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
+which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`
+(it also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs).
 
 ### Why Not Use DataProvider API Directly?
 
