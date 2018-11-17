@@ -2,12 +2,11 @@
 
 # Accessing NoSQL or REST data sources
 
-VoK provides no out-of-the-box support for accessing NoSQL databases;
-to access data from a NoSQL database you should use appropriate NoSQL
-database Java driver. VoK however does support REST REST endpoints: you can use the
-[vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
-VOK module which uses the [OkHttp](http://square.github.io/okhttp/) REST client
-library and adds couple of useful functionality on top of that.
+VoK currently provides no out-of-the-box support for accessing NoSQL databases.
+However, VoK offers a lot of support for showing fetched data in the Vaadin Grid,
+with support for sorting, filtering (including auto-generated filter bar) and
+paging. All you need to implement is single interface called `DataLoader`.
+For information on how to do that, please read on.
 
 ## VoK REST Support
 
@@ -34,7 +33,7 @@ and [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restd
 
 ## Data Loaders
 
-VoK uses the concept of a _Data Loader_. The data loader is responsible for loading
+VoK data fetching revolves around a thing called a _Data Loader_. The data loader is responsible for loading
 pages of data from arbitrary data source, sorting and filtering it as necessary,
 converting rows into Java Beans. The data loader then can be plugged into Vaadin Grid,
 in order to show the data.
@@ -47,30 +46,35 @@ on the adapter which enables the filter row to set filters to the data provider.
 
 Another example is the SQL database access via the `vok-orm`. vok-orm provides
 data loader for every entity which is able to load instances of that entity.
-VoK then provides convenience extension method on vok-orm `Dao` (the `Dao.dataProvider`)
-which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`
-(it also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs).
+VoK then provides convenience extension method on vok-orm `Dao` - the `Dao.dataProvider` -
+which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
+VoK also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs.
+
+Another example would be to add support for MongoDB. You only need to figure out
+how to fetch data with given paging and sorting, then define allowed filters
+and define mapping from JSON map to a Java Bean. That's all that's needed to implement
+a MongoDB-backed `DataLoader`. Then it's just a matter of using `DataLoaderAdapter` to
+turn `DataLoader` into Vaadin `DataProvider`, feed that to Vaadin Grid and
+let VoK auto-generate filter bar for you.
 
 ### Why Not Use DataProvider API Directly?
 
 Why we need the data loaders? Can't we simply implement `DataProvider` API and assign
 it to the Grid directly? Unfortunately we can't, for the following reasons:
 
-1. There are two different `DataProvider` interfaces (they are identical but the class name
-   is different): one for Vaadin 8, one for Vaadin 10. We would have to implement
-   every provider two times, one for Vaadin 8, other for Vaadin 10. And the vok-orm
-   would have to depend on the Vaadin 8 and Vaadin 10 API, which doesn't make any sense.
-2. The `DataLoader` API is vastly simpler than the `DataProvider`.
+1. There are actually two `DataProvider` interfaces (they are identical but the class name
+   is different): one for Vaadin 8, one for Vaadin 10. We would thus have to provide
+   an implementation of the same thing two times, both for Vaadin 8 and Vaadin 10. Also,
+   the data-fetching library like `vok-orm`
+   would have to depend on the Vaadin 8 and Vaadin 10 API, which is simply too heavyweight dependency.
+2. The `DataLoader` API is simpler than the `DataProvider`.
 3. The `DataLoader` API library ([vok-dataloader](https://github.com/mvysny/vok-dataloader))
    comes with a filter hierarchy, so you don't have to write your own hierarchy.
 
+## Implementing Data Loader
 
-TBD more
-
-## The 'Behind The Scenes' Info
-
-This chapter documents the general information what you need to write a custom `DataProvider`
-for your particular type of data source. It is important to understand the basics,
+This chapter documents the general information what you need to write a custom `DataLoader`
+for your particular data source. It is important to understand the basics,
 before you start using whatever VoK provides for you.
 
 ### Feeding Grid With Data
@@ -78,8 +82,8 @@ before you start using whatever VoK provides for you.
 In order to feed the Vaadin Grid with data, you need to have two things:
 
 * A bean (a data class) that is able to hold all data for one row of a Grid
-* A proper implementation of Vaadin's `DataProvider` which would then:
-  * Fetch the data from the NoSQL/REST/other source;
+* A proper implementation of `DataLoader` which would then:
+  * Fetch the data from your NoSQL/REST/other source;
   * Map the data to a bean so that it provides instances of that bean directly.
 
 > Note: If you are accessing a SQL database, there are already two data providers pre-provided for you:
@@ -87,42 +91,52 @@ In order to feed the Vaadin Grid with data, you need to have two things:
   result of any SQL SELECT query).
   Please read [Grids](grids.md) and [Accessing SQL Databases](databases.md) (Vaadin 10: [Grids](grids-v10.md) and [Accessing SQL Databases](databases-v10.md)) for more details.
 
-To implement the `DataProvider` interface it's easiest to extend the
-`AbstractBackEndDataProvider` class.
-Your initial implementation does not need to support any filters nor sorting - to keep things simple just pass in `Unit?`
-as the `<F>` generic parameter to not to support any filters.
+To implement the `DataLoader` interface you only need to implement two methods:
 
-There are two things you need to implement:
-* Implement the `AbstractBackEndDataProvider.sizeInBackEnd()` function which queries how many rows
-  there are in the data source. That enables the Grid to draw a proper scroll bar.
-* Implement the `AbstractBackEndDataProvider.fetchFromBackEnd()`
-  function which retrieves the actual data. You need to pay attention to `Query.offset` and `Query.limit` fields which
+* `fun getCount(filter: Filter<T>?): Long` takes filters and computes number of matching rows.
+  That enables the Grid to draw a proper scroll bar.
+* `fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T>`
+  function retrieves the actual data. You need to pay attention to the `range` parameter which
   specifies the paging.
 
-Then, just call `Grid.setDataProvider()` to set your data provider and you're good to go.
-Grid will never attempt to pass in any filters on its own (it will always set
-`Query.filter` to `null`). If you need filtering, you need to create
-a filter bar and implement it yourself to do that. We'll go through this in a minute.
+Your initial implementation does not need to support any filters nor sorting, to keep things simple.
+Simply ignore the `filter` and `sortBy` parameters for now.
+
+Now, you need to convert your `DataLoader` to Vaadin's `DataProvider` so that you can
+use it with the Grid. Say that you fetch a list of `Person`:
+
+```kotlin
+val dataLoader = ...
+val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurableFilter2()
+grid.dataProvider = dp
+```
+
+Grid will never attempt to pass in any filters on its own. If you need filtering, Grid expects
+you to create a filter bar and implement everything yourself. Luckily, VoK is able to
+do that for you. We'll go through this in a minute.
 
 ### Adding Support For Sorting
 
 If you need certain columns in the Grid to be sortable, you need to support
 sorting clauses in your data provider implementation - you need to pay attention
-to the `Query.sortOrders` field. You only need to consider this field in the
-`AbstractBackEndDataProvider.fetchFromBackEnd()` method - obviously the sorting
-will not alter the count of the items.
+to the `sortBy` parameter of the `DataLoader.fetch()` method.
 
-In your `DataProvider` implementation you need to convert the contents of the
-`Query.sortOrders` field into e.g. a list of query parameters (in case of REST),
+In your `DataLoader` implementation you need to convert the contents of the
+`sortBy` parameter into e.g. a list of query parameters (in case of REST),
 or a sorting clauses (in case of a NoSQL query).
 
 Which columns are actually sortable will depend on your data source. For REST,
 the sorting parameters are limited to whatever is available as a query parameter in the
 REST http call. For NoSQL, the set of available indices limit available sorting parameters.
+By default it is expected that all properties of the Java Bean (e.g. the `Person` class)
+are sortable; the `SortClause.propertyName` in the `sortBy` parameter may be a name of any
+property in the `Person` class.
 
-It is best for your `DataProvider` to throw `IllegalArgumentException` in `AbstractBackEndDataProvider.fetchFromBackEnd()` for
-any unsupported sort clause it encounters in the `Query.sortOrders` field. Then, document all supported sorting criteria
-in the kdoc for your `DataProvider`, so that you'll know which columns to mark as non-sortable in the Grid.
+Of course that may be unwanted since sorting generally
+requires indices and indices tend to slow down insertion of new data. Therefore,
+it is best for your `DataLoader` to throw `IllegalArgumentException` in `fetch()` for
+any unsupported sort clause it encounters in the `sortBy` field. Then, document all supported sorting criteria
+in the kdoc for your `DataLoader`, so that you'll know which columns to mark as non-sortable in the Grid.
 
 ### Adding Support For Filtering
 
