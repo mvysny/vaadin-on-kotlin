@@ -2,19 +2,23 @@
 
 # Getting started with Vaadin-on-Kotlin Vaadin 8
 
-VoK is an opinionated web application framework which employs Vaadin framework running on the Kotlin programming language.
-Vaadin lets you forget the web and program user interfaces much like you would program a desktop application with conventional Java toolkits such as AWT, Swing, or SWT; Kotlin allows you to write clean understandable and save code.
+VoK is an opinionated web application framework which uses Vaadin for its front-end
+and Kotlin for its back-end. While Vaadin lets you forget the web and program user interfaces
+and let's you program much like when creating a desktop application
+with conventional Java toolkits such as AWT, Swing, or SWT, Kotlin allows you to
+write clean understandable and save code.
 
-This guide teaches you how to get Vaadin On Kotlin (VoK) up and running and introduces
+This guide teaches you how to get Vaadin On Kotlin (VoK) up and running. It introduces
 the basic concepts needed to create your own applications.
 
-> **Tribute:** I got heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html).
+> **Tribute:** I got heavily inspired by the excellent 
+> [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html).
 
-After reading this guide, you will know:
+After reading this guide, you will be able to:
 
-* How to create a new VoK application, and connect your application to a database.
-* The general layout of a VoK application.
-* How to quickly write the starting pieces of a VoK application.
+* Create a VoK application, and connect it to a database.
+* Understand the general layout of a VoK application.
+* Write the starting pieces of a VoK application.
 
 > **Note:** To skip the introduction and dive straight into the code, go to [Chapter 3.2](#3_2)
 
@@ -25,8 +29,8 @@ Though you don't need to be a seasoned programmer to follow through,
 I assume a basic working knowledge of Kotlin and Vaadin.
 
 If you have no prior experience with Kotlin or Vaadin, you might get overwhelmed
-by the sheer amount of the new information. Therefore, I recommend to take it slow
-and get familiar with both Vaadin and Kotlin first. 
+by the sheer amount of new information. Therefore, I recommend to take it slowly
+and get familiar with both Vaadin and Kotlin first:
 * To learn about Kotlin, consider the following materials:
   * [Official Kotlin Programming Language website](https://kotlinlang.org/)
   * [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
@@ -34,13 +38,13 @@ and get familiar with both Vaadin and Kotlin first.
   * [Official Vaadin website](https://www.vaadin.com)
   * [Vaadin 8 Documentation](https://vaadin.com/docs/v8)
 
-At any point, I encourage you to experiment with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application):
-VoK basically uses Karibu-DSL under the hood, therefore the lessons learned in the Karibu-DSL Hello World example will
-be applicable in the VoK-based apps later on.
+I encourage you to experiment with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application)
+at any point since VoK uses Karibu-DSL under the hood, therefore the lessons learned
+in the Karibu-DSL Hello World example will come in handy later on in all VoK-based apps.
 
 ## What is Vaadin-on-Kotlin?
 
-VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
+VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly.
 It is designed to make the art of programming of web applications easier by making assumptions about what 
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
