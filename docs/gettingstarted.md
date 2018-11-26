@@ -49,11 +49,6 @@ It is designed to make the art of programming of web applications easier by maki
 every developer needs to get started. It allows you to write less code while accomplishing 
 more than many other languages and frameworks.
 
-> **Note:** Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
-But, with the advent of the Kotlin programming language,
-we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
-We believe that Kotlin can replace the traditional approach of using the Dependency Injection to glue stuff together.
-
 VoK is opinionated software. It makes the assumption that there is a "best" way to do things,
 and it's designed to encourage that way - and in some cases to discourage alternatives.
 
@@ -63,13 +58,21 @@ The VoK philosophy includes three major guiding principles:
   and MVC are deliberately left out.
 * Components as basic building blocks - Vaadin is a single-page web component framework as opposed to
   the traditional multiple page frameworks. As such, it resembles the traditional fat client
-  Swing/JavaFX programming and is closer to GUI software development than traditional web development with HTML and JavaScript.
+  Swing/JavaFX programming and is closer to GUI software development than the traditional web development with HTML and JavaScript.
   VoK promotes code/UI reuse by means of reusing components (your components will range from basic ones
-  to a complex containers, even forms) instead of creating page templates.
+  to a complex containers, even forms) instead of creating page templates. It is a predecessor to the Web Components technology.
 * No magic - No proxies, interceptors, reflection. VoK introduces explicit functions which you can easily
   browse for sources in your Intellij IDEA.
 
-While the Dependency Injection (DI) itself is not hard to grok, it comes with unfortunate consequences:
+### Notes For Java Programmers
+
+Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
+But, with the advent of the Kotlin programming language,
+we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
+We believe that the era of traditional approach of using the Dependency Injection, Annotations and auto-discovery magic is over and
+the Kotlin programming language itself is all that's needed to glue stuff together.
+
+While the Dependency Injection (DI) itself is not hard to understand, it comes with unfortunate consequences:
 * The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services may be a desirable
 practice in larger project, it is overkill for simple projects.
 * The DI requires you to run on a DI container, such as a JavaEE server, or tons of Spring libraries. While that's nothing
@@ -169,7 +172,7 @@ you should see your command prompt cursor again. For most UNIX-like systems incl
 
 > **Note:** changes in theme files will only be propagated when you are running `./gradlew clean web:appRun` and there is no 
 `styles.css` file. If there is, your changes will be ignored until you compile the theme again, by running
-`./gradlew vaadinThemeCompile`.
+`./gradlew vaadinThemeCompile`. Just delete the `styles.css` file, to apply changes to your styles immediately as you edit them.
 >
 > Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
  running `./gradlew build`.
@@ -182,7 +185,7 @@ have your software configured correctly enough to serve a page.
 To get VoK saying "Hello", you need to create a View.
 
 A View's purpose is to provide a Vaadin Component (usually a Layout containing other components), which then interacts with the user.
-The Navigator decides which View receives which requests. Usually there is exactly one route to a View. You can collect the data
+The Navigator decides which View receives which requests. There is exactly one route to a View. You can collect the data
 to be displayed right in the View itself (for small applications), or you can define so-called Service layer
 (a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
 VoK however does not enforce this, and we will not use this pattern in the tutorial.
@@ -207,9 +210,8 @@ Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.View
-import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
 
@@ -238,7 +240,7 @@ Launch the web server again and navigate to [http://localhost:8080](http://local
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
 that this new Navigator route is indeed going to `MyWelcomeView` and is rendering the view correctly.
 
-## 5 Getting Up and Running
+## Getting Up and Running
 
 Now that you've seen how to create a view, let's create something with a bit more substance.
 
@@ -257,9 +259,7 @@ import com.github.vokorm.*
 
 data class Article(
         override var id: Long? = null,
-
         var title: String? = null,
-
         var text: String? = null
 ) : Entity<Long> {
     companion object : Dao<Article>
@@ -279,31 +279,38 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which wi
 ```kotlin
 package com.example.vok
 
+import com.github.mvysny.karibudsl.v8.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
 }
 ```
 
-This will add the possibility to retrieve the articles via a REST call. Just try
+In order to take these REST endpoints into use, in the `Bootstrap.kt`, edit the `configureRest()` function at the end of the file and make sure it calls our `articleRest()` function:
 
-```bash
-$ wget localhost:8080/rest/articles
+```kotlin
+fun Javalin.configureRest(): Javalin {
+    val gson = GsonBuilder().create()
+    gson.configureToJavalin()
+    articleRest()
+    return this
+}
 ```
 
-You will get 500 internal server error; the server log will show a long stacktrace, with the most interesting
+This will add the possibility to retrieve the articles via a REST call. Just restart the server and try
+
+```bash
+$ curl localhost:8080/rest/articles
+```
+
+You will get `Internal server error`; the server log will show a long stacktrace, with the most interesting
 part being
 ```
 Caused by: org.h2.jdbc.JdbcSQLException: Table "ARTICLE" not found; SQL statement:
@@ -337,7 +344,7 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -371,7 +378,7 @@ To make the "Save Article" button do something, just change the class as follows
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -465,7 +472,7 @@ Vaadin Navigator supports adding parameters after the view name. This way, we ca
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -533,8 +540,8 @@ following contents:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.*
+import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -621,7 +628,10 @@ or you'll need to run `./gradlew build` in another terminal, to actually see the
 
 The entity file, `Article.kt` is about as simple as it can get.
 
-There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of functionality to your entities for free, including basic database CRUD (Create, Read, Update, Destroy) operations, data validation, as well as sophisticated search support and the ability to relate multiple models to one another.
+There isn't much to this file - but both Sql2o and Vaadin-on-Kotlin supplies a great deal of
+functionality to your entities for free, including basic database CRUD
+(Create, Read, Update, Destroy) operations, data validation, as well as
+sophisticated search support and the ability to relate multiple models to one another.
 
 Vaadin-on-Kotlin includes methods to help you validate the data that you send to models.
 Open the `Article.kt` file and edit it:
@@ -629,8 +639,8 @@ Open the `Article.kt` file and edit it:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vokorm.*
+import eu.vaadinonkotlin.vaadin8.sql2o.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -687,7 +697,7 @@ The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/Edi
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
@@ -767,7 +777,7 @@ And we'll also add one to the `ArticleView.kt` template as well, so that there's
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -813,7 +823,7 @@ And here's how our app looks so far:
 
 ### Creating components to clean up duplication in views
 
-Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact, 
+Our `EditArticleView` view looks very similar to the `CreateArticleView` view; in fact,
 they both share the same code for displaying the form. 
 Let's remove this duplication by using a common component.
 
@@ -822,7 +832,7 @@ Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with th
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -872,13 +882,13 @@ When you press the "Save Article" button, the `ArticleEditor` component will eit
 The function `HasComponents.articleEditor()` looks interesting. The function has been specially crafted in a way that allows us to 
 build Vaadin UIs in a structured way, using purely Kotlin code.
 This technique is called DSL (Domain Specific Language). The name fits - in a way we have constructed
-a 'language' used to create Vaadin UIs. You can find more information about the Kotlin DSL at the [Kotlin Type-Safe Builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
+a 'language' used to create Vaadin UIs. You can find more information about the DSLs at the [DSLs: Explained](http://www.vaadinonkotlin.eu/dsl_explained.html) article.
 
 Using type-safe builders or DSL has the advantage that the Kotlin compiler will check
 for typos, and the Kotlin IDEA plugin will help us with the auto-completion.
 
 > **Note:** The [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library actually defines such builder functions for every Vaadin component.
-You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/vok/karibudsl/Basic.kt) file
+You can check the [Basic.kt](https://github.com/mvysny/karibu-dsl/blob/master/karibu-dsl-v8/src/main/kotlin/com/github/mvysny/karibudsl/v8/Basic.kt) file
 for the definitions of the sources for the `button` and `textField` builder methods.
 
 Now, let's update the `CreateArticleView.kt` view to use this new component, rewriting it completely:
@@ -886,7 +896,7 @@ Now, let's update the `CreateArticleView.kt` view to use this new component, rew
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
 import com.vaadin.ui.themes.ValoTheme
@@ -910,7 +920,7 @@ Then do the same for the `EditArticleView.kt` view:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.VerticalLayout
@@ -946,12 +956,12 @@ We will add a 'Destroy' link to the `ArticlesView.kt` file, to wrap everything t
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.themes.ValoTheme
+import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
 
 @AutoView
 class ArticlesView: VerticalLayout(), View {
@@ -1093,9 +1103,9 @@ You'll need to edit `Article.kt` to add the other side of the association:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
 import com.github.vokorm.*
-import com.vaadin.data.provider.DataProvider
+import eu.vaadinonkotlin.vaadin8.*
+import eu.vaadinonkotlin.vaadin8.sql2o.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1133,27 +1143,22 @@ it may just be handy to check your database status via the `curl` tool. Edit `Ar
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.getAll
+import com.github.mvysny.karibudsl.v8.getAll
 import com.github.vokorm.*
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
+import io.javalin.Javalin
+import io.javalin.NotFoundResponse
 
-@Path("/articles")
-class ArticleRest {
-
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun get(@PathParam("id") id: Long): Article = Article.findById(id) ?: throw NotFoundException("No article with id $id")
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getAll(): List<Article> = Article.findAll()
-
-    @GET
-    @Path("/{id}/comments")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun getComments(@PathParam("id") id: Long): List<Comment> = get(id).comments.getAll()
+fun Javalin.articleRest() {
+    get("/rest/articles/:id") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        ctx.json(Article.findById(id) ?: throw NotFoundResponse("No article with id $id"))
+    }
+    get("/rest/articles") { ctx -> ctx.json(Article.findAll()) }
+    get("/rest/articles/:id/comments") { ctx ->
+        val id = ctx.pathParam("id").toLong()
+        val article = Article.findById(id) ?: throw NotFoundResponse("No article with id $id")
+        ctx.json(article.comments.getAll())
+    }
 }
 ```
 
@@ -1165,14 +1170,16 @@ $ curl localhost:8080/rest/articles/1/comments
 
 ### Writing a View
 
-Like with any blog, our readers will create their comments directly after reading the article, and once they have added their comment, will be sent back to the article show page to see their comment now listed. 
+Like with any blog, our readers will create their comments directly after
+reading the article, and once they have added their comment, will be sent
+back to the article show page to see their comment now listed.
 
 So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
@@ -1275,7 +1282,7 @@ in the future, the `Label` component will no longer suffice. Create the `web/src
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.ui.*
 
@@ -1317,7 +1324,7 @@ Let us also move that new comment section out to its own component. Create the f
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
 
@@ -1363,7 +1370,7 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -1422,7 +1429,7 @@ Let's add a link button to the `CommentsComponent.kt` file:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.karibudsl.*
+import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -1482,85 +1489,65 @@ We will implement a login service and a login form. Just create the `web/src/mai
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.Session
-import com.github.vok.karibudsl.*
-import com.vaadin.icons.VaadinIcons
+import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.*
 import com.vaadin.ui.*
-import com.vaadin.ui.themes.ValoTheme
+import eu.vaadinonkotlin.vaadin8.Session
+import eu.vaadinonkotlin.vaadin8.loginForm
 import java.io.Serializable
 
 data class User(val name: String) : Serializable
 
-object LoginService {
-    fun login(user: User) {
-        Session[User::class] = user
+class LoginService : Serializable {
+    fun login(username: String, password: String): Boolean {
+        currentUser = User(username)
         Page.getCurrent().reload()
+        return true
     }
-    val currentUser: User? get() = Session[User::class]
+    var currentUser: User? = null
+    private set
+
     fun logout() {
         VaadinSession.getCurrent().close()
         Page.getCurrent().reload()
     }
+
+    val isLoggedIn get() = currentUser != null
 }
 
-class LoginForm : VerticalLayout() {
-    private lateinit var username: TextField
-    private lateinit var password: TextField
+val Session.loginService: LoginService get() = getOrPut { LoginService() }
+
+class LoginView : VerticalLayout() {
     init {
         setSizeFull()
-        panel {
-            w = 500.px; alignment = Alignment.MIDDLE_CENTER
-            verticalLayout {
-                w = fillParent
-                horizontalLayout {
-                    w = fillParent
-                    label("Welcome") {
-                        alignment = Alignment.BOTTOM_LEFT
-                        addStyleNames(ValoTheme.LABEL_H4, ValoTheme.LABEL_COLORED)
-                    }
-                    label("Vaadin-on-Kotlin Sample App") {
-                        alignment = Alignment.BOTTOM_RIGHT; styleName = ValoTheme.LABEL_H3; expandRatio = 1f
-                    }
-                }
-                horizontalLayout {
-                    w = fillParent
-                    username = textField("Username") {
-                        expandRatio = 1f; w = fillParent
-                        icon = VaadinIcons.USER; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
-                    }
-                    password = passwordField("Password") {
-                        expandRatio = 1f; w = fillParent
-                        icon = VaadinIcons.LOCK; styleName = ValoTheme.TEXTFIELD_INLINE_ICON
-                    }
-                    button("Sign In") {
-                        alignment = Alignment.BOTTOM_RIGHT; setPrimary()
-                        onLeftClick { login() }
-                    }
+        loginForm("Vaadin-on-Kotlin Sample App") {
+            alignment = Alignment.MIDDLE_CENTER
+            onLogin { username, password ->
+                if (!Session.loginService.login(username, password)) {
+                    usernameField.componentError = UserError("The user does not exist or invalid password")
                 }
             }
         }
     }
-
-    private fun login() {
-        LoginService.login(User(username.value))
-    }
 }
 ```
 
-The code is a bit longer, but the result is worth it. This is how the `LoginForm` component looks like:
+The code is a bit longer, but the result is worth it. This is how the `LoginView` component looks like:
 
-![Login Form](images/login_form.png)
+![Login View](images/login_form.png)
 
-The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
-user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
-will reinstantiate the `MyUI`. We will now configure `MyUI` to show a login form if there's nobody logged in yet. Just
+The `LoginService` class handles the process of login/logout. Upon login,
+we will store the information about the currently logged-in
+user into the session. This will serve as a marker that there is someone
+logged in. We will also tell the browser to reload the page - this
+will reinstantiate the `MyUI`. We will now configure `MyUI` to show a
+login form if there's nobody logged in yet. Just
 edit `MyUI.kt` and change the `init()` method as follows:
 
 ```kotlin
     override fun init(request: VaadinRequest?) {
-        if (LoginService.currentUser == null) {
-            setContent(LoginForm())
+        if (!Session.loginService.isLoggedIn) {
+            setContent(LoginView())
             return
         }
         setContent(content)
@@ -1595,7 +1582,7 @@ Remember you don't have to do everything without help. As you need assistance ge
 You're encouraged to help improve the quality of this guide.
 
 Please contribute if you see any typos or factual errors. To get started, you can read our 
-[documentation contributions](todo) section.
+[documentation contributions](contributing.html) section.
 
 You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
 Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.

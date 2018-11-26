@@ -8,7 +8,7 @@ plugins {
 val jettyVer = "9.4.2.v20170220"
 
 dependencies {
-    compile("com.github.vok.karibudsl:karibu-dsl-v8compat7:${ext["karibudsl_version"]}")
+    compile("com.github.mvysny.karibudsl:karibu-dsl-v8compat7:${ext["karibudsl_version"]}")
 
     compile(project(":vok-framework-jpa-compat7"))
     compile("org.jetbrains.kotlin:kotlin-stdlib")

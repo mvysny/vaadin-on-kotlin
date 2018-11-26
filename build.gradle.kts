@@ -1,25 +1,26 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.0"
+    kotlin("jvm") version "1.3.10"
     id("org.gretty") version "2.2.0"
     id("com.jfrog.bintray") version "1.8.1"
     `maven-publish`
+    id("org.jetbrains.dokka") version "0.9.17"
 }
 
 defaultTasks("clean", "build")
 
 allprojects {
-    group = "com.github.vaadinonkotlin"
-    version = "0.5.3-SNAPSHOT"
+    group = "eu.vaadinonkotlin"
+    version = "0.6.3-SNAPSHOT"
 
     repositories {
-        jcenter()
-        maven { setUrl("https://dl.bintray.com/mvysny/github") }
-        maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
+        mavenCentral()
+        maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
     }
 
     tasks {
@@ -35,6 +36,7 @@ subprojects {
         plugin("maven-publish")
         plugin("kotlin")
         plugin("com.jfrog.bintray")
+        plugin("org.jetbrains.dokka")
     }
 
     tasks.withType<KotlinCompile> {
@@ -66,22 +68,46 @@ subprojects {
             from(java.sourceSets["main"].allSource)
         }
 
+        val javadocJar = task("javadocJar", Jar::class) {
+            val javadoc = tasks.findByName("dokka") as DokkaTask
+            javadoc.outputFormat = "javadoc"
+            javadoc.outputDirectory = "$buildDir/javadoc"
+            dependsOn(javadoc)
+            classifier = "javadoc"
+            from(javadoc.outputDirectory)
+        }
+
         publishing {
             publications {
                 create("mavenJava", MavenPublication::class.java).apply {
                     groupId = project.group.toString()
                     this.artifactId = artifactId
                     version = project.version.toString()
-                    pom.withXml {
-                        val root = asNode()
-                        root.appendNode("description", description)
-                        root.appendNode("name", artifactId)
-                        root.appendNode("url", "https://github.com/mvysny/vaadin-on-kotlin")
+                    pom {
+                        this.description.set(description)
+                        name.set(artifactId)
+                        url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                        licenses {
+                            license {
+                                name.set("The MIT License")
+                                url.set("https://opensource.org/licenses/MIT")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("mavi")
+                                name.set("Martin Vysny")
+                                email.set("martin@vysny.me")
+                            }
+                        }
+                        scm {
+                            url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                        }
                     }
                     from(components.findByName("java")!!)
-                    artifact(sourceJar) {
-                        classifier = "sources"
-                    }
+                    artifact(sourceJar)
+                    artifact(javadocJar)
                 }
             }
         }
@@ -91,7 +117,7 @@ subprojects {
             key = local.getProperty("bintray.key")
             pkg(closureOf<BintrayExtension.PackageConfig> {
                 repo = "github"
-                name = "vaadin-on-kotlin"
+                name = "eu.vaadinonkotlin"
                 setLicenses("MIT")
                 vcsUrl = "https://github.com/mvysny/vaadin-on-kotlin"
                 publish = true

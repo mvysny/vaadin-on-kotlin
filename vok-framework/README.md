@@ -1,4 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework)
 
 # VoK Framework Core
 
@@ -45,14 +46,14 @@ This is the true value of simplicity.
 
 The internationalization/localization/i18n/l10n of strings used by VoK (e.g. error messages,
 filter component captions) can be tuned by the means of resource bundles. See
-[I18n.kt](src/main/kotlin/com/github/vok/framework/I18n.kt) for more details.
+[I18n.kt](src/main/kotlin/eu/vaadinonkotlin/I18n.kt) for more details.
 
 The following resource bundles are searched:
 
 * The `VokMessages*.properties` bundle, located in the root package. Create one if you need to customize the localization
   strings in your app.
-* If the message is not found, the standard message bundle of `com.github.vok.VokMessages*.properties` is consulted.
+* If the message is not found, the standard message bundle of `eu.vaadinonkotlin.VokMessages*.properties` is consulted.
 
-Consult the [standard message bundle](src/main/resources/com/github/vok/VokMessages.properties) for the list of messages.
+Consult the [standard message bundle](src/main/resources/eu/vaadinonkotlin/VokMessages.properties) for the list of messages.
 
 Consult the [Translating Your App](http://www.vaadinonkotlin.eu/i18n.html) Guide for more details.

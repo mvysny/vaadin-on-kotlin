@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/mvysny/vaadin-on-kotlin.svg?branch=master)](https://travis-ci.org/mvysny/vaadin-on-kotlin)
 [![Join the chat at https://gitter.im/vaadin/vaadin-on-kotlin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vaadin/vaadin-on-kotlin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework)
 
 # Welcome to Vaadin-On-Kotlin
 
@@ -114,6 +115,7 @@ The list of modules:
   the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 10.
   Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to expose data from your VoK app to other REST-consuming clients.
+* [vok-rest-client](vok-rest-client) - when you want to consume data in your VoK app from other REST servers.
 * [vok-db](vok-db) - Provides access to the database; uses [VoK-ORM](https://github.com/mvysny/vok-orm)
 * [vok-security](vok-security) - provides basic security support. The documentation there explains the basics and provides links to sample projects.
 
@@ -221,8 +223,8 @@ grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFil
 #### Keyboard shortcuts via operator overloading
 
 ```kotlin
-import com.github.vok.framework.vaadin.ModifierKey.Alt
-import com.github.vok.framework.vaadin.ModifierKey.Ctrl
+import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
+import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 
 button("Create New Person (Ctrl+Alt+C)") {

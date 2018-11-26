@@ -1,4 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-security/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-security)
 
 # VoK-Security
 
@@ -96,6 +97,94 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
 }
 ```
 
+### Making The Annotations Work
+
+In order to enforce the rules set by the annotations, you need to hook into the navigator: before a view is rendered, we will check whether
+it can be navigated to.
+
+First step is to register the `loggedInUserResolver`. It doesn't do anything on its own, but will serve current user
+to a function which we will setup next:
+
+```kotlin
+VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
+    override fun isLoggedIn(): Boolean = Session.loginManager.isLoggedIn
+    override fun getCurrentUserRoles(): Set<String> = Session.loginManager.getCurrentUserRoles()
+}
+```
+
+Now, to the hook itself. For Vaadin 8 we simply install the security hook in the `UI.init()`:
+
+```kotlin
+class MyUI : UI() {
+
+    override fun init(request: VaadinRequest?) {
+        if (!Session.loginManager.isLoggedIn) {
+            // If no user is logged in, then simply show the LoginView (a full-screen login form) and bail out.
+            // When the user logs in, we will simply reload the page, which recreates the UI instance; since the user is stored in a session
+            // and therefore logged in, the code will skip this block and will initialize the UI properly.
+            content = LoginView()
+            return
+        }
+
+        navigator = Navigator(this, content as ViewDisplay)
+        navigator.addProvider(autoViewProvider)
+        VokSecurity.install()
+        ...
+    }
+}
+```
+
+#### Vaadin 10
+
+For Vaadin 10 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
+```kotlin
+class MyUI: UI() {
+    override fun init(request: VaadinRequest) {
+        addBeforeEnterListener { enterEvent ->
+            if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
+                enterEvent.rerouteTo(LoginScreen::class.java)
+            } else {
+                VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
+            }
+        }
+    }
+}
+```
+
+If you don't have the UI class but you have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
+```kotlin
+class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
+    override fun beforeEnter(event: BeforeEnterEvent) {
+        if (!Session.loginManager.isLoggedIn) {
+            event.rerouteTo(LoginView::class.java)
+        } else {
+            VokSecurity.checkPermissionsOfView(event.navigationTarget)
+        }
+    }
+}
+```
+
+Otherwise you can provide your own init listener:
+
+```kotlin
+class BookstoreInitListener : VaadinServiceInitListener {
+    override fun serviceInit(initEvent: ServiceInitEvent) {
+        initEvent.source.addUIInitListener { uiInitEvent ->
+            uiInitEvent.ui.addBeforeEnterListener { enterEvent ->
+                if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
+                    enterEvent.rerouteTo(LoginScreen::class.java)
+                } else {
+                    VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
+                }
+            }
+        }
+    }
+}
+```
+
+Don't forget to register it though: create a file in your `src/main/resources/META-INF/services` named `com.vaadin.flow.server.VaadinServiceInitListener`
+containing the full class name of your `BookstoreInitListener` class.
+
 ## VoK Authentication
 
 Authentication identifies the user and tries to prove that it's indeed the user who's
@@ -122,12 +211,12 @@ VoK also provide basic login forms and the documentation on how to integrate the
 with your app. There is also a set of example projects:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK Authorization
 
 The VoK API authorization API uses role-based authorization on Vaadin views. There are
-three annotations in the [AllowRoles.kt](src/main/kotlin/com/github/vok/security/AllowRoles.kt) file,
+three annotations in the [AllowRoles.kt](src/main/kotlin/eu/vaadinonkotlin/security/AllowRoles.kt) file,
 and your view must list exactly one of them otherwise it will be inaccessible:
 
 * `AllowRoles` lists roles that are allowed to visit that view; the user must be logged in and must be assigned at least one of the roles listed in the annotation
@@ -139,7 +228,7 @@ define more complex rules as a Kotlin code in the `View.enter()` which is invoke
 to that particular view. For Vaadin 10, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
 
 For example, the View may check e.g. whether given user has the right
-to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/com/github/vok/security/AccessRejectedException.kt) must be simply thrown.
+to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
 The exception is then caught by the Vaadin exception handler and either
 an error notification "access rejected" should be shown (Vaadin 8), or
 the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 10).
@@ -170,8 +259,8 @@ This module only provides basic API classes which lays out the foundation of the
 security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 10
 and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 [vok-util-vaadin10](../vok-util-vaadin10) modules:
-* For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/com/github/vok/framework/VokSecurity.kt) class;
-* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/com/github/vok/framework/flow/VokSecurity.kt) class;
+* For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/eu/vaadinonkotlin/vaadin8/VokSecurity.kt) class;
+* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
 
 ## Example projects
 
@@ -179,7 +268,7 @@ Please find example projects below. Both projects are using the username+passwor
 stored in the SQL database:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10)
+* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK-Security Simple
 

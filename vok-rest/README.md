@@ -1,6 +1,7 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest)
 
-# VoK REST support
+# VoK REST Server Support
 
 This module makes it easy to export your objects via REST. The aim here is to use as lightweight libraries as possible,
 that's why we're using [Javalin](https://javalin.io/) for REST endpoint definition, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
@@ -8,14 +9,15 @@ Jackson.
 
 > Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
 Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources.html) guide for more information.
+Also visit [vok-rest-client](../vok-rest-client) for consuming REST services easily with VOK apps.
 
-## Adding REST to your app
+## Adding REST Server To Your App
 
 Include dependency on this module to your app; just add the following Gradle dependency to your `build.gradle`:
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-rest:x.y.z"
+    compile "eu.vaadinonkotlin:vok-rest:x.y.z"
 }
 ```
 
@@ -45,7 +47,7 @@ fun Javalin.configureRest(): Javalin {
     gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     get("/rest/person/helloworld2") { ctx -> ctx.json(Person.findAll()) }  // uses Gson
-    crud("/rest/person", Person.getCrudHandler(true))
+    crud2("/rest/person", Person.getCrudHandler(true))  // a full-blown CRUD Handler
     return this
 }
 ```
@@ -56,44 +58,81 @@ To test it out, just run the following in your command line:
 curl http://localhost:8080/rest/person
 ```
 
-This should hit the route defined via the `crud("/rest/person")` and should print all personnel in your database.
+This should hit the route defined via the `crud2("/rest/person")` and should print all personnel in your database.
 
 Please consult [Javalin Documentation](https://javalin.io/documentation) for more details on how to configure REST endpoints.
 
+### CRUD Handler
+
+VoK provides a full-blown REST CRUD handler for any vok-orm entity, which
+exposes given entity in a standard way over REST (the `crud2()` function as seen above).
+Attaching the CRUD handler to, say, `/rest/users` will export the following endpoints:
+
+* `GET /rest/users` returns all users
+* `GET /rest/users/22` returns one user
+* `POST /rest/users` will create an user
+* `PATCH /rest/users/22` will update an user
+* `DELETE /rest/users/22` will delete an user
+
+The Handler will automatically use vok-orm's `EntityDataProvider` to fetch instances of the entity.
+
+The `get all` endpoint supports the following query parameters:
+
+* `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than `maxLimit`
+* `sort_by=-lastModified,+email,firstName` - a list of sorting clauses.
+Only those which appear in `allowSortColumns` are allowed. Prepending a column name with
+`-` will sort DESC. Prepending the column name with `+` is optional and can be omitted.
+* To define filters, simply pass in column names with the values, for example `age=81`. You can also specify operators: one of
+`eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. You can pass single column name
+multiple times to AND additional clauses, for example `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`. OR filters are not supported.
+* `select=count` - if this is passed in, then instead of a list of matching objects a single number will be returned: the number of
+records matching given filters.
+
+All column names are expected to be Kotlin property names of the entity in question.
+
 ### Testing your REST endpoints
 
-You can easily start Javalin with Jetty which would serve your endpoints on an actual http server. You need to add the following dependencies:
+You can easily start Javalin with Jetty which allows you to test your REST endpoints on an actual http server. You need to add the following dependencies:
 
 ```gradle
 dependencies {
-    testCompile("khttp:khttp:0.1.0") {
-        exclude(mapOf("group" to "org.json"))
-    }
+    testCompile("com.github.vok:vok-rest-client:x.y.z")
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
 ```
 
-This will add Jetty for booting up a testing Javalin server; we're going to access the REST endpoints via the [khttp](https://khttp.readthedocs.io/en/latest/) library.
+This will add Jetty for booting up a testing Javalin server; we're going to access the REST endpoints via the [vok-rest-client](../vok-rest-client) VOK module.
 
 The testing file will look like this:
 
 ```kotlin
-fun Response.checkOk(): Response {
-    if (statusCode !in 200..299) throw IOException("$statusCode: $text ($url)")
-    return this
+// Demoes Retrofit + annotations client
+interface PersonRestClient {
+    @GET("helloworld")
+    @Throws(IOException::class)
+    fun helloWorld(): String
+
+    @GET(".")
+    @Throws(IOException::class)
+    fun getAll(): List<Person>
 }
 
-class PersonRestClient(val baseUrl: String) {
-    init {
-        require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
+// Demoes direct access via okhttp
+class PersonRestClient2(val baseUrl: String) {
+    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
+    fun helloWorld(): String {
+        val request = Request.Builder().url("${baseUrl}helloworld").build()
+        return client.exec(request) { response -> response.string() }
     }
-    val gson: Gson = GsonBuilder().create()
-    fun helloWorld(): String = khttp.get("$baseUrl/person/helloworld").checkOk().text
     fun getAll(): List<Person> {
-        val text = khttp.get("$baseUrl/person").checkOk().text
-        val type = TypeToken.getParameterized(List::class.java, Person::class.java).type
-        return gson.fromJson<List<Person>>(text, type)
+        val request = Request.Builder().url(baseUrl).build()
+        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
+}
+
+fun DynaNodeGroup.usingRestClient() {
+    beforeGroup { RetrofitClientVokPlugin().init() }
+    afterGroup { RetrofitClientVokPlugin().destroy() }
 }
 
 class PersonRestTest : DynaTest({
@@ -104,22 +143,25 @@ class PersonRestTest : DynaTest({
     }
     afterGroup { javalin.stop() }
 
-    usingApp()  // to bootstrap the app to have access to the database.
-
-    lateinit var client: PersonRestClient
-    beforeEach { client = PersonRestClient("http://localhost:9876/rest") }
+    usingDb()  // to have access to the database.
+    usingRestClient()
 
     test("hello world") {
+        val client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java)
         expect("Hello World") { client.helloWorld() }
-    }
-
-    test("get all users") {
-        expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
         expectList(p) { client.getAll() }
     }
-})
+
+    test("hello world 2") {
+        val client = PersonRestClient2("http://localhost:9876/rest/person/")
+        expect("Hello World") { client.helloWorld() }
+        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        p.save()
+        expectList(p) { client.getAll() }
+    }
+}
 ```
 
 Please consult the [vok-example-crud-sql2o](../vok-example-crud-sql2o) example project for more info.

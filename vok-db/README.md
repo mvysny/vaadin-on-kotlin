@@ -1,3 +1,6 @@
+[![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-db/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-db)
+
 # VoK database support
 
 The recommended way to use the SQL databases. It includes the [VoK-ORM](https://github.com/mvysny/vok-orm)
@@ -9,9 +12,11 @@ To use this module, simply add the following to your `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-db:0.4.1"
+    compile "com.github.vok:vok-db:x.y.z"
 }
 ```
+
+> Note: to obtain the newest version see above for the most recent tag
 
 ## When to use this module
 
