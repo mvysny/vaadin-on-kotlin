@@ -1,9 +1,11 @@
 package eu.vaadinonkotlin.vaadin10.sql2o
 
+import com.github.mvysny.vokdataloader.DataLoader
 import com.github.vokorm.Dao
 import com.github.vokorm.Entity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
+import com.vaadin.flow.component.grid.Grid
 import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin10.VokDataProvider
 import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
@@ -16,9 +18,18 @@ import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
     get() {
-        val entityDataProvider = DataLoaderAdapter(T::class.java, EntityDataLoader(T::class.java), { it.id!! })
+        val entityDataProvider = DataLoaderAdapter(T::class.java, dataLoader) { it.id!! }
         return entityDataProvider.withConfigurableFilter2()
     }
+
+/**
+ * Provides instances of this entity from a database. Does not support joins on any of the like; supports filtering
+ * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [sqlDataProvider].
+ *
+ * Example of use: `grid.setDataLoader(Person.dataLoader)`.
+ */
+inline val <reified T: Entity<*>> Dao<T>.dataLoader: DataLoader<T>
+    get() = EntityDataLoader(T::class.java)
 
 /**
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
@@ -63,3 +74,23 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
         = DataLoaderAdapter(clazz, SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
+
+/**
+ * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
+ * as a (configurable) [Grid.getDataProvider].
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.data.provider.DataProvider.getId] for more details. Typically every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+inline fun <reified T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, noinline idResolver: (T)->Any) {
+    dataProvider = DataLoaderAdapter(T::class.java, dataLoader, idResolver).withConfigurableFilter2()
+}
+
+/**
+ * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
+ * as a (configurable) [Grid.getDataProvider].
+ */
+inline fun <reified T: Entity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
+    setDataLoader(dataLoader) { it.id!! }
+}
