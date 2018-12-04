@@ -1,5 +1,4 @@
 plugins {
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"  // remove when https://github.com/gradle/gradle/issues/4417 is fixed
     war
     id("org.gretty")
 }
@@ -7,10 +6,6 @@ plugins {
 gretty {
     contextPath = "/"
     servletContainer = "jetty9.4"
-}
-
-dependencyManagement {
-    imports { mavenBom("com.vaadin:vaadin-bom:${ext["vaadin10_version"]}") }
 }
 
 dependencies {

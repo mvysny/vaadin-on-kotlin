@@ -1,11 +1,3 @@
-plugins {
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"
-}
-
-dependencyManagement {
-    imports { mavenBom("com.vaadin:vaadin-bom:${ext["vaadin10_version"]}") }
-}
-
 dependencies {
     compile(project(":vok-framework"))
     compile(project(":vok-db"))

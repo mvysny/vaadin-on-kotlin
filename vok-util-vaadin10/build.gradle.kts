@@ -1,11 +1,3 @@
-plugins {
-    id("io.spring.dependency-management") version "1.0.6.RELEASE"
-}
-
-dependencyManagement {
-    imports { mavenBom("com.vaadin:vaadin-bom:${ext["vaadin10_version"]}") }
-}
-
 dependencies {
     compile(project(":vok-framework"))
     compile(project(":vok-security"))
@@ -14,6 +6,7 @@ dependencies {
 
     // Vaadin
     compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${ext["karibudsl_version"]}")
+    compile(platform("com.vaadin:vaadin-bom:${ext["vaadin10_version"]}"))
     compile("javax.servlet:javax.servlet-api:3.1.0")
 
     // testing
