@@ -38,3 +38,13 @@ class DataLoaderAdapter<T : Any>(val clazz: Class<T>, private val loader: DataLo
         return list.stream()
     }
 }
+
+/**
+ * Adapts [DataLoader] to Vaadin's [VokDataProvider].
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [DataProvider.getId] for more details. Typically every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+inline fun <reified T: Any> DataLoader<T>.toDataProvider(noinline idResolver: (T) -> Any): VokDataProvider<T> =
+        DataLoaderAdapter(T::class.java, this, idResolver).withConfigurableFilter2()

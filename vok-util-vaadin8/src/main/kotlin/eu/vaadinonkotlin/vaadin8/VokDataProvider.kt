@@ -1,13 +1,16 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.ILikeFilter
 import com.github.mvysny.vokdataloader.SqlWhereBuilder
 import com.github.mvysny.vokdataloader.and
 import com.vaadin.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.data.provider.DataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
+import com.vaadin.ui.ComboBox
 import java.util.stream.Stream
+import kotlin.reflect.KProperty1
 
 /**
  * A data provider with configurable filter - use [setFilter] to set your custom filter. Note that user-provided filter value in Grid
@@ -92,3 +95,12 @@ fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataPr
     sort.isEmpty() -> this
     else -> AppendSortDataProvider(sort.toList(), this).withConfigurableFilter2()
 }
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
+        withConvertedFilter<String> { filter ->
+            if (filter.isNullOrBlank()) null else ILikeFilter(property.name, filter.trim())
+        }
