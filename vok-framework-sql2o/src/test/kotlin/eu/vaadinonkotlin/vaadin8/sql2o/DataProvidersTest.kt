@@ -1,9 +1,13 @@
 package eu.vaadinonkotlin.vaadin8.sql2o
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectList
+import com.github.mvysny.kaributesting.v8.getSuggestions
+import com.github.mvysny.kaributesting.v8.setUserInput
 import com.github.mvysny.vokdataloader.*
 import com.vaadin.ui.ComboBox
 import eu.vaadinonkotlin.vaadin8.withFilter
+import eu.vaadinonkotlin.vaadin8.withStringFilterOn
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({
@@ -23,29 +27,32 @@ class DataProvidersTest : DynaTest({
     }
 
     group("API test: populating combobox with data providers") {
+        usingH2Database()
         // test that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
         // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
-        // this test does not test a functionality; it rather tests the API itself whether the API is simple to use.
         test("entity data provider") {
+            (0..10).forEach { Person( null, "foo $it", it).save() }
             val dp = Person.dataProvider
-            ComboBox<Person>().apply {
+            val cb = ComboBox<Person>().apply {
                 setItemCaptionGenerator { it.personName }
-                setDataProvider(dp) { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString)
-                }
+                setDataProvider(dp.withStringFilterOn(Person::personName))
             }
+            expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
+            cb.setUserInput("foo 1")
+            expectList("foo 1", "foo 10") { cb.getSuggestions() }
         }
         // tests that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
         // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
-        // this test does not test a functionality; it rather tests the API itself whether the API is simple to use.
         test("sql data provider") {
-            val dp = sqlDataProvider(Person::class.java, "select * from Person where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
-            ComboBox<Person>().apply {
+            (0..10).forEach { Person( null, "foo $it", it).save() }
+            val dp = sqlDataProvider(Person::class.java, "select * from Test where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
+            val cb = ComboBox<Person>().apply {
                 setItemCaptionGenerator { it.personName }
-                setDataProvider(dp) { searchString: String? ->
-                    if (searchString.isNullOrBlank()) null else ILikeFilter(Person::personName.name, searchString)
-                }
+                setDataProvider(dp.withStringFilterOn("name"))
             }
+            expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
+            cb.setUserInput("foo 1")
+            expectList("foo 1", "foo 10") { cb.getSuggestions() }
         }
     }
 })

@@ -1,9 +1,6 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.mvysny.vokdataloader.Filter
-import com.github.mvysny.vokdataloader.ILikeFilter
-import com.github.mvysny.vokdataloader.SqlWhereBuilder
-import com.github.mvysny.vokdataloader.and
+import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.provider.DataProvider
@@ -100,6 +97,13 @@ fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataPr
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
 fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
+        withStringFilterOn(property.name)
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withConvertedFilter<String> { filter ->
-            if (filter.isNullOrBlank()) null else ILikeFilter(property.name, filter.trim())
+            if (filter.isNullOrBlank()) null else ILikeFilter(property, filter.trim())
         }
