@@ -1,9 +1,13 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v8.MockVaadin
+import com.github.mvysny.kaributesting.v8.getSuggestions
+import com.github.mvysny.kaributesting.v8.setUserInput
 import com.github.mvysny.vokdataloader.dataLoader
 import com.vaadin.ui.ComboBox
+import kotlin.test.expect
 
 class FilteredComboBoxTest : DynaTest({
     beforeEach { MockVaadin.setup() }
@@ -13,7 +17,10 @@ class FilteredComboBoxTest : DynaTest({
         val dp = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader().toDataProvider { it.id!! }
         val cb = ComboBox<Person>().apply {
             setDataProvider(dp.withStringFilterOn(Person::personName))
+            setItemCaptionGenerator { it.personName }
         }
-        // @todo when Karibu-Testing 1.0.2 is released, add tests for proper filtering
+        expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
+        cb.setUserInput("foo 1")
+        expectList("foo 1", "foo 10") { cb.getSuggestions() }
     }
 })
