@@ -51,7 +51,7 @@ class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvid
 /**
  * Utility method to create [JPADataProvider] like this: `jpaDataProvider<Person>()` instead of `JPADataProvider(Person::class)`
  */
-inline fun <reified T : Any> jpaDataProvider(): JPADataProvider<T> = JPADataProvider(T::class)
+inline fun <reified T : Any> jpaDataProvider(): ConfigurableFilterDataProvider<T, JPAFilter?, JPAFilter?> = JPADataProvider(T::class).configurableFilter()
 
 /**
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.

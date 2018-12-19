@@ -13,6 +13,7 @@ dependencies {
 
     testCompile("org.flywaydb:flyway-core:${ext["flyway_version"]}")
     testCompile("com.h2database:h2:${ext["h2_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${ext["kaributesting_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
