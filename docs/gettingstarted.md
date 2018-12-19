@@ -31,6 +31,7 @@ I assume a basic working knowledge of Kotlin and Vaadin.
 If you have no prior experience with Kotlin or Vaadin, you might get overwhelmed
 by the sheer amount of new information. Therefore, I recommend to take it slowly
 and get familiar with both Vaadin and Kotlin first:
+
 * To learn about Kotlin, consider the following materials:
   * [Official Kotlin Programming Language website](https://kotlinlang.org/)
   * [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
