@@ -23,7 +23,9 @@ class JPADataProvider<T: Any>(val entity: KClass<T>) : AbstractBackEndDataProvid
         em.criteriaBuilder.let { cb ->
             val q = cb.createQuery(entity.java)
             val root = q.from(entity.java)
-            q.orderBy(query.sortOrders.map { it.toOrder(cb, root) })
+            if (query.sortOrders != null) {
+                q.orderBy(query.sortOrders.map { it.toOrder(cb, root) })
+            }
             if (query.filter.isPresent) q.where(query.filter.get().toPredicate(cb, root))
             val q2 = em.createQuery(q)
             q2.firstResult = query.offset
