@@ -30,7 +30,7 @@ import java.util.*
  *
  * All column names are expected to be Kotlin [kotlin.reflect.KProperty1.name] of the entity in question.
  *
- * Since this client is also a [DataLoader], you can use the `DataLoaderAdapter` class from the `vok-framework-sql2o`/`vok-framework-v10-sql2o`
+ * Since this client is also a [DataLoader], you can use the `DataLoaderAdapter` class from the `vok-util-vaadin8`/`vok-util-vaadin10`
  * module to turn this client into a Vaadin `DataProvider` which you can then feed into Vaadin Grid or ComboBox etc:
  * ```
  * val crud = CrudClient("http://localhost:8080/rest/person/", Person::class.java)
