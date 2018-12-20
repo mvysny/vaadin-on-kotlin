@@ -11,7 +11,7 @@ import kotlin.test.expect
 class DataLoaderAdapterTest : DynaTest({
     test("fetch with empty query") {
         val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
-        val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+        val adapter = DataLoaderAdapter(loader, { it })
         adapter.size(Query())
         adapter.fetch(Query())
         loader.checkCalled()
@@ -20,7 +20,7 @@ class DataLoaderAdapterTest : DynaTest({
     group("offset/limit") {
         test("fetch with offset=0 limit=Int.MAX_VALUE") {
             val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
-            val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+            val adapter = DataLoaderAdapter(loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(0, Int.MAX_VALUE, null, null, null))
             loader.checkCalled()
@@ -28,7 +28,7 @@ class DataLoaderAdapterTest : DynaTest({
 
         test("fetch with offset=30 limit=30") {
             val loader = AssertingDataLoader(null, listOf(), 30L..59)
-            val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+            val adapter = DataLoaderAdapter(loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(30, 30, null, null, null))
             loader.checkCalled()
@@ -36,7 +36,7 @@ class DataLoaderAdapterTest : DynaTest({
 
         test("fetch with offset=100 limit=Int.MAX_VALUE") {
             val loader = AssertingDataLoader(null, listOf(), 100L..Int.MAX_VALUE)
-            val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+            val adapter = DataLoaderAdapter(loader, { it })
             adapter.size(Query())
             adapter.fetch(Query(100, Int.MAX_VALUE, null, null, null))
             loader.checkCalled()
@@ -45,7 +45,7 @@ class DataLoaderAdapterTest : DynaTest({
 
     test("fetch with sort orders") {
         val loader = AssertingDataLoader(null, listOf("name".asc, "age".desc), 0L..Int.MAX_VALUE)
-        val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+        val adapter = DataLoaderAdapter(loader, { it })
         adapter.size(Query())
         adapter.fetch(Query(0, Int.MAX_VALUE, QuerySortOrder.asc("name").thenDesc("age").build(), null, null))
         loader.checkCalled()
@@ -53,7 +53,7 @@ class DataLoaderAdapterTest : DynaTest({
 
     test("fetch with filter") {
         val loader = AssertingDataLoader(buildFilter { Person::age eq "foo" }, listOf(), 0L..Int.MAX_VALUE)
-        val adapter = DataLoaderAdapter(Person::class.java, loader, { it })
+        val adapter = DataLoaderAdapter(loader, { it })
         adapter.size(Query(buildFilter { Person::age eq "foo" }))
         adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, buildFilter { Person::age eq "foo" }))
         loader.checkCalled()

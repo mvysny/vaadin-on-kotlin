@@ -18,7 +18,7 @@ import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
     get() {
-        val entityDataProvider = DataLoaderAdapter(T::class.java, dataLoader) { it.id!! }
+        val entityDataProvider = DataLoaderAdapter(dataLoader) { it.id!! }
         return entityDataProvider.withConfigurableFilter2()
     }
 
@@ -73,24 +73,24 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
-        = DataLoaderAdapter(clazz, SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
+        = DataLoaderAdapter(SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
  * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
- * See [com.vaadin.data.provider.DataProvider.getId] for more details. Typically every item
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically every item
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-inline fun <reified T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, noinline idResolver: (T)->Any) {
-    dataProvider = DataLoaderAdapter(T::class.java, dataLoader, idResolver).withConfigurableFilter2()
+fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
+    dataProvider = DataLoaderAdapter(dataLoader, idResolver).withConfigurableFilter2()
 }
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
  */
-inline fun <reified T: Entity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
+fun <T: Entity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
     setDataLoader(dataLoader) { it.id!! }
 }
