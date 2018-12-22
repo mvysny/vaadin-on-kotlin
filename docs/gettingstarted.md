@@ -39,38 +39,35 @@ and get familiar with both Vaadin and Kotlin first:
   * [Vaadin 8 Documentation](https://vaadin.com/docs/v8)
 
 I encourage you to experiment with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu-helloworld-application)
-at any point since VoK uses Karibu-DSL under the hood, therefore the lessons learned
+at any point since VoK uses Karibu-DSL under the hood; therefore the lessons learned
 in the Karibu-DSL Hello World example will come in handy later on in all VoK-based apps.
 
 ## What is Vaadin-on-Kotlin?
 
-VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly.
-It is designed to make the art of programming of web applications easier by making assumptions about what 
-every developer needs to get started. It allows you to write less code while accomplishing 
-more than many other languages and frameworks.
-
-VoK is opinionated software. It makes the assumption that there is a "best" way to do things,
-and it's designed to encourage that way - and in some cases to discourage alternatives.
+VoK is glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly.
+It is opinionated: it "assumes" there is a best way of doing things, and sometimes
+discourages you from doing thing in another way. It assumes also what you needs
+to get started so you don't have to develop common features: you write less code
+and at the same time, achieve much more than many other languages and frameworks.
 
 The VoK philosophy includes three major guiding principles:
 
-* Simplicity - things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
+* Simplicity &emdash; things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
   and MVC are deliberately left out.
-* Components as basic building blocks - Vaadin is a single-page web component framework as opposed to
-  the traditional multiple page frameworks. As such, it resembles the traditional fat client
+* Components as basic building blocks &emdash; Vaadin is a single-page web component framework as opposed to
+  the traditional multi-page frameworks. As such, it resembles the traditional fat client
   Swing/JavaFX programming and is closer to GUI software development than the traditional web development with HTML and JavaScript.
-  VoK promotes code/UI reuse by means of reusing components (your components will range from basic ones
+  VoK promotes code/UI reuse of components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates. It is a predecessor to the Web Components technology.
-* No magic - No proxies, interceptors, reflection. VoK introduces explicit functions which you can easily
-  browse for sources in your Intellij IDEA.
+* No magic &emdash; No proxies, interceptors, reflection. VoK introduces explicit functions.
 
 ### Notes For Java Programmers
 
-Traditionally both JavaEE and Spring acted as this "glue" which held various frameworks together.
+Traditionally both JavaEE and Spring acted as "glue" which held various frameworks together.
 But, with the advent of the Kotlin programming language,
 we believe that the features of the Kotlin programming language alone are all that's necessary in the modern programming.
-We believe that the era of traditional approach of using the Dependency Injection, Annotations and auto-discovery magic is over and
-the Kotlin programming language itself is all that's needed to glue stuff together.
+We believe that the era of Dependency Injection, Annotations and auto-discovery magic is over and
+Kotlin is all you need to glue stuff together.
 
 While the Dependency Injection (DI) itself is not hard to understand, it comes with unfortunate consequences:
 * The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services may be a desirable
