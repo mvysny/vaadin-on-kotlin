@@ -90,79 +90,74 @@ more harm than good since it adds unnecessary complexity. Therefore this tutoria
 ## Creating a New VoK Project
 The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
 
-By following along with this guide, you'll create a VoK project called blog, a (very) simple weblog.
-Before you can start building the application, you need to make sure that you have Java 8 JDK installed.
+This guide now instructs you to create a VoK project called blog, a very simple weblog.
+The example application has Gradle bundled in;
+Gradle will download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
+This makes VoK applications work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
+
+The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so
+you don't have to set up any database.
 
 ### Prerequisites
 
-Make sure you have Java 8 JDK installed.
-
-The example application has Gradle bundled in;
-Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
-This makes VoK applications really portable
-since they work flawlessly on any OS and CPU which supports Java 8 - be it Windows, Linux or Mac, on x86, ARM or others.
-
-The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
-is no need for you to set up any database.
-
-While it is possible to edit the project files using any text editor, we recommend to install Intellij IDEA which provides awesome
-Kotlin support including auto-completion. You can use IDEA Community edition, which is free and allows you to run
-gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
-servers, and also offers awesome database integration tools.
+* Make sure you have Java 8 JDK installed.
+* Install IDEA Community Edition: while it is possible to edit the project files
+  using any text editor, we recommend to install Intellij IDEA which provides awesome
+  Kotlin support including auto-completion. You can use IDEA Community edition, which is free and allows you to run
+  gradle tasks to run the app, or you can purchase the Ultimate edition which supports also
+  debugging/hot-redeployment of the web app on Tomcat and other
+  servers, and offers awesome database integration tools.
 
 ### Creating the Blog Application<a name="3_2"></a>
 
-Getting the example application is really easy. If you have Git installed, just open a command line and run the
-following command:
+To get the example application, clone it if you have Git installed:
+open a command line and run the following command:
 
 ```bash
 $ git clone https://github.com/mvysny/vok-helloworld-app
 ```
-If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app/archive/master.zip](https://github.com/mvysny/vok-helloworld-app/archive/master.zip).
+If you don't have Git, download the application as a [zip file](https://github.com/mvysny/vok-helloworld-app/archive/master.zip).
 
-After you create the blog application, switch to its folder:
+Once you have the blog application cloned or extracted, switch to its folder and
+build it with Gradle:
 
 ```bash
 $ cd vok-helloworld-app
-$ ./gradlew
+$ ./gradlew #runs gradle build script
 ```
 
-This will download everything necessary and will compile the example application's WAR file.
+The `gradlew` script will run Gradle, which will download the dependencies and compile the application's WAR file.
 
-> **Note:** WAR (Web ARchive) is Java standard for packaging web applications. WAR file is a zip file which
-can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
+> **Note:** WAR (Web ARchive) is Java standard for packaging of web applications: the files
+> can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
 
 The `vok-helloworld-app` directory has a number of files and folders that make up the
-structure of a VoK application. Most of the work in this tutorial will happen in the
-`web/src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and
+structure of a VoK application. Here's a basic rundown of the files and
 folders:
 
-| File/Folder       | Purpose                                 |
+| File/Folder       | Content |
 |-------------------|-----------------------------------------|
-| `web/src/main/kotlin` | Contains the source files of all of your Views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide. |
-| `web/src/main/webapp` | Contains the Vaadin Theme (a SCSS-based theme which gets compiled to CSS). All Themes inherit from the [Valo Theme](https://vaadin.com/valo). JavaScript files, additional CSS files and images are also placed here.  |
-| `web/src/main/resources` | Contains the logger configuration file (`logback.xml`) |
-| `build.gradle`    | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
-| `README.md`       | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on. |
-| .gitignore        | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files. |
+| `web/src/main/kotlin` | source files of Views, Servlets, REST endpoints, async jobs |
+| `web/src/main/webapp` | Vaadin theme (a SCSS-based theme which gets compiled to CSS), JavaScript files, additional CSS files and images |
+| `web/src/main/resources` | logger configuration file `logback.xml` |
+| `build.gradle`    | Gradle tasks that can be run from the command line |
+| `README.md`       | brief instruction manual for your application |
+| .gitignore        | list of untracked files and folders |
 
-## Hello, Vaadin-on-Kotlin!<a name="4"></a>
+ Most of the work in this tutorial will happen in the
+`web/src/main/kotlin` folder.
 
-To begin with, let's get some text up on screen quickly. To do this, you need to get a web server running.
+## Starting up the Web Server
 
-### Starting up the Web Server
-
-You actually have a functional VoK application already. To see it, you need to start a web server on your development machine.
-You can do this by running the following in the `vok-helloworld-app` directory:
+You now have a functional VoK application. To see it, run the web server on your development machine.
+From the `vok-helloworld-app` directory, run the following command:
 
 ```bash
 $ ./gradlew clean web:appRun
 ```
 
-This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
+This will fire up Jetty, an embeddable Java web server. Now open a browser and navigate
  to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
-
-![Welcome VoK](images/welcome_vok.png)
 
 > **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped 
 you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $. 
