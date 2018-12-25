@@ -8,9 +8,6 @@ dependencies {
     compile("com.google.code.gson:gson:2.8.5")
     compile(project(":vok-db"))
 
-    // RESTEasy is deprecated and is replaced by Javalin. Don't use this!
-    compileOnly("org.jboss.resteasy:resteasy-servlet-initializer:3.6.1.Final")
-
     // testing of the CRUD interface
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
     testCompile(project(":vok-rest-client"))
