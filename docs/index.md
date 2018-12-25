@@ -42,6 +42,8 @@ To get started with Vaadin-on-Kotlin, [start here](gettingstarted.html). To find
 * [Vaadin-on-Kotlin Guides](vok-guides.md)
 * [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
+The tutorial comes in two versions, for Vaadin 8 and for Vaadin 10.
+
 ## Vaadin 8-based Quick Starters
 
 <style>
@@ -87,10 +89,9 @@ To get started with Vaadin-on-Kotlin, [start here](gettingstarted.html). To find
 }
 </style>
 
-<!-- this does not fit here
-Vaadin 8 is a mature and proven web framework. If you need production-grade stability, start here.-->
+Vaadin 8 is a mature and proven web framework. If you need production-grade stability, start here.
 
-Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
@@ -102,10 +103,9 @@ have an archetype app with all of those files already provided.
 
 ## Vaadin 10-based Quick Starters
 
-<!-- this does not fit here
-Vaadin 10 components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.-->
+Vaadin 10 components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
 
-Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
