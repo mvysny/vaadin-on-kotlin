@@ -2,47 +2,47 @@
 
 ![VoK Logo](iconography/vok_logo_small.svg)
 
-Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin:
+Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin.
 
+For example, this is all you need to write to delete an object from you database:
 ```kotlin
 button("Create") {
   onLeftClick { db { person.save() } }
 }
 ```
 
-No JavaEE nor Spring needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
-starting point for beginner programmers.
+Nor JavaEE nor Spring is needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
+starting point for beginning programmers: you will write only server-side Kotlin code.
+JavaScript and CSS are needed only if you decide
+to style up your application or write your own custom rich component.
 
-With VoK you only write server-side Kotlin code - no JavaScript and no CSS is necessary until much later on, when you decide
-to style up your application and/or write your own custom rich component. 
-
-VoK is not just yet another REST library, or HTTP route mapping library. On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
+Note that VoK is not just another REST library, or HTTP route mapping library. On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
 [wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders.
 All components have two parts:
 
 * Rich JavaScript front which runs in the browser and provides the UI with which the user interacts; and
 * The server-side part providing API you use to develop your webapps.
 
-The components then use Vaadin to handle the communication
-between the client-side front and server-side part.
-
-Let's take the Grid component as an example. Grid is basically a scrollable table which shows tabular data
-(see [example demo](https://vok-crud.herokuapp.com/crud); just press the "Generate test data" button at the top to see some data).
-
-The client-side front of the Grid component is able fetch
+The components use Vaadin to handle the communication
+between the client-side front and server-side part; for example, the component 
+Grid is basically a scrollable table which shows tabular data
+The client-side front of the Grid component fetches
 the tabular data from the server-side part of the Grid component. Grid configures Vaadin to pass the data properly from server-side Grid
-part to the client-side Grid front. For you, this process is completely transparent.
-You develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
-client-server communication transparently.
+part to the client-side Grid front. To you as programmer, this process is completely transparent:
+you develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
+client-server communication
+(see [example demo](https://vok-crud.herokuapp.com/crud); just press the "Generate test data" button at the top to get some data).
 
-Because of that, VoK feels more of a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
+Thanks to this approach, VoK feels more like a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
 
 ## Tutorial
 
-To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find out more, please visit the following pages:
+To get started with Vaadin-on-Kotlin, [start here](gettingstarted.html). To find out more, please visit the following pages:
 
 * [Vaadin-on-Kotlin Guides](vok-guides.md)
 * [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
+
+The tutorial comes in two versions, for Vaadin 8 and for Vaadin 10.
 
 ## Vaadin 8-based Quick Starters
 
@@ -91,7 +91,7 @@ To get started with Vaadin-on-Kotlin, [Start Here](gettingstarted.html). To find
 
 Vaadin 8 is a mature and proven web framework. If you need production-grade stability, start here.
 
-Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
@@ -105,7 +105,7 @@ have an archetype app with all of those files already provided.
 
 Vaadin 10 components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
 
-Every VoK project tend to have several files (database migrations, Gradle build script, themes, logger configuration etc), it makes sense to
+Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
 have an archetype app with all of those files already provided.
 
 <div style="display: flex; flex-wrap: wrap">
