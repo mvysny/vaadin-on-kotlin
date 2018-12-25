@@ -162,6 +162,8 @@ $ ./gradlew clean web:appRun
 This will fire up Jetty, an embeddable Java web server. Now open a browser and navigate
  to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
+![Welcome VoK](images/welcome_vok.png)
+
 To stop the web server, hit Ctrl+C in the terminal window in which you started the server. 
 
 <!--this is misplaced, should be where you talk about style changes: 
