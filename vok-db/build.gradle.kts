@@ -1,6 +1,6 @@
 dependencies {
     compile(project(":vok-framework"))
-    compile("com.github.mvysny.vokorm:vok-orm:0.15")
+    compile("com.github.mvysny.vokorm:vok-orm:0.16")
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
 }
 
