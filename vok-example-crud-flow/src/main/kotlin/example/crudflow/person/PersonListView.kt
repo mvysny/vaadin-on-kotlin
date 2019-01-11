@@ -19,45 +19,48 @@ import java.time.LocalDate
  * The main view contains a button and a template element.
  */
 @Route("", layout = MainLayout::class)
-class PersonListView : VerticalLayout() {
-    private val personGrid: Grid<Person>
-    init {
-        setSizeFull()
-        h4("Person list")
-        button("Generate testing data") {
-            onLeftClick {
-                generateTestingData()
-            }
-        }
-        personGrid = grid(dataProvider = Person.dataProvider) {
-            flexGrow = 1.0
-            addColumnFor(Person::id, sortable = false) {
-                width = "90px"; isExpand = false
-            }
-            addColumnFor(Person::name)
-            addColumnFor(Person::age, center({it.age?.toString()})) {
-                width = "120px"; isExpand = false
-            }
-            addColumnFor(Person::alive) {
-                width = "130px"; isExpand = false
-            }
-            addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
-            addColumnFor(Person::maritalStatus) {
-                width = "160px"; isExpand = false
-            }
-            addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
+class PersonListView : KComposite() {
+    private lateinit var personGrid: Grid<Person>
 
-            addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) })).apply {
-                width = "90px"; isExpand = false
+    private val root = ui {
+        verticalLayout {
+            setSizeFull()
+            h4("Person list")
+            button("Generate testing data") {
+                onLeftClick {
+                    generateTestingData()
+                }
             }
-            addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
-                width = "90px"; isExpand = false
-            }
-            addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
-                width = "90px"; isExpand = false
-            }
+            personGrid = grid(dataProvider = Person.dataProvider) {
+                flexGrow = 1.0
+                addColumnFor(Person::id, sortable = false) {
+                    width = "90px"; isExpand = false
+                }
+                addColumnFor(Person::name)
+                addColumnFor(Person::age, center({ it.age?.toString() })) {
+                    width = "120px"; isExpand = false
+                }
+                addColumnFor(Person::alive) {
+                    width = "130px"; isExpand = false
+                }
+                addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
+                addColumnFor(Person::maritalStatus) {
+                    width = "160px"; isExpand = false
+                }
+                addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
 
-            appendHeaderRow().generateFilterComponents(this, Person::class)
+                addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) })).apply {
+                    width = "90px"; isExpand = false
+                }
+                addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
+                    width = "90px"; isExpand = false
+                }
+                addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
+                    width = "90px"; isExpand = false
+                }
+
+                appendHeaderRow().generateFilterComponents(this, Person::class)
+            }
         }
     }
 

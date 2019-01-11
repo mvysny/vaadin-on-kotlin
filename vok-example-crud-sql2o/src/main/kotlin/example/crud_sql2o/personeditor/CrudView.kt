@@ -20,15 +20,15 @@ import eu.vaadinonkotlin.vaadin8.generateFilterComponents
  * Demonstrates a CRUD over [Person]. Note how the autoViewProvider automatically discovers your view and assigns a name to it.
  */
 @AutoView
-class CrudView: VerticalLayout(), View {
+class CrudView: Composite(), View {
     companion object {
         fun navigateTo() = navigateToView<CrudView>()
     }
 
     private lateinit var createButton: Button
-    private val personGrid: Grid<Person>
+    private lateinit var personGrid: Grid<Person>
 
-    init {
+    private val root = verticalLayout {
         setSizeFull(); isMargin = false
         horizontalLayout {
             createButton = button("Create New Person (Ctrl+Alt+C)") {

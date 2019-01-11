@@ -20,6 +20,7 @@ fun DynaNodeGroup.usingApp() {
     afterGroup { Bootstrap().contextDestroyed(null) }
 
     beforeEach { MockVaadin.setup(Routes().autoDiscoverViews("example")) }
+    afterEach { MockVaadin.tearDown() }
     fun cleanupDb() { Person.deleteAll() }
     beforeEach { cleanupDb() }
     afterEach { cleanupDb() }
