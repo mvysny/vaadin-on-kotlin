@@ -31,7 +31,6 @@ data class Person(
 
         var dateOfBirth: LocalDate? = null,
 
-        @field:NotNull
         var created: Date? = null,
 
         @field:NotNull

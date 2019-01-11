@@ -51,7 +51,7 @@ class Bootstrap: ServletContextListener {
             }
 
             override fun annotations(): Array<out Class<out Annotation>> = arrayOf(Entity::class.java)
-        }).detect("com.github")   // added a package name for the detector to be faster; you can just use detect() to scan the whole classpath
+        }).detect("example")   // added a package name for the detector to be faster; you can just use detect() to scan the whole classpath
         println("Auto-detected JPA entities: ${entities.map { it.simpleName }}")
         VaadinOnKotlin.entityManagerFactory = Persistence.createEntityManagerFactory("sample", mapOf(AvailableSettings.LOADED_CLASSES to entities))
     }

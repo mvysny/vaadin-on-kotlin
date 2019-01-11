@@ -40,7 +40,9 @@ dependencies {
     compile("com.h2database:h2:${ext["h2_version"]}")
 
     // REST
-    compile(project(":vok-rest"))
+    compile(project(":vok-rest")) {
+        exclude(module = "vok-db")
+    }
     
     // easy development with Jetty
     testCompile("org.eclipse.jetty:jetty-webapp:$jettyVer")
@@ -57,5 +59,9 @@ dependencies {
 
     // Embedded Tomcat is currently unsupported since it always starts its own class loader which is only known on Tomcat start time
     // and we can't thus discover and preload JPA entities.
+
+    // testing
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${ext["kaributesting_version"]}")
 }
 
