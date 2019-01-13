@@ -337,13 +337,13 @@ package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class CreateArticleView: VerticalLayout(), View {
+class CreateArticleView: Composite(), View {
     private val binder = beanValidationBinder<Article>()
-    init {
+    private val root = verticalLayout {
         label("New Article") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -372,13 +372,13 @@ package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class CreateArticleView: VerticalLayout(), View {
+class CreateArticleView: Composite(), View {
     private val binder = beanValidationBinder<Article>()
-    init {
+    private val root = verticalLayout {
         label("New Article") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -471,10 +471,10 @@ import com.vaadin.navigator.*
 import com.vaadin.ui.*
 
 @AutoView
-class ArticleView: FormLayout(), View {
-    private val title: Label
-    private val text: Label
-    init {
+class ArticleView: Composite(), View {
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private val root = formLayout {
         title = label {
             caption = "Title:"
         }
@@ -602,7 +602,7 @@ Now, add another link in `CreateArticleView` underneath the form's "Save Article
         }
 ```
 
-Finally, add a Back link into the `init{}` block of to `ArticleView` (under the labels) so that users can go back to view the list again:
+Finally, add a Back link into the `private val root = formLayout {` block of the `ArticleView` class (under the labels) so that users can go back to view the list again:
 
 ```kotlin
         button("Back") {
@@ -777,17 +777,18 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class ArticleView: FormLayout(), View {
+class ArticleView: Composite(), View {
     //added article property:
     private lateinit var article: Article
-    private val title: Label
-    private val text: Label
-    init {
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private val root = formLayout {
         title = label {
             caption = "Title:"
         }
         text = label {
             caption = "Text:"
+        }
         //added the edit button:
         button("Edit") {
             styleName = ValoTheme.BUTTON_LINK
@@ -893,13 +894,14 @@ package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class CreateArticleView: VerticalLayout(), View {
-    private val editor: ArticleEditor
-    init {
+class CreateArticleView: Composite(), View {
+    private lateinit var editor: ArticleEditor
+
+    private val root = verticalLayout {
         label("New Article") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -1153,14 +1155,14 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class ArticleView: FormLayout(), View {
+class ArticleView: Composite(), View {
     private lateinit var article: Article
-    private val title: Label
-    private val text: Label
-    private val comments: Label
+    private lateinit var title: Label
+    private lateinit var text: Label
+    private lateinit var comments: Label
     private val commentBinder = beanValidationBinder<Comment>()
     private lateinit var createComment: Button
-    init {
+    private val root = formLayout {
         title = label {
             caption = "Title:"
         }
@@ -1289,17 +1291,17 @@ import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.ui.*
 
-class CommentsComponent : VerticalLayout() {
+class CommentsComponent : Composite() {
     var articleId: Long = 0L
         set(value) { field = value; refresh() }
-    init {
+    private val root = verticalLayout {
         caption = "Comments"; isMargin = false
     }
 
     fun refresh() {
-        removeAllComponents()
+        root.removeAllComponents()
         Article.getById(articleId).comments.getAll().forEach { comment ->
-            label {
+            root.label {
                 html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
             }
         }
@@ -1380,13 +1382,13 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class ArticleView: VerticalLayout(), View {
+class ArticleView: Composite(), View {
     private lateinit var article: Article
     private lateinit var title: Label
     private lateinit var text: Label
-    private val comments: CommentsComponent
-    private val newComment: NewCommentForm
-    init {
+    private lateinit var comments: CommentsComponent
+    private lateinit var newComment: NewCommentForm
+    private val root = verticalLayout {
         formLayout {
             title = label {
                 caption = "Title:"
@@ -1437,22 +1439,24 @@ import com.github.vokorm.getById
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
-class CommentsComponent : VerticalLayout() {
+class CommentsComponent : Composite() {
     var articleId: Long = 0L
         set(value) { field = value; refresh() }
-    init {
+    private val root = verticalLayout {
         caption = "Comments"; isMargin = false
     }
 
     fun refresh() {
-        removeAllComponents()
+        root.removeAllComponents()
         Article.getById(articleId).comments.getAll().forEach { comment ->
-            label {
-                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
-            }
-            button("Delete comment") {
-                styleName = ValoTheme.BUTTON_LINK
-                onLeftClick { comment.delete(); refresh() }
+            root.apply {
+                label {
+                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+                }
+                button("Delete comment") {
+                    styleName = ValoTheme.BUTTON_LINK
+                    onLeftClick { comment.delete(); refresh() }
+                }
             }
         }
     }
