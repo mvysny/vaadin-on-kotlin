@@ -204,19 +204,20 @@ Client-side `VGrid` shows a list of data in tabular fashion; it performs scrolli
 Server-side `Grid` allows you to set the `DataProvider` which actually fetches the data from a data source, such as a database.
 
 To create a new View, create a Kotlin class which implements the `View` interface and extends
-a Vaadin Component.
+a Vaadin `Composite`:
+
 1. Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file:
 ```kotlin
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.View
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView("")
-class MyWelcomeView: VerticalLayout(), View {
-    init {
+class MyWelcomeView : Composite(), View {
+    private val root = verticalLayout {
         label("Hello, Vaadin-on-Kotlin!") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -565,20 +566,20 @@ including sorting and filtering.
 ### Adding links
 You can now create, show, and list articles. Now let's add some links to navigate through pages.
 
-Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init {}` contents as follows:
+Open the `MyWelcomeView` class (located in the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file) and modify it as follows:
 
 ```kotlin
-    init {
-        verticalLayout {
-            label("Hello, Vaadin-on-Kotlin!") {
-                styleName = ValoTheme.LABEL_H1
-            }
-            button("My Blog") {
-                styleName = ValoTheme.BUTTON_LINK
-                onLeftClick { navigateToView<ArticlesView>() }
-            }
+class MyWelcomeView : Composite(), View {
+    private val root = verticalLayout {
+        label("Hello, Vaadin-on-Kotlin!") {
+            styleName = ValoTheme.LABEL_H1
+        }
+        button("My Blog") {
+            styleName = ValoTheme.BUTTON_LINK
+            onLeftClick { navigateToView<ArticlesView>() }
         }
     }
+}
 ```
 
 The Vaadin `Button` component can also act as a link. It thus creates a hyperlink based on text to display and where to go - in this case, to the path for articles.
@@ -693,14 +694,14 @@ import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class EditArticleView: VerticalLayout(), View {
+class EditArticleView: Composite(), View {
     private val binder = beanValidationBinder<Article>()
     private var article: Article? = null
-    init {
+    private val root = verticalLayout {
         label("Edit Article") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -917,13 +918,13 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v8.*
 import com.github.vokorm.getById
 import com.vaadin.navigator.*
-import com.vaadin.ui.VerticalLayout
+import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class EditArticleView : VerticalLayout(), View {
-    private val editor: ArticleEditor
-    init {
+class EditArticleView : Composite(), View {
+    private lateinit var editor: ArticleEditor
+    private val root = verticalLayout {
         label("Edit Article") {
             styleName = ValoTheme.LABEL_H1
         }
@@ -1519,8 +1520,8 @@ class LoginService : Serializable {
 
 val Session.loginService: LoginService get() = getOrPut { LoginService() }
 
-class LoginView : VerticalLayout() {
-    init {
+class LoginView : Composite() {
+    private val root = verticalLayout {
         setSizeFull()
         loginForm("Vaadin-on-Kotlin Sample App") {
             alignment = Alignment.MIDDLE_CENTER
