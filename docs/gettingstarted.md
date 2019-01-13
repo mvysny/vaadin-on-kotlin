@@ -1333,12 +1333,12 @@ import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.*
 
-class NewCommentForm : FormLayout() {
+class NewCommentForm : Composite() {
     var commentCreatedListener: ()->Unit = {}
     lateinit var article: Article
     private val commentBinder = beanValidationBinder<Comment>()
-    private val createComment: Button
-    init {
+    private lateinit var createComment: Button
+    private val root = formLayout {
         caption = "Add a comment:"
         textField("Commenter:") {
             bind(commentBinder).bind(Comment::commenter)
