@@ -539,9 +539,9 @@ import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
 @AutoView
-class ArticlesView: VerticalLayout(), View {
-    private val grid: Grid<Article>
-    init {
+class ArticlesView: Composite(), View {
+    private lateinit var grid: Grid<Article>
+    private val root = verticalLayout {
         setSizeFull()
         label("Listing Articles") {
             styleName = ValoTheme.LABEL_H1
@@ -553,7 +553,7 @@ class ArticlesView: VerticalLayout(), View {
             addColumnFor(Article::text)
         }
     }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         grid.refresh()
     }
 }
@@ -593,7 +593,7 @@ Let's add links to the other views as well, starting with the "New Article" link
         }
 ```
 
-Now, add another link in `CreateArticleView` underneath the form's "Save Article" button as the last line of the `init{}` block:
+Now, add another link in `CreateArticleView` underneath the form's "Save Article" button as the last line of the `private val root = verticalLayout {` block:
 
 ```kotlin
         button("Back") {
@@ -961,9 +961,9 @@ import com.vaadin.ui.themes.ValoTheme
 import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
 
 @AutoView
-class ArticlesView: VerticalLayout(), View {
-    private val grid: Grid<Article>
-    init {
+class ArticlesView: Composite(), View {
+    private lateinit var grid: Grid<Article>
+    private val root = verticalLayout {
         setSizeFull()
         label("Listing Articles") {
             styleName = ValoTheme.LABEL_H1
@@ -987,7 +987,7 @@ class ArticlesView: VerticalLayout(), View {
             }))
         }
     }
-    override fun enter(event: ViewChangeListener.ViewChangeEvent?) {
+    override fun enter(event: ViewChangeListener.ViewChangeEvent) {
         grid.refresh()
     }
 }
