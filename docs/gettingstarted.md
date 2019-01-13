@@ -834,7 +834,7 @@ import com.vaadin.server.UserError
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
 
-class ArticleEditor : VerticalLayout() {
+class ArticleEditor : Composite() {
     private val binder = beanValidationBinder<Article>()
     var article: Article? = null
         set(value) {
@@ -842,7 +842,7 @@ class ArticleEditor : VerticalLayout() {
             if (value != null) binder.readBean(value)
         }
 
-    init {
+    private val root = verticalLayout {
         isMargin = false
         textField("Title") {
             bind(binder).bind(Article::title)
