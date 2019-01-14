@@ -340,21 +340,22 @@ create a Kotlin file named `web/src/main/kotlin/com/example/vok/CreateArticleVie
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
 @Route("create-article")
-class CreateArticleView: VerticalLayout() {
+class CreateArticleView : KComposite() {
     private val binder = beanValidationBinder<Article>()
-    init {
-        h1("New Article")
-        textField("Title") {
-            bind(binder).bind(Article::title)
+    private val root = ui {
+        verticalLayout {
+            h1("New Article")
+            textField("Title") {
+                bind(binder).bind(Article::title)
+            }
+            textArea("Text") {
+                bind(binder).bind(Article::text)
+            }
+            button("Save Article")
         }
-        textArea("Text") {
-            bind(binder).bind(Article::text)
-        }
-        button("Save Article")
     }
 }
 ```
@@ -371,25 +372,26 @@ To make the "Save Article" button do something, just change the class as follows
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
 @Route("create-article")
-class CreateArticleView: VerticalLayout() {
+class CreateArticleView: KComposite() {
     private val binder = beanValidationBinder<Article>()
-    init {
-        h1("New Article")
-        textField("Title") {
-            bind(binder).bind(Article::title)
-        }
-        textArea("Text") {
-            bind(binder).bind(Article::text)
-        }
-        button("Save Article") {
-            onLeftClick {
-                val article = Article()
-                if (binder.writeBeanIfValid(article)) {
-                    article.save()
+    private val root = ui {
+        verticalLayout {
+            h1("New Article")
+            textField("Title") {
+                bind(binder).bind(Article::title)
+            }
+            textArea("Text") {
+                bind(binder).bind(Article::text)
+            }
+            button("Save Article") {
+                onLeftClick {
+                    val article = Article()
+                    if (binder.writeBeanIfValid(article)) {
+                        article.save()
+                    }
                 }
             }
         }
@@ -867,16 +869,17 @@ Now, let's update the `CreateArticleView.kt` view to use this new component, rew
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
 @Route("create-article")
-class CreateArticleView: VerticalLayout() {
-    private val editor: ArticleEditor
-    init {
-        h1("New Article")
-        editor = articleEditor {
-            article = Article()
+class CreateArticleView: KComposite() {
+    private lateinit var editor: ArticleEditor
+    private val root = ui {
+        verticalLayout {
+            h1("New Article")
+            editor = articleEditor {
+                article = Article()
+            }
         }
     }
 }
