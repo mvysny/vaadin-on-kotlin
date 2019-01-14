@@ -1279,23 +1279,24 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.button.Button
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class NewCommentForm : VerticalLayout() {
+class NewCommentForm : KComposite() {
     var commentCreatedListener: ()->Unit = {}
     lateinit var article: Article
     private val commentBinder = beanValidationBinder<Comment>()
-    private val createComment: Button
-    init {
-        text("Add a comment:")
-        textField("Commenter:") {
-            bind(commentBinder).bind(Comment::commenter)
-        }
-        textField("Body:") {
-            bind(commentBinder).bind(Comment::body)
-        }
-        createComment = button("Create") {
-            onLeftClick { createComment() }
+    private lateinit var createComment: Button
+    private val root = ui {
+        verticalLayout {
+            text("Add a comment:")
+            textField("Commenter:") {
+                bind(commentBinder).bind(Comment::commenter)
+            }
+            textField("Body:") {
+                bind(commentBinder).bind(Comment::body)
+            }
+            createComment = button("Create") {
+                onLeftClick { createComment() }
+            }
         }
     }
 
