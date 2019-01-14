@@ -473,21 +473,22 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
 @Route("article")
-class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var title: Text
     private lateinit var text: Text
-    init {
-        div {
-            strong("Title: ")
-            this@ArticleView.title = text("")
-        }
-        div {
-            strong("Text: ")
-            this@ArticleView.text = text("")
+    private val root = ui {
+        verticalLayout {
+            div {
+                strong("Title: ")
+                this@ArticleView.title = text("")
+            }
+            div {
+                strong("Text: ")
+                this@ArticleView.text = text("")
+            }
         }
     }
 
@@ -761,25 +762,26 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
 @Route("article")
-class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
-    private val editLink: RouterLink
+class ArticleView: KComposite(), HasUrlParameter<Long> {
+    private lateinit var editLink: RouterLink
     private lateinit var title: Text
     private lateinit var text: Text
-    init {
-        div {
-            strong("Title: ")
-            this@ArticleView.title = text("")
+    private val root = ui {
+        verticalLayout {
+            div {
+                strong("Title: ")
+                this@ArticleView.title = text("")
+            }
+            div {
+                strong("Text: ")
+                this@ArticleView.text = text("")
+            }
+            editLink = routerLink(null, "Edit")
+            routerLink(text = "Back", viewType = ArticlesView::class)
         }
-        div {
-            strong("Text: ")
-            this@ArticleView.text = text("")
-        }
-        editLink = routerLink(null, "Edit")
-        routerLink(text = "Back", viewType = ArticlesView::class)
     }
 
     override fun setParameter(event: BeforeEvent, articleId: Long?) {
@@ -1146,41 +1148,42 @@ import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
 @Route("article")
-class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
+class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var article: Article
-    private val editLink: RouterLink
+    private lateinit var editLink: RouterLink
     private lateinit var title: Text
     private lateinit var text: Text
-    private val comments: Div
+    private lateinit var comments: Div
     private val commentBinder = beanValidationBinder<Comment>()
     private lateinit var createComment: Button
-    init {
-        div {
-            strong("Title: ")
-            this@ArticleView.title = text("")
+    private val root = ui {
+        verticalLayout {
+            div {
+                strong("Title: ")
+                this@ArticleView.title = text("")
+            }
+            div {
+                strong("Text: ")
+                this@ArticleView.text = text("")
+            }
+            p("Comments")
+            comments = div()
+            p("Add a comment:")
+            textField("Commenter:") {
+                bind(commentBinder).bind(Comment::commenter)
+            }
+            textField("Body:") {
+                bind(commentBinder).bind(Comment::body)
+            }
+            createComment = button("Create") {
+                onLeftClick { createComment() }
+            }
+            editLink = routerLink(null, "Edit")
+            routerLink(text = "Back", viewType = ArticlesView::class)
         }
-        div {
-            strong("Text: ")
-            this@ArticleView.text = text("")
-        }
-        p("Comments")
-        comments = div()
-        p("Add a comment:")
-        textField("Commenter:") {
-            bind(commentBinder).bind(Comment::commenter)
-        }
-        textField("Body:") {
-            bind(commentBinder).bind(Comment::body)
-        }
-        createComment = button("Create") {
-            onLeftClick { createComment() }
-        }
-        editLink = routerLink(null, "Edit")
-        routerLink(text = "Back", viewType = ArticlesView::class)
     }
 
     override fun setParameter(event: BeforeEvent, articleId: Long?) {
@@ -1338,31 +1341,32 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 
 @Route("article")
-class ArticleView: VerticalLayout(), HasUrlParameter<Long> {
-    private val editLink: RouterLink
+class ArticleView: KComposite(), HasUrlParameter<Long> {
+    private lateinit var editLink: RouterLink
     private lateinit var title: Text
     private lateinit var text: Text
-    private val comments: CommentsComponent
-    private val newComment: NewCommentForm
-    init {
-        div {
-            strong("Title: ")
-            this@ArticleView.title = text("")
+    private lateinit var comments: CommentsComponent
+    private lateinit var newComment: NewCommentForm
+    private val root = ui {
+        verticalLayout {
+            div {
+                strong("Title: ")
+                this@ArticleView.title = text("")
+            }
+            div {
+                strong("Text: ")
+                this@ArticleView.text = text("")
+            }
+            comments = commentsComponent()
+            newComment = newCommentForm {
+                commentCreatedListener = { comments.refresh() }
+            }
+            editLink = routerLink(null, "Edit")
+            routerLink(text = "Back", viewType = ArticlesView::class)
         }
-        div {
-            strong("Text: ")
-            this@ArticleView.text = text("")
-        }
-        comments = commentsComponent()
-        newComment = newCommentForm {
-            commentCreatedListener = { comments.refresh() }
-        }
-        editLink = routerLink(null, "Edit")
-        routerLink(text = "Back", viewType = ArticlesView::class)
     }
 
     override fun setParameter(event: BeforeEvent, articleId: Long?) {
