@@ -1230,22 +1230,26 @@ import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class CommentsComponent : VerticalLayout() {
+class CommentsComponent : KComposite() {
     var articleId: Long = 0L
         set(value) { field = value; refresh() }
 
-    private val comments: VerticalLayout
-    init {
-        isMargin = false
-        p("Comments")
-        comments = verticalLayout()
+    private lateinit var comments: VerticalLayout
+    private val root = ui {
+        verticalLayout {
+            isMargin = false
+            p("Comments")
+            comments = verticalLayout()
+        }
     }
 
     fun refresh() {
         comments.removeAll()
         Article.getById(articleId).comments.getAll().forEach { comment ->
-            comments.div {
-                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+            comments.apply {
+                div {
+                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+                }
             }
         }
     }
@@ -1373,28 +1377,33 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
-class CommentsComponent : VerticalLayout() {
+class CommentsComponent : KComposite() {
     var articleId: Long = 0L
         set(value) { field = value; refresh() }
 
-    private val comments: VerticalLayout
-    init {
-        isMargin = false
-        p("Comments")
-        comments = verticalLayout()
+    private lateinit var comments: VerticalLayout
+    private val root = ui {
+        verticalLayout {
+            isMargin = false
+            p("Comments")
+            comments = verticalLayout()
+        }
     }
 
     fun refresh() {
         comments.removeAll()
         Article.getById(articleId).comments.getAll().forEach { comment ->
-            comments.div {
-                html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
-            }
-            comments.button("Delete comment") {
-                themes.add("tertiary small")
-                onLeftClick { comment.delete(); refresh() }
+            comments.apply {
+                div {
+                    html("<p><strong>Commenter:</strong>${comment.commenter}</p><p><strong>Comment:</strong>${comment.body}</p>")
+                }
+                button("Delete comment") {
+                    addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL)
+                    onLeftClick { comment.delete(); refresh() }
+                }
             }
         }
     }
