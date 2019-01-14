@@ -205,13 +205,14 @@ Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make 
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
 @Route("")
-class MyWelcomeView: VerticalLayout() {
-    init {
-        h1("Hello, Vaadin-on-Kotlin!")
+class MyWelcomeView: KComposite() {
+    private val root = ui {
+        verticalLayout {
+            h1("Hello, Vaadin-on-Kotlin!")
+        }
     }
 }
 ```
@@ -570,15 +571,23 @@ including sorting and filtering.
 ### Adding links
 You can now create, show, and list articles. Now let's add some links to navigate through pages.
 
-Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its `init {}` contents as follows:
+Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its contents as follows:
 
 ```kotlin
-    init {
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.router.Route
+
+@Route("")
+class MyWelcomeView: KComposite() {
+    private val root = ui {
         verticalLayout {
             h1("Hello, Vaadin-on-Kotlin!")
-            routerLink(null, "My Blog", ArticlesView::class)
+            routerLink(text = "My Blog", viewType = ArticlesView::class)
         }
     }
+}
 ```
 
 The Vaadin `RouterLink` component creates a hyperlink based on text to display and where to go - in this case, to the path for articles.
