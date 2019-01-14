@@ -1491,12 +1491,11 @@ Next is the `LoginView`: just create the `web/src/main/kotlin/com/example/vok/Lo
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.*
 import eu.vaadinonkotlin.vaadin10.*
 
 @Route("login")
-class LoginView : VerticalLayout(), BeforeEnterObserver {
+class LoginView : KComposite(), BeforeEnterObserver {
 
     override fun beforeEnter(event: BeforeEnterEvent) {
         if (Session.loginService.isLoggedIn) {
@@ -1504,19 +1503,21 @@ class LoginView : VerticalLayout(), BeforeEnterObserver {
         }
     }
 
-    private val loginForm: LoginForm
-    init {
-        setSizeFull(); isPadding = false; content { center() }
+    private lateinit var loginForm: LoginForm
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = false; content { center() }
 
-        loginForm = loginForm("Hello!") {
-            classNames.add("loginform")
-            text("Log in as user/user or admin/admin")
-            onLogin { username, password ->
-                if (!Session.loginService.login(username, password)) {
-                    usernameField.isInvalid = true
-                    usernameField.errorMessage = "No such user or invalid password"
-                    passwordField.isInvalid = true
-                    passwordField.errorMessage = "No such user or invalid password"
+            loginForm = loginForm("Hello!") {
+                classNames.add("loginform")
+                text("Log in as user/user or admin/admin")
+                onLogin { username, password ->
+                    if (!Session.loginService.login(username, password)) {
+                        usernameField.isInvalid = true
+                        usernameField.errorMessage = "No such user or invalid password"
+                        passwordField.isInvalid = true
+                        passwordField.errorMessage = "No such user or invalid password"
+                    }
                 }
             }
         }
