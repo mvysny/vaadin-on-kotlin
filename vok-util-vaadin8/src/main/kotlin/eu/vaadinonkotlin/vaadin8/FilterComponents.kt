@@ -297,3 +297,9 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         toField.isEnabled = !readOnly
     }
 }
+
+@VaadinDsl
+fun (@VaadinDsl HasComponents).dateRangePopup(value: DateInterval? = null, block: (@VaadinDsl DateFilterPopup).()->Unit = {}) = init(DateFilterPopup()) {
+    if (value != null) this.value = value
+    block()
+}
