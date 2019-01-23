@@ -252,33 +252,31 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         return date
     }
 
-    override fun initContent(): Component? {
-        return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = vt["filter.all"]; isHideOnMouseOut = false
-            verticalLayout {
-                styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
-                horizontalLayout {
-                    isSpacing = true
-                    fromField = inlineDateTimeField()
-                    toField = inlineDateTimeField()
-                }
-                horizontalLayout {
-                    alignment = Alignment.BOTTOM_RIGHT
-                    isSpacing = true
-                    set = button(vt["filter.set"]) {
-                        onLeftClick {
-                            value = DateInterval(
-                                    truncateDate(fromField.value, resolution, true),
-                                    truncateDate(toField.value, resolution, false)
-                            )
-                            isPopupVisible = false
-                        }
+    override fun initContent(): Component = PopupView(SimpleContent.EMPTY).apply {
+        w = fillParent; minimizedValueAsHTML = vt["filter.all"]; isHideOnMouseOut = false
+        verticalLayout {
+            styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
+            horizontalLayout {
+                isSpacing = true
+                fromField = inlineDateTimeField()
+                toField = inlineDateTimeField()
+            }
+            horizontalLayout {
+                alignment = Alignment.BOTTOM_RIGHT
+                isSpacing = true
+                set = button(vt["filter.set"]) {
+                    onLeftClick {
+                        value = DateInterval(
+                                truncateDate(fromField.value, resolution, true),
+                                truncateDate(toField.value, resolution, false)
+                        )
+                        isPopupVisible = false
                     }
-                    clear = button(vt["filter.clear"]) {
-                        onLeftClick {
-                            value = null
-                            isPopupVisible = false
-                        }
+                }
+                clear = button(vt["filter.clear"]) {
+                    onLeftClick {
+                        value = null
+                        isPopupVisible = false
                     }
                 }
             }
