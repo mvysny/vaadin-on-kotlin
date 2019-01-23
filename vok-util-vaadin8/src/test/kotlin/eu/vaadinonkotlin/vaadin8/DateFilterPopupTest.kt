@@ -1,15 +1,9 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.kaributesting.v8.MockVaadin
-import com.github.mvysny.kaributesting.v8._find
-import com.github.mvysny.kaributesting.v8._get
-import com.github.mvysny.kaributesting.v8._value
+import com.github.mvysny.kaributesting.v8.*
 import com.vaadin.shared.ui.datefield.DateTimeResolution
-import com.vaadin.ui.InlineDateField
-import com.vaadin.ui.InlineDateTimeField
-import com.vaadin.ui.PopupView
-import com.vaadin.ui.UI
+import com.vaadin.ui.*
 import java.time.LocalDateTime
 import kotlin.test.expect
 
@@ -57,6 +51,20 @@ class DateFilterPopupTest : DynaTest({
             val fields = _find<InlineDateTimeField> { count = 2..2 }
             expect(now) { fields[0]._value }
             expect(now) { fields[1]._value }
+        }
+    }
+
+    test("fill in values") {
+        UI.getCurrent().dateRangePopup {
+            isPopupVisible = true
+            val now = LocalDateTime.of(2018, 12, 22, 1, 2, 3, 459)
+            val fields = _find<InlineDateTimeField> { count = 2..2 }
+            fields[0]._value = now
+            fields[1]._value = now
+            _get<Button> { caption = "Set" } ._click()
+            expect(false) { isPopupVisible }
+            expect(DateInterval(LocalDateTime.of(2018, 12, 22, 1, 2, 0, 0),
+                    LocalDateTime.of(2018, 12, 22, 1, 2, 59, 999))) { _value }
         }
     }
 })

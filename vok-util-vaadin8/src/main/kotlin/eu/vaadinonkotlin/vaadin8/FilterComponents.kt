@@ -249,6 +249,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
                 date = date.withMonth(if (start) 1 else 12)
             }
         }
+        date = date.withNano(if (start) 0 else 999)
         return date
     }
 
