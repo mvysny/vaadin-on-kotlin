@@ -7,12 +7,6 @@ import com.vaadin.ui.*
 import java.time.LocalDateTime
 import kotlin.test.expect
 
-var DateFilterPopup.isPopupVisible: Boolean
-get() = (firstOrNull() as? PopupView)?.isPopupVisible ?: false
-set(value) {
-    (first() as PopupView).isPopupVisible = value
-}
-
 class DateFilterPopupTest : DynaTest({
     beforeEach { MockVaadin.setup() }
     afterEach { MockVaadin.tearDown() }

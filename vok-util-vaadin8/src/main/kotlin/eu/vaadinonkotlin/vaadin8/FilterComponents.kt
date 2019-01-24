@@ -4,6 +4,7 @@ import com.github.mvysny.karibudsl.v8.*
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.toDate
 import com.vaadin.data.Binder
+import com.vaadin.shared.Registration
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
 import java.io.Serializable
@@ -197,11 +198,10 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     /**
      * The desired resolution of this filter popup, defaults to [DateTimeResolution.MINUTE].
      */
-    var resolution: DateTimeResolution
-        get() = fromField.resolution
+    var resolution: DateTimeResolution = DateTimeResolution.MINUTE
         set(value) {
-            fromField.resolution = value
-            toField.resolution = value
+            field = value
+            updateFields()
         }
 
     private var internalValue: DateInterval? = null
@@ -214,9 +214,15 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 
     override fun doSetValue(value: DateInterval?) {
         internalValue = value?.copy()
-        fromField.value = internalValue?.from
-        toField.value = internalValue?.to
+        updateValueToFields()
         updateCaption()
+    }
+
+    private fun updateValueToFields() {
+        if (isPopupInitialized) {
+            fromField.value = internalValue?.from
+            toField.value = internalValue?.to
+        }
     }
 
     override fun getValue() = internalValue?.copy()
@@ -224,12 +230,12 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     private fun format(date: LocalDateTime?) = if (date == null) "" else formatter.format(date)
 
     private fun updateCaption() {
-        val content = content as PopupView
+        val content = content as KPopupView
         val value = value
         if (value == null || value.isUniversalSet) {
             content.minimizedValueAsHTML = vt["filter.all"]
         } else {
-            content.minimizedValueAsHTML = "${format(fromField.value)} - ${format(toField.value)}"
+            content.minimizedValueAsHTML = "${format(value.from)} - ${format(value.to)}"
         }
     }
 
@@ -253,54 +259,168 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         return date
     }
 
-    override fun initContent(): Component = PopupView(SimpleContent.EMPTY).apply {
+    override fun initContent(): Component = KPopupView().apply {
         w = fillParent; minimizedValueAsHTML = vt["filter.all"]; isHideOnMouseOut = false
-        verticalLayout {
-            styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
-            horizontalLayout {
-                isSpacing = true
-                fromField = inlineDateTimeField()
-                toField = inlineDateTimeField()
-            }
-            horizontalLayout {
-                alignment = Alignment.BOTTOM_RIGHT
-                isSpacing = true
-                set = button(vt["filter.set"]) {
-                    onLeftClick {
-                        value = DateInterval(
-                                truncateDate(fromField.value, resolution, true),
-                                truncateDate(toField.value, resolution, false)
-                        )
-                        isPopupVisible = false
-                    }
-                }
-                clear = button(vt["filter.clear"]) {
-                    onLeftClick {
-                        value = null
-                        isPopupVisible = false
-                    }
-                }
-            }
-        }
-    }
+        lazy {
+            verticalLayout {
+                styleName = "datefilterpopupcontent"; setSizeUndefined(); isSpacing = true; isMargin = true
 
-    override fun attach() {
-        super.attach()
-        fromField.locale = locale
-        toField.locale = locale
+                horizontalLayout {
+                    isSpacing = true
+                    fromField = inlineDateTimeField {
+                        locale = this@DateFilterPopup.locale
+                    }
+                    toField = inlineDateTimeField {
+                        locale = this@DateFilterPopup.locale
+                    }
+                }
+                horizontalLayout {
+                    alignment = Alignment.BOTTOM_RIGHT
+                    isSpacing = true
+                    set = button(vt["filter.set"]) {
+                        onLeftClick {
+                            value = DateInterval(
+                                    truncateDate(fromField.value, resolution, true),
+                                    truncateDate(toField.value, resolution, false)
+                            )
+                            isPopupVisible = false
+                        }
+                    }
+                    clear = button(vt["filter.clear"]) {
+                        onLeftClick {
+                            value = null
+                            isPopupVisible = false
+                        }
+                    }
+                }
+            }
+
+            updateValueToFields()
+            updateFields()
+        }
     }
 
     override fun setReadOnly(readOnly: Boolean) {
         super.setReadOnly(readOnly)
-        set.isEnabled = !readOnly
-        clear.isEnabled = !readOnly
-        fromField.isEnabled = !readOnly
-        toField.isEnabled = !readOnly
+        updateFields()
     }
+
+    private val isPopupInitialized: Boolean get() = ::set.isInitialized
+
+    private fun updateFields() {
+        if (isPopupInitialized) {
+            set.isEnabled = !isReadOnly
+            clear.isEnabled = !isReadOnly
+            fromField.isEnabled = !isReadOnly
+            toField.isEnabled = !isReadOnly
+            fromField.resolution = resolution
+            toField.resolution = resolution
+        }
+    }
+
+    var isPopupVisible: Boolean
+        get() = (content as KPopupView).isPopupVisible
+        set(value) {
+            (content as KPopupView).isPopupVisible = value
+        }
 }
 
 @VaadinDsl
 fun (@VaadinDsl HasComponents).dateRangePopup(value: DateInterval? = null, block: (@VaadinDsl DateFilterPopup).()->Unit = {}) = init(DateFilterPopup()) {
     if (value != null) this.value = value
     block()
+}
+
+// @todo mavi remove when Karibu-DSL is v-bumped
+class KPopupView : Composite(), SpecialContainer {
+    private val popup = PopupView()
+    private var popupContents: Component? = null
+    private var popupContentsLazyInitializer: (() -> Component)? = null
+
+    init {
+        compositionRoot = popup
+        popup.content = object : PopupView.Content {
+            override fun getPopupComponent(): Component {
+                if (popupContents == null) {
+                    val i = checkNotNull(popupContentsLazyInitializer) { "No contents has been set to this KPopupView, neither directly nor via the 'lazy' function" }
+                    popupContents = i()
+                }
+                return popupContents!!
+            }
+
+            override fun getMinimizedValueAsHTML(): String {
+                return this@KPopupView.minimizedValueAsHTML
+            }
+        }
+    }
+
+    var minimizedValueAsHTML: String = ""
+        set(value) {
+            field = value
+            popup.markAsDirty() // to pick up the new value of this property
+        }
+
+    override fun addComponent(component: Component) {
+        check(popupContents == null) { "This component can only host one child" }
+        popupContents = component
+    }
+
+    override fun removeComponent(component: Component) {
+        if (popupContents == component) {
+            popupContents = null
+        }
+    }
+
+    /**
+     * Registers a [block] which produces popup contents lazily, when the popup is shown for the first time. The block
+     * is called at most once.
+     *
+     * Example of use:
+     * ```
+     * popupView {
+     *   lazy {
+     *     verticalLayout { ... }
+     *   }
+     * }
+     * ```
+     */
+    @VaadinDsl
+    fun lazy(block: (@VaadinDsl HasComponents).() -> Unit) {
+        check(popupContentsLazyInitializer == null) { "lazy initializer has already been set" }
+        check(popupContents == null) { "popup contents had been already set eagerly" }
+        popupContentsLazyInitializer = {
+            val panel = Panel()
+            panel.block()
+            requireNotNull(panel.content) { "The lazy initializer have not added any component" }
+        }
+    }
+
+    /**
+     * Gets/sets the visibility of the popup. Does not hide the minimal
+     * representation.
+     */
+    var isPopupVisible: Boolean
+        get() = popup.isPopupVisible
+        set(value) {
+            popup.isPopupVisible = value
+        }
+
+    /**
+     * Should the popup automatically hide when the user takes the mouse cursor
+     * out of the popup area? If this is false, the user must click outside the
+     * popup to close it. The default is true.
+     */
+    var isHideOnMouseOut: Boolean
+        get() = popup.isHideOnMouseOut
+        set(value) {
+            popup.isHideOnMouseOut = value
+        }
+
+    /**
+     * Add a listener that is called whenever the visibility of the popup is
+     * changed.
+     * @param listener the listener to add, not null
+     * @return a registration object for removing the listener
+     */
+    fun addPopupVisibilityListener(listener: PopupView.PopupVisibilityListener): Registration = popup.addPopupVisibilityListener(listener)
 }
