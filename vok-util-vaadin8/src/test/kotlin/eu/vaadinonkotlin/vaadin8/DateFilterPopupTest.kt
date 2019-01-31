@@ -15,7 +15,7 @@ class DateFilterPopupTest : DynaTest({
         DateFilterPopup()
     }
 
-    test("setting stuff works even when not attached") {
+    test("setting value and properties works even when not attached") {
         DateFilterPopup().apply {
             value = DateInterval(LocalDateTime.now(), LocalDateTime.now())
             isReadOnly = true
@@ -24,7 +24,7 @@ class DateFilterPopupTest : DynaTest({
         }
     }
 
-    test("setting stuff is applied immediately when the popup is opened") {
+    test("setting value and properties is applied immediately when the popup is opened") {
         UI.getCurrent().dateRangePopup {
             isPopupVisible = true
             isReadOnly = true
@@ -37,7 +37,7 @@ class DateFilterPopupTest : DynaTest({
         }
     }
 
-    test("setting value while popup visible will update the text fields as well") {
+    test("setting value while popup is visible will update the text fields as well") {
         UI.getCurrent().dateRangePopup {
             isPopupVisible = true
             val now = LocalDateTime.now()
