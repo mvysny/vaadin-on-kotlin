@@ -25,7 +25,7 @@ class SessionTest : DynaTest({
                     initCalled = true
                 }
             }
-            MockVaadin.setup { MyUI() }
+            MockVaadin.setup({ MyUI() })
             expect(true) { initCalled }
         }
         test("Succeeds after UI is initialized") {

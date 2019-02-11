@@ -3,11 +3,11 @@ dependencies {
     compile(project(":vok-db"))
     compile(project(":vok-util-vaadin10"))
 
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 
-    testCompile("ch.qos.logback:logback-classic:${ext["logback_version"]}")
-    testCompile("com.h2database:h2:${ext["h2_version"]}")
-    testCompile("com.github.mvysny.kaributesting:karibu-testing-v10:${ext["kaributesting_version"]}")
+    testCompile("ch.qos.logback:logback-classic:${properties["logback_version"]}")
+    testCompile("com.h2database:h2:${properties["h2_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
     testCompile("org.zeroturnaround:zt-exec:1.10")
 
     testCompile("org.postgresql:postgresql:42.2.1")

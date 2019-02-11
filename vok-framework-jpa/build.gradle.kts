@@ -2,7 +2,7 @@ dependencies {
     compile(project(":vok-framework"))
     compile(project(":vok-util-vaadin8"))
 
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 
     // db
     compile("org.hibernate:hibernate-core:5.3.0.Final") {
@@ -11,9 +11,9 @@ dependencies {
     // support for Java 9: https://stackoverflow.com/questions/48986999/classnotfoundexception-for-javax-xml-bind-jaxbexception-with-spring-boot-when-sw
     compile("javax.xml.bind:jaxb-api:2.3.0")
 
-    testCompile("org.flywaydb:flyway-core:${ext["flyway_version"]}")
-    testCompile("com.h2database:h2:${ext["h2_version"]}")
-    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${ext["kaributesting_version"]}")
+    testCompile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
+    testCompile("com.h2database:h2:${properties["h2_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit

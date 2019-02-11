@@ -15,29 +15,29 @@ gretty {
 
 dependencies {
     compile(project(":vok-framework-jpa"))
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 
     // logging
     // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
-    compile("ch.qos.logback:logback-classic:${ext["logback_version"]}")
-    compile("org.slf4j:slf4j-api:${ext["slf4j_version"]}")
+    compile("ch.qos.logback:logback-classic:${properties["logback_version"]}")
+    compile("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
     // this will configure Vaadin to log to SLF4J
-    compile("org.slf4j:jul-to-slf4j:${ext["slf4j_version"]}")
+    compile("org.slf4j:jul-to-slf4j:${properties["slf4j_version"]}")
 
     // Vaadin
-    compile("com.vaadin:vaadin-client-compiled:${ext["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-server:${ext["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-push:${ext["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-themes:${ext["vaadin8_version"]}")
+    compile("com.vaadin:vaadin-client-compiled:${properties["vaadin8_version"]}")
+    compile("com.vaadin:vaadin-server:${properties["vaadin8_version"]}")
+    compile("com.vaadin:vaadin-push:${properties["vaadin8_version"]}")
+    compile("com.vaadin:vaadin-themes:${properties["vaadin8_version"]}")
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 
     // db
-    compile("org.flywaydb:flyway-core:${ext["flyway_version"]}")
+    compile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
     compile("org.hibernate:hibernate-hikaricp:5.2.11.Final") {
         exclude(mapOf("group" to "javax.enterprise"))
     }
-    compile("com.zaxxer:HikariCP:${ext["hikaricp_version"]}")
-    compile("com.h2database:h2:${ext["h2_version"]}")
+    compile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
+    compile("com.h2database:h2:${properties["h2_version"]}")
 
     // REST
     compile(project(":vok-rest")) {
@@ -61,7 +61,7 @@ dependencies {
     // and we can't thus discover and preload JPA entities.
 
     // testing
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
-    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${ext["kaributesting_version"]}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
 }
 

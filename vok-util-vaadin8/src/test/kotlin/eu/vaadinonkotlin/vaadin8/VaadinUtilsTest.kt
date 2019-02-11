@@ -22,7 +22,7 @@ class VaadinUtilsTest : DynaTest({
                     description = vt["filter.all"]
                 }
             }
-            MockVaadin.setup { MyUI() }
+            MockVaadin.setup({ MyUI() })
             expect("All") { UI.getCurrent().description }
         }
     }

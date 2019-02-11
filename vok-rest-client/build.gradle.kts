@@ -4,10 +4,10 @@ dependencies {
     compile("com.google.code.gson:gson:2.8.5")
     compile("com.squareup.retrofit2:converter-scalars:2.4.0")
     compile("com.squareup.retrofit2:converter-gson:2.4.0")
-    compile("com.github.mvysny.vokdataloader:vok-dataloader:${ext["vok_dataloader_version"]}")
+    compile("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${ext["dynatest_version"]}")
+    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit

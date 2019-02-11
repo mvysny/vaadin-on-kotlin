@@ -1,6 +1,6 @@
 dependencies {
     compile(project(":vok-framework-jpa"))
-    compile("com.vaadin:vaadin-compatibility-server:${ext["vaadin8_version"]}")
+    compile("com.vaadin:vaadin-compatibility-server:${properties["vaadin8_version"]}")
 
     compile("com.vaadin.addon:jpacontainer:4.0.0")
 }

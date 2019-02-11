@@ -29,7 +29,7 @@ fun DynaNodeGroup.usingApp() {
     }
     afterGroup { Bootstrap().contextDestroyed(null) }
 
-    beforeEach { MockVaadin.setup { MyUI() } }
+    beforeEach { MockVaadin.setup({ MyUI() }) }
     afterEach { MockVaadin.tearDown() }
 
     fun cleanupDb() { Person.deleteAll() }
