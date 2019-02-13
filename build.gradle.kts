@@ -16,10 +16,11 @@ defaultTasks("clean", "build")
 
 allprojects {
     group = "eu.vaadinonkotlin"
-    version = "0.6.5-SNAPSHOT"
+    version = "0.7.0-SNAPSHOT"
 
     repositories {
         mavenCentral()
+        maven { setUrl("https://maven.vaadin.com/vaadin-prereleases/") }  // because of Vaadin 13.0.0.beta1
         maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
     }
 
