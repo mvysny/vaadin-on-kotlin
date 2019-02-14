@@ -8,6 +8,7 @@ import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.textfield.TextField
 import java.time.LocalDate
 
 /**
@@ -35,7 +36,7 @@ class PersonListViewTest : DynaTest({
     }
 
     test("grid is refreshed when data is generated") {
-        _get<Button> { caption = "Generate testing data" } ._click()
+        _get<Button> { caption = "Generate testing data (Alt+G)" } ._click()
 
         val grid = _get<Grid<*>>()
         grid.expectRows(86)
@@ -48,9 +49,8 @@ class PersonListViewTest : DynaTest({
     test("edit one person") {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
 
-        _get<Grid<*>>()
-        // currently not possible: https://github.com/mvysny/karibu-testing/issues/2
-/*
+        val grid = _get<Grid<Person>>()
+        grid.expectRows(1)
         grid._clickRenderer(0, "edit")
 
         // the CreateEditPerson dialog should pop up
@@ -58,7 +58,41 @@ class PersonListViewTest : DynaTest({
         _get<Button> { caption = "Save" }._click()
 
         // assert the updated person
-        expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.name } }
-*/
+        expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }
+    }
+
+    test("delete one person") {
+        Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+        val grid = _get<Grid<Person>>()
+        grid.expectRows(1)
+        grid._clickRenderer(0, "delete")
+        expectList() { Person.findAll() }
+        grid.expectRows(0)
+    }
+
+    group("context menu") {
+        test("edit one person") {
+            Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+
+            val grid = _get<Grid<Person>>()
+            grid.expectRows(1)
+            _get<PersonListView>().gridContextMenu._clickItemWithCaption("edit", grid._get(0))
+
+            // the CreateEditPerson dialog should pop up
+            _get<TextField> { caption = "Name:" }.value = "Duke Leto Atreides"
+            _get<Button> { caption = "Save" }._click()
+
+            // assert the updated person
+            expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }
+        }
+
+        test("delete one person") {
+            Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
+            val grid = _get<Grid<Person>>()
+            grid.expectRows(1)
+            _get<PersonListView>().gridContextMenu._clickItemWithCaption("delete", grid._get(0))
+            expectList() { Person.findAll() }
+            grid.expectRows(0)
+        }
     }
 })

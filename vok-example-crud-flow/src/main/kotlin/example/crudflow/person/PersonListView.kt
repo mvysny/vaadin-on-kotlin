@@ -4,10 +4,15 @@ import example.crudflow.MainLayout
 import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
 import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
 import com.github.vokorm.db
+import com.vaadin.flow.component.Key
+import com.vaadin.flow.component.Key.KEY_G
+import com.vaadin.flow.component.KeyModifier.ALT
+import com.vaadin.flow.component.Shortcuts
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
 import com.vaadin.flow.component.html.Div
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.data.renderer.Renderer
@@ -21,15 +26,17 @@ import java.time.LocalDate
 @Route("", layout = MainLayout::class)
 class PersonListView : KComposite() {
     private lateinit var personGrid: Grid<Person>
+    lateinit var gridContextMenu: GridContextMenu<Person>
 
     private val root = ui {
         verticalLayout {
             setSizeFull()
             h4("Person list")
-            button("Generate testing data") {
+            button("Generate testing data (Alt+G)") {
                 onLeftClick {
                     generateTestingData()
                 }
+                addClickShortcut(Alt + KEY_G)
             }
             personGrid = grid(dataProvider = Person.dataProvider) {
                 flexGrow = 1.0
@@ -53,13 +60,19 @@ class PersonListView : KComposite() {
                     width = "90px"; isExpand = false
                 }
                 addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
-                    width = "90px"; isExpand = false
+                    width = "90px"; isExpand = false; key = "edit"
                 }
                 addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
-                    width = "90px"; isExpand = false
+                    width = "90px"; isExpand = false; key = "delete"
                 }
 
                 appendHeaderRow().generateFilterComponents(this, Person::class)
+
+                gridContextMenu = gridContextMenu {
+                    item("view", { person -> if (person != null) navigateToView(PersonView::class, person.id!!) })
+                    item("edit", { person -> if (person != null) createOrEditPerson(person) })
+                    item("delete", { person -> if (person != null) { person.delete(); refresh() } })
+                }
             }
         }
     }
