@@ -2,12 +2,12 @@ package example.crud_sql2o
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import example.crud_sql2o.personeditor.MaritalStatus
-import example.crud_sql2o.personeditor.Person
-import example.crud_sql2o.personeditor.usingApp
 import eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin
 import eu.vaadinonkotlin.restclient.exec
 import eu.vaadinonkotlin.restclient.jsonArray
+import example.crud_sql2o.personeditor.MaritalStatus
+import example.crud_sql2o.personeditor.Person
+import example.crud_sql2o.personeditor.usingApp
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -50,6 +50,8 @@ class PersonRestTest : DynaTest({
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
-        expectList(p) { client.getAll() }
+        val all = client.getAll()
+        p.created = all[0].created
+        expectList(p) { all }
     }
 })
