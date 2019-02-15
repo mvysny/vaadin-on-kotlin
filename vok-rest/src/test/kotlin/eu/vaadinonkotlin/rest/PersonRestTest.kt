@@ -17,6 +17,7 @@ import retrofit2.http.*
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoField
 import kotlin.test.expect
 
 fun Javalin.configureRest(): Javalin {
@@ -73,6 +74,7 @@ class PersonRestTest : DynaTest({
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
+        p.created = p.created!!.withZeroNanos
         expectList(p) { client.getAll() }
     }
 
@@ -82,6 +84,7 @@ class PersonRestTest : DynaTest({
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
+        p.created = p.created!!.withZeroNanos
         expectList(p) { client.getAll() }
     }
 
@@ -92,6 +95,7 @@ class PersonRestTest : DynaTest({
             expectList() { crud.getAll() }
             val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
             p.save()
+            p.created = p.created!!.withZeroNanos
             expectList(p) { crud.getAll() }
         }
 
@@ -99,6 +103,7 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
+                p.created = p.created!!.withZeroNanos
                 expect(p) { crud.getOne(p.id!!.toString()) }
             }
             test("non-existing") {
@@ -114,7 +119,7 @@ class PersonRestTest : DynaTest({
         }
 
         test("create") {
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now().withZeroNanos)
             crud.create(p)
             val actual = db { Person.findAll() }
             p.id = actual[0].id!!
@@ -143,6 +148,7 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
+                p.created = p.created!!.withZeroNanos
                 p.personName = "Leto Atreides"
                 crud.update(p.id!!.toString(), p)
                 expectList(p) { Person.findAll() }
@@ -163,6 +169,7 @@ class PersonRestTest : DynaTest({
                 expectList() { crud.getAll() }
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
+                p.created = p.created!!.withZeroNanos
                 expectList(p) { crud.getAll() }
             }
 
@@ -218,6 +225,7 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
+                p.created = p.created!!.withZeroNanos
                 expect(p) { crud.getOne(p.id!!.toString()) }
             }
             test("non-existing") {
@@ -233,7 +241,7 @@ class PersonRestTest : DynaTest({
         }
 
         test("create") {
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
+            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now().withZeroNanos)
             crud.create(p)
             val actual = db { Person.findAll() }
             p.id = actual[0].id!!
@@ -262,6 +270,7 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
+                p.created = p.created!!.withZeroNanos
                 p.personName = "Leto Atreides"
                 crud.update(p.id!!.toString(), p)
                 expectList(p) { Person.findAll() }
@@ -325,3 +334,5 @@ interface PersonCrudClient {
 }
 
 data class Person2(var id: Long? = null, var age: Int? = null, var personName: String? = null)
+
+val Instant.withZeroNanos: Instant get() = with(ChronoField.NANO_OF_SECOND, get(ChronoField.MILLI_OF_SECOND).toLong() * 1000000)

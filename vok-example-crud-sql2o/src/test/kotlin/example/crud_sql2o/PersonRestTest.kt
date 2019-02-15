@@ -11,7 +11,9 @@ import example.crud_sql2o.personeditor.usingApp
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.time.Instant
 import java.time.LocalDate
+import java.time.temporal.ChronoField
 import kotlin.test.expect
 
 class PersonRestClient(val baseUrl: String) {
@@ -50,8 +52,10 @@ class PersonRestTest : DynaTest({
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
+        p.created = p.created!!.withZeroNanos
         val all = client.getAll()
-        p.created = all[0].created
         expectList(p) { all }
     }
 })
+
+val Instant.withZeroNanos: Instant get() = with(ChronoField.NANO_OF_SECOND, get(ChronoField.MILLI_OF_SECOND).toLong() * 1000000)
