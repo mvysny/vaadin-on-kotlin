@@ -35,6 +35,9 @@ val Int.seconds: Duration get() = toLong().seconds
 val Long.seconds: Duration get() = Duration.ofSeconds(this)
 
 operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
+infix operator fun Duration.plus(other: Duration): Duration = this.plus(other)
+infix operator fun Instant.plus(other: Duration): Instant = this.plus(other)
+infix operator fun Date.plus(other: Duration) = Date(time + other.toMillis())
 
 /**
  * Allows you to add listeners for a particular event into your component like following:
