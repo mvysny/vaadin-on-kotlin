@@ -108,6 +108,25 @@ OR filters are not supported - passing `OrFilter` will cause `getAll()` to throw
 
 All column names are expected to be Kotlin property name of the bean.
 
+### Limited REST Endpoints
+
+Often the endpoints are limited in how many items it can retrieve. For example if the `CrudClient` is tied to Vaadin Grid,
+the Grid may sometimes ask for as many as 200 items. If the endpoint is limited to return, say, 100 items tops, the
+fetch will fail.
+
+To limit the number of data fetched at once, you can simply wrap the loader in the `ChunkFetchingLoader` as shown below:
+
+```kotlin
+val crud = CrudClient("http://localhost:8080/rest/person/", Person::class.java)
+val limiter = ChunkFetchingLoader(crud, 100)
+val dp = DataLoaderAdapter(Person::class.java, limiter, { it.id!! }).withConfigurableFilter2()
+grid.dataProvider = dp
+```
+
+The limiter will make sure that at most 100 items will be fetched at once. If need be, the loader will
+simply poll `CrudClient` multiple times, downloading chunks of 100 items
+until the necessary number of items has been fetched.
+
 ## Using `vok-rest-client` For Testing
 
 If you use `vok-rest-client` from within of your VoK app then VoK will take care of properly
