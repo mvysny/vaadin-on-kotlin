@@ -41,7 +41,7 @@ dependencies {
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 
     // heroku app runner
-    staging("com.github.jsimone:webapp-runner:9.0.14.0")
+    staging("com.github.jsimone:webapp-runner:9.0.16.0")
 }
 
 // Heroku
