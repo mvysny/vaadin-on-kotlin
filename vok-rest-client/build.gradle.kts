@@ -7,6 +7,8 @@ dependencies {
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testCompile("io.javalin:javalin:${properties["javalin_version"]}")
+    testCompile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit

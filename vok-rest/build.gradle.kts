@@ -1,7 +1,7 @@
 dependencies {
     compile(project(":vok-framework"))
 
-    compile("io.javalin:javalin:2.4.0") {
+    compile("io.javalin:javalin:${properties["javalin_version"]}") {
         exclude(mapOf("group" to "org.eclipse.jetty"))
         exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
     }
