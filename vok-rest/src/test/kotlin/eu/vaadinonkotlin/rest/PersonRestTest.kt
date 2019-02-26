@@ -13,7 +13,6 @@ import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import retrofit2.http.*
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
@@ -28,19 +27,8 @@ fun Javalin.configureRest(): Javalin {
     return this
 }
 
-// Demoes Retrofit + annotations client
-interface PersonRestClient {
-    @GET("helloworld")
-    @Throws(IOException::class)
-    fun helloWorld(): String
-
-    @GET(".")
-    @Throws(IOException::class)
-    fun getAll(@Query("offset") offset: Long? = null, @Query("limit") limit: Long? = null): List<Person>
-}
-
 // Demoes direct access via okhttp
-class PersonRestClient2(val baseUrl: String) {
+class PersonRestClient(val baseUrl: String) {
     private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
     fun helloWorld(): String {
         val request = Request.Builder().url("${baseUrl}helloworld").build()
@@ -69,17 +57,7 @@ class PersonRestTest : DynaTest({
     usingRestClient()
 
     test("hello world") {
-        val client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java)
-        expect("Hello World") { client.helloWorld() }
-        expectList() { client.getAll() }
-        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-        p.save()
-        p.created = p.created!!.withZeroNanos
-        expectList(p) { client.getAll() }
-    }
-
-    test("hello world 2") {
-        val client = PersonRestClient2("http://localhost:9876/rest/person/")
+        val client = PersonRestClient("http://localhost:9876/rest/person/")
         expect("Hello World") { client.helloWorld() }
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
@@ -89,79 +67,6 @@ class PersonRestTest : DynaTest({
     }
 
     group("crud") {
-        lateinit var crud: PersonCrudClient
-        beforeEach { crud = createRetrofit("http://localhost:9876/rest/person/").create(PersonCrudClient::class.java) }
-        test("getAll()") {
-            expectList() { crud.getAll() }
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-            p.save()
-            p.created = p.created!!.withZeroNanos
-            expectList(p) { crud.getAll() }
-        }
-
-        group("getOne") {
-            test("simple") {
-                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-                p.save()
-                p.created = p.created!!.withZeroNanos
-                expect(p) { crud.getOne(p.id!!.toString()) }
-            }
-            test("non-existing") {
-                expectThrows(IOException::class, "404: No such entity with ID 555") {
-                    crud.getOne("555")
-                }
-            }
-            test("malformed id") {
-                expectThrows(IOException::class, "Malformed ID: foobar") {
-                    crud.getOne("foobar")
-                }
-            }
-        }
-
-        test("create") {
-            val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now().withZeroNanos)
-            crud.create(p)
-            val actual = db { Person.findAll() }
-            p.id = actual[0].id!!
-            expectList(p) { actual }
-        }
-
-        group("delete") {
-            test("simple") {
-                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-                p.save()
-                crud.delete(p.id!!.toString())
-                expectList() { Person.findAll() }
-            }
-            test("non-existing") {
-                // never fail with 404: http://www.tugberkugurlu.com/archive/http-delete-http-200-202-or-204-all-the-time
-                crud.delete("555")
-            }
-            test("invalid id") {
-                expectThrows(IOException::class, "404: Malformed ID") {
-                    crud.delete("invalid_id")
-                }
-            }
-        }
-
-        group("update") {
-            test("simple") {
-                val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-                p.save()
-                p.created = p.created!!.withZeroNanos
-                p.personName = "Leto Atreides"
-                crud.update(p.id!!.toString(), p)
-                expectList(p) { Person.findAll() }
-            }
-            test("non-existing") {
-                val p = Person(id = 45, personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
-                expectThrows(IOException::class, "404: No such entity with ID 45") {
-                    crud.update(p.id!!.toString(), p)
-                }
-            }
-        }
-    }
-    group("crud2") {
         lateinit var crud: CrudClient<Person>
         beforeEach { crud = CrudClient("http://localhost:9876/rest/person/", Person::class.java) }
         group("getAll()") {
@@ -310,28 +215,6 @@ class PersonRestTest : DynaTest({
         }
     }
 })
-
-interface PersonCrudClient {
-    @GET(".")
-    @Throws(IOException::class)
-    fun getAll(): List<Person>
-
-    @GET("{id}")
-    @Throws(IOException::class)
-    fun getOne(@Path("id") id: String): Person
-
-    @POST(".")
-    @Throws(IOException::class)
-    fun create(@Body entity: Person): Unit?
-
-    @PATCH("{id}")
-    @Throws(IOException::class)
-    fun update(@Path("id") id: String, @Body entity: Person): Unit?
-
-    @DELETE("{id}")
-    @Throws(IOException::class)
-    fun delete(@Path("id") id: String): Unit?
-}
 
 data class Person2(var id: Long? = null, var age: Int? = null, var personName: String? = null)
 

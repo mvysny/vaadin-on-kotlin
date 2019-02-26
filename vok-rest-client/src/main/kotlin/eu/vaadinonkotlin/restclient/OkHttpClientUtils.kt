@@ -97,3 +97,16 @@ fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T):
         }
 
 val LongRange.length: Long get() = if (isEmpty()) 0 else endInclusive - start + 1
+
+/**
+ * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [OkHttpClientVokPlugin.gson].
+ */
+fun <V> ResponseBody.jsonMap(valueClass: Class<V>): Map<String, V> = OkHttpClientVokPlugin.gson.fromJsonMap(charStream(), valueClass)
+
+/**
+ * Parses [json] as a map of items with class [valueClass] and returns that.
+ */
+fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
+    val type = TypeToken.getParameterized(Map::class.java, String::class.java, valueClass).type
+    return fromJson<Map<String, T>>(reader, type)
+}

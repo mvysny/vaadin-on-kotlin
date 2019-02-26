@@ -2,12 +2,6 @@ package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.vokdataloader.*
 import okhttp3.*
-import retrofit2.Converter
-import java.lang.IllegalArgumentException
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.time.*
-import java.util.*
 
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [OkHttpClientVokPlugin.gson].
@@ -132,7 +126,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
 
     private fun buildUrl(baseUrl: String, block: HttpUrl.Builder.()->Unit): HttpUrl {
         val url = requireNotNull(HttpUrl.parse(baseUrl)) { "Unparsable url: $baseUrl" }
-        return url.newBuilder().apply { block() } .build()!!
+        return url.newBuilder().apply { block() } .build()
     }
 
     companion object {
@@ -149,34 +143,5 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         }
         val request = Request.Builder().url(url).build()
         return client.exec(request) { response -> response.string().toLong() }
-    }
-}
-
-/**
- * Converts values of different types properly to String, so that they can be consumed by the REST endpoints.
- * The default implementation uses the following algorithm:
- * * Converts all [Number] to their decimal format with comma as the decimal separator, e.g. "54" or "2.25"
- * * Convert all Date-like objects such as [Date], [LocalDate] and [LocalDateTime] to the UTC Epoch long (number of milliseconds since January 1, 1970, 00:00:00 GMT in UTC).
- * * Fails for everything else.
- * @param zoneId used to convert [LocalDate] and [LocalDateTime] to UTC Epoch.
- */
-open class QueryParameterConverter(val zoneId: ZoneId = ZoneId.systemDefault()) : Converter<Any, String> {
-    protected fun convertNumber(number: Number): String = when(number) {
-        is Int, is Short, is Byte, is Long, is BigInteger -> number.toString()
-        is BigDecimal -> number.stripTrailingZeros().toPlainString()
-        is Float -> convertNumber(number.toDouble())
-        is Double -> convertNumber(number.toBigDecimal())
-        else -> throw IllegalArgumentException("$number of type ${number.javaClass} is not supported")
-    }
-
-    override fun convert(value: Any): String = when(value) {
-        is String -> value
-        is Number -> convertNumber(value)
-        is Date -> value.time.toString()
-        is LocalDate -> convert(LocalDateTime.of(value, LocalTime.MIN))
-        is LocalDateTime -> convert(value.atZone(zoneId))
-        is ZonedDateTime -> convert(value.toInstant())
-        is Instant -> value.toEpochMilli().toString()
-        else -> throw IllegalArgumentException("$value of type ${value.javaClass} is not supported")
     }
 }

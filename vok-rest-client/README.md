@@ -27,8 +27,7 @@ dependencies {
 
 > Note: to obtain the newest version see above for the most recent tag
 
-Now you can write the REST client. The recommended method is to use `okhttp` directly; you can also use `Retrofit` to generate REST clients out of
-your annotated interfaces but that's not really recommended.
+Now you can write the REST client. The recommended method is to use `okhttp` directly.
 
 ### Using `okhttp`
 
@@ -107,32 +106,6 @@ OR filters are not supported - passing `OrFilter` will cause `getAll()` to throw
 
 All column names are expected to be Kotlin property name of the bean.
 
-### Retrofit
-
-Retrofit uses okhttp under the belt but allows you to create client out of annotated interfaces. Might save you a few keystrokes, but makes it
-impossible to debug. This way is therefore not recommended.
-
-For precise instructions on how to construct REST client interfaces for Retrofit please visit the [Retrofit page](https://square.github.io/retrofit/).
-
-Example:
-```kotlin
-interface PersonRestClient2 {
-    @GET("helloworld")
-    @Throws(IOException::class)
-    fun helloWorld(): String
-
-    @GET(".")
-    @Throws(IOException::class)
-    fun getAll(): List<Person>
-}
-
-val client = createRetrofit("http://localhost:8080/rest/person/").create(PersonRestClient2::class.java)
-println(client.getAll())
-```
-
-Retrofit is automatically configured by `vok-rest-client` to properly fail on result code other than 200..299; it is configured to properly
-handle any type of values. Retrofit doesn't support functions returning `Unit` or `void` - just make the function return `Unit?`.
-
 ## Using `vok-rest-client` For Testing
 
 If you use `vok-rest-client` from within of your VoK app then VoK will take care of properly
@@ -145,7 +118,7 @@ You need to do one of these:
   also properly initialize and destroy the `vok-rest-client` module. In the example below, this is
   done via the call to `usingApp()` function, which in turn calls `Bootstrap().contextInitialized(null)`
   and `Bootstrap().contextDestroyed(null)`.
-* Or you need to init the module manually: `RetrofitClientVokPlugin().init()` and `RetrofitClientVokPlugin().destroy()`
+* Or you need to init the module manually: `OkHttpClientVokPlugin().init()` and `OkHttpClientVokPlugin().destroy()`
 
 Otherwise the OkHttpClient won't get initialized and the test will fail with NPE.
 
