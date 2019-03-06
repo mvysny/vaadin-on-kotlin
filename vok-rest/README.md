@@ -52,8 +52,8 @@ fun Javalin.configureRest(): Javalin {
 }
 ```
 
-> *Example:* You can find the `JavalinRestServlet` class in action in the [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app)
-example application, in the *complete* git branch. It's located in the `Bootstrap.kt` file.
+> *Example:* You can find the `JavalinRestServlet` class in action in the [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restdataprovider-example)
+example application. It's located in the `Bootstrap.kt` file.
 
 To test it out, just run the following in your command line:
 
