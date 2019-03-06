@@ -32,7 +32,7 @@ class DataLoaderFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filte
  * using [VokDataProvider]).
  * @param T the type of items in the grid.
  * @param grid the owner grid.
- * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
+ * @param filterFieldFactory used to create the filters themselves. By default the [DefaultFilterFieldFactory] is used.
  * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
  * typically only applies to inline filter
  * components (most importantly [com.vaadin.ui.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])

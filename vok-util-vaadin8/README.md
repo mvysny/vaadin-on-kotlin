@@ -44,7 +44,14 @@ When you want to use the NoSQL database:
 * Depend on this module and implement the proper `FilterFactory` implementation yourself, in order
   to have auto-generated Grid filter components.
 
-## Support for Grid filters
+## Support for Grid Filter Bar
+
+Hooking a Grid to a data provider and auto-generating Grid filter bar is easy:
+
+```kotlin
+grid.dataProvider = Person.dataProvider  // uses vok-orm's DataLoader
+grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
+```
 
 This module provides a default set of filter components intended to be used with Vaadin Grid, to
 perform filtering of the data shown in the Grid:
@@ -63,11 +70,11 @@ perform filtering of the data shown in the Grid:
 
 Note that the filter components need an implementation of the `FilterFactory` to properly
 generate filter objects for a particular database backend. The [vok-framework-sql2o](../vok-framework-sql2o) module
-provides such implementation for filtering with the VoK-ORM framework (recommended);
+provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader);
 The [vok-framework-jpa](../vok-framework-jpa) module
 provides such implementation for filtering with the JPA framework.
 
-### Wiring filters to custom database backend
+### Wiring Filters To Custom Database Backend
 
 In order for the Grid to offer filtering components to the user, the programmer needs to create the
 filter components first and attach them to the Grid. Typically a special header row is created, to accommodate
@@ -106,9 +113,11 @@ The filter component call flow is then as follows:
 With this automatized approach, all you need to provide is:
 
 * A `DataProvider` which is able to fetch data from your backend
-* You will need to define a set of filter objects (say, `LessThanFilter(25)` and others) which your
+* You can either make your `DataProvider` use vok-dataloader filters, or you will need to define a set of
+  filter objects (say, `LessThanFilter(25)` and others) which your
   data provider will then accept and will be able to filter upon.
-* A `FilterFactory` implementation which will then produce your custom filter objects.
+* A `FilterFactory` implementation which will then produce your custom filter objects. For vok-dataloader
+  filters there is such implementation: the `DataLoaderFilterFactory` class.
 
 With this machinery in place, we can now ask the `FilterFieldFactory` to create fields for particular column,
 or even for all Grid columns. That's precisely what the `generateFilterComponents()` function does.
@@ -120,6 +129,32 @@ grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
 ```
 
 For more information about using filters with `DataProviders` please see the [Databases Guide](http://www.vaadinonkotlin.eu/databases.html).
+
+### DataLoaders
+
+Even easier way is to use [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader) which provides a rich hierarchy
+of filters out-of-the-box, and the `DataLoader` interface is way simpler to implement than `DataProvider`.
+The `generateFilterComponents()` function already reuses vok-dataloader filter hierarchy, so all we need is to
+convert a data loader to a data provider. Luckily, that's very easy:
+
+```kotlin
+val dataLoader: DataLoader<Person> = Person.dataLoader // to load stuff from a SQL database via vok-orm
+val dataLoader: DataLoader<Person> = CrudClient("http://localhost:8080/rest/person/", Person::class.java) // to load stuff from a REST endpoint via vok-rest-client
+    // or you can implement your own DataLoader
+    
+val dataProvider: VokDataProvider<Person> = dataLoader.asDataProvider {it.id!!}
+grid.dataProvider = dataProvider
+grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
+```
+
+Or even shorter, by using VoK-provided extension methods to set the data loader to a Grid directly:
+```kotlin
+val dataLoader = // as above
+grid.setDataLoader(dataLoader) { it.id!! }
+grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
+```
+
+See the [vok-crud-client](../vok-crud-client) on how to use the REST client DataLoader.
 
 ### Customizing filters
 

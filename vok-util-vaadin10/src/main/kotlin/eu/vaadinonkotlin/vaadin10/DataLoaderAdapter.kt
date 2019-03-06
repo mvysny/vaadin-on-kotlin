@@ -46,5 +46,5 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-fun <T: Any> DataLoader<T>.toDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
+fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
         DataLoaderAdapter(this, idResolver).withConfigurableFilter2()

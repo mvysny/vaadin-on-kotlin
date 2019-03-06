@@ -32,7 +32,7 @@ class DataLoaderFilterFactory<F: Any>(val clazz: Class<F>) : FilterFactory<Filte
  * This function uses [Filter] hierarchy from `vok-dataloader` which is what you often want to do.
  * @param grid the owner grid.
  * @param itemClass the item class as shown in the grid.
- * @param filterFieldFactory used to create the filters themselves. If null, [DefaultFilterFieldFactory] is used.
+ * @param filterFieldFactory used to create the filters themselves. By default the [DefaultFilterFieldFactory] is used.
  * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
  * typically only applies to inline filter
  * components (most importantly [com.vaadin.flow.component.textfield.TextField]), typically ignored for popup components (such as [com.github.vok.framework.flow.NumberFilterPopup])

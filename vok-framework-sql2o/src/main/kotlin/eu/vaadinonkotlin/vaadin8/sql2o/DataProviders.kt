@@ -8,6 +8,7 @@ import com.github.vokorm.dataloader.SqlDataLoader
 import com.vaadin.ui.Grid
 import eu.vaadinonkotlin.vaadin8.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin8.VokDataProvider
+import eu.vaadinonkotlin.vaadin8.asDataProvider
 import eu.vaadinonkotlin.vaadin8.withConfigurableFilter2
 
 /**
@@ -17,10 +18,7 @@ import eu.vaadinonkotlin.vaadin8.withConfigurableFilter2
  * Example of use: `grid.dataProvider = Person.dataProvider`.
  */
 inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
-    get() {
-        val entityDataProvider = DataLoaderAdapter(dataLoader) { it.id!! }
-        return entityDataProvider.withConfigurableFilter2()
-    }
+    get() = dataLoader.asDataProvider()
 
 /**
  * Provides instances of this entity from a database. Does not support joins on any of the like; supports filtering
@@ -73,7 +71,7 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
-        = DataLoaderAdapter(SqlDataLoader(clazz, sql, params), idMapper).withConfigurableFilter2()
+        = SqlDataLoader(clazz, sql, params).asDataProvider(idMapper)
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
@@ -84,7 +82,7 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
  * including the item itself.
  */
 fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
-    dataProvider = DataLoaderAdapter(dataLoader, idResolver).withConfigurableFilter2()
+    dataProvider = dataLoader.asDataProvider(idResolver)
 }
 
 /**
@@ -92,5 +90,10 @@ fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->A
  * as a (configurable) [Grid.getDataProvider].
  */
 fun <T: Entity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
-    setDataLoader(dataLoader) { it.id!! }
+    dataProvider = dataLoader.asDataProvider()
 }
+
+/**
+ * Returns a [VokDataProvider] which loads data from this [DataLoader].
+ */
+fun <T: Entity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }.withConfigurableFilter2()
