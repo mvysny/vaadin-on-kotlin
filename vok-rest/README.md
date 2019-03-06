@@ -64,17 +64,20 @@ Please consult [Javalin Documentation](https://javalin.io/documentation) for mor
 
 ### CRUD Handler
 
-VoK provides a full-blown REST CRUD handler for any vok-orm entity, which
-exposes given entity in a standard way over REST (the `crud2()` function as seen above).
+VoK provides two REST CRUD handlers by default:
+
+* The `DataLoaderCrudHandler` which exposes contents of any [DataLoader](https://gitlab.com/mvysny/vok-dataloader)
+  over REST (the `crud2()` function as seen above), including paging, filtering and sorting, but it provides no support for POST/PATCH/DELETE;
+* The `VokOrmCrudHandler` which provides the same as the `DataLoaderCrudHandler` but it includes support for POST/PATCH/DELETE.
+  This Handler will automatically use vok-orm's `EntityDataProvider` to fetch instances of the entity.
+
 Attaching the CRUD handler to, say, `/rest/users` will export the following endpoints:
 
 * `GET /rest/users` returns all users
 * `GET /rest/users/22` returns one user
-* `POST /rest/users` will create an user
-* `PATCH /rest/users/22` will update an user
-* `DELETE /rest/users/22` will delete an user
-
-The Handler will automatically use vok-orm's `EntityDataProvider` to fetch instances of the entity.
+* `POST /rest/users` will create an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
+* `PATCH /rest/users/22` will update an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
+* `DELETE /rest/users/22` will delete an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
 
 The `get all` endpoint supports the following query parameters:
 
