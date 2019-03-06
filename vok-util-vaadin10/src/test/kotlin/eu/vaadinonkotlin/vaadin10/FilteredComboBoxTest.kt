@@ -14,7 +14,7 @@ class FilteredComboBoxTest : DynaTest({
     afterEach { MockVaadin.tearDown() }
 
     test("combo box filtering") {
-        val dp = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader().toDataProvider { it.id!! }
+        val dp = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader().asDataProvider { it.id!! }
         val cb = ComboBox<Person>().apply {
             setDataProvider(dp.withStringFilterOn(Person::personName))
             setItemLabelGenerator { it.personName }
