@@ -28,7 +28,7 @@ class OkHttpClientUtilsTest : DynaTest({
         javalin = Javalin.create()
                 .disableStartupBanner()
                 .get("foo") { ctx -> ctx.result(content) }
-                .get("fail") { ctx -> throw RuntimeException() }
+                .get("fail") { _ -> throw RuntimeException() }
                 .start(54444)
     }
     afterEach { javalin.stop() }

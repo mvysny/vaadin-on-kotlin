@@ -4,7 +4,6 @@ import com.github.mvysny.karibudsl.v8.*
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.toDate
 import com.vaadin.data.Binder
-import com.vaadin.shared.Registration
 import com.vaadin.shared.ui.datefield.DateTimeResolution
 import com.vaadin.ui.*
 import java.io.Serializable
@@ -62,9 +61,9 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
     private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = NumberInterval(null, null) }
     private var internalValue: NumberInterval<Double>? = null
 
-    override fun initContent(): Component? {
-        return PopupView(SimpleContent.EMPTY).apply {
-            w = fillParent; minimizedValueAsHTML = vt["filter.all"]; isHideOnMouseOut = false
+    override fun initContent(): Component = KPopupView().apply {
+        w = fillParent; minimizedValueAsHTML = vt["filter.all"]; isHideOnMouseOut = false
+        lazy {
             verticalLayout {
                 w = wrapContent
                 horizontalLayout {
@@ -100,17 +99,24 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
                     }
                 }
             }
+            updateReadOnly()
         }
     }
 
     override fun setReadOnly(readOnly: Boolean) {
         super.setReadOnly(readOnly)
-        ltInput.isEnabled = !readOnly
-        gtInput.isEnabled = !readOnly
+        updateReadOnly()
+    }
+
+    private fun updateReadOnly() {
+        if (::ltInput.isInitialized) {
+            ltInput.isEnabled = !isReadOnly
+            gtInput.isEnabled = !isReadOnly
+        }
     }
 
     private fun updateCaption() {
-        val content = content as PopupView
+        val content = content as KPopupView
         val value = value
         if (value == null || value.isUniversalSet) {
             content.minimizedValueAsHTML = vt["filter.all"]
@@ -134,6 +140,12 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
     }
 
     override fun getValue() = internalValue?.copy()
+
+    var isPopupVisible: Boolean
+        get() = (content as KPopupView).isPopupVisible
+        set(value) {
+            (content as KPopupView).isPopupVisible = value
+        }
 }
 
 /**
@@ -329,98 +341,4 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 fun (@VaadinDsl HasComponents).dateRangePopup(value: DateInterval? = null, block: (@VaadinDsl DateFilterPopup).()->Unit = {}) = init(DateFilterPopup()) {
     if (value != null) this.value = value
     block()
-}
-
-// @todo mavi remove when Karibu-DSL is v-bumped
-class KPopupView : Composite(), SpecialContainer {
-    private val popup = PopupView()
-    private var popupContents: Component? = null
-    private var popupContentsLazyInitializer: (() -> Component)? = null
-
-    init {
-        compositionRoot = popup
-        popup.content = object : PopupView.Content {
-            override fun getPopupComponent(): Component {
-                if (popupContents == null) {
-                    val i = checkNotNull(popupContentsLazyInitializer) { "No contents has been set to this KPopupView, neither directly nor via the 'lazy' function" }
-                    popupContents = i()
-                }
-                return popupContents!!
-            }
-
-            override fun getMinimizedValueAsHTML(): String {
-                return this@KPopupView.minimizedValueAsHTML
-            }
-        }
-    }
-
-    var minimizedValueAsHTML: String = ""
-        set(value) {
-            field = value
-            popup.markAsDirty() // to pick up the new value of this property
-        }
-
-    override fun addComponent(component: Component) {
-        check(popupContents == null) { "This component can only host one child" }
-        popupContents = component
-    }
-
-    override fun removeComponent(component: Component) {
-        if (popupContents == component) {
-            popupContents = null
-        }
-    }
-
-    /**
-     * Registers a [block] which produces popup contents lazily, when the popup is shown for the first time. The block
-     * is called at most once.
-     *
-     * Example of use:
-     * ```
-     * popupView {
-     *   lazy {
-     *     verticalLayout { ... }
-     *   }
-     * }
-     * ```
-     */
-    @VaadinDsl
-    fun lazy(block: (@VaadinDsl HasComponents).() -> Unit) {
-        check(popupContentsLazyInitializer == null) { "lazy initializer has already been set" }
-        check(popupContents == null) { "popup contents had been already set eagerly" }
-        popupContentsLazyInitializer = {
-            val panel = Panel()
-            panel.block()
-            requireNotNull(panel.content) { "The lazy initializer have not added any component" }
-        }
-    }
-
-    /**
-     * Gets/sets the visibility of the popup. Does not hide the minimal
-     * representation.
-     */
-    var isPopupVisible: Boolean
-        get() = popup.isPopupVisible
-        set(value) {
-            popup.isPopupVisible = value
-        }
-
-    /**
-     * Should the popup automatically hide when the user takes the mouse cursor
-     * out of the popup area? If this is false, the user must click outside the
-     * popup to close it. The default is true.
-     */
-    var isHideOnMouseOut: Boolean
-        get() = popup.isHideOnMouseOut
-        set(value) {
-            popup.isHideOnMouseOut = value
-        }
-
-    /**
-     * Add a listener that is called whenever the visibility of the popup is
-     * changed.
-     * @param listener the listener to add, not null
-     * @return a registration object for removing the listener
-     */
-    fun addPopupVisibilityListener(listener: PopupView.PopupVisibilityListener): Registration = popup.addPopupVisibilityListener(listener)
 }
