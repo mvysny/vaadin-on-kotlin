@@ -98,23 +98,24 @@ object Cookies {
     /**
      * Finds a cookie by name.
      * @param name cookie name
-     * @return cookie or null if there is no such cookie.
+     * @return cookie or null if there is no such cookie. Note that the cookies set via [set] will not be retrievable unless
+     * the request passes.
      */
-    operator fun get(name: String): Cookie? = currentRequest.cookies?.firstOrNull { it.name == name }
+    operator fun get(name: String): Cookie? = currentRequest.cookies?.firstOrNull { it.name == name && it.value != null }
 
     /**
      * Overwrites given cookie, or deletes it.
      * @param name cookie name
      * @param cookie the cookie to overwrite. If null, the cookie is deleted.
      */
-    operator fun set(name: String, cookie: Cookie?) {
-        if (cookie == null) {
+    operator fun set(name: String, value: String?) {
+        if (value == null) {
             val newCookie = Cookie(name, null)
             newCookie.maxAge = 0  // delete immediately
             newCookie.path = "/"
             currentResponse.addCookie(newCookie)
         } else {
-            currentResponse.addCookie(cookie)
+            currentResponse.addCookie(Cookie(name, value))
         }
     }
 
@@ -127,16 +128,11 @@ object Cookies {
 /**
  * Allows you to add a cookie: `Cookies += Cookie("autologin", "secret")`
  */
-infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
+infix operator fun Cookies.plusAssign(cookie: Cookie) {
+    currentResponse.addCookie(cookie)
+}
 
 /**
  * Allows you to remove a cookie: `Cookies -= Cookie("autologin", "secret")`
  */
 infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
-
-/**
- * Checks that this thread runs with Vaadin UI set.
- * @return the UI instance, not null.
- * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
- */
-fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not called in the UI thread")

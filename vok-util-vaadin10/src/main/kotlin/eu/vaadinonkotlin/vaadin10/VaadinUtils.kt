@@ -30,3 +30,10 @@ val vt: I18n
     val provider = getI18nProvider(ui.session.configuration.isProductionMode)
     return provider(locale)
 }
+
+/**
+ * Checks that this thread runs with Vaadin UI set.
+ * @return the UI instance, not null.
+ * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
+ */
+fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")

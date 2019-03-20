@@ -1,5 +1,6 @@
 package eu.vaadinonkotlin.vaadin8
 
+import com.github.mvysny.karibudsl.v8.DateInterval
 import com.github.mvysny.karibudsl.v8.fillParent
 import com.github.mvysny.karibudsl.v8.w
 import eu.vaadinonkotlin.FilterFactory

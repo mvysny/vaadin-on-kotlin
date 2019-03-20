@@ -1,13 +1,9 @@
-package eu.vaadinonkotlin.vaadin8
+package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.kaributesting.mockhttp.MockResponse
-import com.github.mvysny.kaributesting.v8.MockVaadin
-import com.vaadin.server.VaadinRequest
-import com.vaadin.server.VaadinServletResponse
-import com.vaadin.ui.UI
-import java.lang.IllegalStateException
+import com.github.mvysny.kaributesting.v10.MockVaadin
+import com.vaadin.flow.server.VaadinServletResponse
 import javax.servlet.http.Cookie
 import kotlin.test.expect
 

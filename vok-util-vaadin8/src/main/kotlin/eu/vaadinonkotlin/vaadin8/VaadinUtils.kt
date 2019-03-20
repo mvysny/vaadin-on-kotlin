@@ -3,6 +3,7 @@ package eu.vaadinonkotlin.vaadin8
 import eu.vaadinonkotlin.I18n
 import eu.vaadinonkotlin.getI18nProvider
 import com.vaadin.ui.UI
+import java.util.*
 
 /**
  * Shortcut for VOK Translate. Retrieves the [I18n] for the current UI and the current locale.
@@ -27,6 +28,13 @@ val vt: I18n
     val ui = checkUIThread()
     val locale = ui.locale
     check(locale != null) { "UI.getCurrent().locale can't really return null" }
-    val provider = getI18nProvider(ui.session.configuration.isProductionMode)
+    val provider: (Locale) -> I18n = getI18nProvider(ui.session.configuration.isProductionMode)
     return provider(locale)
 }
+
+/**
+ * Checks that this thread runs with Vaadin UI set.
+ * @return the UI instance, not null.
+ * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
+ */
+fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not called in the UI thread")

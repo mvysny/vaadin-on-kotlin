@@ -20,7 +20,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven { setUrl("https://maven.vaadin.com/vaadin-prereleases/") }  // because of Vaadin 13.0.0.beta1
         maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
     }
 

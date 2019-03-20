@@ -163,22 +163,11 @@ val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
     else -> this
 }
 
-/**
- * A potentially open date range. If both [from] and [to] are `null`, then the interval accepts any date.
- * @property to the maximum accepted value, inclusive. If `null` then the date range has no upper limit.
- * @property from the minimum accepted value, inclusive. If `null` then the date range has no lower limit.
- */
-data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Serializable {
-    /**
-     * True if the interval includes all possible numbers (both [from] and [to] are `null`).
-     */
-    val isUniversalSet: Boolean
-        get() = from == null && to == null
-
-    private fun <T: Comparable<T>, F> T.legeFilter(propertyName: String, filterFactory: FilterFactory<F>, isLe: Boolean): F =
+fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>): F? {
+    fun <T : Comparable<T>, F> T.legeFilter(propertyName: String, filterFactory: FilterFactory<F>, isLe: Boolean): F =
             if (isLe) filterFactory.le(propertyName, this) else filterFactory.ge(propertyName, this)
 
-    private fun <F> LocalDateTime.toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>, isLe: Boolean): F {
+    fun <F> LocalDateTime.toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>, isLe: Boolean): F {
         return when (fieldType) {
             LocalDateTime::class.java -> legeFilter(propertyName, filterFactory, isLe)
             LocalDate::class.java -> toLocalDate().legeFilter(propertyName, filterFactory, isLe)
@@ -188,10 +177,8 @@ data class DateInterval(var from: LocalDateTime?, var to: LocalDateTime?) : Seri
         }
     }
 
-    fun <F: Any> toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>): F? {
-        val filters = listOf(from?.toFilter(propertyName, filterFactory, fieldType, false), to?.toFilter(propertyName, filterFactory, fieldType, true)).filterNotNull()
-        return filterFactory.and(filters.toSet())
-    }
+    val filters = listOf(from?.toFilter(propertyName, filterFactory, fieldType, false), to?.toFilter(propertyName, filterFactory, fieldType, true)).filterNotNull()
+    return filterFactory.and(filters.toSet())
 }
 
 /**
