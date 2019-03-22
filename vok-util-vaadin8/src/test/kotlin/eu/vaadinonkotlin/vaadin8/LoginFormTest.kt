@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.karibudsl.v8.message
 import com.github.mvysny.kaributesting.v8.MockVaadin
 import com.github.mvysny.kaributesting.v8._click
 import com.github.mvysny.kaributesting.v8._get
@@ -28,7 +29,7 @@ class LoginFormTest : DynaTest({
         _get<Button> { caption = "Sign In" } ._click()
         expect(null) { username }
         expect(null) { password }
-        expect("The&#32;user&#32;name&#32;is&#32;blank") { _get<TextField> { caption = "Username" }.componentError.formattedHtmlMessage }
+        expect("The user name is blank") { _get<TextField> { caption = "Username" }.componentError.message }
     }
 
     test("blank password") {
@@ -36,7 +37,7 @@ class LoginFormTest : DynaTest({
         _get<Button> { caption = "Sign In" } ._click()
         expect(null) { username }
         expect(null) { password }
-        expect("The&#32;password&#32;is&#32;blank") { _get<TextField> { caption = "Password" }.componentError.formattedHtmlMessage }
+        expect("The password is blank") { _get<TextField> { caption = "Password" }.componentError.message }
     }
 
     test("proper login") {
