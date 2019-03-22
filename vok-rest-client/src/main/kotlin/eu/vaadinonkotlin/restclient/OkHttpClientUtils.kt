@@ -4,10 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import eu.vaadinonkotlin.VOKPlugin
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.*
 import java.io.Reader
 
 /**
@@ -96,8 +93,6 @@ fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T):
             responseBlock(it.checkOk().body()!!)
         }
 
-val LongRange.length: Long get() = if (isEmpty()) 0 else endInclusive - start + 1
-
 /**
  * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [OkHttpClientVokPlugin.gson].
  */
@@ -110,3 +105,11 @@ fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
     val type = TypeToken.getParameterized(Map::class.java, String::class.java, valueClass).type
     return fromJson<Map<String, T>>(reader, type)
 }
+
+/**
+ * Parses this string as a `http://` or `https://` URL. You can use the builder to add further query parameters.
+ * @throws IllegalArgumentException if the URL is unparsable
+ */
+fun String.buildUrl(block: HttpUrl.Builder.()->Unit): HttpUrl = HttpUrl.get(this).newBuilder().apply {
+    block()
+}.build()

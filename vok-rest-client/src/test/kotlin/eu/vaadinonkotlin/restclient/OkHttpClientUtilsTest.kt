@@ -9,6 +9,7 @@ import okhttp3.Request
 import org.intellij.lang.annotations.Language
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.lang.IllegalStateException
 import kotlin.test.expect
 
 data class Person(var name: String, var surname: String)
@@ -69,6 +70,22 @@ class OkHttpClientUtilsTest : DynaTest({
         test("simple") {
             content = """{"director": {"name":"John", "surname":"Doe"}}"""
             expect(mapOf("director" to Person("John", "Doe"))) { client().exec(request) { it.jsonMap(Person::class.java) } }
+        }
+    }
+
+    group("buildUrl") {
+        test("simple build") {
+            expect("http://hello.com/") {
+                "http://hello.com".buildUrl {  } .url().toString()
+            }
+        }
+        test("add query parameters") {
+            "http://hello.com".buildUrl { addQueryParameter("q", "foo bar") } .url().toString()
+        }
+        test("fails with invalid URL") {
+            expectThrows(IllegalArgumentException::class, "Expected URL scheme 'http' or 'https'") {
+                "hello.com".buildUrl {}
+            }
         }
     }
 })
