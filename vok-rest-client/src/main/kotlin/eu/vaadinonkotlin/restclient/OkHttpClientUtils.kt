@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import eu.vaadinonkotlin.VOKPlugin
 import okhttp3.*
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.io.Reader
 
 /**
@@ -19,12 +21,13 @@ fun OkHttpClient.destroy() {
 
 /**
  * Fails if the response is not in 200..299 range; otherwise returns [this].
+ * @throws IOException if the response is not in 200..299 ([Response.isSuccessful] returns false). Uses [FileNotFoundException] for 404.
  */
 fun Response.checkOk(): Response {
     if (!isSuccessful) {
         val msg = "${code()}: ${body()!!.string()} (${request().url()})"
-        if (code() == 404) throw java.io.FileNotFoundException(msg)
-        throw java.io.IOException(msg)
+        if (code() == 404) throw FileNotFoundException(msg)
+        throw IOException(msg)
     }
     return this
 }
@@ -107,9 +110,17 @@ fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
 }
 
 /**
- * Parses this string as a `http://` or `https://` URL. You can use the builder to add further query parameters.
- * @throws IllegalArgumentException if the URL is unparsable
+ * Parses this string as a `http://` or `https://` URL. You can configure the URL (e.g. add further query parameters) in [block].
+ * @throws IllegalArgumentException if the URL is unparseable
  */
-fun String.buildUrl(block: HttpUrl.Builder.()->Unit): HttpUrl = HttpUrl.get(this).newBuilder().apply {
+inline fun String.buildUrl(block: HttpUrl.Builder.()->Unit = {}): HttpUrl = HttpUrl.get(this).newBuilder().apply {
+    block()
+}.build()
+
+/**
+ * Builds a new OkHttp [Request] using given URL. You can optionally configure the request in [block]. Use [exec] to
+ * execute the request with given OkHttp client and obtain a response. By default the `GET` request gets built.
+ */
+inline fun HttpUrl.buildRequest(block: Request.Builder.()->Unit = {}): Request = Request.Builder().url(this).apply {
     block()
 }.build()

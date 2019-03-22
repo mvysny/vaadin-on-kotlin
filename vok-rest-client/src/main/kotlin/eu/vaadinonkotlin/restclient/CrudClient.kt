@@ -52,7 +52,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
      * @return a list of items matching the query, may be empty.
      */
     fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
-        val url = buildUrl(baseUrl) {
+        val url = baseUrl.buildUrl {
             if (range != 0..Long.MAX_VALUE) {
                 addQueryParameter("offset", range.first.toString())
                 addQueryParameter("limit", range.length.toString())
@@ -64,7 +64,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
                 addFilterQueryParameters(filter)
             }
         }
-        val request = Request.Builder().url(url).build()
+        val request = url.buildRequest()
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
@@ -103,30 +103,25 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
     }
 
     fun getOne(id: String): T {
-        val request = Request.Builder().url("$baseUrl$id").build()
+        val request = "$baseUrl$id".buildUrl().buildRequest()
         return client.exec(request) { response -> response.json(itemClass) }
     }
 
     fun create(entity: T) {
         val body = RequestBody.create(mediaTypeJson, OkHttpClientVokPlugin.gson.toJson(entity))
-        val request = Request.Builder().post(body).url(baseUrl).build()
+        val request = baseUrl.buildUrl().buildRequest { post(body) }
         client.exec(request) {}
     }
 
     fun update(id: String, entity: T) {
         val body = RequestBody.create(mediaTypeJson, OkHttpClientVokPlugin.gson.toJson(entity))
-        val request = Request.Builder().patch(body).url("$baseUrl$id").build()
+        val request = "$baseUrl$id".buildUrl().buildRequest { patch(body) }
         client.exec(request) {}
     }
 
     fun delete(id: String) {
-        val request = Request.Builder().delete().url("$baseUrl$id").build()
+        val request = "$baseUrl$id".buildUrl().buildRequest { delete() }
         client.exec(request) {}
-    }
-
-    private fun buildUrl(baseUrl: String, block: HttpUrl.Builder.()->Unit): HttpUrl {
-        val url = requireNotNull(HttpUrl.parse(baseUrl)) { "Unparsable url: $baseUrl" }
-        return url.newBuilder().apply { block() } .build()
     }
 
     companion object {
@@ -136,12 +131,11 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
     override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T> = getAll(filter, sortBy, range.first..range.endInclusive)
 
     override fun getCount(filter: Filter<T>?): Long {
-        val url = buildUrl("$baseUrl?select=count") {
+        val request = "$baseUrl?select=count".buildUrl {
             if (filter != null) {
                 addFilterQueryParameters(filter)
             }
-        }
-        val request = Request.Builder().url(url).build()
+        }.buildRequest()
         return client.exec(request) { response -> response.string().toLong() }
     }
 }

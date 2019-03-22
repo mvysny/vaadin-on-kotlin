@@ -46,11 +46,11 @@ class PersonRestClient(val baseUrl: String) {
     }
     private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
     fun helloWorld(): String {
-        val request = Request.Builder().url("$baseUrl/helloworld").build()
+        val request = "$baseUrl/helloworld".buildUrl().buildRequest()
         return client.exec(request) { response -> response.string() }
     }
     fun getAll(): List<Person> {
-        val request = Request.Builder().url(baseUrl).build()
+        val request = baseUrl.buildUrl().buildRequest()
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
 }
@@ -63,6 +63,16 @@ VOK module loading mechanism in `OkHttpClientVokPlugin.init()`. Alternatively, i
 need to customize/configure the `OkHttpClient` instance, you can simply assign your
 own `OkHttpClient` instance to `OkHttpClientVokPlugin.okHttpClient` before
 the VoK is initialized. Your instance will not be overwritten by `init()`.
+
+### Adding Query Parameters
+
+Just use the `buildUrl` extension method which uses OkHttp's `HttpUrl` under the belt:
+```
+val request = "http://localhost:8080/rest/person".buildUrl {
+    addQueryParameter("q", "foo bar")
+} .buildRequest()
+client.exec(request) { ... }
+```
 
 ### Polling CRUD Endpoint For Data
 
