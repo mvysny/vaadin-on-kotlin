@@ -80,7 +80,9 @@ class OkHttpClientUtilsTest : DynaTest({
             }
         }
         test("add query parameters") {
-            "http://hello.com".buildUrl { addQueryParameter("q", "foo bar") } .url().toString()
+            expect("http://hello.com/?q=foo%20bar") {
+                "http://hello.com/".buildUrl { addQueryParameter("q", "foo bar") }.url().toString()
+            }
         }
         test("fails with invalid URL") {
             expectThrows(IllegalArgumentException::class, "Expected URL scheme 'http' or 'https'") {
