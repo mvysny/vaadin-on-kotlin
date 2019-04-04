@@ -7,6 +7,7 @@ import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.VaadinSession
 import com.vaadin.flow.theme.Theme
 import com.vaadin.flow.theme.lumo.Lumo
+import java.util.*
 
 /**
  * The main layout, defines the general outlook of the app. All views are then nested inside of this layout.
@@ -17,6 +18,6 @@ import com.vaadin.flow.theme.lumo.Lumo
 class MainLayout : VerticalLayout(), RouterLayout {
     init {
         setSizeFull()
-        VaadinSession.getCurrent().locale = VaadinSession.getCurrent().browser.locale
+        VaadinSession.getCurrent().locale = VaadinSession.getCurrent().browser.locale ?: Locale.getDefault()
     }
 }
