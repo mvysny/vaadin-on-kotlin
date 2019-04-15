@@ -4,14 +4,23 @@
 
 Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin.
 
-For example, this is all you need to write to delete an object from you database:
+This is all you need, to delete an object from you database:
+
 ```kotlin
 button("Create") {
-  onLeftClick { db { person.save() } }
+  onLeftClick { person.save() }
 }
 ```
 
-Nor JavaEE nor Spring is needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
+## Everything is a component
+
+Need a button? Write `button {}`. Need a text field? Write `textField {}`.
+
+Build own components and views by composing existing components with layouts.
+
+## Simplicity
+
+No JavaEE nor Spring is needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
 starting point for beginning programmers: you will write only server-side Kotlin code.
 JavaScript and CSS are needed only if you decide
 to style up your application or write your own custom rich component.
