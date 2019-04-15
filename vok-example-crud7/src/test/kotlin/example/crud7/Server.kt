@@ -1,4 +1,4 @@
-package example.crud
+package example.crud7
 
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin8.jpa.entityManagerFactory
