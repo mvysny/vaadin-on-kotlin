@@ -18,6 +18,8 @@ Need a button? Write `button {}`. Need a text field? Write `textField {}`.
 
 Build own components and views by composing existing components with layouts.
 
+Navigate to components by marking them with a `@Route("path")` (for Vaadin 10+ based apps) or `@AutoView("path")` (for Vaadin 8-based apps) annotation.
+
 ## Simplicity
 
 No JavaEE nor Spring is needed; all complex features are deliberately left out, which makes Vaadin-on-Kotlin a perfect
@@ -112,7 +114,7 @@ have an archetype app with all of those files already provided.
 
 ## Vaadin 10-based Quick Starters
 
-Vaadin 10 components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
+Vaadin 10+ components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
 
 Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
 have an archetype app with all of those files already provided.
