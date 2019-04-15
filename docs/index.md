@@ -125,27 +125,6 @@ have an archetype app with all of those files already provided.
 <div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app backed by SQL db; for desktop and mobile browsers</div></div>
 </div>
 
-## Complete List Of Examples
-
-The following is a complete list of all example projects demonstrating vok or its parts, in alphabetical order:
-
-* [beverage-buddy-vok](https://github.com/mvysny/beverage-buddy-vok): VoK, Vaadin 10, Kotlin, Gradle, DynaTest
-* [karibu-helloworld-application](https://github.com/mvysny/karibu-helloworld-application): Karibu-DSL, Vaadin 8, Kotlin, Gradle, DynaTest
-* [karibu-helloworld-application-maven](https://github.com/mvysny/karibu-helloworld-application-maven): Karibu-DSL, Vaadin 8, Kotlin, Gradle
-* [karibu-testing-spring](https://github.com/mvysny/karibu-testing-spring): Karibu-DSL, Vaadin 8, Java, Karibu-Testing, Maven, Spring Boot, JUnit 4
-* [karibu10-helloworld-application](https://github.com/mvysny/karibu10-helloworld-application): Karibu-DSL, Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
-* [vaadin-coroutines-demo](https://github.com/mvysny/vaadin-coroutines-demo): Karibu-DSL, Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
-* [vaadin-kotlin-pwa](https://github.com/mvysny/vaadin-coroutines-demo): VoK, Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
-* [vaadin10-sqldataprovider-example](https://github.com/mvysny/vaadin10-sqldataprovider-example): Vaadin 10, Java, Maven, Karibu-Testing, JUnit 5
-* [vaadin8-jpadataprovider-example](https://github.com/mvysny/vaadin8-jpadataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
-* [vaadin8-sqldataprovider-example](https://github.com/mvysny/vaadin8-sqldataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
-* [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app): Vaadin 8, Kotlin, Gradle
-* [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10): Vaadin 10, Kotlin, Gradle
-* [vok-security-demo](https://github.com/mvysny/vok-security-demo): Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
-* [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10): Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
-
-<sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
-
 # Further Reading
 
 For technical description of what Vaadin-on-Kotlin is, please feel free to read the [Vaadin-on-Kotlin Github page](https://github.com/mvysny/vaadin-on-kotlin).
@@ -168,3 +147,24 @@ Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a
 <div onclick="location.href='https://github.com/mvysny/dynatest';" class="box au"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
 </div>
+
+## Complete List Of Examples
+
+The following is a complete list of all example projects demonstrating vok or its parts, in alphabetical order:
+
+* [beverage-buddy-vok](https://github.com/mvysny/beverage-buddy-vok): VoK, Vaadin 10, Kotlin, Gradle, DynaTest
+* [karibu-helloworld-application](https://github.com/mvysny/karibu-helloworld-application): Karibu-DSL, Vaadin 8, Kotlin, Gradle, DynaTest
+* [karibu-helloworld-application-maven](https://github.com/mvysny/karibu-helloworld-application-maven): Karibu-DSL, Vaadin 8, Kotlin, Gradle
+* [karibu-testing-spring](https://github.com/mvysny/karibu-testing-spring): Karibu-DSL, Vaadin 8, Java, Karibu-Testing, Maven, Spring Boot, JUnit 4
+* [karibu10-helloworld-application](https://github.com/mvysny/karibu10-helloworld-application): Karibu-DSL, Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
+* [vaadin-coroutines-demo](https://github.com/mvysny/vaadin-coroutines-demo): Karibu-DSL, Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
+* [vaadin-kotlin-pwa](https://github.com/mvysny/vaadin-coroutines-demo): VoK, Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
+* [vaadin10-sqldataprovider-example](https://github.com/mvysny/vaadin10-sqldataprovider-example): Vaadin 10, Java, Maven, Karibu-Testing, JUnit 5
+* [vaadin8-jpadataprovider-example](https://github.com/mvysny/vaadin8-jpadataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
+* [vaadin8-sqldataprovider-example](https://github.com/mvysny/vaadin8-sqldataprovider-example): Vaadin 8, Java, Maven, Karibu-Testing, JUnit 5
+* [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app): Vaadin 8, Kotlin, Gradle
+* [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10): Vaadin 10, Kotlin, Gradle
+* [vok-security-demo](https://github.com/mvysny/vok-security-demo): Vaadin 8, Kotlin, Gradle, Karibu-Testing, DynaTest
+* [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10): Vaadin 10, Kotlin, Gradle, Karibu-Testing, DynaTest
+
+<sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
