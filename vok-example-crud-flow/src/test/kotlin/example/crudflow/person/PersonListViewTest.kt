@@ -17,10 +17,11 @@ import java.time.LocalDate
  * A demo of reusable test lifecycle; see https://github.com/mvysny/dynatest#patterns for details.
  */
 fun DynaNodeGroup.usingApp() {
-    beforeGroup { Bootstrap().contextInitialized(null) }
+    lateinit var routes: Routes
+    beforeGroup { routes = Routes().autoDiscoverViews("example"); Bootstrap().contextInitialized(null) }
     afterGroup { Bootstrap().contextDestroyed(null) }
 
-    beforeEach { MockVaadin.setup(Routes().autoDiscoverViews("example")) }
+    beforeEach { MockVaadin.setup(routes) }
     afterEach { MockVaadin.tearDown() }
     fun cleanupDb() { Person.deleteAll() }
     beforeEach { cleanupDb() }
