@@ -26,8 +26,7 @@ class OkHttpClientUtilsTest : DynaTest({
     afterEach { OkHttpClientVokPlugin().destroy() }
     lateinit var javalin: Javalin
     beforeEach {
-        javalin = Javalin.create()
-                .disableStartupBanner()
+        javalin = Javalin.create { it.showJavalinBanner = false }
                 .get("foo") { ctx -> ctx.result(content) }
                 .get("fail") { _ -> throw RuntimeException() }
                 .start(54444)

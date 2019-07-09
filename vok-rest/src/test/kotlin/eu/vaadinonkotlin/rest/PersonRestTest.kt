@@ -48,7 +48,7 @@ fun DynaNodeGroup.usingRestClient() {
 class PersonRestTest : DynaTest({
     lateinit var javalin: Javalin
     beforeGroup {
-        javalin = Javalin.create().disableStartupBanner()
+        javalin = Javalin.create { it.showJavalinBanner = false }
         javalin.configureRest().start(9876)
     }
     afterGroup { javalin.stop() }

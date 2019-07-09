@@ -78,7 +78,7 @@ fun DynaNodeGroup.usingDb() {
             password = ""
         }
         VokOrm.init()
-        val flyway = Flyway.configure()
+        val flyway: Flyway = Flyway.configure()
                 .dataSource(VaadinOnKotlin.dataSource)
                 .load()
         flyway.migrate()

@@ -2,10 +2,10 @@ package eu.vaadinonkotlin.rest
 
 import com.github.mvysny.vokdataloader.*
 import com.github.vokorm.db
-import io.javalin.BadRequestResponse
-import io.javalin.Context
-import io.javalin.UnauthorizedResponse
 import io.javalin.apibuilder.CrudHandler
+import io.javalin.http.BadRequestResponse
+import io.javalin.http.Context
+import io.javalin.http.UnauthorizedResponse
 import java.beans.Introspector
 import java.beans.PropertyDescriptor
 import java.math.BigDecimal
@@ -45,9 +45,9 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
                                          val allowFilterColumns: Set<DataLoaderPropertyName>? = null) : CrudHandler {
     override fun getAll(ctx: Context) {
         // grab fetchRange from the query
-        val limit: Long = ctx.queryParam("limit")?.toLong() ?: defaultLimit
+        val limit: Long = ctx.queryParam<Long>("limit").getOrNull() ?: defaultLimit
         if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
-        val offset = ctx.queryParam("offset")?.toLong() ?: 0
+        val offset = ctx.queryParam<Long>("offset").getOrNull() ?: 0
         if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
         val fetchRange = offset until (offset + limit)
 

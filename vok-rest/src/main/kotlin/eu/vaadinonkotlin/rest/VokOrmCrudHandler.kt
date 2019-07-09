@@ -2,10 +2,10 @@ package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
 import com.github.vokorm.dataloader.EntityDataLoader
-import io.javalin.Context
-import io.javalin.NotFoundResponse
-import io.javalin.UnauthorizedResponse
 import io.javalin.apibuilder.CrudHandler
+import io.javalin.http.Context
+import io.javalin.http.NotFoundResponse
+import io.javalin.http.UnauthorizedResponse
 import org.sql2o.converters.Converter
 import org.sql2o.converters.IntegerConverter
 import org.sql2o.converters.LongConverter
@@ -28,7 +28,7 @@ import org.sql2o.converters.StringConverter
  *
  * @param idClass the type of the Entity ID. Only `String`, `Long` and `Integer` IDs are supported as of now; all others will be rejected with an [IllegalArgumentException].
  * @property entityClass the type of the entity for which to provide instances.
- * @param allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
+ * @property allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
  * @param maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
  * items then 400 BAD REQUEST is returned. Defaults to [Int.MAX_VALUE], definitely change this in production!
  * @param defaultLimit if `limit` is unspecified in [getAll] request, then return at most this number of items. By default equals to [maxLimit].

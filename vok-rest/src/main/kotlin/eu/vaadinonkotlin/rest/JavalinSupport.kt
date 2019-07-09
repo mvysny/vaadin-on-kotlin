@@ -5,10 +5,10 @@ import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.CrudHandler
-import io.javalin.json.FromJsonMapper
-import io.javalin.json.JavalinJson
-import io.javalin.json.ToJsonMapper
-import io.javalin.security.Role
+import io.javalin.core.security.Role
+import io.javalin.plugin.json.FromJsonMapper
+import io.javalin.plugin.json.JavalinJson
+import io.javalin.plugin.json.ToJsonMapper
 
 /**
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
