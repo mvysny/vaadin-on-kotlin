@@ -38,10 +38,10 @@ dependencies {
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
     testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
     testCompile(project(":vok-rest-client"))
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830") // because of Javalin
 
     // heroku app runner
-    staging("com.github.jsimone:webapp-runner:9.0.16.0")
+    staging("com.github.jsimone:webapp-runner:9.0.20.1")
 }
 
 // Heroku
