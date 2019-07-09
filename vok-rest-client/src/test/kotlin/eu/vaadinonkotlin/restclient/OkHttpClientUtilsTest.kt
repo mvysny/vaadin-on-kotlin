@@ -75,12 +75,12 @@ class OkHttpClientUtilsTest : DynaTest({
     group("buildUrl") {
         test("simple build") {
             expect("http://hello.com/") {
-                "http://hello.com".buildUrl {  } .url().toString()
+                "http://hello.com".buildUrl {  } .toUrl().toString()
             }
         }
         test("add query parameters") {
             expect("http://hello.com/?q=foo%20bar") {
-                "http://hello.com/".buildUrl { addQueryParameter("q", "foo bar") }.url().toString()
+                "http://hello.com/".buildUrl { addQueryParameter("q", "foo bar") }.toUrl().toString()
             }
         }
         test("fails with invalid URL") {

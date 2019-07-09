@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import eu.vaadinonkotlin.VOKPlugin
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.Reader
@@ -14,9 +15,9 @@ import java.io.Reader
  * OTHER http clients if they share e.g. dispatcher executor service.
  */
 fun OkHttpClient.destroy() {
-    dispatcher().executorService().shutdown()
-    connectionPool().evictAll()
-    cache()?.close()
+    dispatcher.executorService.shutdown()
+    connectionPool.evictAll()
+    cache?.close()
 }
 
 /**
@@ -25,8 +26,8 @@ fun OkHttpClient.destroy() {
  */
 fun Response.checkOk(): Response {
     if (!isSuccessful) {
-        val msg = "${code()}: ${body()!!.string()} (${request().url()})"
-        if (code() == 404) throw FileNotFoundException(msg)
+        val msg = "$code: ${body!!.string()} (${request.url})"
+        if (code == 404) throw FileNotFoundException(msg)
         throw IOException(msg)
     }
     return this
@@ -93,7 +94,7 @@ fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
  */
 fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T): T =
         newCall(request).execute().use {
-            responseBlock(it.checkOk().body()!!)
+            responseBlock(it.checkOk().body!!)
         }
 
 /**
@@ -113,7 +114,7 @@ fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
  * Parses this string as a `http://` or `https://` URL. You can configure the URL (e.g. add further query parameters) in [block].
  * @throws IllegalArgumentException if the URL is unparseable
  */
-inline fun String.buildUrl(block: HttpUrl.Builder.()->Unit = {}): HttpUrl = HttpUrl.get(this).newBuilder().apply {
+inline fun String.buildUrl(block: HttpUrl.Builder.()->Unit = {}): HttpUrl = toHttpUrl().newBuilder().apply {
     block()
 }.build()
 

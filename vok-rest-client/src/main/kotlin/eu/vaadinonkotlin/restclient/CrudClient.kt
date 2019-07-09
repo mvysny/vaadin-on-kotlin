@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.vokdataloader.*
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [OkHttpClientVokPlugin.gson].
@@ -125,13 +126,13 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
     }
 
     companion object {
-        val mediaTypeJson = MediaType.parse("application/json; charset=utf-8")
+        val mediaTypeJson: MediaType = "application/json; charset=utf-8".toMediaType()
     }
 
     override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T> = getAll(filter, sortBy, range.first..range.endInclusive)
 
     override fun getCount(filter: Filter<T>?): Long {
-        val request = "$baseUrl?select=count".buildUrl {
+        val request: Request = "$baseUrl?select=count".buildUrl {
             if (filter != null) {
                 addFilterQueryParameters(filter)
             }
