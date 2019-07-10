@@ -41,9 +41,9 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
     /**
      * Invoked when the [filter] changes.
      */
-    val onFilterChangeListeners = listeners<SerializableConsumer<F?>>()
+    val onFilterChangeListeners: Listeners<SerializableConsumer<F?>> = listeners()
 
-    private val filterComponents = mutableMapOf<HasValue<*, *>, FilterFieldWatcher<*, *>>()
+    private val filterComponents: MutableMap<HasValue<*, *>, FilterFieldWatcher<*, *>> = mutableMapOf()
 
     /**
      * Binds given filtering field to a container - starts filtering based on the contents of the field, and starts watching for field value changes.
@@ -125,13 +125,13 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
  * @property headerRow the wrapped header row
  */
 @Suppress("UNCHECKED_CAST")
-class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val headerRow: HeaderRow,
+class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>, val headerRow: HeaderRow,
                                 val filterFieldFactory: FilterFieldFactory<T, F>,
                                 filterFactory: FilterFactory<F>) : Serializable {
 
     private val binder: FilterBinder<T, F> = FilterBinder(filterFieldFactory, filterFactory)
     init {
-        binder.onFilterChangeListeners.add(SerializableConsumer { filter ->
+        binder.onFilterChangeListeners.add(SerializableConsumer { filter: F? ->
             (grid.dataProvider as ConfigurableFilterDataProvider<T, F, F>).setFilter(filter)
         })
     }
@@ -156,9 +156,9 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
         filterComponents.clear()
 
         val properties: Map<String, PropertyDefinition<T, *>> =
-            BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
+            BeanPropertySet.get(itemClass).properties.toList().associateBy { it.name }
         for (propertyId in grid.columns.mapNotNull { it.key }) {
-            val property = properties[propertyId]
+            val property: PropertyDefinition<T, *>? = properties[propertyId]
             val field: HasValue<*, *>? = if (property == null) null else filterFieldFactory.createField(property)
             if (field != null) {
                 (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
@@ -215,7 +215,7 @@ fun <T: Any, F: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass
                                                         filterFactory: FilterFactory<F>,
                                                         filterFieldFactory: FilterFieldFactory<T, F> = DefaultFilterFieldFactory(itemClass.java, filterFactory),
                                                         valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, F> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, filterFactory)
+    val filterRow: FilterRow<T, F> = FilterRow(grid, itemClass.java, this, filterFieldFactory, filterFactory)
     filterRow.generateFilterComponents(valueChangeMode)
     return filterRow
 }

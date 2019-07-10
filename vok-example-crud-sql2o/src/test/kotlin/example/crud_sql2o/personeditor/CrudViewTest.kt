@@ -3,6 +3,7 @@ package example.crud_sql2o.personeditor
 import com.github.mvysny.kaributesting.v8.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import example.crud_sql2o.Bootstrap
 import example.crud_sql2o.MyUI
 import com.github.mvysny.karibudsl.v8.autoDiscoverViews
@@ -51,7 +52,7 @@ class CrudViewTest : DynaTest({
         person.save()
         CrudView.navigateTo()
 
-        val grid = _get<Grid<*>>()
+        val grid = _get<Grid<Person>>()
         grid.expectRows(1)
         grid.expectRow(0, person.id!!.toString(), "Duke Leto Atreides", "45", "1980-05-01", "Single", "false", "1970-01-01T00:00:00Z", VaadinIcons.EXTERNAL_LINK.html, VaadinIcons.EDIT.html, VaadinIcons.TRASH.html)
     }
@@ -69,5 +70,10 @@ class CrudViewTest : DynaTest({
 
         // assert the updated person
         expect(listOf("Duke Leto Atreides")) { Person.findAll().map { it.personName } }
+    }
+
+    test("serializable") {
+        CrudView.navigateTo()
+        _get<CrudView>().cloneBySerialization()
     }
 })

@@ -108,9 +108,9 @@ class CrudView: Composite(), View {
  * The column will optionally have given [id]
  */
 fun <T> Grid<T>.addButtonColumn(icon: FontIcon, listener: (ClickableRenderer.RendererClickEvent<T>)->Unit, id: String? = null): Grid.Column<T, String> {
-    val renderer = ButtonRenderer<T>(listener).apply { isHtmlContentAllowed = true }
-    val html = icon.html
-    val column = addColumn({ html }, renderer)
+    val renderer: ButtonRenderer<T> = ButtonRenderer<T>(listener).apply { isHtmlContentAllowed = true }
+    val html: String = icon.html
+    val column: Grid.Column<T, String> = addColumn({ html }, renderer)
     column.setStyleGenerator { "borderless" }
     if (id != null) {
         column.id = id

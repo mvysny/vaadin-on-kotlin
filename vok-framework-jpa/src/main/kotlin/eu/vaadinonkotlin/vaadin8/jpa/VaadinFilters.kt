@@ -30,7 +30,7 @@ class JPAFilterFactory : FilterFactory<JPAFilter> {
 fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
                                                 filterFieldFactory: FilterFieldFactory<T, JPAFilter> = DefaultFilterFieldFactory(JPAFilterFactory()),
                                                 valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, JPAFilter> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, JPAFilterFactory())
+    val filterRow = FilterRow(grid, itemClass.java, this, filterFieldFactory, JPAFilterFactory())
     filterRow.generateFilterComponents(valueChangeMode)
     return filterRow
 }

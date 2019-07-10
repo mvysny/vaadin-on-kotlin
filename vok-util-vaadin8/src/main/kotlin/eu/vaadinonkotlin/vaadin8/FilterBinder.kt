@@ -110,7 +110,7 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
     }
 
     private fun recomputeFilter() {
-        val filters = filterComponents.values.mapNotNull { it.currentFilter } .toSet()
+        val filters: Set<F> = filterComponents.values.mapNotNull { it.currentFilter } .toSet()
         filter = filterFactory.and(filters)
         onFilterChangeListeners.fire.accept(filter)
     }
@@ -124,7 +124,7 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
  * @property headerRow the wrapped header row
  */
 @Suppress("UNCHECKED_CAST")
-class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val headerRow: HeaderRow,
+class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>, val headerRow: HeaderRow,
                                 val filterFieldFactory: FilterFieldFactory<T, F>,
                                 val filterFactory: FilterFactory<F>) : Serializable {
 
@@ -152,7 +152,7 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
         clear()
 
         val properties: Map<String, PropertyDefinition<T, *>> =
-            BeanPropertySet.get(itemClass.java).properties.toList().associateBy { it.name }
+            BeanPropertySet.get(itemClass).properties.toList().associateBy { it.name }
         for (propertyId in grid.columns.mapNotNull { it.id }) {
             val property = properties[propertyId]
             val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
@@ -189,8 +189,8 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: KClass<T>, val
      * that property.
      */
     fun getFilterComponent(property: KProperty1<T, *>): HasValue<Any?> {
-        val column = grid.getColumnBy(property)
-        val component = headerRow.getCell(column).component ?: throw IllegalArgumentException("There is no filter configured for $property")
+        val column: Grid.Column<T, Any?> = grid.getColumnBy(property)
+        val component: Component = headerRow.getCell(column).component ?: throw IllegalArgumentException("There is no filter configured for $property")
         return component as HasValue<Any?>
     }
 }
@@ -214,7 +214,7 @@ fun <T: Any, F: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass
                                                         filterFactory: FilterFactory<F>,
                                                         filterFieldFactory: FilterFieldFactory<T, F> = DefaultFilterFieldFactory(filterFactory),
                                                         valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, F> {
-    val filterRow = FilterRow(grid, itemClass, this, filterFieldFactory, filterFactory)
+    val filterRow: FilterRow<T, F> = FilterRow(grid, itemClass.java, this, filterFieldFactory, filterFactory)
     filterRow.generateFilterComponents(valueChangeMode)
     return filterRow
 }

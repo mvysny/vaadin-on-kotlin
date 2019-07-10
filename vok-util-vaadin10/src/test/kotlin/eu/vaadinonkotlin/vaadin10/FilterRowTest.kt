@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.DateRangePopup
 import com.github.mvysny.karibudsl.v10.getAll
@@ -24,6 +25,7 @@ class FilterRowTest : DynaTest({
         expect<Class<*>>(NumberFilterPopup::class.java) { filterRow.getFilterComponent(Person::age).javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { filterRow.getFilterComponent(Person::dob).javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { filterRow.getFilterComponent(Person::dateOfMarriage).javaClass }
+        filterRow.serializeToBytes()
     }
 
     test("string filter") {

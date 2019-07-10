@@ -7,6 +7,7 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.io.*
+import java.lang.reflect.Method
 import kotlin.reflect.KClass
 
 /**
@@ -45,7 +46,7 @@ infix operator fun Date.plus(other: Duration) = Date(time + other.toMillis())
  * val onFilterChangeListeners = listeners<OnClickListener>()
  * ```
  */
-inline fun <reified T: Serializable> listeners() = Listeners(T::class)
+inline fun <reified T: Serializable> listeners() = Listeners(T::class.java)
 
 /**
  * Allows you to add listeners for a particular event into your component.
@@ -70,12 +71,12 @@ inline fun <reified T: Serializable> listeners() = Listeners(T::class)
  * onClickListeners.fire.onClick(2)
  * ```
  */
-class Listeners<T: Serializable>(val listenerType: KClass<T>): Serializable {
+class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializable {
     init {
-        require(listenerType.java.isInterface) { "$listenerType must be an interface" }
+        require(listenerType.isInterface) { "$listenerType must be an interface" }
     }
 
-    private val listeners = mutableSetOf<T>()
+    private val listeners: MutableSet<T> = mutableSetOf()
 
     /**
      * Registers a new listener. Registering same listener multiple times has no further effect.
@@ -96,16 +97,29 @@ class Listeners<T: Serializable>(val listenerType: KClass<T>): Serializable {
         listeners.remove(listener)
     }
 
+    override fun toString(): String =
+            "Listeners($listenerType, listeners=$listeners)"
+
     /**
      * Use the returned value to fire particular event to all listeners.
      *
      * Returns a proxy of type [T]. Any method call on this proxy is propagated to all
      * listeners.
+     *
+     * Not serializable!
      */
     @Suppress("UNCHECKED_CAST")
-    val fire: T = Proxy.newProxyInstance(listenerType.java.classLoader, arrayOf(listenerType.java)) { _, method, args ->
-        for (listener in listeners) {
-            method.invoke(listener, *args)
+    val fire: T get() = Proxy.newProxyInstance(listenerType.classLoader, arrayOf(listenerType)) { _, method: Method, args: Array<Any>? ->
+        if (method.name == "toString") {
+            "fire($this}"
+        } else {
+            for (listener in listeners) {
+                if (args == null) {
+                    method.invoke(listener)
+                } else {
+                    method.invoke(listener, *args)
+                }
+            }
         }
     } as T
 }

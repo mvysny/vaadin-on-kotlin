@@ -3,6 +3,7 @@ package example.crud_jpa.personeditor
 import com.github.mvysny.kaributesting.v8.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import com.github.mvysny.karibudsl.v8.autoDiscoverViews
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
@@ -68,5 +69,10 @@ class CrudViewTest : DynaTest({
 
         // assert the updated person
         expect(listOf("Duke Leto Atreides")) { db { em.findAll<Person>().map { it.name } } }
+    }
+
+    test("serializable") {
+        CrudView.navigateTo()
+        _get<CrudView>().cloneBySerialization()
     }
 })

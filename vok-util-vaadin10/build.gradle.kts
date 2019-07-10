@@ -7,6 +7,7 @@ dependencies {
     // Vaadin
     compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${properties["karibudsl_version"]}")
     compile(platform("com.vaadin:vaadin-bom:${properties["vaadin10_version"]}"))
+    compile("com.vaadin:vaadin-core:${properties["vaadin10_version"]}")
     compile("javax.servlet:javax.servlet-api:3.1.0")
 
     // testing

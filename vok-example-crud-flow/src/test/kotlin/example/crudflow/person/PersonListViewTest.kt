@@ -3,6 +3,7 @@ package example.crudflow.person
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import example.crudflow.Bootstrap
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
