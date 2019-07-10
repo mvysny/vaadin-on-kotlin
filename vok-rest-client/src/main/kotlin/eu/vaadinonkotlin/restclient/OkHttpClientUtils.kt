@@ -95,6 +95,7 @@ fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
  * The [responseBlock] is only called on HTTP 200..299 SUCCESS. [checkOk] is used, to check for
  * possible failure reported as HTTP status code, prior calling the block.
  * @param responseBlock run on success.
+ * @return whatever has been returned by [responseBlock]
  */
 fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T): T =
         newCall(request).execute().use {
