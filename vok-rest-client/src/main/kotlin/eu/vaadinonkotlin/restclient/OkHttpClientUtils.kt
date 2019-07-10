@@ -9,6 +9,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.Reader
+import java.lang.reflect.Type
 
 /**
  * Destroys the [OkHttpClient] including the dispatcher, connection pool, everything. WARNING: THIS MAY AFFECT
@@ -75,7 +76,7 @@ fun <T> ResponseBody.jsonArray(clazz: Class<T>): List<T> = OkHttpClientVokPlugin
  * Parses [json] as a list of items with class [itemClass] and returns that.
  */
 fun <T> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
-    val type = TypeToken.getParameterized(List::class.java, itemClass).type
+    val type: Type = TypeToken.getParameterized(List::class.java, itemClass).type
     return fromJson<List<T>>(json, type)
 }
 
@@ -83,18 +84,24 @@ fun <T> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
  * Parses JSON from a [reader] as a list of items with class [itemClass] and returns that.
  */
 fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
-    val type = TypeToken.getParameterized(List::class.java, itemClass).type
+    val type: Type = TypeToken.getParameterized(List::class.java, itemClass).type
     return fromJson<List<T>>(reader, type)
 }
 
 /**
- * Runs given [request] synchronously and then runs [responseBlock] with the response body. The [Response] is properly closed afterwards.
- * Only calls the block on success; uses [checkOk] to check for failure prior calling the block.
+ * Runs given [request] synchronously and then runs [responseBlock] with the response body.
+ * Everything including the [Response] and [ResponseBody] is properly closed afterwards.
+ *
+ * The [responseBlock] is only called on HTTP 200..299 SUCCESS. [checkOk] is used, to check for
+ * possible failure reported as HTTP status code, prior calling the block.
  * @param responseBlock run on success.
  */
 fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody) -> T): T =
         newCall(request).execute().use {
-            responseBlock(it.checkOk().body!!)
+            val body: ResponseBody = it.checkOk().body!!
+            body.use {
+                responseBlock(body)
+            }
         }
 
 /**
@@ -106,7 +113,7 @@ fun <V> ResponseBody.jsonMap(valueClass: Class<V>): Map<String, V> = OkHttpClien
  * Parses [json] as a map of items with class [valueClass] and returns that.
  */
 fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
-    val type = TypeToken.getParameterized(Map::class.java, String::class.java, valueClass).type
+    val type: Type = TypeToken.getParameterized(Map::class.java, String::class.java, valueClass).type
     return fromJson<Map<String, T>>(reader, type)
 }
 
