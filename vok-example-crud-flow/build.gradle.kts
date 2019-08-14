@@ -10,6 +10,7 @@ gretty {
 
 dependencies {
     compile(project(":vok-framework-v10-sql2o"))
+    compile("com.vaadin:flow-server-compatibility-mode:2.0.7")
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 
     // logging
