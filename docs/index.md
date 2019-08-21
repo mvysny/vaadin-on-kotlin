@@ -4,11 +4,12 @@
 
 Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin.
 
-This is all you need, to delete an object from you database:
+This is all you need to have a button on a page which, upon clicking,
+creates new row in your SQL database:
 
 ```kotlin
 button("Create") {
-  onLeftClick { person.save() }
+  onLeftClick { Person(name = "Albert Einstein").save() }
 }
 ```
 
