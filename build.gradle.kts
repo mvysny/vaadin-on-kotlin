@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.3.50"
     id("org.gretty") version "2.3.1"
     id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
