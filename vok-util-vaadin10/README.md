@@ -152,7 +152,7 @@ grid.setDataLoader(dataLoader) { it.id!! }
 grid.appendHeaderRow().generateFilterComponents(grid, Person::class)
 ```
 
-See the [vok-crud-client](../vok-crud-client) on how to use the REST client DataLoader.
+See the [vok-rest-client](../vok-rest-client) on how to use the REST client DataLoader.
 
 ## Support for Session
 
