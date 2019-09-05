@@ -15,7 +15,7 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-framework-sql2o:x.y.z"
+    compile("eu.vaadinonkotlin:vok-framework-sql2o:x.y.z")
 }
 ```
 
@@ -23,15 +23,11 @@ dependencies {
 
 This module provides:
 
-* The [EntityDataProvider.kt](src/main/kotlin/com/github/vok/framework/sql2o/vaadin/EntityDataProvider.kt)
+* The [dataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/sql2o/DataProviders.kt)
   which is a Vaadin `DataProvider` implementation which is able to fetch instances of VoK-ORM entities
   and support proper sorting and filtering. It also defines extension property `dataProvider` on the `Dao`
-  interface which allows you to write code as follows: `grid.dataProvider = Person.dataProvider.configurableFilter()`
-
-> Note: The `configurableFilter()` bit is necessary if you use filter components, since these components need to set
-appropriate filters to the `DataProvider` on their value change. See the `vok-util-vaadin8` module for more details.
-
-* The [SqlDataProvider.kt](src/main/kotlin/com/github/vok/framework/sql2o/vaadin/SqlDataProvider.kt) which
+  interface which allows you to write code as follows: `grid.dataProvider = Person.dataProvider`
+* The [sqlDataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/sql2o/DataProviders.kt) which
   is able to represent the outcome of any SELECT including joins (as opposed to `EntityDataProvider` which
   is only able to represent one table or view).
 * The `generateFilterComponents()` function which is able to automatically generate Grid filter components:
@@ -50,7 +46,7 @@ layer; however you may find inspiration on how to do so, by checking the sources
 
 ## More documentation
 
-* The [Accessing Database Guide](http://www.vaadinonkotlin.eu/databases.html)
-* The [Using Grids Guide](http://www.vaadinonkotlin.eu/grids.html)
+* The [Accessing Database Guide](https://www.vaadinonkotlin.eu/databases.html)
+* The [Using Grids Guide](https://www.vaadinonkotlin.eu/grids.html)
 * See the documentation of the [vok-util-vaadin8](../vok-util-vaadin8) module on how the filters work
   in general and how to use them.

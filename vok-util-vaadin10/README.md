@@ -8,7 +8,7 @@ Provides utilities for creating UIs with Vaadin 10, but does not introduce suppo
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile('eu.vaadinonkotlin:vok-util-vaadin10:x.y.z')
+    compile("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
 }
 ```
 

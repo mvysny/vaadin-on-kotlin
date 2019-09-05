@@ -17,7 +17,7 @@ Include dependency on this module to your app; just add the following Gradle dep
 
 ```groovy
 dependencies {
-    compile "eu.vaadinonkotlin:vok-rest:x.y.z"
+    compile("eu.vaadinonkotlin:vok-rest:x.y.z")
 }
 ```
 
