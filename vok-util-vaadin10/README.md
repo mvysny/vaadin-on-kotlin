@@ -11,7 +11,7 @@ provides additional Vaadin 10 Kotlin wrappers.
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile('com.github.vok:vok-util-vaadin10:x.y.z')
+    compile("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
 }
 ```
 
@@ -26,7 +26,7 @@ databases you may also want to include additional modules - read below.
 When you want to also use the SQL database with the recommended approach ([vok-db](../vok-db)):
 
 * Depend on the [vok-framework-v10-sql2o](../vok-framework-v10-sql2o) module instead - it will include this
-  module, the [vok-db](../vok-db) module which sports VoK-ORM,
+  module, the [vok-db](../vok-db) module which sports [VoK-ORM](https://github.com/mvysny/vok-orm),
   and will implement proper filters which work with SQL databases.
 
 VoK currently does not support usage of Vaadin 10 with JPA.

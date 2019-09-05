@@ -16,7 +16,7 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile "eu.vaadinonkotlin:vok-framework-v10-sql2o:x.y.z"
+    compile("eu.vaadinonkotlin:vok-framework-v10-sql2o:x.y.z")
 }
 ```
 
