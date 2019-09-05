@@ -56,4 +56,4 @@ The following resource bundles are searched:
 
 Consult the [standard message bundle](src/main/resources/eu/vaadinonkotlin/VokMessages.properties) for the list of messages.
 
-Consult the [Translating Your App](http://www.vaadinonkotlin.eu/i18n.html) Guide for more details.
+Consult the [Translating Your App](https://www.vaadinonkotlin.eu/i18n.html) Guide for more details.

@@ -15,7 +15,7 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-framework-jpa:x.y.z"
+    compile("eu.vaadinonkotlin:vok-framework-jpa:x.y.z")
 }
 ```
 
@@ -23,7 +23,7 @@ dependencies {
 
 This module provides:
 
-* The [JPADataProvider.kt](src/main/kotlin/com/github/vok/framework/JPADataProvider.kt)
+* The [JPADataProvider.kt](src/main/kotlin/eu/vaadinonkotlin/vaadin8/jpa/JPADataProvider.kt)
   which is a Vaadin `DataProvider` implementation which is able to fetch instances of JPA entities
   and support proper sorting and filtering. To use it, just write `grid.dataProvider = JPADataProvider(Person::class).configurableFilter()`
 

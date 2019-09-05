@@ -12,7 +12,7 @@ To use this module, simply add the following to your `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-db:x.y.z"
+    compile("eu.vaadinonkotlin:vok-db:x.y.z")
 }
 ```
 

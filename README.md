@@ -140,7 +140,7 @@ button("Save", { db { em.persist(person) } })
 
 Simply use [Flyway](http://flywaydb.org): write Flyway scripts, add a Gradle dependency:
 ```groovy
-compile 'org.flywaydb:flyway-core:5.0.7'
+compile 'org.flywaydb:flyway-core:5.2.4'
 ```
 and introduce a context listener, to auto-update your database to the newest version before your app starts:
 ```kotlin

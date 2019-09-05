@@ -10,7 +10,7 @@ To use this dependency, just add the following to your `build.gradle`:
 
 ```groovy
 dependencies {
-    compile "com.github.vok:vok-framework-jpa-compat7:x.y.z"
+    compile("eu.vaadinonkotlin:vok-framework-jpa-compat7:x.y.z")
 }
 ```
 

@@ -14,6 +14,16 @@ a set of roles - a set of duties it is expected to perform in the app. Every Vaa
 then declares roles allowed to see that particular view; only users which are assigned at least one
 of the roles declared on the view are then allowed to visit that view.
 
+To use this module, simply add the following to your `build.gradle` file:
+
+```groovy
+dependencies {
+    compile("eu.vaadinonkotlin:vok-security:x.y.z")
+}
+```
+
+> Note: to obtain the newest version see above for the most recent tag
+
 ## The 'Fictional Book Shop' Example
 
 In a fictional book shop:
