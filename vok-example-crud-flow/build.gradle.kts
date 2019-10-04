@@ -14,9 +14,9 @@ dependencies {
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 
     // logging
-    // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
-    compile("ch.qos.logback:logback-classic:${properties["logback_version"]}")
+    // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
     compile("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
+    compile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
     // db
     compile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
