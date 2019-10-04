@@ -14,9 +14,9 @@ dependencies {
     compile(project(":vok-framework-sql2o"))
 
     // logging
-    // currently we are logging through the SLF4J API to LogBack. See logback.xml file for the logger configuration
-    compile("ch.qos.logback:logback-classic:${properties["logback_version"]}")
+    // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
     compile("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
+    compile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     // this will configure Vaadin to log to SLF4J
     compile("org.slf4j:jul-to-slf4j:${properties["slf4j_version"]}")
 
