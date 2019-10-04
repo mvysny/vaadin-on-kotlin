@@ -41,6 +41,6 @@ The application demonstrates the following things:
   [PersonListView](src/main/kotlin/example/crudflow/person/PersonListView.kt)
 * Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the
   [crud example](src/main/kotlin/example/crudflow/person) on how to write the CRUD UI yourself very easily.
-* Logging: uses SLF4j with Logback, configured as follows: [logback.xml](src/main/resources/logback.xml)
+* Logging: uses SLF4j with slf4j-simple, configured as follows: [simplelogger.properties](src/main/resources/simplelogger.properties)
 * Running: this app is a standard WAR application which you can run from your IDE directly.
 * Testing: uses the [Karibu-Testing](https://github.com/mvysny/karibu-testing) framework; please find the example test at [PersonListViewTest.kt](src/test/kotlin/example/crudflow/person/PersonListViewTest.kt).

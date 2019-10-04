@@ -15,8 +15,8 @@ dependencies {
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 
     // logging
-    compile("ch.qos.logback:logback-classic:${properties["logback_version"]}")
     compile("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
+    compile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
     // Vaadin
     compile("com.vaadin:vaadin-compatibility-client-compiled:${properties["vaadin8_version"]}")

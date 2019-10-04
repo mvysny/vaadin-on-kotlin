@@ -46,7 +46,7 @@ The application demonstrates the following things:
   [MyUI](src/main/kotlin/example/crud_sql2o/MyUI.kt)
 * Create Update Delete (CRUD): no Scaffolding-like UI generator for now, but you can see the
   [crud example](src/main/kotlin/example/crud_sql2o/personeditor) on how to write the CRUD UI yourself very easily.
-* Logging: uses SLF4j with Logback, configured as follows: [logback.xml](src/main/resources/logback.xml)
+* Logging: uses SLF4j with slf4j-simple, configured as follows: [simplelogger.properties](src/main/resources/simplelogger.properties)
 * Session-stored cache which of course can access database anytime: see [LastAddedPersonCache.kt](src/main/kotlin/example/crud_sql2o/LastAddedPersonCache.kt).
 * Running: this app is a standard WAR application which you can run from your IDE directly.
 * Testing: uses the [Karibu-Testing](https://github.com/mvysny/karibu-testing) framework; please find the example test at [CrudViewTest.kt](src/test/kotlin/example/crud_sql2o/personeditor/CrudViewTest.kt).
