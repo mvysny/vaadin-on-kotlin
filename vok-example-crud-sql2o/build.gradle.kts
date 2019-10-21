@@ -41,7 +41,7 @@ dependencies {
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830") // because of Javalin
 
     // heroku app runner
-    staging("com.github.jsimone:webapp-runner:9.0.20.1")
+    staging("com.github.jsimone:webapp-runner:9.0.27.1")
 }
 
 // Heroku
