@@ -39,7 +39,7 @@ Use this module if you intend to build a Vaadin8-based app which accesses your S
 using the non-recommended JPA approach.
 
 If you plan to use the recommended approach of using [vok-orm](https://github.com/mvysny/vok-orm),
-then use the [vok-framework-sql2o](../vok-framework-sql2o) module instead.
+then use the [vok-framework-vokdb](../vok-framework-vokdb) module instead.
 
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin8](../vok-util-vaadin8) module. You will then have to write your own data fetching

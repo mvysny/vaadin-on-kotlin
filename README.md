@@ -106,7 +106,7 @@ The list of modules:
   You typically include this module when you build your Vaadin8-based app with VoK.
 * [vok-util-vaadin10](vok-util-vaadin10) - when you want to have additional support for Vaadin 10.
   You typically include this module when you build your Vaadin10-based app with VoK.
-* [vok-framework-sql2o](vok-framework-sql2o) - when you want to have additional support for Vaadin 8 and
+* [vok-framework-vokdb](vok-framework-vokdb) - when you want to have additional support for Vaadin 8 and
   the support for the database using the recommended approach. Includes [vok-util-vaadin8](vok-util-vaadin8) and [vok-db](vok-db).
 * [vok-framework-jpa](vok-framework-jpa) - when you want to have additional support for Vaadin 8 and
   the support for the database using the JPA access approach. Includes [vok-util-vaadin8](vok-util-vaadin8).

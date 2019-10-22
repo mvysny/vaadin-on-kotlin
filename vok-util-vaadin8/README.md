@@ -25,7 +25,7 @@ databases you may also want to include additional modules - read below.
 
 When you want to also use the SQL database with the recommended approach ([vok-db](../vok-db)):
 
-* Depend on the [vok-framework-sql2o](../vok-framework-sql2o) module instead - it will include this
+* Depend on the [vok-framework-vokdb](../vok-framework-vokdb) module instead - it will include this
   module, the [vok-db](../vok-db) module which sports [VoK-ORM](https://github.com/mvysny/vok-orm),
   and will implement proper filters which work with SQL databases.
 
@@ -69,7 +69,7 @@ perform filtering of the data shown in the Grid:
   * Strings - uses in-place `TextField` which performs substring matches
 
 Note that the filter components need an implementation of the `FilterFactory` to properly
-generate filter objects for a particular database backend. The [vok-framework-sql2o](../vok-framework-sql2o) module
+generate filter objects for a particular database backend. The [vok-framework-vokdb](../vok-framework-vokdb) module
 provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader);
 The [vok-framework-jpa](../vok-framework-jpa) module
 provides such implementation for filtering with the JPA framework.
@@ -162,7 +162,7 @@ You can provide your own implementation of `FilterFieldFactory` to the `generate
 Vaadin components placed in the Grid Header bar; then it takes the values of those Vaadin components and produces filters accepted by the
 Vaadin `DataProvider` which will then perform the filtering itself.
 
-For more details please see the `VaadinFilters.kt` file in the `vok-framework-sql2o` module.
+For more details please see the `VaadinFilters.kt` file in the `vok-framework-vokdb` module.
 
 ## Support for Session
 

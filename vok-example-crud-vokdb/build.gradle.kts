@@ -11,7 +11,7 @@ gretty {
 val staging by configurations.creating
 
 dependencies {
-    compile(project(":vok-framework-sql2o"))
+    compile(project(":vok-framework-vokdb"))
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
