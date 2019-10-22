@@ -1,4 +1,4 @@
-package example.crud_sql2o
+package example.crud
 
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.View

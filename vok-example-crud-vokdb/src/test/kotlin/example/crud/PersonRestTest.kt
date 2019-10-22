@@ -1,13 +1,13 @@
-package example.crud_sql2o
+package example.crud
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin
 import eu.vaadinonkotlin.restclient.exec
 import eu.vaadinonkotlin.restclient.jsonArray
-import example.crud_sql2o.personeditor.MaritalStatus
-import example.crud_sql2o.personeditor.Person
-import example.crud_sql2o.personeditor.usingApp
+import example.crud.personeditor.MaritalStatus
+import example.crud.personeditor.Person
+import example.crud.personeditor.usingApp
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request

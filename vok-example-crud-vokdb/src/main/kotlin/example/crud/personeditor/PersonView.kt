@@ -1,6 +1,6 @@
-package example.crud_sql2o.personeditor
+package example.crud.personeditor
 
-import example.crud_sql2o.WelcomeView
+import example.crud.WelcomeView
 import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.navigateToView
 import com.github.mvysny.karibudsl.v8.parameterList
@@ -10,7 +10,6 @@ import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Composite
 import com.vaadin.ui.Label
-import com.vaadin.ui.VerticalLayout
 
 /**
  * Demonstrates the ability to pass parameters to views.

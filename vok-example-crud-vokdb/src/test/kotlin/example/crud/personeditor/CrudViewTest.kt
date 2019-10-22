@@ -1,11 +1,11 @@
-package example.crud_sql2o.personeditor
+package example.crud.personeditor
 
 import com.github.mvysny.kaributesting.v8.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.cloneBySerialization
-import example.crud_sql2o.Bootstrap
-import example.crud_sql2o.MyUI
+import example.crud.Bootstrap
+import example.crud.MyUI
 import com.github.mvysny.karibudsl.v8.autoDiscoverViews
 import com.github.vokorm.deleteAll
 import com.github.vokorm.findAll
@@ -15,7 +15,6 @@ import com.vaadin.ui.Grid
 import com.vaadin.ui.TextField
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 import kotlin.test.expect
 
 /**

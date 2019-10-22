@@ -1,4 +1,4 @@
-package example.crud_sql2o
+package example.crud
 
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vokdb.dataSource

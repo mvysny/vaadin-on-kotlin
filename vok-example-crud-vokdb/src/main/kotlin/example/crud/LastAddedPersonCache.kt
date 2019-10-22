@@ -1,7 +1,7 @@
-package example.crud_sql2o
+package example.crud
 
-import example.crud_sql2o.LastAddedPersonCache.Companion.get
-import example.crud_sql2o.personeditor.Person
+import example.crud.LastAddedPersonCache.Companion.get
+import example.crud.personeditor.Person
 import eu.vaadinonkotlin.vaadin8.Session
 import org.slf4j.LoggerFactory
 import java.io.Serializable

@@ -1,4 +1,4 @@
-package example.crud_sql2o.personeditor
+package example.crud.personeditor
 
 import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
 import com.github.mvysny.karibudsl.v8.*

@@ -1,11 +1,10 @@
-package example.crud_sql2o.personeditor
+package example.crud.personeditor
 
 import com.github.vokorm.As
 import com.github.vokorm.Dao
 import com.github.vokorm.Entity
 import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull

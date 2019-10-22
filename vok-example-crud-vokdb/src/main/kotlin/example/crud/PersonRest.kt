@@ -1,6 +1,6 @@
-package example.crud_sql2o
+package example.crud
 
-import example.crud_sql2o.personeditor.Person
+import example.crud.personeditor.Person
 import eu.vaadinonkotlin.rest.configureToJavalin
 import eu.vaadinonkotlin.rest.crud2
 import eu.vaadinonkotlin.rest.getCrudHandler

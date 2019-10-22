@@ -17,9 +17,9 @@ The View layer leverages component-oriented
 programming as offered by the [Vaadin](https://vaadin.com) framework. Vaadin offers powerful components which are built on AJAX;
 programming in Vaadin resembles programming in a traditional client-side framework such as JavaFX or Swing.
 
-The database access layer is covered by [vok-orm](https://github.com/mvysny/vok-orm) which uses the Sql2o library with additional VoK helpers.
+The database access layer is covered by the [vok-orm](https://github.com/mvysny/vok-orm) library.
 `vok-orm` allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
-Of course, you may decide not to use Sql2o and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and [Hibernate](http://hibernate.org/orm/).
+Of course, you may decide not to use vok-orm and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and [Hibernate](http://hibernate.org/orm/).
 
 Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
 programming language, which makes Vaadin-on-Kotlin a perfect starting point for beginner programmers.
@@ -189,7 +189,7 @@ popupView("Details") {
 }
 ```
 
-### Sql2o-based grid is a breeze
+### vok-orm-based grid is a breeze
 
 Support for sorting and filtering out-of-the-box:
 

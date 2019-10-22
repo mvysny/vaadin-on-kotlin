@@ -1,6 +1,6 @@
-package example.crud_sql2o
+package example.crud
 
-import example.crud_sql2o.personeditor.CrudView
+import example.crud.personeditor.CrudView
 import eu.vaadinonkotlin.vaadin8.Session
 import eu.vaadinonkotlin.scheduleAtFixedRate
 import eu.vaadinonkotlin.seconds

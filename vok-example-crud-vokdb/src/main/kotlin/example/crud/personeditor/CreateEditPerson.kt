@@ -1,6 +1,6 @@
-package example.crud_sql2o.personeditor
+package example.crud.personeditor
 
-import example.crud_sql2o.lastAddedPersonCache
+import example.crud.lastAddedPersonCache
 import eu.vaadinonkotlin.vaadin8.Session
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.server.UserError
