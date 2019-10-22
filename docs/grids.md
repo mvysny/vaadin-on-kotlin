@@ -374,8 +374,8 @@ class MainView: VerticalLayout(), View {
 }
 ```
 
-Also please see the [CrudView](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud-sql2o/src/main/kotlin/com/github/vok/example/crud/personeditor/CrudView.kt)
-class for a complete demo; see the [vok-example-crud-sql2o](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud-sql2o) for documentation
+Also please see the [CrudView](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud-vokdb/src/main/kotlin/com/github/vok/example/crud/personeditor/CrudView.kt)
+class for a complete demo; see the [vok-example-crud-vokdb](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud-vokdb) for documentation
 on the example project.
 
 ## Other Grid options

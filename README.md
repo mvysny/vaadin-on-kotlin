@@ -55,14 +55,14 @@ A more polished example application which you can inspire from. Just type this i
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
-./gradlew vok-example-crud-sql2o:appRun
+./gradlew vok-example-crud-vokdb:appRun
 ```
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
 You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running on Heroku.
 
-For more information check out the [vok-example-crud-sql2o](vok-example-crud-sql2o) module.
+For more information check out the [vok-example-crud-vokdb](vok-example-crud-vokdb) module.
 
 ## Vaadin 10 Flow Example project
 
@@ -71,15 +71,15 @@ Head to [Beverage Buddy VoK](https://github.com/mvysny/beverage-buddy-vok) for t
 ## Run the example application from Intellij IDEA Community
 
 1. In Intellij IDEA, open the project simply by opening the `build.gradle` file, and then selecting "Open as Project".
-2. To run the application from IDEA, just open the [Server.kt](vok-example-crud-sql2o/src/test/java/com/github/vok/example/crud/Server.kt) file and launch it.
-   The web app will be running at [http://localhost:8080](http://localhost:8080). Please make sure that the launch/current working directory directory is set to 
-   the `vok-example-crud-sql2o` directory (Intellij: set `$MODULE_DIR$` to launcher's Working directory)
+2. To run the application from IDEA, just open *Gradle* tab, select `vok-example-crud-vokdb / Tasks / gretty / appRun`,
+   right-click and select Debug. 
+   The web app will be running at [http://localhost:8080](http://localhost:8080).
 
 If you have the Intellij IDEA Ultimate version, we recommend you to use Tomcat for development, since it offers
 better code hot-redeployment:
 
 1. Open the project in IDEA
-2. Launch the `vok-example-crud-sql2o` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
+2. Launch the `vok-example-crud-vokdb` WAR in Tomcat as described here: https://kotlinlang.org/docs/tutorials/httpservlets.html
 
 ## Contributing
 

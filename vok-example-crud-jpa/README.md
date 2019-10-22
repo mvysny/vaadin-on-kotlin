@@ -2,7 +2,7 @@
 
 If you prefer the evil you are accustomed to, then you can start off this example. The application demonstrates the following things:
 
-* Linking to a database. Vaadin-on-Kotlin encourages you to use the [vok-orm](../vok-example-crud-sql2o)
+* Linking to a database. Vaadin-on-Kotlin encourages you to use the [vok-orm](../vok-example-crud-vokdb)
   approach but you can also use the alternative approach of Hibernate for JPA O/R mapping when accessing the database.
   The example project is simply using an in-memory H2 database, so that no additional setup is necessary. See 
   [build.gradle](build.gradle) the db section for more details.

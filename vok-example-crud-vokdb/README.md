@@ -8,7 +8,7 @@ A more complete full-stack example application which you can inspire from. You c
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
-./gradlew vok-example-crud-sql2o:appRun
+./gradlew vok-example-crud-vokdb:appRun
 ```
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).

@@ -170,7 +170,7 @@ class PersonRestTest : DynaTest({
 }
 ```
 
-Please consult the [vok-example-crud-sql2o](../vok-example-crud-sql2o) example project for more info.
+Please consult the [vok-example-crud-vokdb](../vok-example-crud-vokdb) example project for more info.
 
 ## Customizing JSON mapping
 
