@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.sql2o
+package eu.vaadinonkotlin.vokdb
 
 import eu.vaadinonkotlin.VOKPlugin
 import eu.vaadinonkotlin.VaadinOnKotlin

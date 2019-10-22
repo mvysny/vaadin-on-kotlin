@@ -1,8 +1,8 @@
 package example.crudflow
 
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.sql2o.dataSource
-import eu.vaadinonkotlin.sql2o.dataSourceConfig
+import eu.vaadinonkotlin.vokdb.dataSource
+import eu.vaadinonkotlin.vokdb.dataSourceConfig
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.slf4j.LoggerFactory

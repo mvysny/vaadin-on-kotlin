@@ -1,8 +1,8 @@
 package example.crud_sql2o
 
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.sql2o.dataSource
-import eu.vaadinonkotlin.sql2o.dataSourceConfig
+import eu.vaadinonkotlin.vokdb.dataSource
+import eu.vaadinonkotlin.vokdb.dataSourceConfig
 import com.vaadin.annotations.VaadinServletConfiguration
 import com.vaadin.server.VaadinServlet
 import org.flywaydb.core.Flyway
