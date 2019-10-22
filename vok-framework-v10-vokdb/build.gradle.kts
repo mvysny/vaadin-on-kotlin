@@ -16,5 +16,5 @@ dependencies {
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
-configureBintray("vok-framework-v10-sql2o", "VOK: Vaadin 10 Flow with VOK-DB persistence")
+configureBintray("vok-framework-v10-vokdb", "VOK: Vaadin 10 Flow with VOK-DB persistence")
 

@@ -1,5 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-sql20/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-sql2o)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb)
 
 # VoK Vaadin 10 and SQL database support
 
@@ -16,7 +16,7 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-framework-v10-sql2o:x.y.z")
+    compile("eu.vaadinonkotlin:vok-framework-v10-vokdb:x.y.z")
 }
 ```
 

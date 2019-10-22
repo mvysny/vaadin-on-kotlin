@@ -9,7 +9,7 @@ gretty {
 }
 
 dependencies {
-    compile(project(":vok-framework-v10-sql2o"))
+    compile(project(":vok-framework-v10-vokdb"))
     compile("com.vaadin:flow-server-compatibility-mode:2.0.16")
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 

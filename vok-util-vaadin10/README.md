@@ -20,7 +20,7 @@ Use this module when you want to use Vaadin 10 and you need to have additional s
 
 When you want to also use the SQL database with the recommended approach ([vok-db](../vok-db)):
 
-* Depend on the [vok-framework-v10-sql2o](../vok-framework-v10-sql2o) module instead - it will include this module, the [vok-db](../vok-db) module which sports VoK-ORM, and will implement proper filters which work with SQL databases.
+* Depend on the [vok-framework-v10-vokdb](../vok-framework-v10-vokdb) module instead - it will include this module, the [vok-db](../vok-db) module which sports VoK-ORM, and will implement proper filters which work with SQL databases.
 
 VoK currently does not support usage of Vaadin 10 with JPA.
   
@@ -55,7 +55,7 @@ This module provides a default set of filter components intended to be used with
   * Date, LocalDate, LocalDateTime, Instant - uses the `DateRangePopup`
   * Strings - uses in-place `TextField` which performs substring matches
 
-Note that the filter components need an implementation of the `FilterFactory` to properly generate filter objects for a particular database backend. The [vok-framework-v10-sql2o](../vok-framework-v10-sql2o) module provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader). At the moment there is no JPA support.
+Note that the filter components need an implementation of the `FilterFactory` to properly generate filter objects for a particular database backend. The [vok-framework-v10-vokdb](../vok-framework-v10-vokdb) module provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader). At the moment there is no JPA support.
 
 ### Wiring Filters To Custom Database Backend
 
@@ -93,7 +93,7 @@ With this machinery in place, we can now ask the `FilterFieldFactory` to create 
 grid.appendHeaderRow().generateFilterComponents(grid)
 ```
 
-For more details please see the `VaadinFilters.kt` file in the `vok-framework-v10-sql2o` module.
+For more details please see the `VaadinFilters.kt` file in the `vok-framework-v10-vokdb` module.
 
 For more information about using filters with `DataProviders` please see the [Databases Guide](http://www.vaadinonkotlin.eu/databases-v10.html).
 
