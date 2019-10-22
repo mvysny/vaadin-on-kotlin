@@ -3,7 +3,7 @@
 # Getting started with Vaadin-on-Kotlin
 
 This guide covers getting up and running with Vaadin On Kotlin (VoK) with JPA. It is recommended
-to start with the [Getting Started Sql2o](gettingstarted.html) version since it's way simpler
+to start with the [Getting Started vok-orm](gettingstarted.html) version since it's way simpler
 
 > **Note:** This tutorial is heavily inspired by the excellent [Ruby on Rails tutorial](http://guides.rubyonrails.org/getting_started.html). 
 

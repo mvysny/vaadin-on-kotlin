@@ -33,7 +33,7 @@ inline val <reified T: Entity<*>> Dao<T>.dataLoader: DataLoader<T>
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
  * It should support any SQL select, but should allow for adding custom filters and orderings (since this is plugged into Grid after all).
  *
- * The provider is bound to a *holder class* which holds the values (any POJO). Sql2o is used to map the result set to the class. For example:
+ * The provider is bound to a *holder class* which holds the values (any POJO). vok-orm is used to map the result set to the class. For example:
  *
  * ```
  * data class CustomerAddress(val customerName: String, val address: String)

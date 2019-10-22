@@ -204,7 +204,7 @@ For more information please read the [vok-orm documentation](https://github.com/
 
 > Finding Persons: If we want to load a list of persons from the database, the very important thing is to have a zero-arg constructor for the Person class.
 This can be achieved either by providing default values for all parameters, or explicitly declaring the zero-arg constructor.
-Otherwise the code will fail in runtime: Sql2o will try to construct a `Person` instance for every row returned, using
+Otherwise the code will fail in runtime: vok-orm will try to construct a `Person` instance for every row returned, using
 a zero-arg constructor.
 
 ## Forms
@@ -429,7 +429,7 @@ be saved nor deleted), hence it does not implement the `Entity` interface. Since
 applicable to entities, we can't reuse the `Dao`-induced finders.
 
 To load instances of this particular class, we will need to write our own finder methods. We will directly
-use the Sql2o capabilities to map any SELECT result into an arbitrary class. In order for the automatic mapping to work,
+use the vok-orm capabilities to map any SELECT result into an arbitrary class. In order for the automatic mapping to work,
 we must ensure that:
 
 * The SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching);

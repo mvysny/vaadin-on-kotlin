@@ -39,7 +39,7 @@ class CrudView: Composite(), View {
                 onLeftClick { generateTestingData() }
             }
         }
-        // the SQL2O list demo - shows all instances of a particular database table, allows sorting and filtering.
+        // the vok-orm list demo - shows all instances of a particular database table, allows sorting and filtering.
         // you can restrict the values by writing the following expression:
         // dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }
         // any user-configured filters will be applied on top of this filter.

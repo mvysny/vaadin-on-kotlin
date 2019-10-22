@@ -6,10 +6,7 @@ import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
 import com.github.vokorm.db
-import com.vaadin.flow.component.Key
 import com.vaadin.flow.component.Key.KEY_G
-import com.vaadin.flow.component.KeyModifier.ALT
-import com.vaadin.flow.component.Shortcuts
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
 import com.vaadin.flow.component.html.Div

@@ -411,8 +411,8 @@ As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whe
 Luckily, we have already created the model &emdash; it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
-> **Note:** Sql2o is smart enough to automatically map column names to the Article class properties,
-which means you don't have to provide the database name for each entity property, as that is done automatically by Sql2o.
+> **Note:** vok-orm is smart enough to automatically map column names to the Article class properties,
+which means you don't have to provide the database name for each entity property, as that is done automatically by vok-orm.
 
 To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
 
@@ -618,7 +618,7 @@ or you'll need to run `./gradlew build` in another terminal to actually see the 
 
 The entity file `Article.kt` is about as simple as it can get.
 
-The file is pretty minimalistic &emdash; Sql2o and Vaadin-on-Kotlin supply a great deal of
+The file is pretty minimalistic &emdash; vok-orm and Vaadin-on-Kotlin supply a great deal of
 functionality to your entities for free, including basic CRUD
 operations, data validation, as well as
 sophisticated search support and the ability to relate multiple models to one another.

@@ -47,8 +47,7 @@ It's always wise to call `.withConfigurableFilter2()`
 on the adapter which enables the filter row to set filters to the data provider.
 
 Another example is the SQL database access via the `vok-orm`. vok-orm provides
-data loader which fetches instances of entities from the database, with the help
-of the [Sql2o](https://www.sql2o.org/) library.
+data loader which fetches instances of entities from the database.
 VoK then provides convenience extension method on vok-orm `Dao` - the `Dao.dataProvider` -
 which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
 VoK also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs.
@@ -111,7 +110,7 @@ the conversion from your native data source to a Java Bean. You can use:
 * [Gson](https://github.com/google/gson) for conversion from JSON to Java Bean; you can use the
   vok-provided `Gson.fromJsonArray()` to convert from an array of JSON maps, or use the following code:
   `fromJson<List<T>>(reader, TypeToken.getParameterized(List::class.java, itemClass).type)`
-* [Sql2o](https://www.sql2o.org/) to convert an outcome of a JDBC result to a Java Bean
+* vok-orm to convert an outcome of a JDBC result to a Java Bean
 
 Afer you have the skeletal implementation of your `DataLoader` ready,
 let's focus on converting the `DataLoader` to Vaadin's `DataProvider` so that you can

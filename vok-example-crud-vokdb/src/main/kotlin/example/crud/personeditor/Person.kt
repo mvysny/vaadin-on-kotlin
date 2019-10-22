@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 /**
- * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by SQL2O.
+ * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by vok-orm.
  * Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
  *
  * See [vok-orm](https://github.com/mvysny/vok-orm) for more details.
