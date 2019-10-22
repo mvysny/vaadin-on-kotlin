@@ -1,10 +1,9 @@
-package eu.vaadinonkotlin.vaadin8.sql2o
+package eu.vaadinonkotlin.vaadin8.vokdb
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v8.getSuggestions
 import com.github.mvysny.kaributesting.v8.setUserInput
-import com.github.mvysny.vokdataloader.*
 import com.vaadin.ui.ComboBox
 import eu.vaadinonkotlin.vaadin8.withFilter
 import eu.vaadinonkotlin.vaadin8.withStringFilterOn

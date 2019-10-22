@@ -23,11 +23,11 @@ dependencies {
 
 This module provides:
 
-* The [dataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/sql2o/DataProviders.kt)
+* The [dataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/vokdb/DataProviders.kt)
   which is a Vaadin `DataProvider` implementation which is able to fetch instances of VoK-ORM entities
   and support proper sorting and filtering. It also defines extension property `dataProvider` on the `Dao`
   interface which allows you to write code as follows: `grid.dataProvider = Person.dataProvider`
-* The [sqlDataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/sql2o/DataProviders.kt) which
+* The [sqlDataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin8/vokdb/DataProviders.kt) which
   is able to represent the outcome of any SELECT including joins (as opposed to `EntityDataProvider` which
   is only able to represent one table or view).
 * The `generateFilterComponents()` function which is able to automatically generate Grid filter components:

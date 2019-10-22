@@ -527,8 +527,8 @@ Following is a full example code which demonstrates this technique:
  ```kotlin
  package com.example.vok
  
- import com.github.vok.framework.sql2o.vaadin.*
- import com.github.vok.karibudsl.*
+ import eu.vaadinonkotlin.vaadin8.vokdb.*
+ import com.github.mvysny.karibudsl.v8.*
  import com.vaadin.navigator.PushStateNavigation
  import com.vaadin.server.VaadinRequest
  import com.vaadin.ui.UI

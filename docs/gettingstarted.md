@@ -532,7 +532,7 @@ We still need a way to list all our articles, so let's do that. Create the `web/
 ```kotlin
 package com.example.vok
 
-import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin8.vokdb.dataProvider
 import com.github.mvysny.karibudsl.v8.*
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
@@ -631,7 +631,7 @@ Edit `Article.kt` as follows:
 package com.example.vok
 
 import com.github.vokorm.*
-import eu.vaadinonkotlin.vaadin8.sql2o.*
+import eu.vaadinonkotlin.vaadin8.vokdb.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -958,7 +958,7 @@ import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.renderers.ButtonRenderer
 import com.vaadin.ui.themes.ValoTheme
-import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin8.vokdb.dataProvider
 
 @AutoView
 class ArticlesView: Composite(), View {
@@ -1105,7 +1105,7 @@ package com.example.vok
 
 import com.github.vokorm.*
 import eu.vaadinonkotlin.vaadin8.*
-import eu.vaadinonkotlin.vaadin8.sql2o.*
+import eu.vaadinonkotlin.vaadin8.vokdb.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 

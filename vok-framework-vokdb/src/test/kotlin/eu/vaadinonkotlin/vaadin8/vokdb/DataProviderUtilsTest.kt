@@ -1,17 +1,12 @@
-package eu.vaadinonkotlin.vaadin8.sql2o
+package eu.vaadinonkotlin.vaadin8.vokdb
 
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.karibudsl.v8.asc
-import com.github.mvysny.karibudsl.v8.desc
 import com.github.mvysny.karibudsl.v8.getAll
-import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
-import com.vaadin.data.provider.AbstractBackEndDataProvider
 import com.vaadin.data.provider.Query
 import com.vaadin.data.provider.QuerySortOrder
 import eu.vaadinonkotlin.vaadin8.withFilter
-import java.util.stream.Stream
 import kotlin.streams.toList
 import kotlin.test.expect
 

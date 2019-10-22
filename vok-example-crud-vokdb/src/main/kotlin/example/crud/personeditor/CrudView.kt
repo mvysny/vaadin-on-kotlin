@@ -1,6 +1,6 @@
 package example.crud.personeditor
 
-import eu.vaadinonkotlin.vaadin8.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin8.vokdb.dataProvider
 import com.github.mvysny.karibudsl.v8.*
 import com.github.mvysny.karibudsl.v8.ModifierKey.Alt
 import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl

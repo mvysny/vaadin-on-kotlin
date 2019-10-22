@@ -285,10 +285,9 @@ button("New Line") {
 ## All-in-One CRUD Grid example
 
 ```kotlin
-import com.github.vok.framework.sql2o.vaadin.dataProvider
-import com.github.vok.framework.sql2o.vaadin.generateFilterComponents
-import com.github.vok.karibudsl.*
-import com.github.vokorm.*
+import eu.vaadinonkotlin.vaadin8.vokdb.*
+import com.github.mvysny.karibudsl.v8.*
+import com.github.mvysny.vokorm.*
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.shared.data.sort.SortDirection
