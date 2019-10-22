@@ -1,7 +1,7 @@
 package example.crudflow.person
 
 import example.crudflow.MainLayout
-import eu.vaadinonkotlin.vaadin10.sql2o.dataProvider
+import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
 import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt

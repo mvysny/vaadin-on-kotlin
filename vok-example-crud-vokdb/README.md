@@ -29,7 +29,7 @@ The application demonstrates the following things:
   You can also use JPA if you so wish - see [vok-example-crud-jpa](../vok-example-crud-jpa) for details.
 * Preparing the database: simply run Flyway migration every time before the app is started, to make sure that the app has newest database ready.
   The migration is safe on cluster as well as a database lock is obtained.
-  Please see [Bootstrap.kt](src/main/kotlin/example/crud_sql2o/Bootstrap.kt)
+  Please see [Bootstrap.kt](src/main/kotlin/example/crud/Bootstrap.kt)
   You will need to write the database migration scripts yourself: see [sample migrations](src/main/resources/db/migration) for details.
   More details in the [Flyway DB Migration Guide](https://flywaydb.org/documentation/migration/sql)
 * Accessing the database: just create your pojo beans [(example Person)](src/main/kotlin/example/crud/personeditor/Person.kt)

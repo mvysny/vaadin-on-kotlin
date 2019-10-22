@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.sql2o
+package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.vokorm.Entity
 import com.github.vokorm.db

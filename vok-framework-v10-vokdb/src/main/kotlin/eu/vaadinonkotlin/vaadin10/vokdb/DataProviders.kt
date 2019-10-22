@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.sql2o
+package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.vokorm.Dao

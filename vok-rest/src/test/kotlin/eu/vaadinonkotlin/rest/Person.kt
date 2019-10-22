@@ -19,7 +19,7 @@ import javax.validation.constraints.Size
  *
  * See [vok-orm](https://github.com/mvysny/vok-orm) for more details.
  * @property id person ID
- * @property name person name
+ * @property personName person name
  * @property age the person age, 15..100
  * @property dateOfBirth date of birth, optional.
  * @property created when the record was created

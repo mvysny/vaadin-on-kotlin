@@ -344,8 +344,8 @@ therefore we need to restrict the columns a bit:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
-import com.github.vok.karibudsl.flow.*
+import eu.vaadinonkotlin.vaadin10.vokdb.*
+import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.db
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
@@ -528,8 +528,8 @@ Following is a full example code which demonstrates this technique:
 ```kotlin
 package com.example.vok
 
-import com.github.vok.framework.sql2o.vaadin.*
-import com.github.vok.karibudsl.flow.*
+import eu.vaadinonkotlin.vaadin10.vokdb.*
+import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
