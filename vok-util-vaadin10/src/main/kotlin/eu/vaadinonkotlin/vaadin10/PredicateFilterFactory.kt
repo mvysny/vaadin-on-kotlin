@@ -99,11 +99,11 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
  * Running block with this class as its receiver will allow you to write expressions like this:
  * `Person::age lt 25`. Does not support joins - just use the plain old SQL 92 where syntax for that ;)
  *
- * Containing these functions in this class will prevent polluting of the KProperty1 interface and also makes it type-safe.
+ * Containing these functions in this class will prevent polluting of the [KProperty1] interface and also makes it type-safe.
  *
- * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic where creation only ;)
+ * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic WHERE clause creation only ;)
  */
-class PredicateFilterBuilder<T: Any>() {
+class PredicateFilterBuilder<T: Any> {
     private val ff = PredicateFilterFactory<T>()
 
     infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): SerializablePredicate<T> = ff.eq(name, value)
@@ -166,7 +166,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Ser
  * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
  * Allows you to write
  * expressions like this: `Person.dataProvider.withFilter { Person::age lt 25 }`
- * See [SqlWhereBuilder] for a complete list of applicable operators.
+ * See [com.github.mvysny.vokdataloader.SqlWhereBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.

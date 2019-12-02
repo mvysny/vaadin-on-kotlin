@@ -20,7 +20,7 @@ class FilterRowTest : DynaTest({
     test("Test simple auto-generated filters") {
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
         val grid = Grid<Person>(Person::class.java)
-        val filterRow = grid.appendHeaderRow().generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        val filterRow = grid.appendHeaderRow().generateFilterComponents2(grid, Person::class, PredicateFilterFactory<Person>())
         expect<Class<*>>(TextField::class.java) { filterRow.getFilterComponent(Person::name).javaClass }
         expect<Class<*>>(NumberFilterPopup::class.java) { filterRow.getFilterComponent(Person::age).javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { filterRow.getFilterComponent(Person::dob).javaClass }
@@ -31,7 +31,7 @@ class FilterRowTest : DynaTest({
     test("string filter") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterRow = grid.appendHeaderRow().generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        val filterRow = grid.appendHeaderRow().generateFilterComponents2(grid, Person::class, PredicateFilterFactory<Person>())
         grid.setItems(Person("foo"))
         expect(1) { grid.dataProvider._size() }
 
@@ -45,7 +45,7 @@ class FilterRowTest : DynaTest({
     test("filter components from cleared filter bar won't affect the grid anymore") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterRow = grid.appendHeaderRow().generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        val filterRow = grid.appendHeaderRow().generateFilterComponents2(grid, Person::class, PredicateFilterFactory<Person>())
         grid.setItems(Person("foo"))
         val nameFilter = filterRow.getFilterComponent(Person::name)
 
@@ -61,7 +61,7 @@ class FilterRowTest : DynaTest({
     test("filter components from cleared filter bar gone") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterRow = grid.appendHeaderRow().generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        val filterRow = grid.appendHeaderRow().generateFilterComponents2(grid, Person::class, PredicateFilterFactory<Person>())
         filterRow.clear()
         expect(mapOf()) { filterRow.getFilterComponents() }
     }
@@ -76,7 +76,7 @@ class FilterRowTest : DynaTest({
         }
         expectList() { grid.dataProvider!!.getAll() }
 
-        val filterBar = filterRow.generateFilterComponents(grid, Person::class, PredicateFilterFactory<Person>())
+        val filterBar = filterRow.generateFilterComponents2(grid, Person::class, PredicateFilterFactory<Person>())
 
         // now let's create and set another data provider. If the generateFilterComponents grabs the DP eagerly, it will ignore this second DP.
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar")))
