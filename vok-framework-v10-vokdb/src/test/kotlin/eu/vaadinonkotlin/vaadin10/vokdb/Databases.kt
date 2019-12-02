@@ -15,15 +15,14 @@ import java.util.*
 
 @Table("Test")
 data class Person(override var id: Long? = null,
-                  @field:ColumnName("name") var personName: String,
-                  var age: Int,
+                  @field:ColumnName("name") var personName: String = "",
+                  var age: Int = -1,
                   @field:Ignore var ignored: String? = null,
                   @Transient var ignored2: Any? = null,
                   var dateOfBirth: LocalDate? = null,
                   var created: Date? = null,
                   var alive: Boolean? = null,
                   var maritalStatus: MaritalStatus? = null
-
 ) : KEntity<Long> {
     override fun save(validate: Boolean) {
         if (id == null) {

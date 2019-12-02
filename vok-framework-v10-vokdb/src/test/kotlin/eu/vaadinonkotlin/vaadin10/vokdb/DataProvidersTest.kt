@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v10.getSuggestions
 import com.github.mvysny.kaributesting.v10.setUserInput
@@ -10,6 +11,10 @@ import eu.vaadinonkotlin.vaadin10.withStringFilterOn
 import kotlin.test.expect
 
 class DataProvidersTest : DynaTest({
+    test("serializable") {
+        Person.dataProvider.cloneBySerialization()
+    }
+
     group("ID retrieval") {
         test("entitydp") {
             expect(1L) { Person.dataProvider.getId(Person(id = 1L, personName = "foo", age = 25)) }

@@ -1,8 +1,8 @@
 package example.crud.personeditor
 
-import com.github.vokorm.As
-import com.github.vokorm.Dao
-import com.github.vokorm.Entity
+import com.github.vokorm.KEntity
+import com.gitlab.mvysny.jdbiorm.Dao
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.Instant
 import java.time.LocalDate
 import javax.validation.constraints.Max
@@ -28,7 +28,7 @@ data class Person(
 
         @field:NotNull
         @field:Size(min = 1, max = 200)
-        @As("name")
+        @field:ColumnName("name")
         var personName: String? = null,
 
         @field:NotNull
@@ -47,9 +47,9 @@ data class Person(
         @field:NotNull
         var alive: Boolean? = null
 
-) : Entity<Long> {
+) : KEntity<Long> {
     // this brings in tons of useful static methods such as findAll(), findById() etc.
-    companion object : Dao<Person>
+    companion object : Dao<Person, Long>(Person::class.java)
 
     override fun save(validate: Boolean) {
         if (id == null) {

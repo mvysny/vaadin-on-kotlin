@@ -1,8 +1,8 @@
 package example.crudflow.person
 
-import com.github.vokorm.As
-import com.github.vokorm.Dao
-import com.github.vokorm.Entity
+import com.github.vokorm.KEntity
+import com.gitlab.mvysny.jdbiorm.Dao
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.LocalDate
 import java.util.*
 import javax.validation.constraints.Max
@@ -28,7 +28,7 @@ data class Person(
 
         @field:NotNull
         @field:Size(min = 1, max = 200)
-        @As("PERSON_NAME")
+        @field:ColumnName("PERSON_NAME")
         var name: String? = null,
 
         @field:NotNull
@@ -47,9 +47,9 @@ data class Person(
         @field:NotNull
         var alive: Boolean? = null
 
-) : Entity<Long> {
+) : KEntity<Long> {
     // this brings in tons of useful static methods such as findAll(), findById() etc.
-    companion object : Dao<Person>
+    companion object : Dao<Person, Long>(Person::class.java)
 
     override fun save(validate: Boolean) {
         if (created == null) created = Date()

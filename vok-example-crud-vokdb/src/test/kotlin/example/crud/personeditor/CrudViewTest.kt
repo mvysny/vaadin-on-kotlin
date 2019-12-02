@@ -7,8 +7,6 @@ import com.github.mvysny.dynatest.cloneBySerialization
 import example.crud.Bootstrap
 import example.crud.MyUI
 import com.github.mvysny.karibudsl.v8.autoDiscoverViews
-import com.github.vokorm.deleteAll
-import com.github.vokorm.findAll
 import com.vaadin.icons.VaadinIcons
 import com.vaadin.ui.Button
 import com.vaadin.ui.Grid
