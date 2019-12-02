@@ -3,7 +3,6 @@ package eu.vaadinonkotlin.vaadin10
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.Listeners
 import eu.vaadinonkotlin.listeners
-import com.github.mvysny.karibudsl.v10.getColumnBy
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
@@ -24,6 +23,8 @@ import kotlin.streams.toList
 /**
  * Maintains a set of fields - monitors bound fields for values and provides [filter] of type F.
  * Fires [onFilterChangeListeners] on every filter change.
+ *
+ * Use [FilterRow] to add filters to Grid easily.
  * @param T the type of items in the grid.
  * @param F the type of the filter
  * @param filterFieldFactory used to create filters from filter components by invoking [FilterFieldFactory.createFilter]
@@ -111,21 +112,30 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
     }
 
     private fun recomputeFilter() {
-        val filters = filterComponents.values.mapNotNull { it.currentFilter } .toSet()
+        val filters: Set<F> = filterComponents.values.mapNotNull { it.currentFilter } .toSet()
         filter = filterFactory.and(filters)
         onFilterChangeListeners.fire.accept(filter)
     }
 }
 
 /**
- * Wraps [HeaderRow] and tracks filter components; also provides support for watching of changes to the filters.
+ * Wraps [HeaderRow] and uses [FilterBinder] to track filter UI components for changes. After the user
+ * changes the value in the filter UI component, a new Grid filter of type [F] is computed and
+ * set to [Grid.getDataProvider].
  * @param T the type of items in the grid.
  * @param F the type of the filters accepted by grid's [ConfigurableFilterDataProvider].
- * @param grid the owner grid.
+ * @param grid the owner grid. It is expected that [Grid.getDataProvider] is of type [VokDataProvider]<T>
+ * (or [ConfigurableFilterDataProvider]<T, F, F>).
+ * @property itemClass the type of items shown by the Grid.
  * @property headerRow the wrapped header row
+ * @property filterFieldFactory used to automatically create filter UI components
+ * for bean properties, and to create Grid filters of type [F].
+ * @param filterFactory used to combine filter values when multiple filters are applied
+ * (using the [FilterFactory.and] function).
  */
 @Suppress("UNCHECKED_CAST")
-class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>, val headerRow: HeaderRow,
+class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>,
+                                val headerRow: HeaderRow,
                                 val filterFieldFactory: FilterFieldFactory<T, F>,
                                 filterFactory: FilterFactory<F>) : Serializable {
 
@@ -211,7 +221,7 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>, val 
  * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.EAGER].
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any, F: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
+fun <T: Any, F: Any> HeaderRow.generateFilterComponents2(grid: Grid<T>, itemClass: KClass<T>,
                                                         filterFactory: FilterFactory<F>,
                                                         filterFieldFactory: FilterFieldFactory<T, F> = DefaultFilterFieldFactory(itemClass.java, filterFactory),
                                                         valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, F> {

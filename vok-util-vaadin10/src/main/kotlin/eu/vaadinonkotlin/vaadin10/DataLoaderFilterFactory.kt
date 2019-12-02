@@ -29,7 +29,8 @@ class DataLoaderFilterFactory<F: Any>(val clazz: Class<F>) : FilterFactory<Filte
  * Re-creates filters in this header row. Simply call `grid.appendHeaderRow().generateFilterComponents(grid)` to automatically attach
  * filters to non-generated columns. Please note that filters are not re-generated when the container data source is changed.
  *
- * This function uses [Filter] hierarchy from `vok-dataloader` which is what you often want to do.
+ * This function uses [Filter] hierarchy from `vok-dataloader` which is what you often want to do. If not,
+ * use [generateFilterComponents] instead.
  * @param grid the owner grid.
  * @param itemClass the item class as shown in the grid.
  * @param filterFieldFactory used to create the filters themselves. By default the [DefaultFilterFieldFactory] is used.
@@ -45,5 +46,5 @@ fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
                                                 itemClass: KClass<T>,
                                                 filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, DataLoaderFilterFactory(itemClass.java)),
                                                 valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, Filter<T>> {
-    return generateFilterComponents(grid, itemClass, DataLoaderFilterFactory(itemClass.java), filterFieldFactory, valueChangeMode)
+    return generateFilterComponents2(grid, itemClass, DataLoaderFilterFactory(itemClass.java), filterFieldFactory, valueChangeMode)
 }
