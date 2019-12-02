@@ -1,10 +1,10 @@
 package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
-import com.github.vokorm.Dao
-import com.github.vokorm.Entity
+import com.github.vokorm.KEntity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
+import com.gitlab.mvysny.jdbiorm.Dao
 import com.vaadin.flow.component.grid.Grid
 import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin10.VokDataProvider
@@ -17,7 +17,7 @@ import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
  *
  * Example of use: `grid.dataProvider = Person.dataProvider`.
  */
-inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
+inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
     get() = dataLoader.asDataProvider()
 
 /**
@@ -26,8 +26,8 @@ inline val <reified T: Entity<*>> Dao<T>.dataProvider: VokDataProvider<T>
  *
  * Example of use: `grid.setDataLoader(Person.dataLoader)`.
  */
-inline val <reified T: Entity<*>> Dao<T>.dataLoader: DataLoader<T>
-    get() = EntityDataLoader(T::class.java)
+inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
+    get() = EntityDataLoader(this)
 
 /**
  * Allows the coder to write any SQL he wishes. This provider must be simple enough to not to get in the way by smart (complex) Kotlin language features.
@@ -89,11 +89,11 @@ fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->A
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
  */
-fun <T: Entity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
+fun <T: KEntity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
     dataProvider = dataLoader.asDataProvider()
 }
 
 /**
  * Returns a [VokDataProvider] which loads data from this [DataLoader].
  */
-fun <T: Entity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }.withConfigurableFilter2()
+fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }.withConfigurableFilter2()

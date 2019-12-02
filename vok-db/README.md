@@ -30,18 +30,24 @@ to tie to VoK init/destroy lifecycle and how to configure the client.
 
 ## Connecting to the SQL database
 
-First you will need to add the JDBC driver for your database as a dependency to your `build.gradle` file.
+First you will need to add the JDBC driver for your database as a dependency to your `build.gradle.kts` file.
+Then, you'll need to add Hikari-CP as a dependency (unless you're running on Spring/JavaEE):
 
-After that's done, you need to configure the `vok-db` database JDBC provider *before* `VaadinOnKotlin.init()` is called.
+```groovy
+compile("com.zaxxer:HikariCP:3.4.1")
+```
+
+After that's done, you need to configure the `vok-db` database JDBC provider.
 The following example configures an in-memory H2 database:
 
 ```kotlin
-VaadinOnKotlin.dataSourceConfig.apply {
+val config = HikariConfig().apply {
     driverClassName = Driver::class.java.name  // the org.h2.Driver class
     jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
     username = "sa"
     password = ""
 }
+VaadinOnKotlin.dataSource = HikariDataSource(config)
 ```
 
 It is a good practice to run the configuration from your `ServletContextListener`. You can find a proper
@@ -59,7 +65,7 @@ The easiest way is to use [Flyway](https://flywaydb.org/). Just add the followin
 
 ```groovy
 dependencies {
-    compile "org.flywaydb:flyway-core:5.0.7"
+    compile "org.flywaydb:flyway-core:6.0.8"
 }
 ```
 
@@ -80,8 +86,9 @@ To actually run the migration, you will need to call the `Flyway` class, ideally
 after VoK is initialized:
 
 ```kotlin
-val flyway = Flyway()
-flyway.dataSource = VaadinOnKotlin.dataSource
+val flyway = Flyway.configure()
+    .dataSource(VaadinOnKotlin.dataSource)
+    .load()
 flyway.migrate()
 ```
 

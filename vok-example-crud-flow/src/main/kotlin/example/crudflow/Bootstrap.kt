@@ -1,8 +1,9 @@
 package example.crudflow
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vokdb.dataSource
-import eu.vaadinonkotlin.vokdb.dataSourceConfig
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.slf4j.LoggerFactory
@@ -23,12 +24,13 @@ import javax.servlet.annotation.WebListener
 class Bootstrap: ServletContextListener {
     override fun contextInitialized(sce: ServletContextEvent?) {
         log.info("Starting up")
-        VaadinOnKotlin.dataSourceConfig.apply {
-            driverClassName = Driver::class.java.name
+        val config = HikariConfig().apply {
+            driverClassName = Driver::class.java.name  // the org.h2.Driver class
             jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
             username = "sa"
             password = ""
         }
+        VaadinOnKotlin.dataSource = HikariDataSource(config)
         log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Running DB migrations")

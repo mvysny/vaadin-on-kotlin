@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
@@ -71,10 +72,10 @@ fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Ro
  * @param allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null.
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-inline fun <reified ID: Any, reified E : Entity<ID>> Dao<E>.getCrudHandler(allowModification: Boolean = false,
-                                                                           maxLimit: Long = Long.MAX_VALUE,
-                                                                           defaultLimit: Long = maxLimit,
-                                                                           allowSortColumns: Set<String>? = null,
-                                                                           allowFilterColumns: Set<String>? = null): CrudHandler {
-    return VokOrmCrudHandler(ID::class.java, E::class.java, allowModification, maxLimit, defaultLimit, allowSortColumns, allowFilterColumns)
+inline fun <reified ID : Any, reified E : KEntity<ID>> Dao<E, ID>.getCrudHandler(allowModification: Boolean = false,
+                                                                                 maxLimit: Long = Long.MAX_VALUE,
+                                                                                 defaultLimit: Long = maxLimit,
+                                                                                 allowSortColumns: Set<String>? = null,
+                                                                                 allowFilterColumns: Set<String>? = null): CrudHandler {
+    return VokOrmCrudHandler(ID::class.java, this, allowModification, maxLimit, defaultLimit, allowSortColumns, allowFilterColumns)
 }

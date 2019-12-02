@@ -2,25 +2,19 @@ package eu.vaadinonkotlin.vokdb
 
 import eu.vaadinonkotlin.VOKPlugin
 import eu.vaadinonkotlin.VaadinOnKotlin
-import com.github.vokorm.VokOrm
-import com.zaxxer.hikari.HikariConfig
+import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import javax.sql.DataSource
 
 class VokOrmPlugin : VOKPlugin {
 
     override fun init() {
-        VokOrm.init()
     }
 
     override fun destroy() {
-        VokOrm.destroy()
+        JdbiOrm.destroy()
     }
 }
 
-/**
- * Configure this before initializing VoK. At minimum you need to set [HikariConfig.dataSource], or
- * [HikariConfig.driverClassName], [HikariConfig.jdbcUrl], [HikariConfig.username] and [HikariConfig.password].
- */
-val VaadinOnKotlin.dataSourceConfig: HikariConfig get() = VokOrm.dataSourceConfig
-
-val VaadinOnKotlin.dataSource: DataSource get() = VokOrm.dataSource!!
+var VaadinOnKotlin.dataSource: DataSource
+    get() = JdbiOrm.getDataSource()
+    set(value) { JdbiOrm.setDataSource(value) }

@@ -7,7 +7,6 @@ import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.vokdataloader.SortClause
 import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
-import com.github.vokorm.findAll
 import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin

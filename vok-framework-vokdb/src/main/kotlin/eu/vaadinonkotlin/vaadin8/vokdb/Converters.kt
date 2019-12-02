@@ -1,8 +1,7 @@
 package eu.vaadinonkotlin.vaadin8.vokdb
 
-import com.github.vokorm.Entity
-import com.github.vokorm.db
-import com.github.vokorm.findById
+import com.github.vokorm.KEntity
+import com.gitlab.mvysny.jdbiorm.Dao
 import com.vaadin.data.Binder
 import com.vaadin.data.Converter
 import com.vaadin.data.Result
@@ -14,13 +13,14 @@ import com.vaadin.data.ValueContext
  * @param T the type of the entity
  * @param ID the type of the ID field of the entity
  */
-class EntityToIdConverter2<ID: Any, T: Entity<ID>>(val clazz: Class<T>) : Converter<T?, ID?> {
+class EntityToIdConverter<ID: Any, T: KEntity<ID>>(val dao: Dao<T, ID>) : Converter<T?, ID?> {
+    constructor(clazz: Class<T>) : this(Dao<T, ID>(clazz))
     override fun convertToModel(value: T?, context: ValueContext?): Result<ID?> =
         Result.ok(value?.id)
 
     override fun convertToPresentation(value: ID?, context: ValueContext?): T? {
         if (value == null) return null
-        return db { con.findById(clazz, value) }
+        return dao.findById(value)
     }
 }
 
@@ -41,5 +41,5 @@ class EntityToIdConverter2<ID: Any, T: Entity<ID>>(val clazz: Class<T>) : Conver
  * }
  * ```
  */
-inline fun <BEAN, ID: Any, reified ENTITY: Entity<ID>> Binder.BindingBuilder<BEAN, ENTITY?>.toId(): Binder.BindingBuilder<BEAN, ID?> =
-    withConverter(EntityToIdConverter2(ENTITY::class.java))
+inline fun <BEAN, ID: Any, reified ENTITY: KEntity<ID>> Binder.BindingBuilder<BEAN, ENTITY?>.toId(): Binder.BindingBuilder<BEAN, ID?> =
+    withConverter(EntityToIdConverter(ENTITY::class.java))

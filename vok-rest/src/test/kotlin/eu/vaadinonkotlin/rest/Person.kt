@@ -4,8 +4,13 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vokdb.dataSource
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
+import com.gitlab.mvysny.jdbiorm.JdbiOrm
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
 import org.h2.Driver
+import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.Instant
 import java.time.LocalDate
 import javax.validation.constraints.Max
@@ -31,7 +36,7 @@ data class Person(
 
         @field:NotNull
         @field:Size(min = 1, max = 200)
-        @As("name")
+        @field:ColumnName("name")
         var personName: String? = null,
 
         @field:NotNull
@@ -50,9 +55,9 @@ data class Person(
         @field:NotNull
         var alive: Boolean? = null
 
-) : Entity<Long> {
+) : KEntity<Long> {
     // this brings in tons of useful static methods such as findAll(), findById() etc.
-    companion object : Dao<Person>
+    companion object : Dao<Person, Long>(Person::class.java)
 
     override fun save(validate: Boolean) {
         if (id == null) {
@@ -71,19 +76,19 @@ enum class MaritalStatus {
 
 fun DynaNodeGroup.usingDb() {
     beforeGroup {
-        VokOrm.dataSourceConfig.apply {
-            driverClassName = Driver::class.java.name
+        val config = HikariConfig().apply {
+            driverClassName = Driver::class.java.name  // the org.h2.Driver class
             jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
             username = "sa"
             password = ""
         }
-        VokOrm.init()
+        JdbiOrm.setDataSource(HikariDataSource(config))
         val flyway: Flyway = Flyway.configure()
                 .dataSource(VaadinOnKotlin.dataSource)
                 .load()
         flyway.migrate()
     }
-    afterGroup { VokOrm.destroy() }
+    afterGroup { JdbiOrm.destroy() }
 
     beforeEach { Person.deleteAll() }
     afterEach { Person.deleteAll() }

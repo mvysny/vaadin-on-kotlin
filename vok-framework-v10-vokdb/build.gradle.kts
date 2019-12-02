@@ -7,6 +7,8 @@ dependencies {
 
     testCompile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     testCompile("com.h2database:h2:${properties["h2_version"]}")
+    testCompile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
+
     testCompile("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
     testCompile("org.zeroturnaround:zt-exec:1.10")
 

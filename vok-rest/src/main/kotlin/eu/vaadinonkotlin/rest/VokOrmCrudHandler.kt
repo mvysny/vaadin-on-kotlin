@@ -2,14 +2,11 @@ package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
 import com.github.vokorm.dataloader.EntityDataLoader
+import com.gitlab.mvysny.jdbiorm.Dao
 import io.javalin.apibuilder.CrudHandler
 import io.javalin.http.Context
 import io.javalin.http.NotFoundResponse
 import io.javalin.http.UnauthorizedResponse
-import org.sql2o.converters.Converter
-import org.sql2o.converters.IntegerConverter
-import org.sql2o.converters.LongConverter
-import org.sql2o.converters.StringConverter
 
 /**
  * A very simple handler that exposes instances of given [entityClass] using the `vok-orm` database access library.
@@ -35,7 +32,7 @@ import org.sql2o.converters.StringConverter
  * @param allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private val entityClass: Class<E>,
+open class VokOrmCrudHandler<ID: Any, E: KEntity<ID>>(idClass: Class<ID>, private val dao: Dao<E, ID>,
                                                                        val allowsModification: Boolean,
                                                                        maxLimit: Long = Long.MAX_VALUE,
                                                                        defaultLimit: Long = maxLimit,
@@ -45,13 +42,15 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
     /**
      * The [getAll] call delegates here.
      */
-    protected val getAllHandler: CrudHandler = DataLoaderCrudHandler(entityClass, EntityDataLoader(entityClass), maxLimit, defaultLimit, allowSortColumns, allowFilterColumns)
+    protected val getAllHandler: CrudHandler = DataLoaderCrudHandler(dao.entityClass,
+            EntityDataLoader(dao.entityClass), maxLimit, defaultLimit,
+            allowSortColumns, allowFilterColumns)
 
     @Suppress("UNCHECKED_CAST")
-    private val idConverter = when (idClass) {
-        String::class.java -> StringConverter() as Converter<ID>
-        java.lang.Long::class.java -> LongConverter(false) as Converter<ID>
-        Integer::class.java -> IntegerConverter(false) as Converter<ID>
+    private val idConverter: (String)->ID = when (idClass) {
+        String::class.java -> { it -> it as ID }
+        java.lang.Long::class.java -> { it -> it.toLong() as ID }
+        Integer::class.java -> { it -> it.toInt() as ID }
         else -> throw IllegalArgumentException("Can't provide converter for $idClass")
     }
 
@@ -60,38 +59,38 @@ open class VokOrmCrudHandler<ID: Any, E: Entity<ID>>(idClass: Class<ID>, private
     }
 
     private fun convertID(resourceId: String): ID = try {
-        idConverter.convert(resourceId)
+        idConverter(resourceId)
     } catch (e: NumberFormatException) {
         throw NotFoundResponse("Malformed ID: $resourceId")
     }
 
     override fun create(ctx: Context) {
         checkAllowsModification()
-        ctx.bodyAsClass(entityClass).save()
+        ctx.bodyAsClass(dao.entityClass).save()
     }
 
     override fun delete(ctx: Context, resourceId: String) {
         checkAllowsModification()
-        val id = convertID(resourceId)
-        db { con.deleteById(entityClass, id) }
+        val id: ID = convertID(resourceId)
+        dao.deleteById(id)
     }
 
     override fun getAll(ctx: Context) = getAllHandler.getAll(ctx)
 
     override fun getOne(ctx: Context, resourceId: String) {
-        val id = convertID(resourceId)
-        val obj = db { con.findById(entityClass, id) }
-                ?: throw NotFoundResponse("No such entity with ID $resourceId")
+        val id: ID = convertID(resourceId)
+        val obj: E = dao.findById(id) ?: throw NotFoundResponse("No such entity with ID $resourceId")
         ctx.json(obj)
     }
 
     override fun update(ctx: Context, resourceId: String) {
         checkAllowsModification()
-        val entity = ctx.bodyAsClass(entityClass)
-        entity.id = idConverter.convert(resourceId)
+        val entity = ctx.bodyAsClass(dao.entityClass)
+        entity.id = idConverter(resourceId)
         db {
-            val exists = con.existsById(entityClass, entity.id!!)
-            if (!exists) throw NotFoundResponse("No such entity with ID $resourceId")
+            if (!dao.existsById(entity.id!!)) {
+                throw NotFoundResponse("No such entity with ID $resourceId")
+            }
             entity.save()
         }
     }

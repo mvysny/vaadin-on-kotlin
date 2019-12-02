@@ -21,6 +21,7 @@ dependencies {
     // db
     compile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
     compile("com.h2database:h2:${properties["h2_version"]}")
+    compile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
 
     // REST
     compile(project(":vok-rest"))

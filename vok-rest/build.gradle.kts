@@ -14,6 +14,7 @@ dependencies {
     testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.20.v20190813")
     testCompile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
     testCompile("com.h2database:h2:${properties["h2_version"]}")
+    testCompile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
     testCompile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 }
 
