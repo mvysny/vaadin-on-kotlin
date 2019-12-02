@@ -6,8 +6,10 @@ import eu.vaadinonkotlin.listeners
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
+import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.BeanPropertySet
 import com.vaadin.flow.data.binder.PropertyDefinition
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
@@ -122,6 +124,9 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
  * Wraps [HeaderRow] and uses [FilterBinder] to track filter UI components for changes. After the user
  * changes the value in the filter UI component, a new Grid filter of type [F] is computed and
  * set to [Grid.getDataProvider].
+ *
+ * Every field is configured in the [configureField] function - override and modify
+ * to change the config defaults.
  * @param T the type of items in the grid.
  * @param F the type of the filters accepted by grid's [ConfigurableFilterDataProvider].
  * @param grid the owner grid. It is expected that [Grid.getDataProvider] is of type [VokDataProvider]<T>
@@ -134,7 +139,7 @@ class FilterBinder<T: Any, F: Any>(val filterFieldFactory: FilterFieldFactory<T,
  * (using the [FilterFactory.and] function).
  */
 @Suppress("UNCHECKED_CAST")
-class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>,
+open class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>,
                                 val headerRow: HeaderRow,
                                 val filterFieldFactory: FilterFieldFactory<T, F>,
                                 filterFactory: FilterFactory<F>) : Serializable {
@@ -149,7 +154,7 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>,
     /**
      * Map mapping [T] property name to the filtering component generated.
      */
-    private val filterComponents = mutableMapOf<String, Component>()
+    private val filterComponents: MutableMap<String, Component> = mutableMapOf()
 
     /**
      * Invoked when the filter changes.
@@ -174,10 +179,22 @@ class FilterRow<T: Any, F: Any>(val grid: Grid<T>, val itemClass: Class<T>,
                 (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
                 binder.bind(field as HasValue<HasValue.ValueChangeEvent<Any?>, Any?>, property!! as PropertyDefinition<T, Any?>)
                 filterComponents[propertyId] = field as Component
-                (field as? HasSize)?.width = "100%"
+                configureField(field)
             }
             headerRow.getCell(grid.getColumnByKey(propertyId)).setComponent(field as Component?)
         }
+    }
+
+    /**
+     * Configures every Vaadin UI filter [field]. By default the width is set to 100%
+     * and the clear button is made visible for [TextField] and [ComboBox].
+     *
+     * Override to change the configuration defaults.
+     */
+    protected open fun configureField(field: HasValue<*, *>?) {
+        (field as? HasSize)?.width = "100%"
+        (field as? TextField)?.isClearButtonVisible = true
+        (field as? ComboBox)?.isClearButtonVisible = true
     }
 
     /**

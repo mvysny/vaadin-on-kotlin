@@ -36,10 +36,13 @@ interface FilterFieldFactory<T: Any, F> : Serializable {
      * object which mandates given value to be contained in a numeric range.
      *
      * [createFilter] is later used internally when the field's value changes, to construct a filter for given field.
-     * @param property the [itemClass] property.
+     *
+     * You don't need to set the width of the filter to "100%" - this is done automatically by [FilterRow].
+     * @param property one property of a bean of type [T]
      * @param V the type of the value the property holds.
      * @return A field that can be assigned to the given fieldType and that is
-     *         capable of filtering given type of data. May return null if filtering of given data type with given field type is unsupported.
+     *         capable of filtering given type of data.
+     *         May return null if filtering of given data type with given field type is unsupported.
      */
     fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<*, V?>?
 
