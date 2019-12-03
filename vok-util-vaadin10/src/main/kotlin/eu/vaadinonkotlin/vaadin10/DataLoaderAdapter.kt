@@ -3,6 +3,7 @@ package eu.vaadinonkotlin.vaadin10
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.SortClause
+import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.Query
@@ -19,7 +20,8 @@ import java.util.stream.Stream
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any)
+        : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
     override fun toString() = "DataLoaderAdapter($loader)"
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int {
@@ -48,3 +50,15 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
  */
 fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
         DataLoaderAdapter(this, idResolver).withConfigurableFilter2()
+
+/**
+ * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
+ * as a (configurable) [Grid.getDataProvider].
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
+    dataProvider = dataLoader.asDataProvider(idResolver)
+}

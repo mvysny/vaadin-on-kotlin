@@ -76,18 +76,6 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
- * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
- * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically every item
- * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
- * including the item itself.
- */
-fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
-    dataProvider = dataLoader.asDataProvider(idResolver)
-}
-
-/**
- * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
- * as a (configurable) [Grid.getDataProvider].
  */
 fun <T: KEntity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
     dataProvider = dataLoader.asDataProvider()
