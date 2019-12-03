@@ -70,6 +70,7 @@ inline fun <reified T: Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KPr
 /**
  * Returns the Vaadin's [PropertyDefinition] for Kotlin [KProperty1].
  */
+@Suppress("UNCHECKED_CAST")
 inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?> get() =
     BeanPropertySet.get(T::class.java).getProperty(name).get() as PropertyDefinition<T, V?>
 

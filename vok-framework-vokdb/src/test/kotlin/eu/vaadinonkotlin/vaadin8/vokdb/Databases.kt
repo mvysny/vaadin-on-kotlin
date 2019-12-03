@@ -52,7 +52,7 @@ fun DynaNodeGroup.usingH2Database() {
         }
         JdbiOrm.setDataSource(HikariDataSource(config))
         db {
-            con.createUpdate(
+            handle.createUpdate(
                 """create table if not exists Test (
                 id bigint primary key auto_increment,
                 name varchar not null,
