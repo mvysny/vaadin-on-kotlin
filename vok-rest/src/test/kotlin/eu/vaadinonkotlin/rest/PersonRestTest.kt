@@ -61,7 +61,6 @@ class PersonRestTest : DynaTest({
         expectList() { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
-        p.created = p.created!!.withZeroNanos
         expectList(p) { client.getAll() }
     }
 
@@ -73,7 +72,6 @@ class PersonRestTest : DynaTest({
                 expectList() { crud.getAll() }
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
-                p.created = p.created!!.withZeroNanos
                 expectList(p) { crud.getAll() }
             }
 
@@ -129,7 +127,6 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
-                p.created = p.created!!.withZeroNanos
                 expect(p) { crud.getOne(p.id!!.toString()) }
             }
             test("non-existing") {
@@ -174,7 +171,6 @@ class PersonRestTest : DynaTest({
             test("simple") {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
-                p.created = p.created!!.withZeroNanos
                 p.personName = "Leto Atreides"
                 crud.update(p.id!!.toString(), p)
                 expectList(p) { Person.findAll() }

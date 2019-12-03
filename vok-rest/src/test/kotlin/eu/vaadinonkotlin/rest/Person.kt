@@ -61,7 +61,7 @@ data class Person(
 
     override fun save(validate: Boolean) {
         if (id == null) {
-            if (created == null) created = Instant.now()
+            if (created == null) created = Instant.now().withZeroNanos // JDK11
         }
         super.save(validate)
     }
