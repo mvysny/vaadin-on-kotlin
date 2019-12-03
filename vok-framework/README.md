@@ -24,8 +24,8 @@ class Bootstrap: ServletContextListener {
 
 This will initialize all VoK plugins properly. The VoK plugins also tend to add additional fields
 to the `VaadinOnKotlin` object. For example the `vok-db` module adds the
-`VaadinOnKotlin.dataSourceConfig` property which allows you to specify the JDBC URL, username, password,
-JDBC connection pool configuration and other.
+`VaadinOnKotlin.dataSource` property which allows you to specify the JDBC DataSource to
+access the database with.
 
 ## Initializing VoK from your tests
 
