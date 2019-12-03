@@ -32,7 +32,7 @@ import kotlin.reflect.KProperty1
  * You will usually use [VokDataProvider] which uses VoK-DataLoader [Filter] as filter type.
  * @author mvy
  */
-interface FilterFieldFactory<T: Any, F> : Serializable {
+interface FilterFieldFactory<T : Any, F> : Serializable {
     /**
      * Creates the filtering component for given bean property, or Grid column.
      * The component may not necessarily produce values of given data types - for example,
@@ -62,19 +62,6 @@ interface FilterFieldFactory<T: Any, F> : Serializable {
 }
 
 /**
- * Utility method which creates field for a Kotlin property. Calls [FilterFieldFactory.createField].
- */
-inline fun <reified T: Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KProperty1<T, V>): HasValue<*, V?>? =
-        createField(prop.definition)
-
-/**
- * Returns the Vaadin's [PropertyDefinition] for Kotlin [KProperty1].
- */
-@Suppress("UNCHECKED_CAST")
-inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?> get() =
-    BeanPropertySet.get(T::class.java).getProperty(name).get() as PropertyDefinition<T, V?>
-
-/**
  * Provides default implementation for [FilterFieldFactory].
  * Supports filter fields for dates, numbers and strings.
  *
@@ -93,7 +80,7 @@ inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T
  * @author mvy
  */
 @Suppress("UNUSED_PARAMETER")
-open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F> {
+open class DefaultFilterFieldFactory<T : Any, F : Any>(clazz: Class<T>, val filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F> {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
@@ -131,7 +118,9 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filter
 
     private fun <V> createEnumField(type: Class<V?>, property: PropertyDefinition<T, V?>): HasValue<*, V?> = ComboBox<V?>().apply {
         setItems(*type.enumConstants)
-        setItemLabelGenerator { item -> getEnumFilterDisplayName(property, item as Enum<*>) ?: item.name }
+        setItemLabelGenerator { item ->
+            getEnumFilterDisplayName(property, item as Enum<*>) ?: item.name
+        }
     }
 
     protected open fun createTextField(property: PropertyDefinition<T, *>): HasValue<*, *> = TextField()
@@ -145,7 +134,9 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filter
      */
     protected open fun createBooleanField(property: PropertyDefinition<T, Boolean?>): HasValue<*, Boolean?> = ComboBox<Boolean?>().apply {
         setItems(listOf(true, false))
-        setItemLabelGenerator { item -> getBooleanFilterDisplayName(property, item!!) ?: item.toString() }
+        setItemLabelGenerator { item ->
+            getBooleanFilterDisplayName(property, item!!) ?: item.toString()
+        }
     }
 
     protected open fun getBooleanFilterDisplayName(property: PropertyDefinition<T, Boolean?>, value: Boolean): String? = null
@@ -159,7 +150,7 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filter
         else -> null
     }
 
-    protected open fun <V: Serializable> generateGenericFilter(field: HasValue<*, V?>, property: PropertyDefinition<T, V?>, value: V): F? {
+    protected open fun <V : Serializable> generateGenericFilter(field: HasValue<*, V?>, property: PropertyDefinition<T, V?>, value: V): F? {
         /* Special handling for ComboBox (= enum properties) */
         return if (field is ComboBox) {
             filterFactory.eq(property.name, value)
@@ -172,11 +163,11 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filter
 /**
  * Utility method which creates [DefaultFilterFieldFactory] with VOK filters.
  */
-inline fun <reified T: Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
+inline fun <reified T : Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
         DefaultFilterFieldFactory(T::class.java, DataLoaderFilterFactory(T::class.java))
 
-private class FullTextFilterFieldFactory<T: Any>(val delegate: FilterFieldFactory<T, Filter<T>>,
-                                                 val property: DataLoaderPropertyName) : FilterFieldFactory<T, Filter<T>> by delegate {
+class FullTextFilterFieldFactory<T : Any>(val delegate: FilterFieldFactory<T, Filter<T>>,
+                                          val property: DataLoaderPropertyName) : FilterFieldFactory<T, Filter<T>> by delegate {
     override fun <V> createFilter(value: V?, filterField: HasValue<*, V?>, property: PropertyDefinition<T, V?>): Filter<T>? {
         if (property.name == this.property) {
             if (value == null) {
@@ -196,5 +187,11 @@ private class FullTextFilterFieldFactory<T: Any>(val delegate: FilterFieldFactor
  * Creates a new factory which produces [FullTextFilter] for given [property], but delegates
  * all other filter creations to [this].
  */
-fun <T: Any> FilterFieldFactory<T, Filter<T>>.withFullTextOn(property: KProperty1<T, String?>): FilterFieldFactory<T, Filter<T>> =
+fun <T : Any> FilterFieldFactory<T, Filter<T>>.withFullTextOn(property: KProperty1<T, String?>): FilterFieldFactory<T, Filter<T>> =
         FullTextFilterFieldFactory(this, property.name)
+
+/**
+ * Utility method which creates field for a Kotlin property. Calls [FilterFieldFactory.createField].
+ */
+inline fun <reified T : Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KProperty1<T, V>): HasValue<*, V?>? =
+        createField(prop.definition)

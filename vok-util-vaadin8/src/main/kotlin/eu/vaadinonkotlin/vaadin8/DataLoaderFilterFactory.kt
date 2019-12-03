@@ -3,6 +3,8 @@
 package eu.vaadinonkotlin.vaadin8
 
 import com.github.mvysny.vokdataloader.*
+import com.vaadin.data.HasValue
+import com.vaadin.data.PropertyDefinition
 import com.vaadin.shared.ui.ValueChangeMode
 import com.vaadin.ui.Grid
 import com.vaadin.ui.HasValueChangeMode
@@ -11,11 +13,12 @@ import eu.vaadinonkotlin.FilterFactory
 import kotlin.reflect.KClass
 
 /**
- * Produces filters defined by the `VoK-ORM` library. This will allow us to piggyback on the ability of `VoK-ORM` filters to produce
- * SQL92 WHERE clause. See [sqlDataProvider] and [entityDataProvider] for more details.
+ * Produces filters defined by the `VoK-DataLoader` library. This will allow Vaadin Grid to piggyback on the DataLoader API
+ * which provides access to REST (via the `vok-rest-client` module), the ability to use `VoK-ORM` to access SQL databases
+ * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param clazz the type of the entity, not null.
  */
-class DataLoaderFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
+class DataLoaderFilterFactory<T : Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
     override fun and(filters: Set<Filter<T>>) = filters.and()
     override fun or(filters: Set<Filter<T>>) = filters.or()
     override fun eq(propertyName: String, value: Any?) = EqFilter<T>(propertyName, value)
@@ -37,10 +40,18 @@ class DataLoaderFilterFactory<T: Any>(val clazz: Class<T>) : FilterFactory<Filte
  * typically only applies to inline filter
  * components (most importantly [com.vaadin.ui.TextField]), typically ignored for popup components (such as [com.github.vok.framework.NumberFilterPopup])
  * where the values are applied after the user clicks the "Apply" button. Defaults to [ValueChangeMode.LAZY].
+ * @param componentConfigurator invoked for every filter component when created. By default every component
+ * is set to 100%, and by default this closure
+ * will do nothing.
+ * @return the [FilterRow] row with filter components already generated.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>, itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(DataLoaderFilterFactory<T>(itemClass.java)),
-                                                valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY): FilterRow<T, Filter<T>> {
-    return generateFilterComponents(grid, itemClass, DataLoaderFilterFactory<T>(itemClass.java), filterFieldFactory, valueChangeMode)
+fun <T : Any> HeaderRow.generateFilterComponents(
+        grid: Grid<T>, itemClass: KClass<T>,
+        filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(DataLoaderFilterFactory<T>(itemClass.java)),
+        valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY,
+        componentConfigurator: (filterComponent: HasValue<*>, property: PropertyDefinition<T, *>) -> Unit = { _, _ -> }
+): FilterRow<T, Filter<T>> {
+    return generateFilterComponents(grid, itemClass, DataLoaderFilterFactory<T>(itemClass.java),
+            filterFieldFactory, valueChangeMode, componentConfigurator)
 }

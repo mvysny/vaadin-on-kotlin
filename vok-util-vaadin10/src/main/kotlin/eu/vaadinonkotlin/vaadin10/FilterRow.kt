@@ -125,8 +125,7 @@ class FilterBinder<T : Any, F : Any>(val filterFieldFactory: FilterFieldFactory<
  * changes the value in the filter UI component, a new Grid filter of type [F] is computed and
  * set to [Grid.getDataProvider].
  *
- * Every field is configured in the [configureField] function - override and modify
- * to change the config defaults.
+ * Every filter component is configured using the [componentConfigurator] closure.
  * @param T the type of items in the grid.
  * @param F the type of the filters accepted by grid's [ConfigurableFilterDataProvider].
  * @param grid the owner grid. It is expected that [Grid.getDataProvider] is of type [VokDataProvider]<T>

@@ -46,7 +46,7 @@ class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filt
  * @param componentConfigurator invoked for every filter component when created. By default every component
  * is set to 100% and [TextField.isClearButtonVisible]/[ComboBox.isClearButtonVisible] is set to true, and by default this closure
  * will do nothing.
- * @return map mapping property ID to the filtering component generated
+ * @return the [FilterRow] row with filter components already generated.
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> HeaderRow.generateFilterComponents(
