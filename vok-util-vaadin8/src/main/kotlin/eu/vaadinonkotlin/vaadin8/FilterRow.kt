@@ -1,5 +1,6 @@
 package eu.vaadinonkotlin.vaadin8
 
+import com.github.mvysny.karibudsl.v8.fillParent
 import com.github.mvysny.karibudsl.v8.getColumnBy
 import com.github.mvysny.karibudsl.v8.perc
 import com.github.mvysny.karibudsl.v8.w
@@ -191,7 +192,7 @@ class FilterRow<T : Any, F : Any>(
      * Override to change the configuration defaults.
      */
     private fun configureField(field: HasValue<*>, property: PropertyDefinition<T, *>) {
-        (field as Component).w = 100.perc
+        (field as Component).w = fillParent
         componentConfigurator(field, property)
     }
 
