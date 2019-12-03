@@ -53,7 +53,7 @@ class PersonRestTest : DynaTest({
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
         p.created = p.created!!.withZeroNanos
-        val all = client.getAll()
+        val all = client.getAll().onEach { it.created = it.created!!.withZeroNanos }  // JDK11 fix
         expectList(p) { all }
     }
 })
