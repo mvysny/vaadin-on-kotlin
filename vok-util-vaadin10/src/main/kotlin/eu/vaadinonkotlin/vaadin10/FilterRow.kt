@@ -195,7 +195,7 @@ class FilterRow<T : Any, F : Any>(
      * Configures every Vaadin UI filter [field]. By default the width is set to 100%
      * and the clear button is made visible for [TextField] and [ComboBox].
      *
-     * Override to change the configuration defaults.
+     * Calls [componentConfigurator].
      */
     private fun configureField(field: HasValue<*, *>, property: PropertyDefinition<T, *>) {
         (field as? HasSize)?.width = "100%"
