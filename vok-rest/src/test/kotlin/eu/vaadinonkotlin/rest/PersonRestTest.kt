@@ -5,6 +5,7 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.vokdataloader.SortClause
+import com.github.mvysny.vokdataloader.asc
 import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
 import com.google.gson.GsonBuilder
@@ -90,7 +91,7 @@ class PersonRestTest : DynaTest({
                 }
                 expect((0..80).toList()) { crud.getAll(null, listOf(SortClause("age", true))).map { it.age!! - 15 } }
                 expect((0..80).toList().reversed()) { crud.getAll(null, listOf(SortClause("age", false))).map { it.age!! - 15 } }
-                expect((0..80).toSet()) { crud.getAll(null, listOf(SortClause(Person::personName.name, true))).map { it.age!! - 15 } .toSet() }
+                expect((0..80).toSet()) { crud.getAll(null, listOf(Person::personName.asc)).map { it.age!! - 15 } .toSet() }
             }
 
             test("count") {
@@ -205,7 +206,7 @@ class PersonRestTest : DynaTest({
             }
 
             test("sorting") {
-                expectList() { client.getAll(sortBy = listOf(SortClause(Person2::personName.name, true))) }
+                expectList() { client.getAll(sortBy = listOf(Person2::personName.asc)) }
             }
         }
     }
