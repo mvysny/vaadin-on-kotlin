@@ -3,17 +3,21 @@ package eu.vaadinonkotlin.vaadin10
 import eu.vaadinonkotlin.FilterFactory
 import com.github.mvysny.karibudsl.v10.DateInterval
 import com.github.mvysny.karibudsl.v10.DateRangePopup
+import com.github.mvysny.vokdataloader.DataLoaderPropertyName
 import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.FullTextFilter
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.icon.Icon
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.binder.BeanPropertySet
 import com.vaadin.flow.data.binder.PropertyDefinition
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import java.io.Serializable
 import java.time.temporal.Temporal
 import java.util.*
+import kotlin.reflect.KProperty1
 
 /**
  * Produces filter UI components for given bean property, and also
@@ -58,11 +62,29 @@ interface FilterFieldFactory<T: Any, F> : Serializable {
 }
 
 /**
+ * Utility method which creates field for a Kotlin property. Calls [FilterFieldFactory.createField].
+ */
+inline fun <reified T: Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KProperty1<T, V>): HasValue<*, V?>? =
+        createField(prop.definition)
+
+/**
+ * Returns the Vaadin's [PropertyDefinition] for Kotlin [KProperty1].
+ */
+inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?> get() =
+    BeanPropertySet.get(T::class.java).getProperty(name).get() as PropertyDefinition<T, V?>
+
+/**
  * Provides default implementation for [FilterFieldFactory].
  * Supports filter fields for dates, numbers and strings.
  *
  * You can extend this class to add support for custom filters, but it's much better
- * to use the delegate pattern instead.
+ * to use the delegate pattern instead. See [withFullTextOn] for more details.
+ *
+ * Produces the following filters by default:
+ * * OpFilter for NumberRange-based and DateRange-typed properties
+ * * ILikeFilter for String-typed properties (use [withFullTextOn] to override)
+ * * EqFilter for Boolean, Enum and Number-typed properties
+ *
  * @param T the type of beans produced by the [com.vaadin.flow.data.provider.DataProvider]
  * @param F the type of the filter objects accepted by the [com.vaadin.flow.data.provider.DataProvider].
  * @param clazz the class of the beans produced by the [com.vaadin.flow.data.provider.DataProvider]
@@ -145,3 +167,33 @@ open class DefaultFilterFieldFactory<T: Any, F: Any>(clazz: Class<T>, val filter
         }
     }
 }
+
+/**
+ * Utility method which creates [DefaultFilterFieldFactory] with VOK filters.
+ */
+inline fun <reified T: Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
+        DefaultFilterFieldFactory(T::class.java, DataLoaderFilterFactory(T::class.java))
+
+private class FullTextFilterFieldFactory<T: Any>(val delegate: FilterFieldFactory<T, Filter<T>>,
+                                                 val property: DataLoaderPropertyName) : FilterFieldFactory<T, Filter<T>> by delegate {
+    override fun <V> createFilter(value: V?, filterField: HasValue<*, V?>, property: PropertyDefinition<T, V?>): Filter<T>? {
+        if (property.name == this.property) {
+            if (value == null) {
+                return null
+            }
+            val filter = FullTextFilter<T>(property.name, value as String)
+            if (filter.words.isEmpty()) {
+                return null
+            }
+            return filter
+        }
+        return delegate.createFilter(value, filterField, property)
+    }
+}
+
+/**
+ * Creates a new factory which produces [FullTextFilter] for given [property], but delegates
+ * all other filter creations to [this].
+ */
+fun <T: Any> FilterFieldFactory<T, Filter<T>>.withFullTextOn(property: KProperty1<T, String?>): FilterFieldFactory<T, Filter<T>> =
+        FullTextFilterFieldFactory(this, property.name)
