@@ -3,9 +3,13 @@
 package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.vokdataloader.*
+import com.vaadin.flow.component.HasValue
 import eu.vaadinonkotlin.FilterFactory
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
+import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.data.binder.PropertyDefinition
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import kotlin.reflect.KClass
@@ -16,7 +20,7 @@ import kotlin.reflect.KClass
  * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param clazz the type of the entity, not null.
  */
-class DataLoaderFilterFactory<F: Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {
+class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {
     override fun and(filters: Set<Filter<F>>) = filters.and()
     override fun or(filters: Set<Filter<F>>) = filters.or()
     override fun eq(propertyName: String, value: Any?) = EqFilter<F>(propertyName, value)
@@ -36,15 +40,22 @@ class DataLoaderFilterFactory<F: Any>(val clazz: Class<F>) : FilterFactory<Filte
  * @param filterFieldFactory used to create the filters themselves. By default the [DefaultFilterFieldFactory] is used.
  * @param valueChangeMode how eagerly to apply the filtering after the user changes the filter value. Only applied to [HasValueChangeMode];
  * typically only applies to inline filter
- * components (most importantly [com.vaadin.flow.component.textfield.TextField]), typically ignored for popup components (such as [com.github.vok.framework.flow.NumberFilterPopup])
+ * components (most importantly [TextField]), typically ignored for popup components (such as [com.github.vok.framework.flow.NumberFilterPopup])
  * where the values are applied after the user clicks the "Apply" button. There are three values: EAGER - apply the value after every keystroke,
  * ON_CHANGE - apply the value after onblur or when the user presses the Enter button, ON_BLUR - apply the value when the focus leaves the component.
+ * @param componentConfigurator invoked for every filter component when created. By default every component
+ * is set to 100% and [TextField.isClearButtonVisible]/[ComboBox.isClearButtonVisible] is set to true, and by default this closure
+ * will do nothing.
  * @return map mapping property ID to the filtering component generated
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Any> HeaderRow.generateFilterComponents(grid: Grid<T>,
-                                                itemClass: KClass<T>,
-                                                filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, DataLoaderFilterFactory(itemClass.java)),
-                                                valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER): FilterRow<T, Filter<T>> {
-    return generateFilterComponents2(grid, itemClass, DataLoaderFilterFactory(itemClass.java), filterFieldFactory, valueChangeMode)
+fun <T : Any> HeaderRow.generateFilterComponents(
+        grid: Grid<T>,
+        itemClass: KClass<T>,
+        filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, DataLoaderFilterFactory(itemClass.java)),
+        valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER,
+        componentConfigurator: (filterComponent: HasValue<*, *>, property: PropertyDefinition<T, *>) -> Unit = { _, _ -> }
+): FilterRow<T, Filter<T>> {
+    return generateFilterComponents2(grid, itemClass, DataLoaderFilterFactory(itemClass.java),
+            filterFieldFactory, valueChangeMode, componentConfigurator)
 }
