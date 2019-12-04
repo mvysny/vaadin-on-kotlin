@@ -50,6 +50,11 @@ class I18n internal constructor(val locale: Locale) {
         return "!{$key}!";
     }
 
+    /**
+     * Checks whether there is a message under given [key]. If not, [get] will return `!{key}!`.
+     */
+    fun contains(key: String): Boolean = customMessages.containsKey(key) || standardMessages.containsKey(key)
+
     companion object {
         @JvmStatic
         private val log = LoggerFactory.getLogger(I18n::class.java)
