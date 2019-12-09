@@ -126,7 +126,7 @@ build it with Gradle:
 
 ```bash
 $ cd vok-helloworld-app
-$ ./gradlew #runs gradle build script
+$ ./gradlew     #runs gradle build script
 ```
 
 The `gradlew` script will run Gradle, which will download the dependencies and compile the application's WAR file.
@@ -166,12 +166,10 @@ This will fire up Jetty, an embeddable Java web server. Now open a browser and n
 
 To stop the web server, hit Ctrl+C in the terminal window in which you started the server. 
 
-<!--this is misplaced, should be where you talk about style changes: 
 > **Note:** changes in theme files will only be propagated when you are running `./gradlew clean web:appRun` and there is no 
 `styles.css` file. If there is, your changes will be ignored until you compile the theme again, by running
 `./gradlew vaadinThemeCompile`. Just delete the `styles.css` file, to apply changes to your styles immediately as you edit them.
 >
- -->
  
 The "Welcome aboard" page signalizes that you have configured your software 
 correctly enough for it to serve a page.
@@ -249,13 +247,14 @@ Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the follow
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 
 data class Article(
         override var id: Long? = null,
         var title: String? = null,
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 }
 ```
 
@@ -274,9 +273,8 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt`:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.getAll
-import com.github.vokorm.*
 import io.javalin.Javalin
-import io.javalin.NotFoundResponse
+import io.javalin.http.NotFoundResponse
 
 fun Javalin.articleRest() {
     get("/rest/articles/:id") { ctx ->
@@ -466,7 +464,6 @@ Create the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 
@@ -631,7 +628,7 @@ Edit `Article.kt` as follows:
 package com.example.vok
 
 import com.github.vokorm.*
-import eu.vaadinonkotlin.vaadin8.vokdb.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -643,8 +640,8 @@ data class Article(
         var title: String? = null,
 
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 }
 ```
 
@@ -691,7 +688,6 @@ First, create the edit view class `web/src/main/kotlin/com/example/vok/EditArtic
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.server.UserError
 import com.vaadin.ui.Composite
@@ -771,7 +767,6 @@ And we'll also add the link to `ArticleView.kt` as well:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
@@ -918,7 +913,6 @@ Then do the same for the `EditArticleView.kt` view:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.Composite
 import com.vaadin.ui.themes.ValoTheme
@@ -1024,6 +1018,7 @@ Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1039,8 +1034,8 @@ data class Comment(
         @field:NotNull
         @field:Length(min = 3)
         var body: String? = null
-) : Entity<Long> {
-    companion object : Dao<Comment>
+) : KEntity<Long> {
+    companion object : Dao<Comment, Long>(Comment::class.java)
 
     val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 }
@@ -1081,7 +1076,7 @@ Since we are running an embedded database which starts in a clear state, all mig
 15:43:44.823 [RMI TCP Connection(2)-127.0.0.1] INFO  o.f.core.internal.command.DbMigrate - Successfully applied 2 migrations to schema "PUBLIC" (execution time 00:00.057s).
 ```
 
-However, if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not been run against the current database, yet.
+However, if we were to use a persistent database, FlyWay would be smart enough to only execute the migrations that have not been run against the current database yet.
 
 ### Associating Models
 
@@ -1104,6 +1099,7 @@ Edit `Article.kt` to add the other side of the association:
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import eu.vaadinonkotlin.vaadin8.*
 import eu.vaadinonkotlin.vaadin8.vokdb.*
 import org.hibernate.validator.constraints.Length
@@ -1117,8 +1113,8 @@ data class Article(
         var title: String? = null,
 
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 
     val comments: VokDataProvider<Comment> get() = Comment.dataProvider.withFilter { Comment::article_id eq id }
 }
@@ -1251,7 +1247,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v8.getAll
 import com.github.vokorm.*
 import io.javalin.Javalin
-import io.javalin.NotFoundResponse
+import io.javalin.http.NotFoundResponse
 
 fun Javalin.articleRest() {
     get("/rest/articles/:id") { ctx ->
@@ -1288,7 +1284,6 @@ Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.ui.*
 
 class CommentsComponent : Composite() {
@@ -1376,7 +1371,6 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v8.*
-import com.github.vokorm.getById
 import com.vaadin.navigator.*
 import com.vaadin.ui.*
 import com.vaadin.ui.themes.ValoTheme
