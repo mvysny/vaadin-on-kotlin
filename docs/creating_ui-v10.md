@@ -473,6 +473,13 @@ class ButtonBar : HorizontalLayout() {
 }
 ```
 
+The `root` variable will be marked by the IDE as unused. This is okay: the
+side-effect of the `ui {}` is that it runs the `horizontalLayout()` function
+which then attaches the `HorizontalLayout` to the `KComposite` itself.
+However, you may prefer to get rid of this unused `root` variable and call the
+`ui {}` from the `init {}` Kotlin initializer. The downside is that the
+UI-creating code will be indented by two tabs instead of one.
+
 ## More Resources
 
 To learn Vaadin:
