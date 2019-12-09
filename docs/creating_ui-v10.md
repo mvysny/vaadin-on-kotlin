@@ -440,6 +440,39 @@ class NameAgeForm : FormLayout() {
 fun HasComponents.nameAgeForm(block: NameAgeForm.()->Unit = {}): NameAgeForm = init(NameAgeForm(), block)
 ```
 
+## The `KComposite` Pattern
+
+The advantage of extending from `KComposite`, instead of extending the layout (e.g. `VerticalLayout`) directly, is as follows:
+
+* The component public API is not polluted by methods coming from the `VerticalLayout`,
+  resulting in a more compact and to-the-point API. The API coming from `KComposite` is
+  tiny in comparison.
+* Since the `VerticalLayout` API doesn't leak into our component, we are free to
+  replace the `VerticalLayout` with any other layout in the future, without breaking the API.
+* The UI structure is more clearly visible. Take the `ButtonBar` class below as
+  an example: it can clearly be seen that the buttons are nested in the `HorizontalLayout`:
+
+Example 1.: ButtonBar extending KComposite with a clear UI hierarchy
+```kotlin
+class ButtonBar : KComposite() {
+    val root = ui {
+        horizontalLayout {
+            button("ok")
+        }
+    }
+}
+```
+
+Example 2.: ButtonBar extending HorizontalLayout without a clear indication that
+the button is nested in a horizontal layout:
+```kotlin
+class ButtonBar : HorizontalLayout() {
+    init {
+        button("ok")
+    }
+}
+```
+
 ## More Resources
 
 To learn Vaadin:
