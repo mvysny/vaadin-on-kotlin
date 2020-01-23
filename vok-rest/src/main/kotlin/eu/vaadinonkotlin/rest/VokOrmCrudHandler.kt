@@ -9,7 +9,7 @@ import io.javalin.http.NotFoundResponse
 import io.javalin.http.UnauthorizedResponse
 
 /**
- * A very simple handler that exposes instances of given [entityClass] using the `vok-orm` database access library.
+ * A very simple handler that exposes instances of given entity of type [E] using the `vok-orm` database access library.
  *
  * The [getAll] honors the following query parameters:
  * * `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than `maxLimit`
@@ -24,7 +24,8 @@ import io.javalin.http.UnauthorizedResponse
  * All column names are expected to be Kotlin [kotlin.reflect.KProperty1.name] of the entity in question.
  *
  * @param idClass the type of the Entity ID. Only `String`, `Long` and `Integer` IDs are supported as of now; all others will be rejected with an [IllegalArgumentException].
- * @property entityClass the type of the entity for which to provide instances.
+ * @param E the type of the entity for which to provide instances.
+ * @param ID the type of the ID of entity [E]
  * @property allowsModification if false then POST/PATCH/DELETE [create]/[delete]/[update] will fail with 401 UNAUTHORIZED
  * @param maxLimit the maximum number of items permitted to be returned by [getAll]. If the client attempts to request more
  * items then 400 BAD REQUEST is returned. Defaults to [Int.MAX_VALUE], definitely change this in production!

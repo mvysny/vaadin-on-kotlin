@@ -96,6 +96,7 @@ class CrudView: Composite(), View {
     }
 
     private fun createOrEditPerson(person: Person) {
+        person.reload()
         CreateEditPerson(person).apply {
             addCloseListener { personGrid.refresh() }
             UI.getCurrent().addWindow(this)
