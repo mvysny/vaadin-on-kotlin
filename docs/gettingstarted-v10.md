@@ -248,6 +248,7 @@ Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the follow
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 
 data class Article(
         override var id: Long? = null,
@@ -255,8 +256,8 @@ data class Article(
         var title: String? = null,
 
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 }
 ```
 
@@ -275,9 +276,8 @@ Just create a file `web/src/main/kotlin/com/example/vok/ArticleRest.kt` which wi
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.getAll
-import com.github.vokorm.*
 import io.javalin.Javalin
-import io.javalin.NotFoundResponse
+import io.javalin.http.NotFoundResponse
 
 fun Javalin.articleRest() {
     get("/rest/articles/:id") { ctx ->
@@ -632,6 +632,7 @@ Open the `Article.kt` file and edit it:
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -645,8 +646,8 @@ data class Article(
         @field:NotNull
         @field:Length(min = 2)
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 }
 ```
 
@@ -994,6 +995,7 @@ We'll create a `Comment` entity to hold comments for an article. Create the foll
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
 
@@ -1009,8 +1011,8 @@ data class Comment(
         @field:NotNull
         @field:Length(min = 3)
         var body: String? = null
-) : Entity<Long> {
-    companion object : Dao<Comment>
+) : KEntity<Long> {
+    companion object : Dao<Comment, Long>(Comment::class.java)
 
     val article: Article? get() = if (article_id == null) null else Article.findById(article_id!!)
 }
@@ -1074,6 +1076,7 @@ package com.example.vok
 
 import com.github.vokorm.*
 import eu.vaadinonkotlin.vaadin10.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import eu.vaadinonkotlin.vaadin10.vokdb.*
 import org.hibernate.validator.constraints.Length
 import javax.validation.constraints.NotNull
@@ -1086,8 +1089,8 @@ data class Article(
         var title: String? = null,
 
         var text: String? = null
-) : Entity<Long> {
-    companion object : Dao<Article>
+) : KEntity<Long> {
+    companion object : Dao<Article, Long>(Article::class.java)
 
     val comments: VokDataProvider<Comment> get() = Comment.dataProvider.withFilter { Comment::article_id eq id }
 }
@@ -1113,9 +1116,8 @@ it may just be handy to check your database status via the `curl` tool. Edit `Ar
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.getAll
-import com.github.vokorm.*
 import io.javalin.Javalin
-import io.javalin.NotFoundResponse
+import io.javalin.http.NotFoundResponse
 
 fun Javalin.articleRest() {
     get("/rest/articles/:id") { ctx ->
@@ -1503,6 +1505,7 @@ Next is the `LoginView`: just create the `web/src/main/kotlin/com/example/vok/Lo
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.login.*
 import com.vaadin.flow.router.*
 import eu.vaadinonkotlin.vaadin10.*
 
@@ -1520,15 +1523,14 @@ class LoginView : KComposite(), BeforeEnterObserver {
         verticalLayout {
             setSizeFull(); isPadding = false; content { center() }
 
-            loginForm = loginForm("Hello!") {
-                classNames.add("loginform")
-                text("Log in as user/user or admin/admin")
-                onLogin { username, password ->
-                    if (!Session.loginService.login(username, password)) {
-                        usernameField.isInvalid = true
-                        usernameField.errorMessage = "No such user or invalid password"
-                        passwordField.isInvalid = true
-                        passwordField.errorMessage = "No such user or invalid password"
+            val loginI18n: LoginI18n = loginI18n {
+                header.title = "Hello!"
+                additionalInformation = "Log in as user/user or admin/admin"
+            }
+            loginForm = loginForm(loginI18n) {
+                addLoginListener { e ->
+                    if (!Session.loginService.login(e.username, e.password)) {
+                        isError = true
                     }
                 }
             }
@@ -1538,10 +1540,20 @@ class LoginView : KComposite(), BeforeEnterObserver {
 ```
 
 Now we need to intercept every navigation event and check whether the user is logged in,
-redirecting to the `LoginView` if it isn't. Open the `Bootstrap.kt` class, find the line
-`class MyUI : UI()` and replace it as follows:
+redirecting to the `LoginView` if it isn't. Open the `Bootstrap.kt` class and
+add the following to the end of the file:
 
 ```kotlin
+/**
+ * The Vaadin servlet which handles Vaadin framework requests.
+ */
+@WebServlet(urlPatterns = ["/*"], name = "VaadinServlet", asyncSupported = true)
+@VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
+class AppServlet : VaadinServlet()
+
+/**
+ * The root of the component hierarchy.
+ */
 class MyUI : UI() {
     override fun init(request: VaadinRequest) {
         addBeforeEnterListener { event ->
