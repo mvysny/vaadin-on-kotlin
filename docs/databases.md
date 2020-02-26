@@ -132,8 +132,8 @@ Create the `web/src/main/kotlin/com/example/vok/Person.kt` file with the Kotlin 
 ```kotlin
 package com.example.vok
 
-import com.github.vokorm.Dao
-import com.github.vokorm.Entity
+import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import java.time.Instant
 import java.time.LocalDate
 
@@ -147,18 +147,18 @@ data class Person(
     var alive: Boolean = true,
     var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
-) : Entity<Long> {
+) : KEntity<Long> {
     override fun save(validate: Boolean) {
         modified = Instant.now()
         super.save(validate)
     }
 
-    companion object : Dao<Person>
+    companion object : Dao<Person, Long>(Person::class.java)
 }
 ```
 
-By implementing the `Entity` interface the Kotlin class gains capability to create/update itself into
-the database; by having the companion object to implement the `Dao` interface the Kotlin class
+By implementing the `KEntity` interface the Kotlin class gains capability to create/update itself into
+the database; by having the companion object to extend the `Dao` class the Kotlin class
 gains the lookup capabilities. You can paste the following example into the `MyUI.kt` file:
 
 ```kotlin
@@ -175,7 +175,7 @@ import com.vaadin.ui.UI
 @PushStateNavigation
 class MyUI : UI() {
 
-    override fun init(request: VaadinRequest?) {
+    override fun init(request: VaadinRequest) {
         button("Demo") {
             onLeftClick {
                 val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
@@ -298,6 +298,7 @@ as follows:
 package com.example.vok
 
 import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.*
 import java.time.*
 import javax.validation.constraints.*
@@ -316,13 +317,13 @@ data class Person(
     var alive: Boolean = true,
     var maritalStatus: MaritalStatus? = null,
     var modified: Instant? = null
-) : Entity<Long> {
+) : KEntity<Long> {
     override fun save(validate: Boolean) {
         modified = Instant.now()
         super.save(validate)
     }
 
-    companion object : Dao<Person>
+    companion object : Dao<Person, Long>(Person::class.java)
 }
 ```
 
@@ -425,7 +426,7 @@ data class PersonDept(var personName: String? = null, var deptName: String? = nu
 ```
 
 Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
-be saved nor deleted), hence it does not implement the `Entity` interface. Since `Dao` interface is only
+be saved nor deleted), hence it does not implement the `KEntity` interface. Since `Dao` class is only
 applicable to entities, we can't reuse the `Dao`-induced finders.
 
 To load instances of this particular class, we will need to write our own finder methods. We will directly
