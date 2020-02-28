@@ -10,6 +10,10 @@ cd vaadin-on-kotlin
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
+You need to install node.js or use `./gradlew vaadinPrepareNode` beforehand. See the
+[karibu10-helloworld-app](https://github.com/mvysny/karibu10-helloworld-application)
+documentation for more info.
+
 The app is a standard WAR application. Just import the whole vaadin-on-kotlin project directly into your IDE, then launch this app
 as a WAR application in the servlet container of your choice.
 

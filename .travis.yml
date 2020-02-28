@@ -9,3 +9,5 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - node_modules
+script: ./gradlew clean vaadinPrepareNode build -Pvaadin.productionMode

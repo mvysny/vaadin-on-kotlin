@@ -6,8 +6,13 @@ dependencies {
 
     // Vaadin
     compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${properties["karibudsl_version"]}")
-    compile(platform("com.vaadin:vaadin-bom:${properties["vaadin10_version"]}"))
-    compile("com.vaadin:vaadin-core:${properties["vaadin10_version"]}")
+    compile("com.vaadin:vaadin-core:${properties["vaadin10_version"]}") {
+        // Webjars are only needed when running in Vaadin 13 compatibility mode
+        listOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
+                "org.webjars.bowergithub.polymer", "org.webjars.bowergithub.polymerelements",
+                "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
+                .forEach { group -> exclude(group = group) }
+    }
     compile("javax.servlet:javax.servlet-api:3.1.0")
 
     // testing
