@@ -28,7 +28,7 @@ allprojects {
     tasks {
         // Heroku
         val stage by registering {
-            dependsOn("build")
+            // see vok-example-crud-vokdb/build.gradle.kts for proper config of the stage task
         }
     }
 }

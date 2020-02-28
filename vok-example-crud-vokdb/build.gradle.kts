@@ -54,6 +54,6 @@ tasks {
         }
     }
     "stage" {
-        dependsOn("build", copyToLib)
+        dependsOn(":vok-example-crud-vokdb:build", copyToLib)
     }
 }
