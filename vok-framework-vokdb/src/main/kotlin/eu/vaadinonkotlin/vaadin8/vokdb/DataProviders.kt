@@ -5,6 +5,7 @@ import com.github.vokorm.KEntity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
 import com.gitlab.mvysny.jdbiorm.Dao
+import com.gitlab.mvysny.jdbiorm.spi.AbstractEntity
 import com.vaadin.ui.Grid
 import eu.vaadinonkotlin.vaadin8.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin8.VokDataProvider
@@ -17,7 +18,7 @@ import eu.vaadinonkotlin.vaadin8.withConfigurableFilter2
  *
  * Example of use: `grid.dataProvider = Person.dataProvider`.
  */
-inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
+val <T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
     get() = dataLoader.asDataProvider()
 
 /**
@@ -26,7 +27,7 @@ inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
  *
  * Example of use: `grid.setDataLoader(Person.dataLoader)`.
  */
-inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
+val <T: AbstractEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
     get() = EntityDataLoader(this)
 
 /**
