@@ -67,11 +67,6 @@ class NumberFilterPopup: AbstractCompositeField<Button, NumberFilterPopup, Numbe
         dialog.apply {
             isCloseOnEsc = true
             isCloseOnOutsideClick = true
-            addOpenedChangeListener({
-                if (!isOpened) {
-                    element.removeFromParent();
-                }
-            })
             verticalLayout {
                 horizontalLayout {
                     gtInput = textField {
