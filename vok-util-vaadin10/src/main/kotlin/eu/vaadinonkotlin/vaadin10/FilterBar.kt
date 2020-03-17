@@ -177,7 +177,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
     }
 
     /**
-     * Clears all filter components.
+     * Clears all filter components, which effectively removes any filters.
      */
     fun clear() {
         bindings.keys.forEach { it.clearFilter() }
