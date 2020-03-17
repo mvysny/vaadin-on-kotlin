@@ -18,9 +18,8 @@ import kotlin.reflect.KClass
  * Produces filters defined by the `VoK-DataLoader` library. This will allow Vaadin Grid to piggyback on the DataLoader API
  * which provides access to REST (via the `vok-rest-client` module), the ability to use `VoK-ORM` to access SQL databases
  * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
- * @param clazz the type of the entity, not null.
  */
-class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {
+class DataLoaderFilterFactory<F : Any> : FilterFactory<Filter<F>> {
     override fun and(filters: Set<Filter<F>>) = filters.and()
     override fun or(filters: Set<Filter<F>>) = filters.or()
     override fun eq(propertyName: String, value: Any?) = EqFilter<F>(propertyName, value)
@@ -52,10 +51,10 @@ class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filt
 fun <T : Any> HeaderRow.generateFilterComponents(
         grid: Grid<T>,
         itemClass: KClass<T>,
-        filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, DataLoaderFilterFactory(itemClass.java)),
+        filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(itemClass.java, DataLoaderFilterFactory()),
         valueChangeMode: ValueChangeMode = ValueChangeMode.EAGER,
         componentConfigurator: (filterComponent: HasValue<*, *>, property: PropertyDefinition<T, *>) -> Unit = { _, _ -> }
 ): FilterRow<T, Filter<T>> {
-    return generateFilterComponents2(grid, itemClass, DataLoaderFilterFactory(itemClass.java),
+    return generateFilterComponents2(grid, itemClass, DataLoaderFilterFactory(),
             filterFieldFactory, valueChangeMode, componentConfigurator)
 }

@@ -123,3 +123,19 @@ class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializab
         }
     } as T
 }
+
+/**
+ * Converts this class to its non-primitive counterpart. For example, converts `int.class` to `Integer.class`.
+ * @return converts class of primitive type to appropriate non-primitive class; other classes are simply returned as-is.
+ */
+@Suppress("UNCHECKED_CAST")
+val <T> Class<T>.nonPrimitive: Class<T>
+    get() = when (this) {
+        Integer.TYPE -> Integer::class.java as Class<T>
+        java.lang.Long.TYPE -> Long::class.java as Class<T>
+        java.lang.Float.TYPE -> Float::class.java as Class<T>
+        java.lang.Double.TYPE -> java.lang.Double::class.java as Class<T>
+        java.lang.Short.TYPE -> Short::class.java as Class<T>
+        java.lang.Byte.TYPE -> Byte::class.java as Class<T>
+        else -> this
+    }

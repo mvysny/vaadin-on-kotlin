@@ -13,6 +13,7 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.binder.PropertyDefinition
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
+import eu.vaadinonkotlin.nonPrimitive
 import java.io.Serializable
 import java.time.temporal.Temporal
 import java.util.*
@@ -163,7 +164,7 @@ open class DefaultFilterFieldFactory<T : Any, F : Any>(clazz: Class<T>, val filt
  * Utility method which creates [DefaultFilterFieldFactory] with VOK filters.
  */
 inline fun <reified T : Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
-        DefaultFilterFieldFactory(T::class.java, DataLoaderFilterFactory(T::class.java))
+        DefaultFilterFieldFactory(T::class.java, DataLoaderFilterFactory())
 
 class FullTextFilterFieldFactory<T : Any>(val delegate: FilterFieldFactory<T, Filter<T>>,
                                           val property: DataLoaderPropertyName) : FilterFieldFactory<T, Filter<T>> by delegate {
