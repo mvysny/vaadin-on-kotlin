@@ -8,11 +8,11 @@ import com.vaadin.flow.component.textfield.TextField
 import kotlin.test.expect
 import kotlin.test.fail
 
-class NumberFilterPopupTest : DynaTest({
+class NumberRangePopupTest : DynaTest({
     beforeEach { MockVaadin.setup() }
     afterEach { MockVaadin.tearDown() }
-    lateinit var component: NumberFilterPopup
-    beforeEach { component = NumberFilterPopup() }
+    lateinit var component: NumberRangePopup
+    beforeEach { component = NumberRangePopup() }
 
     test("Initial value is null") {
         expect(null) { component.value }

@@ -5,16 +5,18 @@ import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
 import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
+import com.github.mvysny.vokdataloader.Filter
 import com.github.vokorm.db
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.data.renderer.Renderer
 import com.vaadin.flow.router.Route
-import eu.vaadinonkotlin.vaadin10.generateFilterComponents
+import eu.vaadinonkotlin.vaadin10.*
 import java.time.LocalDate
 
 /**
@@ -37,21 +39,33 @@ class PersonListView : KComposite() {
             }
             personGrid = grid(dataProvider = Person.dataProvider) {
                 flexGrow = 1.0
+                appendHeaderRow()
+                val filterBar: FilterBar<Person, Filter<Person>> = appendHeaderRow().asFilterBar(this)
+
                 addColumnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
                 }
-                addColumnFor(Person::name)
-                addColumnFor(Person::age, center({ it.age?.toString() })) {
+                addColumnFor(Person::name) {
+                    filterBar.forField(TextField(), this).ilike()
+                }
+                addColumnFor(Person::age, center { it.age?.toString() }) {
                     width = "120px"; isExpand = false
+                    filterBar.forField(NumberRangePopup(), this).inRange()
                 }
                 addColumnFor(Person::alive) {
                     width = "130px"; isExpand = false
+                    filterBar.forField(BooleanComboBox(), this).eq()
                 }
-                addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
+                addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+                    filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
+                }
                 addColumnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
+                    filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
                 }
-                addColumnFor(Person::created, converter = { it!!.toInstant().toString() })
+                addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
+                    filterBar.forField(DateRangePopup(), this).inRange(Person::created)
+                }
 
                 addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) })).apply {
                     width = "90px"; isExpand = false
@@ -62,8 +76,6 @@ class PersonListView : KComposite() {
                 addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
                     width = "90px"; isExpand = false; key = "delete"
                 }
-
-                appendHeaderRow().generateFilterComponents(this, Person::class)
 
                 gridContextMenu = gridContextMenu {
                     item("view", { person -> if (person != null) navigateToView(PersonView::class, person.id!!) })

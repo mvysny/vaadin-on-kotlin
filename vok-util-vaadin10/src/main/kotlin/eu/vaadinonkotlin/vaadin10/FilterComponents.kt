@@ -4,6 +4,7 @@ import com.github.mvysny.karibudsl.v10.DateInterval
 import com.github.mvysny.karibudsl.v10.browserTimeZone
 import com.github.mvysny.vokdataloader.Filter
 import com.vaadin.flow.component.HasValue
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.shared.Registration
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.toDate
@@ -66,82 +67,20 @@ fun <F : Any> DateInterval.toFilter(
     return filterFactory.and(filters.toSet())
 }
 
+/**
+ * A very simple [ComboBox] with
+ */
+open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
 
-data class ValueChangeEventImpl<V>(
-        private val hasValue: HasValue<*, V>,
-        private val isFromClient: Boolean,
-        private val oldValue: V?,
-        private val value: V?
-) : HasValue.ValueChangeEvent<V> {
-    override fun getHasValue(): HasValue<*, V> = hasValue
-
-    override fun getOldValue(): V? = oldValue
-
-    override fun isFromClient(): Boolean = isFromClient
-
-    override fun getValue(): V? = value
+/**
+ * Creates a very simple [ComboBox] with all enum constants as items. Perfect for
+ * filters for enum-based Grid columns.
+ * @param E the enum type
+ * @param items options in the combo box, defaults to all constants of [E].
+ */
+inline fun <reified E: Enum<E>> enumComboBox(
+        items: List<E> = E::class.java.enumConstants.toList()
+): ComboBox<E?> = ComboBox<E?>().apply {
+    setItems(items)
+    setItemLabelGenerator { item: E? -> item?.name ?: "" }
 }
-
-/**
- * A [HasValue] which produces instances of VOK [Filter]. Used to generate [Filter]
- * instances out of filter components, typically placed in the Grid Header Bar.
- *
- * @todo mavi more documentation, examples, etc.
- */
-typealias HasFilterValue<B> = HasValue<HasValue.ValueChangeEvent<Filter<B>>, Filter<B>>
-
-abstract class FilterComponentAdapter<V : Any, B : Any>(
-        val delegate: HasValue<out HasValue.ValueChangeEvent<V>, V>
-) : HasFilterValue<B> {
-
-    override fun setValue(value: Filter<B>?) {
-        require(value == null) { "The adapter doesn't support displaying filters: $value" }
-        delegate.clear()
-    }
-
-    override fun setReadOnly(readOnly: Boolean) {
-        delegate.isReadOnly = readOnly
-    }
-
-    override fun setRequiredIndicatorVisible(requiredIndicatorVisible: Boolean) {
-        delegate.isRequiredIndicatorVisible = requiredIndicatorVisible
-    }
-
-    override fun isReadOnly(): Boolean = delegate.isReadOnly
-
-    override fun isRequiredIndicatorVisible(): Boolean = delegate.isRequiredIndicatorVisible
-
-    protected abstract fun convertToFilter(value: V?): Filter<B>?
-
-    override fun getValue(): Filter<B>? = convertToFilter(delegate.value)
-
-    override fun addValueChangeListener(listener: HasValue.ValueChangeListener<in HasValue.ValueChangeEvent<Filter<B>>>): Registration {
-        val reg: Registration = delegate.addValueChangeListener { e: HasValue.ValueChangeEvent<V> ->
-            val newEvent: HasValue.ValueChangeEvent<Filter<B>> = ValueChangeEventImpl(this,
-                    e.isFromClient,
-                    convertToFilter(e.oldValue),
-                    convertToFilter(e.value))
-            listener.valueChanged(newEvent)
-        }
-        return Registration { reg.remove() }
-    }
-}
-
-/**
- * Returns a [HasFilterValue] view of a [NumberFilterPopup]. See [HasFilterValue] for more info.
- */
-fun <B : Any> HasValue<*, NumberInterval<Double>>.asFilterValue(propertyName: String): HasFilterValue<B> =
-        object : FilterComponentAdapter<NumberInterval<Double>, B>(this) {
-            override fun convertToFilter(value: NumberInterval<Double>?): Filter<B>? =
-                    value?.toFilter(propertyName, DataLoaderFilterFactory())
-        }
-
-/**
- * Returns a [HasFilterValue] view of a DateRangePopup. See [HasFilterValue] for more info.
- */
-@JvmName("dateIntervalAsFilterValue")
-fun <B : Any> HasValue<*, DateInterval>.asFilterValue(propertyName: String, fieldType: Class<*>): HasFilterValue<B> =
-        object : FilterComponentAdapter<DateInterval, B>(this) {
-            override fun convertToFilter(value: DateInterval?): Filter<B>? =
-                    value?.toFilter(propertyName, DataLoaderFilterFactory(), fieldType)
-        }

@@ -8,7 +8,6 @@ import com.github.mvysny.vokdataloader.FullTextFilter
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.textfield.TextField
-import kotlin.test.assertEquals
 import kotlin.test.expect
 
 class FilterFieldFactoryTest : DynaTest({
@@ -19,7 +18,7 @@ class FilterFieldFactoryTest : DynaTest({
         val factory: FilterFieldFactory<Person, Filter<Person>> = vokDefaultFilterFieldFactory()
         expect<Class<*>>(ComboBox::class.java) { factory.createFieldFor(Person::alive)!!.javaClass }
         expect<Class<*>>(TextField::class.java) { factory.createFieldFor(Person::personName)!!.javaClass }
-        expect<Class<*>>(NumberFilterPopup::class.java) { factory.createFieldFor(Person::age)!!.javaClass }
+        expect<Class<*>>(NumberRangePopup::class.java) { factory.createFieldFor(Person::age)!!.javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { factory.createFieldFor(Person::created)!!.javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { factory.createFieldFor(Person::dateOfBirth)!!.javaClass }
     }

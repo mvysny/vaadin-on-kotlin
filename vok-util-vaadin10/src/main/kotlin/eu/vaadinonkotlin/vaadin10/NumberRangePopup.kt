@@ -50,7 +50,7 @@ data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
  *
  * The current numeric range is also displayed as the caption of the button.
  */
-class NumberFilterPopup : AbstractCompositeField<Button, NumberFilterPopup, NumberInterval<Double>>(null) {
+class NumberRangePopup : AbstractCompositeField<Button, NumberRangePopup, NumberInterval<Double>>(null) {
     private lateinit var ltInput: TextField
     private lateinit var gtInput: TextField
 
@@ -107,7 +107,7 @@ class NumberFilterPopup : AbstractCompositeField<Button, NumberFilterPopup, Numb
 
     override fun setPresentationValue(newPresentationValue: NumberInterval<Double>?) {
         binder.bean = newPresentationValue?.copy()
-                ?: NumberInterval(null, null)
+                ?: NumberInterval<Double>(null, null)
         updateCaption()
     }
 
