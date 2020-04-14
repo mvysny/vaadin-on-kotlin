@@ -41,7 +41,7 @@ typealias VokFilterBar<T> = FilterBar<T, Filter<T>>
  * @param grid the owner grid
  */
 fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
-        asFilterBar(grid, DataLoaderFilterFactory())
+        asFilterBar(grid, DataLoaderFilterFactory<T>())
 
 /**
  * Wraps [HeaderRow] and helps you build filter components. Call [forField] to
