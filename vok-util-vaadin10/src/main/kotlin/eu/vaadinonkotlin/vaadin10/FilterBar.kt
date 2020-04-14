@@ -20,6 +20,12 @@ import java.io.Serializable
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
+/**
+ * Wraps a Grid [HeaderRow] as a filter bar, with additional functionality:
+ * ```kotlin
+ * val filterBar = grid.appendHeaderRow().asFilterBar(grid, DataLoaderFilterFactory<Person>())
+ * ```
+ */
 fun <T : Any, F : Any> HeaderRow.asFilterBar(grid: Grid<T>, filterFactory: FilterFactory<F>): FilterBar<T, F> =
         FilterBar(this, grid, filterFactory)
 
@@ -28,22 +34,40 @@ typealias VokFilterBar<T> = FilterBar<T, Filter<T>>
 /**
  * Creates a [FilterBar] which produces VOK [Filter]s. Perfect for using with the
  * [VokDataProvider].
+ * ```kotlin
+ * val filterBar = grid.appendHeaderRow().asFilterBar(grid)
+ * ```
  * @param T the bean type present in the [grid]
  * @param grid the owner grid
  */
 fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
-        FilterBar<T, Filter<T>>(this, grid, DataLoaderFilterFactory())
+        asFilterBar(grid, DataLoaderFilterFactory())
 
 /**
- * Wraps [HeaderRow] and helps you build filter components.
+ * Wraps [HeaderRow] and helps you build filter components. Call [forField] to
+ * configure filter for particular column, for example:
+ * ```kotlin
+ * personGrid = grid(dataProvider = Person.dataProvider) {
+ *   flexGrow = 1.0
+ *   appendHeaderRow()
+ *   val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
+ *
+ *   addColumnFor(Person::name) {
+ *     filterBar.forField(TextField(), this).ilike()
+ *   }
+ * }
+ * ```
  *
  * After the user
  * changes the value in the filter UI component, a new Grid filter of type [FILTER] is computed and
  * set to [Grid.getDataProvider].
  *
- * Every filter component is configured using the [componentConfigurator] closure.
+ * Every filter component is configured using the [configure] method.
+ *
+ * WARNING: WORK IN PROGRESS, THE API MAY CHANGE AT ANY TIME.
  * @param BEAN the type of items in the grid.
- * @param FILTER the type of the filters accepted by grid's [ConfigurableFilterDataProvider].
+ * @param FILTER the type of the filters accepted by grid's [ConfigurableFilterDataProvider]. For VoK
+ * it's usually [Filter].
  * @param grid the owner grid. It is expected that [Grid.getDataProvider] is of type [VokDataProvider]<BEAN>
  * (or [ConfigurableFilterDataProvider]<BEAN, FILTER, FILTER>).
  * @property headerRow the wrapped header row
@@ -90,10 +114,24 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         }
     }
 
+    /**
+     * Starts configuring [component] to act as a filter component for given [column]:
+     * ```kotlin
+     * personGrid = grid(dataProvider = Person.dataProvider) {
+     *   flexGrow = 1.0
+     *   appendHeaderRow()
+     *   val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
+     *
+     *   addColumnFor(Person::name) {
+     *     filterBar.forField(TextField(), this).ilike()
+     *   }
+     * }
+     * ```
+     */
     fun <VALUE : Any> forField(component: HasValue<*, VALUE?>, column: Grid.Column<BEAN>): Binding.Builder<BEAN, VALUE, FILTER> {
         require(!column.key.isNullOrBlank()) { "The column needs to have the property name as its key" }
         return Binding.Builder(filterFactory, this, column, component as Component) {
-            // useless cast to keep Kotlin compiler happy
+            // useless cast to keep the Kotlin compiler happy
             (component as HasValue<HasValue.ValueChangeEvent<VALUE?>, VALUE?>).value
         }
     }
@@ -111,12 +149,21 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         fun addFilterChangeListener(filterChangeListener: () -> Unit) : Registration =
             (filterComponent as HasValue<*, *>).addValueChangeListener { filterChangeListener() }
 
+        /**
+         * Removes the filter component from the filter bar and stops listening for value changes.
+         */
         fun unbind() {
             builder.filterBar.unregisterBinding(this)
         }
 
+        /**
+         * The filter component.
+         */
         val filterComponent: Component get() = builder.filterComponent
 
+        /**
+         * Clears the filter component - e.g. sets the empty string value `""` to a `TextField`.
+         */
         fun clearFilter() {
             (filterComponent as HasValue<*, *>).clear()
         }
@@ -126,6 +173,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
          * @param BEAN the type of bean present in the Grid
          * @param VALUE this binding is able to extract a value of this type out of the [filterComponent].
          * @param TARGETFILTER we ultimately aim to get the filter of this type out of the [filterComponent].
+         * For VoK it's usually [Filter].
          * @param filterFactory creates filters of type [TARGETFILTER]
          * @param filterComponent the Vaadin filter component, ultimately placed into the [Grid]'s [HeaderRow].
          * @param valueGetter retrieves the current value of type [VALUE] from the [filterComponent].
@@ -141,7 +189,9 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             /**
              * Adds a converter to the chain which converts the value from [filterComponent]
              * (or rather from the previous [valueGetter]).
-             * @param closure never receives nulls nor blank strings: nulls are automatically short-circuited and converted to nulls of type [NEWVALUE].
+             * @param closure never receives nulls nor blank strings: nulls are automatically
+             * short-circuited and converted to nulls of type [NEWVALUE]. Blank strings are
+             * automatically treated as nulls.
              * @param NEWVALUE the new value produced by the new builder (which is now the head of the conversion chain).
              * @return the new converter chain head
              */
@@ -195,6 +245,10 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         bindings.keys.toList().forEach { it.unbind() }
     }
 
+    /**
+     * Return the filter [Binding] for given grid [column]. Fails if no filter
+     * binding has been configured for given column.
+     */
     fun getBindingFor(column: Grid.Column<BEAN>): Binding<BEAN, FILTER> {
         val binding: Binding<BEAN, FILTER>? = bindings.keys.firstOrNull { it.builder.column == column }
         checkNotNull(binding) { "No binding for column ${column.key}: $column" }
@@ -215,21 +269,39 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         (field as? HasValueChangeMode)?.valueChangeMode = ValueChangeMode.LAZY
     }
 
-    fun getFilterComponent(column: Grid.Column<BEAN>) = getBindingFor(column).filterComponent
+    /**
+     * Return the filtering component for given [column]. Fails if no filter
+     * binding has been configured for given column.
+     */
+    fun getFilterComponent(column: Grid.Column<BEAN>): Component = getBindingFor(column).filterComponent
 
-    fun getFilterComponent(property: KProperty1<BEAN, *>) = getFilterComponent(grid.getColumnBy(property))
+    fun getFilterComponent(property: KProperty1<BEAN, *>): Component = getFilterComponent(grid.getColumnBy(property))
 }
 
+/**
+ * Finalizes the binding. A terminal operation; however, usually you wish to finalize
+ * the binding using [ilike] or other terminal operator functions.
+ * @param BEAN the type of beans displayed in the Grid
+ * @param FILTER the type of the filtering value provided by the component,
+ * e.g. [TextField] initially provides [String]s.
+ * @return the finalized binding, with component registered
+ */
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bind(): FilterBar.Binding<BEAN, FILTER> {
     val binding: FilterBar.Binding<BEAN, FILTER> = FilterBar.Binding(this)
     filterBar.finalizeBinding(binding)
     return binding
 }
 
+/**
+ * Finalizes the binding and compares string values using the ILIKE operator.
+ */
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> =
         withConverter { if (it.isBlank()) null else filterFactory.ilike(propertyName, it) }
                 .bind()
 
+/**
+ * Terminal operation which matches numbers in given range.
+ */
 @JvmName("numberIntervalInRange")
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>, FILTER>.inRange(): FilterBar.Binding<BEAN, FILTER> =
         withConverter { it.toFilter(propertyName, filterFactory) }

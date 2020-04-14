@@ -40,7 +40,7 @@ class PersonListView : KComposite() {
             personGrid = grid(dataProvider = Person.dataProvider) {
                 flexGrow = 1.0
                 appendHeaderRow()
-                val filterBar: FilterBar<Person, Filter<Person>> = appendHeaderRow().asFilterBar(this)
+                val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
                 addColumnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
