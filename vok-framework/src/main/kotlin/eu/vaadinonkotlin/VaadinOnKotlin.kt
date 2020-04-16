@@ -123,8 +123,8 @@ fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(C
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*> = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate(
-        {
+fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*>
+        = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate({
             try {
                 command.invoke()
             } catch (t: Throwable) {

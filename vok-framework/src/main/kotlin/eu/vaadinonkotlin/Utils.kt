@@ -8,7 +8,6 @@ import java.time.Instant
 import java.util.*
 import java.io.*
 import java.lang.reflect.Method
-import kotlin.reflect.KClass
 
 /**
  * Closes [this] quietly - if [Closeable.close] fails, an INFO message is logged. The exception is not
@@ -26,6 +25,7 @@ val Instant.toDate: Date get() = Date(toEpochMilli())
 
 fun Iterable<String?>.filterNotBlank() = filterNotNull().filter { it.isNotBlank() }
 
+// @todo remove these when kotlin.time.Duration becomes official
 val Int.days: Duration get() = toLong().days
 val Long.days: Duration get() = Duration.ofDays(this)
 val Int.hours: Duration get() = toLong().hours

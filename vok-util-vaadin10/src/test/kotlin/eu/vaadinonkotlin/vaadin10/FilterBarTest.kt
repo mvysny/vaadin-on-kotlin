@@ -3,10 +3,8 @@ package eu.vaadinonkotlin.vaadin10
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import com.github.mvysny.karibudsl.v10.DateRangePopup
+import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.component
-import com.github.mvysny.karibudsl.v10.getAll
-import com.github.mvysny.karibudsl.v10.getColumnBy
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField

@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.karibudsl.v10.DateInterval
+import com.github.mvysny.karibudsl.v10.NumberInterval
 import com.github.mvysny.karibudsl.v10.browserTimeZone
 import com.vaadin.flow.component.combobox.ComboBox
 import eu.vaadinonkotlin.FilterFactory
@@ -60,10 +61,22 @@ fun <F : Any> DateInterval.toFilter(
         fieldType: Class<*>
 ): F? {
     val filters: List<F> = listOfNotNull(
-            from?.toFilter(propertyName, filterFactory, fieldType, false),
-            to?.toFilter(propertyName, filterFactory, fieldType, true)
+            start?.toFilter(propertyName, filterFactory, fieldType, false),
+            endInclusive?.toFilter(propertyName, filterFactory, fieldType, true)
     )
     return filterFactory.and(filters.toSet())
+}
+
+/**
+ * Creates a filter out of this interval, using given [filterFactory].
+ * @return a filter which matches the same set of numbers as this interval. Returns `null` for universal set interval.
+ */
+fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? where N: Number, N: Comparable<N> = when {
+    isSingleItem -> filterFactory.eq(propertyName, endInclusive!!)
+    isBound -> filterFactory.between(propertyName, start!!, endInclusive!!)
+    endInclusive != null -> filterFactory.le(propertyName, endInclusive!!)
+    start != null -> filterFactory.ge(propertyName, start!!)
+    else -> null
 }
 
 /**

@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.karibudsl.v10.DateInterval
+import com.github.mvysny.karibudsl.v10.NumberInterval
 import com.github.mvysny.karibudsl.v10.getColumnBy
 import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.FullTextFilter

@@ -5,7 +5,7 @@ dependencies {
     compile("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
 
     // Vaadin
-    compile("com.github.mvysny.karibudsl:karibu-dsl-v10:${properties["karibudsl_version"]}")
+    compile("com.github.mvysny.karibudsl:karibu-dsl:${properties["karibudsl_version"]}")
     compile("com.vaadin:vaadin-core:${properties["vaadin10_version"]}") {
         // Webjars are only needed when running in Vaadin 13 compatibility mode
         listOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
