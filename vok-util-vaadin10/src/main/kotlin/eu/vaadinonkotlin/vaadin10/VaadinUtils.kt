@@ -5,6 +5,7 @@ import eu.vaadinonkotlin.getI18nProvider
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.data.binder.BeanPropertySet
 import com.vaadin.flow.data.binder.PropertyDefinition
+import java.util.*
 import kotlin.reflect.KProperty1
 
 /**
@@ -27,10 +28,10 @@ import kotlin.reflect.KProperty1
  */
 val vt: I18n
     get() {
-    val ui = checkUIThread()
-    val locale = ui.locale
+    val ui: UI = checkUIThread()
+    val locale: Locale? = ui.locale
     check(locale != null) { "UI.getCurrent().locale can't really return null" }
-    val provider = getI18nProvider(ui.session.configuration.isProductionMode)
+    val provider: (Locale) -> I18n = getI18nProvider(ui.session.configuration.isProductionMode)
     return provider(locale)
 }
 
@@ -39,7 +40,7 @@ val vt: I18n
  * @return the UI instance, not null.
  * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
  */
-fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
+fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
 
 /**
  * Returns the Vaadin's [PropertyDefinition] for Kotlin [KProperty1].

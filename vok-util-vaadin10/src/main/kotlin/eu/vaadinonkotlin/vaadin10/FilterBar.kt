@@ -17,6 +17,10 @@ import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.shared.Registration
 import eu.vaadinonkotlin.FilterFactory
 import java.io.Serializable
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
@@ -307,18 +311,42 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Dou
         withConverter { it.toFilter(propertyName, filterFactory) }
                 .bind()
 
+/**
+ * Terminal operation which matches dates in given range.
+ * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the filter component to a value
+ * comparable with values coming from the underlying property. Supports [LocalDate],
+ * [LocalDateTime], [Instant], [Date] and [Calendar].
+ */
 @JvmName("dateIntervalInRange")
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
         inRange(fieldType.java)
 
+/**
+ * Terminal operation which matches dates in given range.
+ * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the filter component to a value
+ * comparable with values coming from the underlying property. Supports [LocalDate],
+ * [LocalDateTime], [Instant], [Date] and [Calendar].
+ */
 @JvmName("dateIntervalInRange2")
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> =
         withConverter { it.toFilter(propertyName, filterFactory, fieldType) }
                 .bind()
 
+/**
+ * Terminal operation which matches dates in given range.
+ * @param property the type of the property is used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the filter component to a value
+ * comparable with values coming from the underlying property. Supports [LocalDate],
+ * [LocalDateTime], [Instant], [Date] and [Calendar].
+ */
 inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(property: KProperty1<BEAN, V>): FilterBar.Binding<BEAN, FILTER> =
         inRange(V::class)
 
+/**
+ * Terminal operation which performs full-text search.
+ *
+ * Please read the [FullTextFilter] documentation on how to properly prepare your database
+ * for full-text search.
+ */
 fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> =
         withConverter<Filter<BEAN>> { if (it.isBlank()) null else FullTextFilter<BEAN>(propertyName, it) }
                 .bind()

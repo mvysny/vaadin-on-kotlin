@@ -2,10 +2,7 @@ package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.karibudsl.v10.DateInterval
 import com.github.mvysny.karibudsl.v10.browserTimeZone
-import com.github.mvysny.vokdataloader.Filter
-import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
-import com.vaadin.flow.shared.Registration
 import eu.vaadinonkotlin.FilterFactory
 import eu.vaadinonkotlin.toDate
 import java.time.Instant
@@ -51,9 +48,11 @@ private fun <F> LocalDate.toFilter(
 }
 
 /**
- * Takes `this` and converts it into a filter `propertyName in this`.
- * @param fieldType converts `this` value to a value compatible with this type. Supports [LocalDate],
+ * Creates a filter which accepts dates Takes this and converts it into a filter `propertyName in this`.
+ * @param fieldType used to convert [LocalDate] `from`/`to` values of this range to a value
+ * comparable with values coming from [propertyName]. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
+ * @throws IllegalArgumentException if [fieldType] is of unsupported type.
  */
 fun <F : Any> DateInterval.toFilter(
         propertyName: String,
@@ -68,7 +67,7 @@ fun <F : Any> DateInterval.toFilter(
 }
 
 /**
- * A very simple [ComboBox] with
+ * A very simple [ComboBox] with two pre-filled values: `true` and `false`.
  */
 open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
 

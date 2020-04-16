@@ -55,7 +55,9 @@ class NumberRangePopup : AbstractCompositeField<Button, NumberRangePopup, Number
     private lateinit var gtInput: TextField
 
     @Suppress("UNCHECKED_CAST")
-    private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply { bean = NumberInterval(null, null) }
+    private val binder: Binder<NumberInterval<Double>> = Binder(NumberInterval::class.java as Class<NumberInterval<Double>>).apply {
+        bean = NumberInterval(null, null)
+    }
     private lateinit var set: Button
     private lateinit var clear: Button
     private val dialog = Dialog()
