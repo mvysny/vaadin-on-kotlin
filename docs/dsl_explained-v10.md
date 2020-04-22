@@ -2,14 +2,17 @@
 
 # DSLs: Explained
 
-The Vaadin-on-Kotlin DSL allows you to define your UI in a hierarchical manner. It takes advantage of the DSL Kotlin language feature;
-if you feel lost at any time please feel free to consult the official Kotlin documentation on
+The Vaadin-on-Kotlin DSL allows you to define your UI in a hierarchical manner.
+It takes advantage of the DSL Kotlin language feature;
+if you feel lost at any time please feel free to consult the official Kotlin
+documentation on
 [Type-safe builders](https://kotlinlang.org/docs/reference/type-safe-builders.html).
 
-> **Note**: Please feel free to skip this chapter if you're new to VoK and you're not yet looking for nitty-gritty technical
-details on how things work under the hood.
+> **Note**: Please feel free to skip this chapter if you're new to
+> VoK and you're not yet looking for nitty-gritty technical
+> details on how things work under the hood.
 
-Let's focus on the following code:
+Let's consider the following code, written in the DSL manner:
 ```kotlin
 @Route("")
 class MyView : VerticalLayout() {
@@ -22,7 +25,7 @@ class MyView : VerticalLayout() {
 }
 ```
 
-It is equivalent to the following code in a sense that it produces the same UI component hierarchy:
+It's equivalent to the following code, in a sense that it produces the same UI component hierarchy:
 ```kotlin
 @Route("")
 class MyView : VerticalLayout() {
@@ -37,7 +40,7 @@ class MyView : VerticalLayout() {
 }
 ```
 
-The produced hierarchy in both cases is as follows:
+In both cases the produced hierarchy is as follows:
 ```
 VerticalLayout
   \---- FormLayout
@@ -45,21 +48,32 @@ VerticalLayout
           \----- TextField
 ```
 
-It's clear that the DSL code above has advantage over the plain flat code since it reflects the produced hierarchy.
-Let's thus write the DSL function for constructing the `FormLayout` component. This `formLayout()` function must perform two tasks:
+If we compare both approaches, the hierarchy of Vaadin components is
+more clearly visible in the DSL approach, while the plan code
+looks "flat".
+
+## Creating DSL for Vaadin
+
+Let's start from the very beginning: let's write the DSL function for
+constructing the `FormLayout` component. This `formLayout()`
+function must perform two tasks:
 
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
-* Provide a block which would make all functions, called from this block, insert components into the `FormLayout`.
+* Provide a block which would make all nested function calls insert components into this `FormLayout`.
 
 ## The First Task: Pick Proper Parent To Insert The Component Into
 
 The first task can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
-The receiver for the `formLayout()` function will denote the parent where the `FormLayout` will be inserted. It will be of the `VerticalLayout` type
+The receiver for the `formLayout()` function will denote the parent where
+the `FormLayout` will be inserted. It will be of the `VerticalLayout` type
 (or rather `HasComponents` which is a supertype of all
-layouts and component containers which would allow us to create form layouts in, say, `HorizontalLayout`). Kotlin will then auto-fill the closest `this` which matches
-the receiver type. In this example the receiver will be the `MyView` class itself (since it extends from `VerticalLayout` which implements `HasComponents`).
+layouts and component containers which would allow us to create form
+layouts in, say, `HorizontalLayout`). Kotlin will then auto-fill the
+closest `this` which matches
+the receiver type. In this example the receiver will be the
+`MyView` class itself (since it extends from `VerticalLayout` which implements `HasComponents`).
 
-An example of an (so-called extension) function with such receiver would be:
+An example of a function (so-called extension function) with such receiver would be:
 ```kotlin
 fun HasComponents.formLayout() {
     val fl = FormLayout()
