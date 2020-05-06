@@ -18,14 +18,18 @@ Let's consider the following code, written in the DSL manner:
 class MyView : VerticalLayout() {
     init {
         formLayout {
-            textField("Name:")
-            textField("Age:")
+            textField("Name:") {
+                description = "Last name, first name"
+            }
+            textField("Age:") {
+                width = "5em"
+            }
         }
     }
 }
 ```
 
-It's equivalent to the following code, in a sense that it produces the same UI component hierarchy:
+The same code, but written the old way:
 ```kotlin
 @Route("")
 class MyView : VerticalLayout() {
@@ -33,8 +37,10 @@ class MyView : VerticalLayout() {
         val fl = FormLayout()
         addComponent(fl)
         val nameField = TextField("Name:")
+        nameField.description = "Last name, first name"
         fl.add(nameField)
         val ageField = TextField("Age:")
+        ageField.width = "5em"
         fl.add(ageField)
     }
 }
@@ -49,7 +55,7 @@ VerticalLayout
 ```
 
 If we compare both approaches, the hierarchy of Vaadin components is
-more clearly visible in the DSL approach, while the plan code
+more clearly visible in the DSL approach, while the "old" code
 looks "flat".
 
 ## Creating DSL for Vaadin
@@ -61,7 +67,7 @@ function must perform two tasks:
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
 * Provide a block which would make all nested function calls insert components into this `FormLayout`.
 
-## 1. Adding new component into parent layout
+### Adding new component into parent layout
 
 The first task can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
 The receiver for the `formLayout()` function will denote the parent where
@@ -94,7 +100,7 @@ cause `FormLayout` to be added into `MyView`
   way that would insert the `TextField` into the `FormLayout` instead of into the `MyView`. In order to do that,
   we need the `formLayout()` function to run a specially designed closure.
 
-## 2. Designing the DSL closure
+### Designing the DSL closure
 
 The `formLayout()` function clearly needs to be able to run a closure. Moreover, we need to declare the closure
 in a special way so that any DSL functions invoked from the closure will add components into this `FormLayout`.
