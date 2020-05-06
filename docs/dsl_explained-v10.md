@@ -213,7 +213,8 @@ If we mark both `textField()`, `formLayout()` and `HasComponents` with a particu
 prevent Kotlin from crossing to the outer receiver. However, we can't add annotation to the `HasComponents` interface since it's bundled in the Vaadin jar and
 hence we can't modify its sources!
 
-The solution is to add the `@VaadinDsl` annotation not to the `HasComponents` interface .java source, but into our DSL function definition sources. And
+The solution is to add the `@VaadinDsl` annotation not to the `HasComponents` interface .java source file,
+but into our DSL function definition sources. And
 hence the DSL function becomes like follows:
 
 ```kotlin
