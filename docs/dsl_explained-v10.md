@@ -35,7 +35,7 @@ The same code, but written the old way:
 class MyView : VerticalLayout() {
     init {
         val fl = FormLayout()
-        addComponent(fl)
+        add(fl)
         val nameField = TextField("Name:")
         nameField.description = "Last name, first name"
         fl.add(nameField)
@@ -56,7 +56,7 @@ VerticalLayout
 
 If we compare both approaches, the hierarchy of Vaadin components is
 more clearly visible in the DSL approach, while the "old" code
-looks "flat".
+looks "flat", more boilerplate and the intent is not conveyed as clearly.
 
 ## Creating DSL for Vaadin
 
@@ -220,12 +220,12 @@ hence the DSL function becomes like follows:
 ```kotlin
 fun (@VaadinDsl HasComponents).formLayout(block: (@VaadinDsl FormLayout).()->Unit) {
     val fl = FormLayout()
-    this.addChild(fl)
+    this.add(fl)
     fl.block()
 }
-fun (@VaadinDsl HasComponents).textField(block: (@VaadinDsl TextField).()->Unit) {
+fun (@VaadinDsl HasComponents).textField(caption: String = "", block: (@VaadinDsl TextField).()->Unit) {
     val fl = TextField(caption)
-    this.addChild(fl)
+    this.add(fl)
     fl.block()
 }
 ```
