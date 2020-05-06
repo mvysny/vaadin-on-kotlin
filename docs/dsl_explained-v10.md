@@ -69,47 +69,54 @@ function must perform two tasks:
 
 ### Adding new component into parent layout
 
-The first task can be achieved simply by using [functions with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver).
-The receiver for the `formLayout()` function will denote the parent where
-the `FormLayout` will be inserted. The receiver could be of the `VerticalLayout` type, however
-in order to make the function work for all layouts and component containers it's better to use the `HasComponents` type.
+The first task can be achieved simply by using [extension functions](https://kotlinlang.org/docs/reference/extensions.html).
+In our example, we want to insert the FormLayout into the `MyView` class.
+If we would create the `formLayout()` function as an extension function, the
+Kotlin compiler will automatically fill in the `MyView` instance as the receiver,
+which can be referenced from within the `formLayout()` function simply by using the `this.` expression: 
 
-Kotlin compiler will then automatically pick the
-closest receiver or `this` object which matches
-the receiver type. In this example the receiver for the `formLayout()` function will be the
-`MyView` class since it extends from `VerticalLayout` which implements `HasComponents`.
-
-An example of a function (so-called extension function) with such receiver would be:
 ```kotlin
 fun HasComponents.formLayout() {
     val fl = FormLayout()
-    this.add(fl)  // "this" is HasComponents
+    this.add(fl)  // when calling this function from MyView, "this" will be the instance of MyView
 }
-fun HasComponents.textField() {
-    val fl = TextField()
+fun HasComponents.textField(caption: String = "") {
+    val fl = TextField(caption)
     this.add(fl)
 }
 ```
 
+What about the type of the receiver of the `formLayout()` function? We could make
+the receiver to be of type `MyView`, or even better `VerticalLayout` since
+`MyView` extends from `VerticalLayout`. However, that would still be quite limiting.
+In order to make the function truly flexible and usable with all layouts and component containers,
+it's best to use the `HasComponents` type.
+
 Kotlin will automatically pick the proper receiver:
 * In the `init{}` block of the `MyView` class, the receiver will be the
-`MyView` class itself (which extends `VerticalLayout`). Calling `formLayout()` in the `init{}` block will therefore
-cause `FormLayout` to be added into `MyView`
-* The same situation happens within all functions defined on `MyView`
+  `MyView` class itself (which extends `VerticalLayout`). Calling `formLayout()` in the `init{}` block will therefore
+  cause `FormLayout` to be added into `MyView`.
 * However, we wish to call the `textField()` function from `formLayout()`'s block in such a
   way that would insert the `TextField` into the `FormLayout` instead of into the `MyView`. In order to do that,
   we need the `formLayout()` function to run a specially designed closure.
 
 ### Designing the DSL closure
 
-The `formLayout()` function clearly needs to be able to run a closure. Moreover, we need to declare the closure
-in a special way so that any DSL functions invoked from the closure will add components into this `FormLayout`.
+The `formLayout()` function must accept a closure as its parameter, in order to write the following code:
+
+```kotlin
+formLayout {
+}
+```
+
+Moreover, we need to declare the closure
+in a special way so that any DSL functions invoked from the closure itself will add components into this `FormLayout`.
 The DSL functions insert components into whatever is referenced by `this`; therefore
 we need a way to set the `this` reference in the closure to be the `FormLayout` itself.
 That would make Kotlin to run all nested DSL functions such as
 `textField()` in the context of that receiver (`FormLayout` in this example).
 
-That's precisely what *closures with receivers* do.
+That's precisely what [closures with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver) do.
 
 We will therefore modify the `formLayout()` function accordingly:
 ```kotlin
@@ -129,8 +136,8 @@ formLayout({  // here the receiver is the newly constructed FormLayout
 ...
 ```
 
-The `this.` clause can be dropped as usual. Also, when the `block` is the last parameter of a Kotlin function,
-it goes after the parenthesis:
+The `this.` stanza can be dropped as usual. Also, when a closure is the last parameter of a Kotlin function,
+it may go after the parenthesis:
 
 ```kotlin
 ...
@@ -140,7 +147,7 @@ formLayout() {  // here the receiver is the newly constructed FormLayout
 ...
 ```
 
-If a Kotlin function takes `block` as the only parameter, the empty parentheses can be omitted:
+If a Kotlin function takes a closure as the only parameter, the empty parentheses can be omitted:
 
 ```kotlin
 ...
@@ -150,7 +157,8 @@ formLayout {  // here the receiver is the newly constructed FormLayout
 ...
 ```
 
-We have constructed functions in a way that allows us to write hierarchical code. Since Kotlin allows us to omit syntactic sugar
+We now have constructed functions in a way that allows us to write hierarchical code.
+Since Kotlin allows us to omit syntactic sugar
 we can now define UIs in a way that is both concise and hierarchical.
 
 ## Specifying properties for the TextField
@@ -168,7 +176,7 @@ textField {
 We can achieve that by having the `textField()` function also take a closure with receiver:
 
 ```kotlin
-fun HasComponents.textField(block: TextField.()->Unit) {
+fun HasComponents.textField(caption: String = "", block: TextField.()->Unit) {
     val fl = TextField(caption)
     this.add(fl) // this. is for brevity and can be omitted
     fl.block()
@@ -199,7 +207,7 @@ formLayout {
 }
 ```
 
-Yet writing `this.` to protect ourselves from this kind of issue is highly annoying. Therefore we will use another technique:
+Yet writing `this.` every time to protect ourselves from this kind of issue is highly annoying. Therefore we will use another technique:
 the [DSL markers](https://kotlinlang.org/docs/reference/type-safe-builders.html#scope-control-dslmarker-since-11).
 If we mark both `textField()`, `formLayout()` and `HasComponents` with a particular DSL Marker annotation (in our case, `@VaadinDsl` annotation), that would
 prevent Kotlin from crossing to the outer receiver. However, we can't add annotation to the `HasComponents` interface since it's bundled in the Vaadin jar and
