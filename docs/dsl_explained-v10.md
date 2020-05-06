@@ -113,12 +113,10 @@ The closure needs to be declared
 in a special way so that any DSL functions invoked from the closure itself will add components into this `FormLayout`.
 The DSL functions insert components into whatever layout is referenced by `this`; therefore
 we need a way to set the `this` reference in the closure to be the `FormLayout` itself.
-That would make Kotlin to run all nested DSL functions such as
-`textField()` in the context of that receiver (`FormLayout` in this example).
 
 That's precisely what [closures with receivers](https://kotlinlang.org/docs/reference/lambdas.html#function-literals-with-receiver) do.
-
 We will therefore modify the `formLayout()` function accordingly:
+
 ```kotlin
 fun HasComponents.formLayout(block: FormLayout.()->Unit) {
     val fl = FormLayout()
