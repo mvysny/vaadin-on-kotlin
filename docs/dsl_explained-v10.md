@@ -56,7 +56,7 @@ VerticalLayout
 
 If we compare both approaches, the hierarchy of Vaadin components is
 more clearly visible in the DSL approach, while the "old" code
-looks "flat", more boilerplate and the intent is not conveyed as clearly.
+looks "flat", more boilerplate-y and the intent is not conveyed as clearly.
 
 ## Creating DSL for Vaadin
 
@@ -65,7 +65,7 @@ constructing the `FormLayout` component. This `formLayout()`
 function must perform two tasks:
 
 * Create a `FormLayout` component and insert it into the parent `VerticalLayout`;
-* Provide a block which would make all nested function calls insert components into this `FormLayout`.
+* Provide a block which would make all nested DSL calls insert components into this `FormLayout`.
 
 ### Adding new component into parent layout
 
@@ -73,16 +73,16 @@ The first task can be achieved simply by using [extension functions](https://kot
 In our example, we want to insert the FormLayout into the `MyView` class.
 If we would create the `formLayout()` function as an extension function, the
 Kotlin compiler will automatically fill in the `MyView` instance as the receiver,
-which can be referenced from within the `formLayout()` function simply by using the `this.` expression: 
+which can then be referenced from within the `formLayout()` function simply by using the "`this.`" expression: 
 
 ```kotlin
 fun HasComponents.formLayout() {
     val fl = FormLayout()
-    this.add(fl)  // when calling this function from MyView, "this" will be the instance of MyView
+    this.add(fl)  // when calling this function from MyView, "this" will reference the instance of MyView
 }
 fun HasComponents.textField(caption: String = "") {
-    val fl = TextField(caption)
-    this.add(fl)
+    val tf = TextField(caption)
+    this.add(tf)
 }
 ```
 
@@ -102,16 +102,16 @@ Kotlin will automatically pick the proper receiver:
 
 ### Designing the DSL closure
 
-The `formLayout()` function must accept a closure as its parameter, in order to write the following code:
+The `formLayout()` function must accept a closure as its parameter since we wish to write a code like this:
 
 ```kotlin
 formLayout {
 }
 ```
 
-Moreover, we need to declare the closure
+The closure needs to be declared
 in a special way so that any DSL functions invoked from the closure itself will add components into this `FormLayout`.
-The DSL functions insert components into whatever is referenced by `this`; therefore
+The DSL functions insert components into whatever layout is referenced by `this`; therefore
 we need a way to set the `this` reference in the closure to be the `FormLayout` itself.
 That would make Kotlin to run all nested DSL functions such as
 `textField()` in the context of that receiver (`FormLayout` in this example).
