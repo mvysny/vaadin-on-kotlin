@@ -2,7 +2,8 @@
 
 ![VoK Logo](iconography/vok_logo_small.svg)
 
-Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes everything necessary to create database-backed web applications in server-side Kotlin.
+Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes
+everything necessary to create database-backed web applications in server-side Kotlin.
 
 This is all you need to have a button on a page which, upon clicking,
 creates new row in your SQL database:
@@ -19,7 +20,8 @@ Need a button? Write `button {}`. Need a text field? Write `textField {}`.
 
 Build own components and views by composing existing components with layouts.
 
-Navigate to components by marking them with a `@Route("path")` (for Vaadin 10+ based apps) or `@AutoView("path")` (for Vaadin 8-based apps) annotation.
+Navigate to components by marking them with a `@Route("path")` (for
+Vaadin 14-based apps) or `@AutoView("path")` (for Vaadin 8-based apps) annotation.
 
 ## Simplicity
 
@@ -28,8 +30,10 @@ starting point for beginning programmers: you will write only server-side Kotlin
 JavaScript and CSS are needed only if you decide
 to style up your application or write your own custom rich component.
 
-Note that VoK is not just another REST library, or HTTP route mapping library. On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
-[wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/): lazy paged tables, color pickers, menu components, sliders.
+Note that VoK is not just another REST library, or HTTP route mapping library.
+On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
+[wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/):
+lazy paged tables, color pickers, menu components, sliders.
 All components have two parts:
 
 * Rich JavaScript front which runs in the browser and provides the UI with which the user interacts; and
@@ -39,7 +43,8 @@ The components use Vaadin to handle the communication
 between the client-side front and server-side part; for example, the component 
 Grid is basically a scrollable table which shows tabular data
 The client-side front of the Grid component fetches
-the tabular data from the server-side part of the Grid component. Grid configures Vaadin to pass the data properly from server-side Grid
+the tabular data from the server-side part of the Grid component. Grid configures
+Vaadin to pass the data properly from server-side Grid
 part to the client-side Grid front. To you as programmer, this process is completely transparent:
 you develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
 client-server communication
