@@ -50,7 +50,7 @@ class UsersView : VerticalLayout(), View { ... }
 class BookListView : VerticalLayout(), View { ... }
 ```
 
-Vaadin 10:
+Vaadin 14:
 
 ```kotlin
 @Route("orders", layout = MainLayout::class)
@@ -90,7 +90,7 @@ class OrderView : VerticalLayout(), View {
 }
 ```
 
-Vaadin 10:
+Vaadin 14:
 
 ```kotlin
 @AllowAllUsers
@@ -144,9 +144,9 @@ class MyUI : UI() {
 }
 ```
 
-#### Vaadin 10
+#### Vaadin 14
 
-For Vaadin 10 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
+For Vaadin 14 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
 ```kotlin
 class MyUI: UI() {
     override fun init(request: VaadinRequest) {
@@ -221,7 +221,7 @@ VoK also provide basic login forms and the documentation on how to integrate the
 with your app. There is also a set of example projects:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
+* For Vaadin 14 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK Authorization
 
@@ -235,13 +235,13 @@ and your view must list exactly one of them otherwise it will be inaccessible:
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
 define more complex rules as a Kotlin code in the `View.enter()` which is invoked on navigation
-to that particular view. For Vaadin 10, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
+to that particular view. For Vaadin 14, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
 
 For example, the View may check e.g. whether given user has the right
 to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
 The exception is then caught by the Vaadin exception handler and either
 an error notification "access rejected" should be shown (Vaadin 8), or
-the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 10).
+the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 14).
 
 The API is intended to be very simple so that it can be backed easily by any kind
 of auth scheme you need: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)
@@ -266,11 +266,11 @@ To convert your app to this new security paradigm:
 ### The vok-security module
 
 This module only provides basic API classes which lays out the foundation of the
-security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 10
+security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 14
 and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 [vok-util-vaadin10](../vok-util-vaadin10) modules:
 * For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/eu/vaadinonkotlin/vaadin8/VokSecurity.kt) class;
-* For Vaadin 10 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
+* For Vaadin 14 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
 
 ## Example projects
 
@@ -278,7 +278,7 @@ Please find example projects below. Both projects are using the username+passwor
 stored in the SQL database:
 
 * For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 10 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
+* For Vaadin 14 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK-Security Simple
 

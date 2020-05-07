@@ -84,7 +84,7 @@ println(crud.getAll())
 ```
 
 The CRUD client supports filtering, paging and sorting. It also implements the `DataLoader` interface
-which is very easy to turn into Vaadin 8 or Vaadin 10's `DataProvider` which can
+which is very easy to turn into Vaadin 8 or Vaadin 14's `DataProvider` which can
 then be fed directly to the Vaadin `Grid` component, making it easy to display
 CRUD contents in a tabular fashion:
 

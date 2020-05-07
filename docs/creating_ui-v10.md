@@ -79,30 +79,30 @@ programming language. If you feel lost in the following text, please take your t
 
 ## Available Components
 
-Lots of components are already built-in. You can [browse built-in Vaadin 10 components](https://vaadin.com/components/browse).
-You can also visit [Vaadin 10 Documentation on Components](https://vaadin.com/docs/v10/flow/components/tutorial-flow-components-setup.html) to read about all of the available
+Lots of components are already built-in. You can [browse built-in Vaadin 14 components](https://vaadin.com/components/browse).
+You can also visit [Vaadin 14 Documentation on Components](https://vaadin.com/docs/v14/flow/components/tutorial-flow-components-setup.html) to read about all of the available
 components.
 
-You can find additional components at the [Vaadin Directory](https://vaadin.com/directory); just make sure to search for components intended for Vaadin 10 since
-Vaadin 8/7 components won't work with Vaadin 10.
+You can find additional components at the [Vaadin Directory](https://vaadin.com/directory); just make sure to search for components intended for Vaadin 14 since
+Vaadin 8/7 components won't work with Vaadin 14.
 
 It is also possible to integrate a standalone Web Component into Vaadin. Just find a (preferably Polymer 2-based)
 component at the [webcomponents.org](https://www.webcomponents.org/) page, then find and include appropriate [webjar](https://www.webjars.org/)
 to include the web component into your project. Then, read the [Integrating a Web Component](https://vaadin.com/docs/v10/flow/web-components/integrating-a-web-component.html)
-Vaadin 10 documentation on how to integrate web component into Vaadin 10.
+Vaadin 14 documentation on how to integrate web component into Vaadin 14.
 
 ## Creating Views
 
-Please git clone the [VoK Hello World App Vaadin 10](https://github.com/mvysny/vok-helloworld-app-v10) - we're going to experiment on that app.
+Please git clone the [VoK Hello World App Vaadin 14](https://github.com/mvysny/vok-helloworld-app-v10) - we're going to experiment on that app.
 
 If you open the [WelcomeView.kt](https://github.com/mvysny/vok-helloworld-app-v10/blob/master/web/src/main/kotlin/com/example/vok/WelcomeView.kt)
 file, you'll notice that it extends from the `VerticalLayout`. By extending the `VerticalLayout` we state that the root layout of this view is going to be vertical.
 
-> Vaadin 10 no longer introduces its own layout manager but uses
+> Vaadin 14 no longer introduces its own layout manager but uses
 the CSS Flex Layout extensively. Yet, we still provide `VerticalLayout` and `HorizontalLayout` as a wrappers over
 the Flex Layout, for those familiar with Vaadin 8's `VerticalLayout` and `HorizontalLayout` and unfamiliar with the Flex layout.
-However, the behavior of those two classes is a bit different with Vaadin 10 than it was in Vaadin 8, please
-read [Vaadin 10 server-side layouting for Vaadin 8 and Android developers](http://mavi.logdown.com/posts/6855605)
+However, the behavior of those two classes is a bit different with Vaadin 14 than it was in Vaadin 8, please
+read [Vaadin 14 server-side layouting for Vaadin 8 and Android developers](http://mavi.logdown.com/posts/6855605)
 for a full explanation.
 
 Let's now replace the contents of the `WelcomeView` by a single button. Rewrite the `WelcomeView` class as follows:
@@ -187,7 +187,7 @@ at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) do
 
 ## Layouts
 
-Vaadin 10 delegates all layout work to CSS. There are no JavaScript-based layouts like in Vaadin 8 - there is no need
+Vaadin 14 delegates all layout work to CSS. There are no JavaScript-based layouts like in Vaadin 8 - there is no need
 for that since we have CSS flexbox and CSS grid positioning standards which are now powerful enough to
 cater for all layouting needs.
 

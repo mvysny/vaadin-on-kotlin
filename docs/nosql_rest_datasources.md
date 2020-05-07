@@ -65,11 +65,11 @@ Why we need the data loaders? Can't we simply implement Vaadin's `DataProvider` 
 it to the Grid directly? Unfortunately we can't, for the following reasons:
 
 1. There are actually two `DataProvider` interfaces: `com.vaadin.data.provider.DataProvider` for Vaadin 8,
-  `com.vaadin.flow.data.provider.DataProvider` for Vaadin 10. The methods are identical but the class name
+  `com.vaadin.flow.data.provider.DataProvider` for Vaadin 14. The methods are identical but the class name
    is different. We would thus have to provide
-   an implementation of the same thing two times, both for Vaadin 8 and Vaadin 10. Also,
+   an implementation of the same thing two times, both for Vaadin 8 and Vaadin 14. Also,
    the data-fetching library like `vok-orm`
-   would have to depend on the Vaadin 8 and Vaadin 10 API, which is simply too heavyweight dependency.
+   would have to depend on the Vaadin 8 and Vaadin 14 API, which is simply too heavyweight dependency.
 2. The `DataLoader` API is simpler than the `DataProvider`.
 3. The `DataLoader` API library ([vok-dataloader](https://github.com/mvysny/vok-dataloader))
    comes with filter classes provided (`EqFilter`, `LikeFilter` etc), so you don't have to
@@ -93,7 +93,7 @@ In order to feed the Vaadin Grid with data, you need to have two things:
 > Note: If you are accessing a SQL database, there are already two data providers pre-provided for you:
   the `EntityDataProvider` (fetching entities from their tables) and `SQLDataProvider` (fetching
   result of any SQL SELECT query).
-  Please read [Grids](grids.md) and [Accessing SQL Databases](databases.md) (Vaadin 10: [Grids](grids-v10.md) and [Accessing SQL Databases](databases-v10.md)) for more details.
+  Please read [Grids](grids.md) and [Accessing SQL Databases](databases.md) (Vaadin 14: [Grids](grids-v10.md) and [Accessing SQL Databases](databases-v10.md)) for more details.
 
 To implement the `DataLoader` interface you only need to implement two methods:
 

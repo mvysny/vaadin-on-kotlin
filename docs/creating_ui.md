@@ -63,7 +63,7 @@ client-side code then renders itself as HTML elements.
 With VoK, we create component hierarchies by employing the DSL Kotlin language feature. We will now show how that is done in VoK in a minute.
 
 > **Note:** Vaadin 8 components are not to be
-confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 10.
+confused with the [Web Components Standard](https://en.wikipedia.org/wiki/Web_Components) which are used by Vaadin 14.
 Vaadin 8's Components are in fact GWT widgets which are in essence just plain HTML elements controlled by JavaScript. GWT widgets
 do not require the Web Component Standard to be supported
 by the browser, however they also don't benefit from e.g. Shadow DOM isolation.
@@ -79,7 +79,7 @@ you can also visit [Vaadin 8 Documentation on Components](https://vaadin.com/doc
 components.
 
 You can find additional components at the [Vaadin Directory](https://vaadin.com/directory); just make sure to search for components intended for Vaadin 8 since
-Vaadin 10 components won't work with Vaadin 8.
+Vaadin 14 components won't work with Vaadin 8.
 
 It is also possible to integrate a standalone GWT component into Vaadin; you can find out more at the [Integrating an existing GWT widget](https://vaadin.com/docs/v8/framework/articles/IntegratingAnExistingGWTWidget.html)
 page.

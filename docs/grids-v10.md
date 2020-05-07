@@ -8,7 +8,7 @@ It also allows you to sort and filter for particular column.
 Vaadin Grid is probably the most versatile and complex component, and it may take some time to learn all of its capabilities.
 Just take things slow and you'll be used to Grid in no time.
 
-You can learn about Grid capabilities in the [official Vaadin 10 Grid Documentation page](https://vaadin.com/docs/v10/flow/components/tutorial-flow-grid.html).
+You can learn about Grid capabilities in the [official Vaadin 14 Grid Documentation page](https://vaadin.com/docs/v10/flow/components/tutorial-flow-grid.html).
 
 There are more ways of using Grid; in the tutorial we will use the easiest way as endorsed by the VoK framework.
 
@@ -83,7 +83,7 @@ the data is typically sorted by the primary key by default, which makes little s
 provides a different default sorting instead: `grid(dataProvider = Person.dataProvider.sortedBy(Person::name.asc)) {}`
 
 Even better would be to tell the Grid to initially sort by given column, by calling something like `Grid.sort()`. That way, a visual
-sort indicator would be displayed for the user as well. Unfortunately this is not yet supported by Vaadin 10.
+sort indicator would be displayed for the user as well. Unfortunately this is not yet supported by Vaadin 14.
 
 > Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
@@ -126,7 +126,7 @@ grid(dataProvider = Person.dataProvider) {
 ```
 
 VoK provides means to auto-generate filter components for all bean properties shown in the Grid itself. For more information on this topic
-please read the [VoK Vaadin 10 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin10/README.md).
+please read the [VoK Vaadin 14 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin10/README.md).
 
 > Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
 
@@ -135,7 +135,7 @@ You can do quite a lot with the data providers - please see the (Databases Guide
 ## Conditional Row/Cell formats
 
 Often it is required to change the cell formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.
-Vaadin 10 currently does not support styling cells directly; there is a feature request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
+Vaadin 14 currently does not support styling cells directly; there is a feature request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
 In order to achieve custom formatting you need to use a `ComponentRenderer` for that particular column, which renders a `Div` styled in any way you wish.
 
 For example, to center text inside of a column you can use something like this:
@@ -153,7 +153,7 @@ Another option is to use the `TemplateRenderer` as described here: [Bug 146](htt
 
 # Grid Editor
 
-Note: Vaadin 10 does not support row editors yet: [Bug 199](https://github.com/vaadin/vaadin-grid-flow/issues/199)
+TODO
 
 ## Other Grid options
 

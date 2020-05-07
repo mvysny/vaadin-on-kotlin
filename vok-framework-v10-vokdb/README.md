@@ -1,7 +1,7 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb)
 
-# VoK Vaadin 10 and SQL database support
+# VoK Vaadin 14 and SQL database support
 
 This module includes:
  
@@ -9,7 +9,7 @@ This module includes:
 utilities for pleasant Kotlin development of Vaadin10-based app,
 * The [vok-db](../vok-db) module which includes SQL database support,
 * In addition it provides several
-utility methods to provide nice integration of Vaadin 10 with the SQL database, namely the
+utility methods to provide nice integration of Vaadin 14 with the SQL database, namely the
 Grid filters and Grid DataProvider.
 
 To use this module in your app just add the following dependency into your `build.gradle` file:

@@ -49,12 +49,58 @@ Thanks to this approach, VoK feels more like a desktop widget library (such as S
 
 # Tutorial
 
-To get started with Vaadin-on-Kotlin, [start here](gettingstarted.html). To find out more, please visit the following pages:
+To get started with Vaadin-on-Kotlin, [start here](gettingstarted-v10.html). To find out more, please visit the following pages:
 
 * [Vaadin-on-Kotlin Guides](vok-guides.md)
 * [Vaadin-on-Kotlin GitHub project page](https://github.com/mvysny/vaadin-on-kotlin).
 
-The tutorial comes in two versions, for Vaadin 8 and for Vaadin 10.
+The tutorial comes in two versions, for Vaadin 14 and for Vaadin 8.
+
+## Vaadin 14 Quick Starters
+
+Vaadin 14 components are based on the Web Components standard; Vaadin 14-based apps
+are also themable more easily than Vaadin 8-based apps.
+
+Every VoK project tends to have several files (database migrations,
+Gradle build script, themes, logger configuration etc) and our project will
+be no exception. Therefore, it makes sense to
+have an archetype app with all of those files already provided.
+
+<div style="display: flex; flex-wrap: wrap">
+<div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for your UI experiments</div></div>
+<div onclick="location.href='https://github.com/mvysny/vok-helloworld-app-v10';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Skeletal app with support for SQL db; start building your app here</div></div>
+<div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box go"><div class="caption">Full Stack App</div><div class="body">The "Beverage Buddy" app backed by SQL db; demoes two tables</div></div>
+<div onclick="location.href='https://github.com/mvysny/bookstore-vok';" class="box go"><div class="caption">Full Stack App</div><div class="body">The "Bookstore" app backed by SQL db; also demoes security</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app backed by SQL db; for desktop and mobile browsers</div></div>
+</div>
+
+# Further Reading
+
+For technical description of what Vaadin-on-Kotlin is, please feel free to read
+the [Vaadin-on-Kotlin Github page](https://github.com/mvysny/vaadin-on-kotlin).
+
+Vaadin-on-Kotlin apps are typically three-tiered:
+
+* The browser renders HTML and JavaScript constructed by the components orchestrated
+  by the Vaadin framework. Vaadin offers the possibility to orchestrate
+  interactive components entirely server-side using a rich Java API. The Karibu-DSL
+  library wraps Vaadin APIs to provide more pleasant Kotlin experience.
+* Server-side code is typically written using the Kotlin language. This is where
+  your app logic resides and this is where you will add your code.
+* The database access is handled by the VoK-ORM library: a very simple and powerful
+  layer over a SQL database. You can of course decide not to use
+  VoK-ORM and use JPA; you can even decide not to use SQL at all and use a NoSQL database.
+
+Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a particular piece, just click the box below: 
+
+<div style="display: flex; flex-wrap: wrap">
+<div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
+<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box app"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
+<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
+<div onclick="location.href='https://vaadin.com/';" class="box go"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
+<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box au"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
+<div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
+</div>
 
 ## Vaadin 8-based Quick Starters
 
@@ -111,44 +157,6 @@ have an archetype app with all of those files already provided.
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl/tree/master/karibu-dsl-v8#component-palette-app';" class="box fe"><div class="caption">Component Palette</div><div class="body">App which demoes all Vaadin components and the Navigator; no db</div></div>
 <div onclick="location.href='https://github.com/mvysny/vok-helloworld-app';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Skeletal app with support for SQL db; start building your app here</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-on-kotlin#example-project';" class="box go"><div class="caption">VoK Full Stack</div><div class="body">Full-stack with db and a db table editor; a good source of code examples</div></div>
-</div>
-
-## Vaadin 10-based Quick Starters
-
-Vaadin 10+ components are based on the Web Components standard; Vaadin 10-based apps are also themable more easily than Vaadin 8-based apps.
-
-Every VoK project tends to have several files (database migrations, Gradle build script, themes, logger configuration etc) and our project will be no exception. Therefore, it makes sense to
-have an archetype app with all of those files already provided.
-
-<div style="display: flex; flex-wrap: wrap">
-<div onclick="location.href='https://github.com/mvysny/karibu10-helloworld-application';" class="box md"><div class="caption">UI Base</div><div class="body">A project with one view and no db; perfect for your UI experiments</div></div>
-<div onclick="location.href='https://github.com/mvysny/vok-helloworld-app-v10';" class="box app"><div class="caption">VoK Project Base</div><div class="body">Skeletal app with support for SQL db; start building your app here</div></div>
-<div onclick="location.href='https://github.com/mvysny/beverage-buddy-vok';" class="box go"><div class="caption">Full Stack App</div><div class="body">The "Beverage Buddy" app backed by SQL db; demoes two tables</div></div>
-<div onclick="location.href='https://github.com/mvysny/bookstore-vok';" class="box go"><div class="caption">Full Stack App</div><div class="body">The "Bookstore" app backed by SQL db; also demoes security</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-kotlin-pwa';" class="box au"><div class="caption">Full Stack PWA</div><div class="body">Full-stack task list app backed by SQL db; for desktop and mobile browsers</div></div>
-</div>
-
-# Further Reading
-
-For technical description of what Vaadin-on-Kotlin is, please feel free to read the [Vaadin-on-Kotlin Github page](https://github.com/mvysny/vaadin-on-kotlin).
-
-Vaadin-on-Kotlin apps are typically three-tiered:
-
-* The browser renders HTML and JavaScript constructed by the components orchestrated by the Vaadin framework. Vaadin offers the possibility to orchestrate
-  interactive components entirely server-side using a rich Java API. The Karibu-DSL library wraps Vaadin APIs to provide more pleasant Kotlin experience.
-* Server-side code is typically written using the Kotlin language. This is where your app logic resides and this is where you will add your code.
-* The database access is handled by the VoK-ORM library: a very simple and powerful layer over a SQL database. You can of course decide not to use
-  VoK-ORM and use JPA; you can even decide not to use SQL at all and use a NoSQL database.
-
-Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a particular piece, just click the box below: 
-
-<div style="display: flex; flex-wrap: wrap">
-<div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box md"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
-<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box app"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
-<div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box fe"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
-<div onclick="location.href='https://vaadin.com/';" class="box go"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
-<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box au"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
-<div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box pt"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
 </div>
 
 ## Complete List Of Examples

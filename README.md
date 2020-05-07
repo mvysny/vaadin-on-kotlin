@@ -64,7 +64,7 @@ You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running o
 
 For more information check out the [vok-example-crud-vokdb](vok-example-crud-vokdb) module.
 
-## Vaadin 10 Flow Example project
+## Vaadin 14 Flow Example project
 
 Head to [Beverage Buddy VoK](https://github.com/mvysny/beverage-buddy-vok) for the standalone example project.
 
@@ -104,15 +104,15 @@ The list of modules:
   Always included in your project when you build your app with VoK.
 * [vok-util-vaadin8](vok-util-vaadin8) - when you want to have additional support for Vaadin 8.
   You typically include this module when you build your Vaadin8-based app with VoK.
-* [vok-util-vaadin10](vok-util-vaadin10) - when you want to have additional support for Vaadin 10.
+* [vok-util-vaadin10](vok-util-vaadin10) - when you want to have additional support for Vaadin 14.
   You typically include this module when you build your Vaadin10-based app with VoK.
 * [vok-framework-vokdb](vok-framework-vokdb) - when you want to have additional support for Vaadin 8 and
   the support for the database using the recommended approach. Includes [vok-util-vaadin8](vok-util-vaadin8) and [vok-db](vok-db).
 * [vok-framework-jpa](vok-framework-jpa) - when you want to have additional support for Vaadin 8 and
   the support for the database using the JPA access approach. Includes [vok-util-vaadin8](vok-util-vaadin8).
 * [vok-framework-jpa-compat7](vok-framework-jpa-compat7) - when you need Vaadin7-compat JPA Containers. Includes [vok-framework-jpa](vok-framework-jpa).
-* [vok-framework-v10-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 10 and
-  the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 10.
+* [vok-framework-v10-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 14 and
+  the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 14.
   Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to expose data from your VoK app to other REST-consuming clients.
 * [vok-rest-client](vok-rest-client) - when you want to consume data in your VoK app from other REST servers.
