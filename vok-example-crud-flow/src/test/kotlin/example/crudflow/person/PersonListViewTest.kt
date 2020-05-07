@@ -1,15 +1,12 @@
 package example.crudflow.person
 
-import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.cloneBySerialization
-import example.crudflow.Bootstrap
-import com.github.vokorm.deleteAll
-import com.github.vokorm.findAll
+import com.github.mvysny.kaributesting.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
+import example.crudflow.Bootstrap
 import java.time.LocalDate
 
 /**
@@ -45,7 +42,7 @@ class PersonListViewTest : DynaTest({
         val first = Person.findAll()[0]
         // unfortunately since we're using Renderer to render Age, we won't see the "Age" value here because of
         // https://github.com/vaadin/vaadin-grid-flow/issues/197
-        grid.expectRow(0, first.id!!.toString(), "generated0", "Div[text-align:center, text='15']", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z", "View", "Edit", "Delete")
+        grid.expectRow(0, "Button[icon='vaadin:eye']", "Button[icon='vaadin:edit']", "Button[icon='vaadin:trash']", first.id!!.toString(), "generated0", "15", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z")
     }
 
     test("edit one person") {

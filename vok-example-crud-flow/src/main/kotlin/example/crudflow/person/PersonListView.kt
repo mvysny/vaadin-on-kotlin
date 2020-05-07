@@ -4,11 +4,15 @@ import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
 import com.github.vokorm.db
 import com.vaadin.flow.component.Key.KEY_G
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.grid.ColumnTextAlign
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
+import com.vaadin.flow.component.icon.IconFactory
+import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.component.textfield.TextField
-import com.vaadin.flow.data.renderer.NativeButtonRenderer
+import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin10.*
@@ -39,6 +43,10 @@ class PersonListView : KComposite() {
                 appendHeaderRow()
                 val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
+                addButtonColumn(VaadinIcon.EYE, "view", { person -> navigateToView(PersonView::class, person.id!!) }) {}
+                addButtonColumn(VaadinIcon.EDIT, "edit", { person -> createOrEditPerson(person) }) {}
+                addButtonColumn(VaadinIcon.TRASH, "delete", { person -> person.delete(); refresh() }) {}
+
                 addColumnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
                 }
@@ -62,16 +70,6 @@ class PersonListView : KComposite() {
                 }
                 addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     filterBar.forField(DateRangePopup(), this).inRange(Person::created)
-                }
-
-                addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView(PersonView::class, person.id!!) })).apply {
-                    width = "90px"; isExpand = false
-                }
-                addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) })).apply {
-                    width = "90px"; isExpand = false; key = "edit"
-                }
-                addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() })).apply {
-                    width = "90px"; isExpand = false; key = "delete"
                 }
 
                 gridContextMenu = gridContextMenu {
@@ -99,4 +97,20 @@ class PersonListView : KComposite() {
         }
         personGrid.dataProvider.refreshAll()
     }
+}
+
+/**
+ * Utility method which adds a column housing one small icon button with given [icon] and [clickListener].
+ */
+fun <T> Grid<T>.addButtonColumn(icon: IconFactory, key: String, clickListener: (T) -> Unit, block: Grid.Column<T>.()->Unit): Grid.Column<T> {
+    val renderer = ComponentRenderer<Button, T> { row: T ->
+        val button = Button(icon.create())
+        button.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL)
+        button.addClickListener { clickListener(row) }
+        button
+    }
+    val column: Grid.Column<T> = addColumn(renderer).setKey(key).setWidth("50px")
+    column.isExpand = false
+    column.block()
+    return column
 }
