@@ -1,22 +1,19 @@
 package example.crudflow.person
 
-import example.crudflow.MainLayout
-import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
-import eu.vaadinonkotlin.toDate
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
-import com.github.mvysny.vokdataloader.Filter
 import com.github.vokorm.db
 import com.vaadin.flow.component.Key.KEY_G
+import com.vaadin.flow.component.grid.ColumnTextAlign
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
-import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.textfield.TextField
-import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.data.renderer.NativeButtonRenderer
-import com.vaadin.flow.data.renderer.Renderer
 import com.vaadin.flow.router.Route
+import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin10.*
+import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
+import example.crudflow.MainLayout
 import java.time.LocalDate
 
 /**
@@ -48,8 +45,8 @@ class PersonListView : KComposite() {
                 addColumnFor(Person::name) {
                     filterBar.forField(TextField(), this).ilike()
                 }
-                addColumnFor(Person::age, center { it.age?.toString() }) {
-                    width = "120px"; isExpand = false
+                addColumnFor(Person::age) {
+                    width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER
                     filterBar.forField(NumberRangePopup(), this).inRange()
                 }
                 addColumnFor(Person::alive) {
@@ -103,9 +100,3 @@ class PersonListView : KComposite() {
         personGrid.dataProvider.refreshAll()
     }
 }
-
-/**
- * A workaround for centering column contents until https://github.com/vaadin/vaadin-grid-flow/issues/185 is implemented
- */
-fun <T> Grid<T>.center(vp: (T)->String?): Renderer<T> =
-    ComponentRenderer<Div, T>({ it:T -> Div().apply { text = vp(it); style.set("text-align", "center") }})
