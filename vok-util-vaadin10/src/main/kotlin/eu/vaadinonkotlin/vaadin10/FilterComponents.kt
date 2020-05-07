@@ -80,7 +80,11 @@ fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: Filte
 }
 
 /**
- * A very simple [ComboBox] with two pre-filled values: `true` and `false`.
+ * A very simple [ComboBox] with two pre-filled values: `true` and `false`. Perfect
+ * for filters for boolean-based Grid columns since it's 3-state:
+ * * `null` (no filter)
+ * * `true` (passes only `true` values)
+ * * `false` (passes only `false` values)
  */
 open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
 
@@ -93,6 +97,9 @@ open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
 inline fun <reified E: Enum<E>> enumComboBox(
         items: List<E> = E::class.java.enumConstants.toList()
 ): ComboBox<E?> = ComboBox<E?>().apply {
+    // no need to explicitly add the `null` item here since the ComboBox is clearable:
+    // the user can click the "X" button to set the combo box value to null.
     setItems(items)
+    isClearButtonVisible = true
     setItemLabelGenerator { item: E? -> item?.name ?: "" }
 }

@@ -3,7 +3,8 @@
 
 # VoK-CRUD Example application
 
-A more complete full-stack example application which you can inspire from. You can launch the app simply from your terminal:
+A more complete full-stack example application using Vaadin 8 which you can inspire from.
+You can launch the app simply from your terminal:
 
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin

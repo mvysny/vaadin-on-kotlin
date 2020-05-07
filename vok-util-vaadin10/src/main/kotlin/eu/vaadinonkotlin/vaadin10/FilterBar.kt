@@ -209,14 +209,37 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
                 return Builder(filterFactory, filterBar, column, filterComponent, chainedValueGetter)
             }
 
+            /**
+             * Finalizes the binding. Creates a filter which passes rows with value
+             * equal to the value selected in the filter component.
+             * @return the finalized binding.
+             */
             fun eq(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.eq(propertyName, it) } .bind()
 
+            /**
+             * Finalizes the binding. Creates a filter which passes rows with value
+             * less-than or equal to the value selected in the filter component.
+             * @return the finalized binding.
+             */
             fun le(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.le(propertyName, it) } .bind()
 
+            /**
+             * Finalizes the binding. Creates a filter which passes rows with value
+             * greater-than or equal to the value selected in the filter component.
+             * @return the finalized binding.
+             */
             fun ge(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.ge(propertyName, it) } .bind()
         }
     }
 
+    /**
+     * For internal purpose only.
+     *
+     * Finalizes given [binding]:
+     * 1. Starts watching the filter component for changes and calls [updateFilter] on change.
+     * 2. [configure]s the filter component
+     * 3. Places the filter component into the header cell.
+     */
     internal fun finalizeBinding(binding: Binding<BEAN, FILTER>) {
         val reg: Registration = binding.addFilterChangeListener { updateFilter() }
         bindings[binding] = reg
@@ -239,12 +262,12 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
     }
 
     /**
-     * Returns all current bindings.
+     * Returns all currently active bindings.
      */
     fun getBindings(): List<Binding<BEAN, FILTER>> = bindings.keys.toList()
 
     /**
-     * Removes all filter components from this filter bar.
+     * Removes all filter components from this filter bar and stops listening for value changes.
      */
     fun removeAllBindings() {
         bindings.keys.toList().forEach { it.unbind() }
@@ -280,6 +303,10 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      */
     fun getFilterComponent(column: Grid.Column<BEAN>): Component = getBindingFor(column).filterComponent
 
+    /**
+     * Return the filtering component for given [property]. Fails if no filter
+     * binding has been configured for given column.
+     */
     fun getFilterComponent(property: KProperty1<BEAN, *>): Component = getFilterComponent(grid.getColumnBy(property))
 }
 
@@ -289,7 +316,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
  * @param BEAN the type of beans displayed in the Grid
  * @param FILTER the type of the filtering value provided by the component,
  * e.g. [TextField] initially provides [String]s.
- * @return the finalized binding, with component registered
+ * @return the finalized binding, with component properly configured and placed into
+ * the header bar. See [FilterBar.finalizeBinding] for more details.
  */
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bind(): FilterBar.Binding<BEAN, FILTER> {
     val binding: FilterBar.Binding<BEAN, FILTER> = FilterBar.Binding(this)
