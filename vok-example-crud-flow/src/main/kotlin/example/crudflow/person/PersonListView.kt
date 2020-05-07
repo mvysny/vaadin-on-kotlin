@@ -43,9 +43,9 @@ class PersonListView : KComposite() {
                 appendHeaderRow()
                 val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
-                addButtonColumn(VaadinIcon.EYE, "view", { person -> navigateToView(PersonView::class, person.id!!) }) {}
-                addButtonColumn(VaadinIcon.EDIT, "edit", { person -> createOrEditPerson(person) }) {}
-                addButtonColumn(VaadinIcon.TRASH, "delete", { person -> person.delete(); refresh() }) {}
+                addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateToView(PersonView::class, person.id!!) }) {}
+                addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
+                addButtonColumn(VaadinIcon.TRASH, "delete", { person: Person -> person.delete(); refresh() }) {}
 
                 addColumnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
@@ -73,9 +73,9 @@ class PersonListView : KComposite() {
                 }
 
                 gridContextMenu = gridContextMenu {
-                    item("view", { person -> if (person != null) navigateToView(PersonView::class, person.id!!) })
-                    item("edit", { person -> if (person != null) createOrEditPerson(person) })
-                    item("delete", { person -> if (person != null) { person.delete(); refresh() } })
+                    item("view", { person: Person? -> if (person != null) navigateToView(PersonView::class, person.id!!) })
+                    item("edit", { person: Person? -> if (person != null) createOrEditPerson(person) })
+                    item("delete", { person: Person? -> if (person != null) { person.delete(); refresh() } })
                 }
             }
         }
