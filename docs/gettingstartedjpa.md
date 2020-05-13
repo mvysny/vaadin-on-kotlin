@@ -1,6 +1,8 @@
-[Index](index.html) | [Getting Started](gettingstarted.html) | [Guides](vok-guides.html)
+[Index](index.html) | [Getting Started](gettingstarted-v10.html) | [Guides](vok-guides.html)
 
 # Getting started with Vaadin-on-Kotlin
+
+> Warning: This tutorial is deprecated and not maintained anymore.
 
 This guide covers getting up and running with Vaadin On Kotlin (VoK) with JPA. It is recommended
 to start with the [Getting Started vok-orm](gettingstarted.html) version since it's way simpler

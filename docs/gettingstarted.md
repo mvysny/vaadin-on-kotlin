@@ -53,14 +53,14 @@ and at the same time, achieve much more than many other languages and frameworks
 
 The VoK philosophy includes three major guiding principles:
 
-* Simplicity &emdash; things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
+* Simplicity — things are kept as simple as possible, and libraries are used only when absolutely necessary. Complex patterns such as Dependency Injection
   and MVC are deliberately left out.
-* Components as basic building blocks &emdash; Vaadin is a single-page web component framework as opposed to
+* Components as basic building blocks — Vaadin is a single-page web component framework as opposed to
   the traditional multi-page frameworks. As such, it resembles the traditional fat client
   Swing/JavaFX programming and is closer to GUI software development than the traditional web development with HTML and JavaScript.
   VoK promotes code/UI reuse of components (your components will range from basic ones
   to a complex containers, even forms) instead of creating page templates. It is a predecessor to the Web Components technology.
-* No magic &emdash; No proxies, interceptors, reflection. VoK introduces explicit functions.
+* No magic — No proxies, interceptors, reflection. VoK introduces explicit functions.
 
 ### Notes For Java Programmers
 
@@ -406,7 +406,7 @@ As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whe
 
 ### Creating the Article model
 
-Luckily, we have already created the model &emdash; it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
+Luckily, we have already created the model — it's the `Article` entity class. We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map the Article object to a relational database. By default it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
 > **Note:** vok-orm is smart enough to automatically map column names to the Article class properties,
@@ -615,7 +615,7 @@ or you'll need to run `./gradlew build` in another terminal to actually see the 
 
 The entity file `Article.kt` is about as simple as it can get.
 
-The file is pretty minimalistic &emdash; vok-orm and Vaadin-on-Kotlin supply a great deal of
+The file is pretty minimalistic — vok-orm and Vaadin-on-Kotlin supply a great deal of
 functionality to your entities for free, including basic CRUD
 operations, data validation, as well as
 sophisticated search support and the ability to relate multiple models to one another.
@@ -680,7 +680,7 @@ The form will remain displayed with the invalid fields marked red; also the "Sav
 
 ### Updating Articles
 
-We've covered the "CR" part of CRUD. Now let's focus on the "U" part &emdash; updating articles.
+We've covered the "CR" part of CRUD. Now let's focus on the "U" part — updating articles.
 
 First, create the edit view class `web/src/main/kotlin/com/example/vok/EditArticleView.kt`:
 
@@ -872,7 +872,7 @@ When you press the "Save Article" button, `ArticleEditor` either creates a new a
 
 Noteworthy is the function `HasComponents.articleEditor()`: it that allows us to 
 build Vaadin UIs in a structured way using Kotlin code.
-This technique is called DSL (Domain Specific Language). The name fits &emdash; we have constructed
+This technique is called DSL (Domain Specific Language). The name fits — we have constructed
 a sort of a language to create Vaadin UIs. You can find more information about the DSLs at the [DSLs: Explained](http://www.vaadinonkotlin.eu/dsl_explained.html) article.
 
 With the type-safe builders, the Kotlin compiler will check for typos in DSL and
@@ -1125,7 +1125,7 @@ variable `article` containing an article, you can retrieve all the comments belo
 as an array using `article.comments.getAll()`.
 
 Note that the `comments` field is outside of the `data class` constructor. This is intentional
-since the `comments` field is not really a field but a computed property and thus cannot stand as a constructor parameter. `comments` is hence lazy &emdash;
+since the `comments` field is not really a field but a computed property and thus cannot stand as a constructor parameter. `comments` is hence lazy —
 it is evaluated every time it is read; when it is read, a database `select` is run.
 This is to prevent the `comments` property from appearing in `Article.toString()`
 return value so that logging a newly created article, which does call `toString()`, won't run the select.
