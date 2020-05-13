@@ -32,15 +32,14 @@ This module provides:
 * [sqlDataProvider](src/main/kotlin/eu/vaadinonkotlin/vaadin10/vokdb/DataProviders.kt)
   which is able to represent the outcome of any SELECT including joins
   (as opposed to `dataProvider` which is only able to represent one table or view).
-* The `generateFilterComponents()` function which is able to automatically generate Grid filter components:
-  `grid.appendHeaderRow().generateFilterComponents(grid, Person::class)`
+* And all of the [vok-util-vaadin10](../vok-util-vaadin10) goodies.
 
 ## When to use this module
 
-Use this module if you intend to build a Vaadin10-based app which accesses your SQL database
+Use this module if you intend to build a Vaadin 14-based app which accesses your SQL database
 using the recommended approach.
 
-Unfortunately there is no support for Vaadin10 + JPA at the moment.
+There is no support for Vaadin 14 + JPA in VoK.
 
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin10](../vok-util-vaadin10) module. You will then have to write your own data fetching

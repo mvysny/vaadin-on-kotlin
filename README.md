@@ -194,27 +194,23 @@ popupView("Details") {
 Support for sorting and filtering out-of-the-box:
 
 ```kotlin
-grid(Person::class, dataProvider = Person.dataProvider) {
-  setSizeFull()
-  cols {
-    column(Person::id) {
-      isSortable = false
-    }
-    column(Person::name)
-    column(Person::age)
-    button("edit", "Edit", { createOrEditPerson(db { em.get<Person>(it.itemId) } ) })
-    button("delete", "Delete", { deletePerson(it.itemId as Long) })
+grid<User>(dataProvider = Person.dataProvider) {
+  isExpand = true
+  
+  val filterBar = appendHeaderRow().asFilterBar(this)
+
+  addColumnFor(User::id) {
+      filterBar.forField(NumberRangePopup(), this).inRange()
   }
-  // automatically create filters, based on the types of values present in particular columns.
-  appendHeaderRow().generateFilterComponents(this)
-}
-```
-
-JPA version: 
-
-```kotlin
-grid(Person::class, dataProvider = jpaDataProvider<Person>().withConfigurableFilter()) {
-  ...
+  addColumnFor(User::username) {
+      filterBar.forField(TextField(), this).ilike()
+  }
+  addColumnFor(User::roles) {
+      filterBar.forField(TextField(), this).ilike()
+  }
+  addColumnFor(User::hashedPassword)
+  addButtonColumn(VaadinIcon.EDIT, "edit", { createOrEditUser(it) }) {}
+  addButtonColumn(VaadinIcon.TRASH, "delete", { it.delete(); refresh() }) {}
 }
 ```
 

@@ -46,7 +46,7 @@ When you want to use the NoSQL database:
 
 ## Support for Grid Filter Bar
 
-Hooking a Grid to a data provideris easy:
+Hooking a Grid to a data provider is easy:
 
 ```kotlin
 grid.dataProvider = Person.dataProvider  // uses vok-orm's DataLoader
@@ -58,7 +58,7 @@ you need to do something along these lines:
 ```kotlin
 personGrid = grid(dataProvider = Person.dataProvider) {
   flexGrow = 1.0
-  appendHeaderRow()
+  appendHeaderRow() // workaround for https://github.com/vaadin/vaadin-grid-flow/issues/973
   val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
   addColumnFor(Person::name) {
@@ -73,14 +73,36 @@ Vaadin Grid, to perform filtering of the data shown in the Grid:
 * A `NumberFilterPopup` which allows the user to specify a numeric range of accepted values, which may be
   potentially open.
 * A `DateRangePopup` which allows the user to specify a date range of accepted values.
+* A `BooleanComboBox` which is betterly suited for filtering than a `Checkbox`
+  since it has three states: `true`: filters beans having the `true`
+  value in given property; `false`: filters beans having the `false`
+  value in given property; `null` which disables the filter.
+* An `enumComboBox()` function which allows the user to filter for a particular
+  enum constant.
+
+In addition, you can use any Vaadin field component:
+
+* A `TextField` for ILIKE or full-text filtering.
+* A `ComboBox` with pre-populated values, to mimic `enumComboBox()` when
+  there's a limited set of values present in the column.
+* Possibly others.
+
+`FilterBar.configure()` configures all filter fields by default as follows:
+
+* the width is set to 100%
+* the clear button is made visible for `TextField` and `ComboBox`.
+* `HasValueChangeMode.setValueChangeMode` is set to `ValueChangeMode.LAZY`: not to bombard the database with EAGER, but
+  also not to wait until the focus is lost from the filter - not a good UX since the user types in something and waits and waits and waits with nothing going on.
+
+You can override the `configure()` function to modify this behaviour.
 
 Note that the filter components need an implementation of the `FilterFactory` to
 properly generate filter objects for a particular database backend.
 By default the [DataLoaderFilterFactory] is used: it produces `vok-dataloader`-compatible
 `Filter` instances which are accepted by [vok-framework-v10-vokdb](../vok-framework-v10-vokdb)
-module.
+module. This detail is hidden within the `asFilterBar()` function.
 
-At the moment there is no JPA support.
+There is no support for JPA.
 
 ### How this works: Wiring Filters To Custom Database Backend
 

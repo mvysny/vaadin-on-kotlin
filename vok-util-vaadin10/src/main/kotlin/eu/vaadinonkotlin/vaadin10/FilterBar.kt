@@ -287,8 +287,11 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             getBindingFor(grid.getColumnBy(property))
 
     /**
-     * Configures every Vaadin UI filter [field]. By default the width is set to 100%
-     * and the clear button is made visible for [TextField] and [ComboBox].
+     * Configures every Vaadin UI filter [field]. By default:
+     * * the width is set to 100%
+     * * the clear button is made visible for [TextField] and [ComboBox].
+     * * [HasValueChangeMode.setValueChangeMode] is set to [ValueChangeMode.LAZY]: not to bombard the database with EAGER, but
+     *   also not to wait until the focus is lost from the filter - not a good UX since the user types in something and waits and waits and waits with nothing going on.
      */
     open protected fun configure(field: Component) {
         (field as? HasSize)?.width = "100%"
