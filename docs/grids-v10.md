@@ -62,8 +62,6 @@ personGrid = grid(dataProvider = Person.dataProvider) {
     addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) }))
     addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) }))
     addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() }))
-
-    appendHeaderRow().generateFilterComponents(this, Person::class)
 }
 ```
 
@@ -119,9 +117,22 @@ In the simplest case, when you do not wish to fine-tune the filter appearance, y
 ```kotlin
 grid(dataProvider = Person.dataProvider) {
     // ..
-
-    // automatically create filters, based on the types of values present in particular columns.
-    grid.appendHeaderRow().generateFilterComponents(grid, Task::class)
+    val filterBar = appendHeaderRow().asFilterBar(this)
+    addColumnFor(Person::id, sortable = false) {
+        filterBar.forField(NumberRangePopup(), this).inRange()
+    }
+    addColumnFor(Person::name) {
+        filterBar.forField(TextField(), this).ilike()
+    }
+    addColumnFor(Person::age) {
+        filterBar.forField(NumberRangePopup(), this).inRange()
+    }
+    addColumnFor(Person::alive) {
+        filterBar.forField(BooleanComboBox(), this).eq()
+    }
+    addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+        filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
+    }
 }
 ```
 

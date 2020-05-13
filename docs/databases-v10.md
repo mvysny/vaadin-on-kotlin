@@ -381,18 +381,41 @@ This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sor
 #### Grid Filters
 
 Adding the possibility
-for the user to filter on the contents of the Grid is really easy, just add the following call, as the last
-line into the `grid { ...  }` block:
+for the user to filter on the contents of the Grid is really easy.
+You need to add the filter bar to the Grid; then just create filter components
+and register them to the filter bar. The filter bar will make sure to listen
+for changes in these components, then it will construct the final filter
+which will then be passed to the `DataProvider`:
 
 ```kotlin
-appendHeaderRow().generateFilterComponents(this, Person::class)
+    grid(dataProvider = Person.dataProvider) {
+        setSizeFull()
+        val filterBar = appendHeaderRow().asFilterBar()
+        addColumnFor(Person::id) {
+            filterBar.forField(NumberRangePopup(), this).inRange()
+        }
+        addColumnFor(Person::name) {
+            filterBar.forField(TextField(), this).ilike()
+        }
+        addColumnFor(Person::age) {
+            filterBar.forField(NumberRangePopup(), this).inRange()
+        }
+        addColumnFor(Person::dateOfBirth) {
+            filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
+        }
+        addColumnFor(Person::maritalStatus) {
+            filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
+        }
+        addColumnFor(Person::alive) {
+            filterBar.forField(BooleanComboBox(), this).eq()
+        }
 ```
 
-This will create additional Grid header and will auto-populate it with filters. You can finetune
-the generator by extending the `DefaultFilterFieldFactory`; see the `generateFilterComponents()`
-documentation for details. All filter components will be monitored for a value change events, and a proper filter
-will be set to the data provider upon every change. To achieve this, all built-in VoK data providers
-offered for all entities by the `Dao` interface (via the `dataProvider` extension property) are already configurable
+All filter components will be monitored for a value change events, and a proper filter
+will be set to the data provider upon every change.
+To achieve this, all built-in VoK data providers
+offered for all entities by the `Dao` interface (via the `dataProvider` extension property)
+are already configurable
 (that is, instances of `ConfigurableFilterDataProvider`).
 
 You can also create an unremovable programmatic filter easily:
@@ -403,11 +426,13 @@ grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 
 }
 ```
 
-The unremovable filter will be ANDed with any additional filters set by the filter components. The important distinction here is as follows:
+The unremovable filter will be ANDed with any additional filters set by the filter components.
+The important distinction here is as follows:
 
 * `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider. However
-  this filter will be removed by any filtering value typed in by the user into the filtering component. That is because
-  the filter components will simply call `setFilter()`, overwriting any filter you provided earlier.
+  this filter will be overwritten by a Filter computed by FilterBar when any filter component
+  changes. That is because
+  the filter bar will also call `setFilter()`, overwriting any filter you provided earlier.
 * That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
   takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
   to the old one but always ANDs given filter with any filters set by the `setFilter()`.
@@ -466,9 +491,13 @@ class MyUI : UI {
     override fun init(request: VaadinRequest) {
         grid(dataProvider = PersonDept.dataProvider) {
             setSizeFull()
-            addColumnFor(PersonDept::personName)
-            addColumnFor(PersonDept::deptName)
-            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+            val filterBar = appendHeaderRow().asFilterBar()
+            addColumnFor(PersonDept::personName) {
+                filterBar.forField(TextField(), this).ilike()
+            }
+            addColumnFor(PersonDept::deptName) {
+                filterBar.forField(TextField(), this).ilike()
+            }
         }
     }
 }
@@ -554,9 +583,13 @@ class WelcomeView: VerticalLayout() {
         // components would not overwrite filter set by the custom text field filter above.
         grid(dataProvider = dp.withConfigurableFilter2()) {
             setSizeFull()
-            addColumnFor(PersonDept::personName)
-            addColumnFor(PersonDept::deptName)
-            appendHeaderRow().generateFilterComponents(this, PersonDept::class)
+            val filterBar = appendHeaderRow().asFilterBar()
+            addColumnFor(PersonDept::personName) {
+                filterBar.forField(TextField(), this).ilike()
+            }
+            addColumnFor(PersonDept::deptName) {
+                filterBar.forField(TextField(), this).ilike()
+            }
         }
     }
 }

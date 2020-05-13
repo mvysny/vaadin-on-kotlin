@@ -135,10 +135,12 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      */
     fun <VALUE : Any> forField(component: HasValue<*, VALUE?>, column: Grid.Column<BEAN>): Binding.Builder<BEAN, VALUE, FILTER> {
         require(!column.key.isNullOrBlank()) { "The column needs to have the property name as its key" }
-        return Binding.Builder(filterFactory, this, column, component as Component) {
+        // start with a very simple getter which simply polls the component for its value.
+        val fieldValueGetter: ()->VALUE? = {
             // useless cast to keep the Kotlin compiler happy
             (component as HasValue<HasValue.ValueChangeEvent<VALUE?>, VALUE?>).value
         }
+        return Binding.Builder(filterFactory, this, column, component as Component, fieldValueGetter)
     }
 
     class Binding<BEAN : Any, F : Any>(internal val builder: Builder<BEAN, F, F>) : Serializable {
