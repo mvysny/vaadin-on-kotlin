@@ -6,11 +6,11 @@ import java.util.*
 
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("org.gretty") version "3.0.1"
+    id("org.gretty") version "3.0.3"
     id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
     id("org.jetbrains.dokka") version "0.9.17"
-    id("com.vaadin") version "0.6.0" apply(false)
+    id("com.vaadin") version "0.7.0" apply(false)
 }
 
 defaultTasks("clean", "build")

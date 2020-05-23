@@ -9,6 +9,8 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.vaadin
+    - $HOME/.pnpm-store
     - node_modules
-script: ./gradlew clean vaadinPrepareNode build -Pvaadin.productionMode --stacktrace
+script: ./gradlew clean build -Pvaadin.productionMode --stacktrace
 
