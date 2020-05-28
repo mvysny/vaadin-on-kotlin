@@ -9,9 +9,11 @@ import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
 import com.vaadin.flow.component.textfield.TextField
+import com.vaadin.flow.component.timepicker.TimePicker
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
@@ -291,14 +293,16 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
     /**
      * Configures every Vaadin UI filter [field]. By default:
      * * the width is set to 100%
-     * * the clear button is made visible for [TextField] and [ComboBox].
+     * * the clear button is made visible for [TextField], [ComboBox], [DatePicker], and [TimePicker].
      * * [HasValueChangeMode.setValueChangeMode] is set to [ValueChangeMode.LAZY]: not to bombard the database with EAGER, but
      *   also not to wait until the focus is lost from the filter - not a good UX since the user types in something and waits and waits and waits with nothing going on.
      */
-    open protected fun configure(field: Component) {
+    protected open fun configure(field: Component) {
         (field as? HasSize)?.width = "100%"
         (field as? TextField)?.isClearButtonVisible = true
         (field as? ComboBox<*>)?.isClearButtonVisible = true
+        (field as? DatePicker)?.isClearButtonVisible = true
+        (field as? TimePicker)?.isClearButtonVisible = true
         (field as? HasValueChangeMode)?.valueChangeMode = ValueChangeMode.LAZY
     }
 
