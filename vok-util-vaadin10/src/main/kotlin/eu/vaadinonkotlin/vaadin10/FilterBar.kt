@@ -145,6 +145,16 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         return Binding.Builder(filterFactory, this, column, component as Component, fieldValueGetter)
     }
 
+    /**
+     * The idea here is to gradually introduce converters on top of a Vaadin component, which
+     * will ultimately convert the value into a Filter [F].
+     *
+     * After that's done, we can append the entire setup
+     * into the FilterBar: FilterBar will now track changes to the filter component,
+     * combine all filters into one and ultimately set it to the DataProvider.
+     * @param BEAN the bean type as provided by the DataProvider.
+     * @param F the filter type which the DataProvider uses.
+     */
     class Binding<BEAN : Any, F : Any>(internal val builder: Builder<BEAN, F, F>) : Serializable {
         /**
          * Returns the current filter from the filter component.
