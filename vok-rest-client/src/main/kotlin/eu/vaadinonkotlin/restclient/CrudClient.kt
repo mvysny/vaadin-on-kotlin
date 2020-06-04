@@ -93,6 +93,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
                 is LikeFilter -> "like:$value"
                 is ILikeFilter ->  "ilike:$value"
                 is OpFilter -> "${opToRest(filter.operator)}:$value"
+                is FullTextFilter -> "fulltext:$value"
                 else -> throw IllegalArgumentException("Unsupported filter $filter")
             }
             addQueryParameter(propName, restValue)

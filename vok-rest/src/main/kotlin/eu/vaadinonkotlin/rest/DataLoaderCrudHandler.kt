@@ -106,7 +106,7 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
      */
     @Suppress("UNCHECKED_CAST")
     protected open fun restFilterToDataLoaderFilter(value: String, prop: PropertyDescriptor): Filter<T> {
-        val name = prop.name
+        val name: String = prop.name
         return when {
             value.startsWith("eq:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.eq)
             value.startsWith("lte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.le)
@@ -117,6 +117,7 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
             value.startsWith("isnotnull:") -> IsNotNullFilter(name)
             value.startsWith("like:") -> LikeFilter(name, value.substring(5))
             value.startsWith("ilike:") -> ILikeFilter(name, value.substring(6))
+            value.startsWith("fulltext:") -> FullTextFilter(name, value.substring(9))
             else -> EqFilter(name, convertToDatabase(value, prop.propertyType))
         }
     }

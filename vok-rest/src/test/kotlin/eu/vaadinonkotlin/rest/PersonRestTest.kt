@@ -4,6 +4,7 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.vokdataloader.FullTextFilter
 import com.github.mvysny.vokdataloader.SortClause
 import com.github.mvysny.vokdataloader.asc
 import com.github.mvysny.vokdataloader.buildFilter
@@ -113,6 +114,7 @@ class PersonRestTest : DynaTest({
                 expect(81) { crud.getCount(buildFilter { Person::personName ilike "duke " })}
                 expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
                 expect(81) { crud.getCount(buildFilter { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
+                expect(0) { crud.getCount(FullTextFilter("personName", "duke")) }
             }
 
             test("filter on same fields") {
