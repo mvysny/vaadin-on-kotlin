@@ -218,21 +218,36 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * equal to the value selected in the filter component.
              * @return the finalized binding.
              */
-            fun eq(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.eq(propertyName, it) } .bind()
+            fun eq(): Binding<BEAN, TARGETFILTER> {
+                // first we need to have a converter, converting the component's value to a filter
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.eq(propertyName, it) }
+                // now we can finalize the binding
+                return builder.bind()
+            }
 
             /**
              * Finalizes the binding. Creates a filter which passes rows with value
              * less-than or equal to the value selected in the filter component.
              * @return the finalized binding.
              */
-            fun le(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.le(propertyName, it) } .bind()
+            fun le(): Binding<BEAN, TARGETFILTER> {
+                // first we need to have a converter, converting the component's value to a filter
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.le(propertyName, it) }
+                // now we can finalize the binding
+                return builder.bind()
+            }
 
             /**
              * Finalizes the binding. Creates a filter which passes rows with value
              * greater-than or equal to the value selected in the filter component.
              * @return the finalized binding.
              */
-            fun ge(): Binding<BEAN, TARGETFILTER> = withConverter { filterFactory.ge(propertyName, it) } .bind()
+            fun ge(): Binding<BEAN, TARGETFILTER> {
+                // first we need to have a converter, converting the component's value to a filter
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.ge(propertyName, it) }
+                // now we can finalize the binding
+                return builder.bind()
+            }
         }
     }
 
