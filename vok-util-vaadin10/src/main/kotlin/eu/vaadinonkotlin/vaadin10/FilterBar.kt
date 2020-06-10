@@ -354,9 +354,11 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
 /**
  * Finalizes the binding. A terminal operation; however, usually you wish to finalize
  * the binding using [ilike] or other terminal operator functions.
+ *
+ * You are able to finalize the binding only after you managed to configure binding
+ * builder to conver the field value to [FILTER].
  * @param BEAN the type of beans displayed in the Grid
- * @param FILTER the type of the filtering value provided by the component,
- * e.g. [TextField] initially provides [String]s.
+ * @param FILTER the type of the filtering value accepted by the DataProvider.
  * @return the finalized binding, with component properly configured and placed into
  * the header bar. See [FilterBar.finalizeBinding] for more details.
  */
@@ -369,17 +371,23 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bi
 /**
  * Finalizes the binding and compares string values using the ILIKE operator.
  */
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> =
-        withConverter { if (it.isBlank()) null else filterFactory.ilike(propertyName, it) }
-                .bind()
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> {
+    // first we need to have a converter, converting the component's value to a ILIKE filter
+    val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { if (it.isBlank()) null else filterFactory.ilike(propertyName, it) }
+    // now we can finalize the binding
+    return builder.bind()
+}
 
 /**
  * Terminal operation which matches numbers in given range.
  */
 @JvmName("numberIntervalInRange")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>, FILTER>.inRange(): FilterBar.Binding<BEAN, FILTER> =
-        withConverter { it.toFilter(propertyName, filterFactory) }
-                .bind()
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>, FILTER>.inRange(): FilterBar.Binding<BEAN, FILTER> {
+    // first we need to have a converter, converting the component's value to a range filter
+    val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { it.toFilter(propertyName, filterFactory) }
+    // now we can finalize the binding
+    return builder.bind()
+}
 
 /**
  * Terminal operation which matches dates in given range.
@@ -398,9 +406,12 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILT
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
 @JvmName("dateIntervalInRange2")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> =
-        withConverter { it.toFilter(propertyName, filterFactory, fieldType) }
-                .bind()
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+    // first we need to have a converter, converting the component's value to a range filter
+    val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { it.toFilter(propertyName, filterFactory, fieldType) }
+    // now we can finalize the binding
+    return builder.bind()
+}
 
 /**
  * Terminal operation which matches dates in given range.
@@ -417,6 +428,9 @@ inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, 
  * Please read the [FullTextFilter] documentation on how to properly prepare your database
  * for full-text search.
  */
-fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> =
-        withConverter<Filter<BEAN>> { if (it.isBlank()) null else FullTextFilter<BEAN>(propertyName, it) }
-                .bind()
+fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> {
+    // first we need to have a converter, converting the component's value to a range filter
+    val builder: FilterBar.Binding.Builder<BEAN, Filter<BEAN>, Filter<BEAN>> = withConverter<Filter<BEAN>> { if (it.isBlank()) null else FullTextFilter<BEAN>(propertyName, it) }
+    // now we can finalize the binding
+    return builder.bind()
+}
