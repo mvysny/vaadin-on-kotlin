@@ -1468,7 +1468,6 @@ We will implement a login service and a login form. Just create the `web/src/mai
 package com.example.vok
 
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.server.VaadinSession
 import eu.vaadinonkotlin.vaadin10.Session
 import java.io.Serializable
 
@@ -1486,7 +1485,7 @@ class LoginService : Serializable {
         private set
 
     fun logout() {
-        VaadinSession.getCurrent().close()
+        Session.current.close()
         UI.getCurrent().navigate("")
         UI.getCurrent().page.reload()
     }
