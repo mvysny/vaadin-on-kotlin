@@ -39,14 +39,18 @@ object Session {
      * @param key the key
      * @param value the value to store, may be null if
      */
-    operator fun set(key: String, value: Any?) = current.setAttribute(key, value)
+    operator fun set(key: String, value: Any?) {
+        current.setAttribute(key, value)
+    }
 
     /**
      * Stores given value under given key in a session. Removes the mapping if value is null
      * @param key the key
      * @param value the value to store, may be null if
      */
-    operator fun <T: Any> set(key: KClass<T>, value: T?) = current.setAttribute(key.java, value)
+    operator fun <T: Any> set(key: KClass<T>, value: T?) {
+        current.setAttribute(key.java, value)
+    }
 
     /**
      * Retrieves the class stored under its class name from the session; if it's not yet there calls [defaultValue] block to create it.
@@ -112,6 +116,10 @@ object Cookies {
     fun delete(name: String) = set(name, null)
 }
 
-infix operator fun Cookies.plusAssign(cookie: Cookie) = set(cookie.name, cookie)
+infix operator fun Cookies.plusAssign(cookie: Cookie) {
+    set(cookie.name, cookie)
+}
 
-infix operator fun Cookies.minusAssign(cookie: Cookie) = set(cookie.name, null)
+infix operator fun Cookies.minusAssign(cookie: Cookie) {
+    set(cookie.name, null)
+}
