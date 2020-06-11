@@ -71,6 +71,11 @@ fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
  *
  * Every filter component is configured using the [configure] method.
  *
+ * You can also call [setCustomFilter] to set or remove completely custom filters which will
+ * be ANDed with component-bound filters. You can use this functionality to e.g.
+ * implement a global search bar, or to create an unremovable filter (e.g. filter rows
+ * for the current user only).
+ *
  * WARNING: WORK IN PROGRESS, THE API MAY CHANGE AT ANY TIME.
  * @param BEAN the type of items in the grid.
  * @param FILTER the type of the filters accepted by grid's [ConfigurableFilterDataProvider]. For VoK
@@ -87,7 +92,11 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         val filterFactory: FilterFactory<FILTER>
 ) : Serializable {
 
-    private var currentFilter: FILTER? = null
+    /**
+     * The current filter. Defaults to null.
+     */
+    var currentFilter: FILTER? = null
+        private set
 
     /**
      * Lists all currently registered bindings. The value is a registration of the
@@ -95,9 +104,44 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      */
     private val bindings: MutableMap<Binding<BEAN, FILTER>, Registration> = mutableMapOf()
 
+    /**
+     * Contains a set of custom filters. See [setCustomFilter] for more details.
+     */
+    private val customFilters: MutableMap<String, FILTER> = mutableMapOf()
+
     private fun applyFilterToGrid(filter: FILTER?) {
         @Suppress("UNCHECKED_CAST")
         (grid.dataProvider as ConfigurableFilterDataProvider<BEAN, FILTER, FILTER>).setFilter(filter)
+    }
+
+    /**
+     * Invoked when a filter changes. By default does nothing. Read [currentFilter]
+     * to obtain the current filter.
+     *
+     * Invoked after the filter has already been set to Grid's DataProvider.
+     */
+    var onFilterChanged: () -> Unit = {}
+
+    /**
+     * Along with component/column-scoped filters, you can add a completely custom filters
+     * using this method. Two use-cases:
+     * 1. call `setCustomFilter("unremovable-filter-by-user", buildFilter { Record::userId eq Session.currentUserId })`
+     * to create an unremovable filter which only passes records intended for the current user.
+     * 2. create a global search TextField above the Grid, then call
+     * `setCustomFilter("global", ...)` to set the new global filter.
+     *
+     * All filters - both custom and column-scoped - are ANDed together.
+     * @param key an arbitrary key to set the filter under. Setting a new filter with
+     * an existing key overwrites the old filter stored under that key.
+     * @param filter the new filter to set. Pass `null` to remove the filter.
+     */
+    fun setCustomFilter(key: String, filter: FILTER?) {
+        if (filter == null) {
+            customFilters.remove(key) != null
+        } else {
+            customFilters.set(key, filter) != filter
+        }
+        updateFilter()
     }
 
     /**
@@ -106,7 +150,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      */
     private fun computeFilter(): FILTER? {
         val filters: List<FILTER> = bindings.keys.mapNotNull { it.getFilter() }
-        return filterFactory.and(filters.toSet())
+        val customFilters: Collection<FILTER> = customFilters.values
+        return filterFactory.and((filters + customFilters).toSet())
     }
 
     /**
@@ -117,6 +162,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         val newFilter: FILTER? = computeFilter()
         if (newFilter != currentFilter) {
             applyFilterToGrid(newFilter)
+            onFilterChanged()
             currentFilter = newFilter
         }
     }
@@ -140,6 +186,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
         // start with a very simple getter which simply polls the component for its value.
         val fieldValueGetter: ()->VALUE? = {
             // useless cast to keep the Kotlin compiler happy
+            @Suppress("UNCHECKED_CAST")
             (component as HasValue<HasValue.ValueChangeEvent<VALUE?>, VALUE?>).value
         }
         return Binding.Builder(filterFactory, this, column, component as Component, fieldValueGetter)

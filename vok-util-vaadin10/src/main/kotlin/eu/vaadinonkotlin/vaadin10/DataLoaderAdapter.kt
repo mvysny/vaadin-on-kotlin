@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.ListDataLoader
 import com.github.mvysny.vokdataloader.SortClause
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
@@ -34,9 +35,9 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
         } ?: listOf()
         val offset = query?.offset ?: 0
         val limit = query?.limit ?: Int.MAX_VALUE
-        var endInclusive = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+        var endInclusive: Int = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         if (endInclusive == Int.MAX_VALUE - 1) endInclusive = Int.MAX_VALUE
-        val list = loader.fetch(query?.filter?.orElse(null), sortBy, offset.toLong()..endInclusive.toLong())
+        val list: List<T> = loader.fetch(query?.filter?.orElse(null), sortBy, offset.toLong()..endInclusive.toLong())
         return list.stream()
     }
 }
@@ -61,4 +62,18 @@ fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvid
  */
 fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
     dataProvider = dataLoader.asDataProvider(idResolver)
+}
+
+/**
+ * An utility method to set [ListDataLoader] to the Grid.
+ */
+inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline idResolver: (T) -> Any = { it }) {
+    setDataLoader(ListDataLoader(T::class.java, items), idResolver)
+}
+
+/**
+ * An utility method to set [ListDataLoader] to the Grid.
+ */
+inline fun <reified T: Any> Grid<T>.setDataLoaderItems(vararg items: T, noinline idResolver: (T) -> Any = { it }) {
+    setDataLoaderItems(items.toList(), idResolver)
 }

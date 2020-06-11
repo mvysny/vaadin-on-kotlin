@@ -5,6 +5,9 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.component
+import com.github.mvysny.vokdataloader.Filter
+import com.github.mvysny.vokdataloader.ListDataLoader
+import com.github.mvysny.vokdataloader.buildFilter
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
@@ -12,6 +15,7 @@ import com.vaadin.flow.data.provider.ListDataProvider
 import java.time.LocalDate
 import java.util.*
 import kotlin.test.expect
+import kotlin.test.fail
 
 fun FilterBar<*, *>.getFilterComponents(): List<Component> = grid.columns.mapNotNull { headerRow.getCell(it).component }
 
@@ -98,5 +102,53 @@ class FilterBarTest : DynaTest({
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
         nameFilter.value = "foobar"
         expectList(Person("foobar")) { grid.dataProvider!!.getAll() }
+    }
+
+    test("onFilterChanged invoked") {
+        data class Person(var name: String)
+        val grid = Grid(Person::class.java)
+        val filterBar: FilterBar<Person, Filter<Person>> = grid.appendHeaderRow().asFilterBar(grid)
+        filterBar.onFilterChanged = { fail("should not be called") }
+        val filterField = TextField()
+        filterBar.forField(filterField, grid.getColumnBy(Person::name)).ilike()
+        grid.setDataLoaderItems(Person("foo"))
+
+        var called = false
+        filterBar.onFilterChanged = { called = true }
+        filterField._value = "bar"
+        assert(true) { called }
+
+        called = false
+        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        assert(true) { called }
+
+        // setting the same filter again doesn't fire the listener
+        called = false
+        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        assert(false) { called }
+
+        called = false
+        filterBar.setCustomFilter("global", null)
+        assert(true) { called }
+    }
+
+    test("custom filters are applied") {
+        data class Person(var name: String)
+        val grid: Grid<Person> = Grid(Person::class.java)
+        val filterBar: FilterBar<Person, Filter<Person>> = grid.appendHeaderRow().asFilterBar(grid)
+        grid.setDataLoaderItems(Person("foo"))
+        grid.expectRows(1)
+
+        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        grid.expectRows(0)
+
+        filterBar.setCustomFilter("global", buildFilter { Person::name eq "foo" })
+        grid.expectRows(1)
+
+        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        grid.expectRows(0)
+
+        filterBar.setCustomFilter("global", null)
+        grid.expectRows(1)
     }
 })
