@@ -68,9 +68,9 @@ object Session {
      * @return the session-bound instance
      */
     fun <T: Serializable> getOrPut(key: KClass<T>, defaultValue: ()->T): T {
-        val value = get(key)
+        val value: T? = get(key)
         return if (value == null) {
-            val answer = defaultValue()
+            val answer: T = defaultValue()
             set(key, answer)
             answer
         } else {
