@@ -137,9 +137,9 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      */
     fun setCustomFilter(key: String, filter: FILTER?) {
         if (filter == null) {
-            customFilters.remove(key) != null
+            customFilters.remove(key)
         } else {
-            customFilters.set(key, filter) != filter
+            customFilters[key] = filter
         }
         updateFilter()
     }

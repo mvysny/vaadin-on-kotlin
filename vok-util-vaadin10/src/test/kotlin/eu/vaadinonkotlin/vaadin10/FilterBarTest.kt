@@ -116,20 +116,20 @@ class FilterBarTest : DynaTest({
         var called = false
         filterBar.onFilterChanged = { called = true }
         filterField._value = "bar"
-        assert(true) { called }
+        expect(true) { called }
 
         called = false
         filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
-        assert(true) { called }
+        expect(true) { called }
 
         // setting the same filter again doesn't fire the listener
         called = false
         filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
-        assert(false) { called }
+        expect(false) { called }
 
         called = false
         filterBar.setCustomFilter("global", null)
-        assert(true) { called }
+        expect(true) { called }
     }
 
     test("custom filters are applied") {
