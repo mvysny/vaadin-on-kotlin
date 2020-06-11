@@ -113,7 +113,9 @@ object Cookies {
     /**
      * Deletes cookie with given [name]. Does nothing if there is no such cookie.
      */
-    fun delete(name: String) = set(name, null)
+    fun delete(name: String) {
+        set(name, null)
+    }
 }
 
 infix operator fun Cookies.plusAssign(cookie: Cookie) {

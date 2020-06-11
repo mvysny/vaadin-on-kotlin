@@ -66,6 +66,8 @@ fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->A
 
 /**
  * An utility method to set [ListDataLoader] to the Grid.
+ * @param items the items list. The [ListDataLoader] reflects changes in the list,
+ * but the [Grid] needs to be refreshed in order to re-display the items properly.
  */
 inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline idResolver: (T) -> Any = { it }) {
     setDataLoader(ListDataLoader(T::class.java, items), idResolver)
