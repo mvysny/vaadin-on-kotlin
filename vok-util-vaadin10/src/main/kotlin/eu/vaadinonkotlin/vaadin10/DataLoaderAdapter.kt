@@ -5,6 +5,7 @@ import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.ListDataLoader
 import com.github.mvysny.vokdataloader.SortClause
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.data.binder.HasDataProvider
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.Query
@@ -24,7 +25,7 @@ import java.util.stream.Stream
 class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any)
         : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
-    override fun toString() = "DataLoaderAdapter($loader)"
+    override fun toString(): String = "DataLoaderAdapter($loader)"
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int {
         val count: Long = loader.getCount(query?.filter?.orElse(null))
         return count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
@@ -33,8 +34,8 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
         val sortBy: List<SortClause> = query?.sortOrders?.map {
             SortClause(it.sorted, it.direction == SortDirection.ASCENDING)
         } ?: listOf()
-        val offset = query?.offset ?: 0
-        val limit = query?.limit ?: Int.MAX_VALUE
+        val offset: Int = query?.offset ?: 0
+        val limit: Int = query?.limit ?: Int.MAX_VALUE
         var endInclusive: Int = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         if (endInclusive == Int.MAX_VALUE - 1) endInclusive = Int.MAX_VALUE
         val list: List<T> = loader.fetch(query?.filter?.orElse(null), sortBy, offset.toLong()..endInclusive.toLong())
@@ -60,8 +61,8 @@ fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvid
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-fun <T: Any> Grid<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
-    dataProvider = dataLoader.asDataProvider(idResolver)
+fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
+    setDataProvider(dataLoader.asDataProvider(idResolver))
 }
 
 /**

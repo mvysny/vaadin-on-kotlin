@@ -104,6 +104,7 @@ class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
  *
  * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic WHERE clause creation only ;)
  */
+@Deprecated("Use DataLoader API with PredicateFilter")
 class PredicateFilterBuilder<T: Any> {
     private val ff = PredicateFilterFactory<T>()
 
@@ -141,6 +142,7 @@ class PredicateFilterBuilder<T: Any> {
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
  * @return a new data provider which can be outfitted with a custom filter.
  */
+@Deprecated("Use DataLoader API with PredicateFilter")
 fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilter2() : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withConfigurableFilter({ f1: SerializablePredicate<T>?, f2: SerializablePredicate<T>? -> when {
         f1 == null && f2 == null -> null
@@ -156,6 +158,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilte
  * @param other applies this filter
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
+@Deprecated("Use DataLoader API with PredicateFilter")
 fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
@@ -173,5 +176,6 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Ser
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
+@Deprecated("Use DataLoader API with PredicateFilter")
 inline fun <reified T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: PredicateFilterBuilder<T>.()-> SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withFilter(block(PredicateFilterBuilder()))
