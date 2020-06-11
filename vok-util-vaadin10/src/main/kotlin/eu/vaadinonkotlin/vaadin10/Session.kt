@@ -1,6 +1,5 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest
 import com.vaadin.flow.server.VaadinResponse
 import com.vaadin.flow.server.VaadinService
