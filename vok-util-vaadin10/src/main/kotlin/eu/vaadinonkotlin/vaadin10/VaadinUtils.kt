@@ -1,10 +1,10 @@
 package eu.vaadinonkotlin.vaadin10
 
-import eu.vaadinonkotlin.I18n
-import eu.vaadinonkotlin.getI18nProvider
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.data.binder.BeanPropertySet
 import com.vaadin.flow.data.binder.PropertyDefinition
+import eu.vaadinonkotlin.I18n
+import eu.vaadinonkotlin.getI18nProvider
 import java.util.*
 import kotlin.reflect.KProperty1
 

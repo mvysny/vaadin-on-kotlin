@@ -10,8 +10,10 @@ import java.util.stream.Stream
 import kotlin.reflect.KProperty1
 
 /**
- * A data provider with configurable filter - use [setFilter] to set your custom filter. Note that user-provided filter value in Grid
- * will overwrite this filter; if you want an unremovable filter use [withFilter].
+ * A data provider with configurable filter.
+ * Usually [FilterBar] will call [ConfigurableFilterDataProvider.setFilter] to set the final filter.
+ * If you want an unremovable filter use [DataLoader.withFilter] or
+ * [FilterBar.setCustomFilter].
  */
 typealias VokDataProvider<T> = ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>
 
@@ -19,6 +21,7 @@ typealias VokDataProvider<T> = ConfigurableFilterDataProvider<T, Filter<T>?, Fil
  * Wraps this data provider in a configurable filter, regardless of whether this data provider is already a configurable filter or not.
  * @return data provider which can be configured to always apply given filter.
  */
+@Deprecated("Use DataLoader API instead")
 fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : VokDataProvider<T> =
     withConfigurableFilter { f1: Filter<T>?, f2: Filter<T>? -> listOfNotNull(f1, f2).toSet().and() }
 
@@ -28,6 +31,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : VokDataP
  * Invoking this method multiple times will chain the data providers and restrict the rows further.
  * @param other applies this filter
  */
+@Deprecated("Use DataLoader API instead")
 fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
@@ -45,6 +49,7 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDa
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
+@Deprecated("Use DataLoader API instead")
 inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
     withFilter(block(SqlWhereBuilder(T::class.java)))
 
@@ -56,6 +61,7 @@ inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: Sql
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
+@Deprecated("Use DataLoader API instead")
 inline fun <reified T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
     setFilter(block(SqlWhereBuilder(T::class.java)))
 }
@@ -64,6 +70,7 @@ inline fun <reified T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter
  * Creates a new data provider which delegates to [delegate] but always appends given list of sort orders.
  * This class can be used to specify the default ordering if the Grid is currently unsorted.
  */
+@Deprecated("Use DataLoader API instead")
 class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrder>, private val delegate: DataProvider<T, F>) : DataProvider<T, F> by delegate {
     init {
         require(!delegate.isInMemory) { "$delegate is in-memory which is unsupported" }
@@ -87,6 +94,7 @@ class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrder>, pr
  * @receiver delegate all data fetching calls to here
  * @param sort append these sort criteria. May be empty - in that case just returns the receiver.
  */
+@Deprecated("Use DataLoader API instead")
 fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataProvider<T> = when {
     sort.isEmpty() -> this
     else -> AppendSortDataProvider(sort.toList(), this).withConfigurableFilter2()
@@ -96,6 +104,7 @@ fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataPr
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
+@Deprecated("Use DataLoader API instead")
 fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
         withStringFilterOn(property.name)
 
@@ -103,7 +112,24 @@ fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<T, Stri
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
+@Deprecated("Use DataLoader API instead")
 fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withConvertedFilter<String> { filter ->
+            if (filter.isNullOrBlank()) null else ILikeFilter(property, filter.trim())
+        }
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : Any> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>, idResolver: (T) -> Any): DataProvider<T, String?> =
+        withStringFilterOn(property.name, idResolver)
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : Any> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName, idResolver: (T) -> Any): DataProvider<T, String?> =
+        asDataProvider(idResolver).withConvertedFilter<String> { filter: String? ->
             if (filter.isNullOrBlank()) null else ILikeFilter(property, filter.trim())
         }

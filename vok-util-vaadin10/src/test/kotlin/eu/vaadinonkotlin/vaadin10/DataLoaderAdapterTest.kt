@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.cloneBySerialization
 import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.data.provider.Query
 import com.vaadin.flow.data.provider.QuerySortOrder
@@ -9,9 +10,13 @@ import java.util.*
 import kotlin.test.expect
 
 class DataLoaderAdapterTest : DynaTest({
+    test("serializable") {
+        DataLoaderAdapter(EmptyDataLoader<String>()) { it }.cloneBySerialization()
+    }
+
     test("fetch with empty query") {
         val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
-        val adapter = DataLoaderAdapter(loader, { it })
+        val adapter = DataLoaderAdapter(loader) { it }
         adapter.size(Query())
         adapter.fetch(Query())
         loader.checkCalled()
@@ -20,7 +25,7 @@ class DataLoaderAdapterTest : DynaTest({
     group("offset/limit") {
         test("fetch with offset=0 limit=Int.MAX_VALUE") {
             val loader = AssertingDataLoader(null, listOf(), 0L..Int.MAX_VALUE)
-            val adapter = DataLoaderAdapter(loader, { it })
+            val adapter = DataLoaderAdapter(loader) { it }
             adapter.size(Query())
             adapter.fetch(Query(0, Int.MAX_VALUE, null, null, null))
             loader.checkCalled()
@@ -57,6 +62,12 @@ class DataLoaderAdapterTest : DynaTest({
         adapter.size(Query(buildFilter { Person::age eq "foo" }))
         adapter.fetch(Query(0, Int.MAX_VALUE, listOf(), null, buildFilter { Person::age eq "foo" }))
         loader.checkCalled()
+    }
+
+    group("DataLoader.asDataProvider().toString() should return meaningful value") {
+        test("empty dataloader") {
+            expect("DataLoaderAdapter(EmptyDataLoader)") { listOf<String>().dataLoader().asDataProvider { it } .toString() }
+        }
     }
 })
 

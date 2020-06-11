@@ -1,15 +1,21 @@
 package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
+import com.github.mvysny.vokdataloader.DataLoaderPropertyName
+import com.github.mvysny.vokdataloader.ILikeFilter
 import com.github.vokorm.KEntity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
 import com.gitlab.mvysny.jdbiorm.Dao
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.data.binder.HasDataProvider
+import com.vaadin.flow.data.provider.DataProvider
 import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin10.VokDataProvider
 import eu.vaadinonkotlin.vaadin10.asDataProvider
-import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
+import kotlin.reflect.KProperty1
+import eu.vaadinonkotlin.vaadin10.withStringFilterOn as withStringFilterOn1
 
 /**
  * Provides instances of entities of given class from a database. Does not support joins on any of the like; supports filtering
@@ -17,6 +23,7 @@ import eu.vaadinonkotlin.vaadin10.withConfigurableFilter2
  *
  * Example of use: `grid.dataProvider = Person.dataProvider`.
  */
+@Deprecated("Use dataLoader")
 inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
     get() = dataLoader.asDataProvider()
 
@@ -67,6 +74,7 @@ inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
  * @param T the type of the holder class.
  * @author mavi
  */
+@Deprecated("Use SqlDataLoader class directly")
 fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
@@ -77,11 +85,25 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
  */
-fun <T: KEntity<*>> Grid<T>.setDataLoader(dataLoader: DataLoader<T>) {
-    dataProvider = dataLoader.asDataProvider()
+fun <T: KEntity<*>> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>) {
+    setDataProvider(dataLoader.asDataProvider())
 }
 
 /**
  * Returns a [VokDataProvider] which loads data from this [DataLoader].
  */
-fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }.withConfigurableFilter2()
+fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
+        withStringFilterOn(property.name)
+
+/**
+ * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
+ * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ */
+fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
+        withStringFilterOn1(property) { it.id!! }

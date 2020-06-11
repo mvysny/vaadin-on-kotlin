@@ -1,15 +1,9 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.mvysny.vokdataloader.DataLoader
-import com.github.mvysny.vokdataloader.Filter
-import com.github.mvysny.vokdataloader.ListDataLoader
-import com.github.mvysny.vokdataloader.SortClause
+import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.HasDataProvider
-import com.vaadin.flow.data.provider.AbstractBackEndDataProvider
-import com.vaadin.flow.data.provider.DataProvider
-import com.vaadin.flow.data.provider.Query
-import com.vaadin.flow.data.provider.SortDirection
+import com.vaadin.flow.data.provider.*
 import java.util.stream.Stream
 
 /**
@@ -23,13 +17,22 @@ import java.util.stream.Stream
  * including the item itself.
  */
 class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any)
-        : AbstractBackEndDataProvider<T, Filter<T>?>() {
+        : AbstractBackEndDataProvider<T, Filter<T>?>(), VokDataProvider<T> {
+
     override fun getId(item: T): Any = idResolver(item)
+
     override fun toString(): String = "DataLoaderAdapter($loader)"
+
+    private fun computeFilter(query: Query<T, Filter<T>?>?): Filter<T>? {
+        val filters: List<Filter<T>> = listOfNotNull(query?.filter?.orElse(null), filter)
+        return filters.toSet().and()
+    }
+
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int {
-        val count: Long = loader.getCount(query?.filter?.orElse(null))
+        val count: Long = loader.getCount(computeFilter(query))
         return count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
     }
+
     override fun fetchFromBackEnd(query: Query<T, Filter<T>?>?): Stream<T> {
         val sortBy: List<SortClause> = query?.sortOrders?.map {
             SortClause(it.sorted, it.direction == SortDirection.ASCENDING)
@@ -38,8 +41,20 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
         val limit: Int = query?.limit ?: Int.MAX_VALUE
         var endInclusive: Int = (limit.toLong() + offset - 1).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
         if (endInclusive == Int.MAX_VALUE - 1) endInclusive = Int.MAX_VALUE
-        val list: List<T> = loader.fetch(query?.filter?.orElse(null), sortBy, offset.toLong()..endInclusive.toLong())
+        val filter: Filter<T>? = computeFilter(query)
+        val list: List<T> = loader.fetch(filter, sortBy, offset.toLong()..endInclusive.toLong())
         return list.stream()
+    }
+
+    /**
+     * The currently configured filter, may be null if no filter has been configured yet.
+     */
+    var filter: Filter<T>? = null
+        private set
+
+    override fun setFilter(filter: Filter<T>?) {
+        this.filter = filter
+        refreshAll()
     }
 }
 
@@ -51,7 +66,7 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
  * including the item itself.
  */
 fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
-        DataLoaderAdapter(this, idResolver).withConfigurableFilter2()
+        DataLoaderAdapter(this, idResolver)
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
@@ -71,6 +86,7 @@ fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, idResol
  * but the [Grid] needs to be refreshed in order to re-display the items properly.
  */
 inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline idResolver: (T) -> Any = { it }) {
+    // don't use List.dataProvider() since that may return EmptyDataProvider which doesn't reflect List modifications.
     setDataLoader(ListDataLoader(T::class.java, items), idResolver)
 }
 

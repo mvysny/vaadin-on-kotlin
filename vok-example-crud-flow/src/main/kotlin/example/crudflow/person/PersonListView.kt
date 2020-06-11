@@ -16,7 +16,8 @@ import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin10.*
-import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
+import eu.vaadinonkotlin.vaadin10.vokdb.dataLoader
+import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
 import example.crudflow.MainLayout
 import java.time.LocalDate
 
@@ -38,9 +39,10 @@ class PersonListView : KComposite() {
                 }
                 addClickShortcut(Alt + KEY_G)
             }
-            personGrid = grid(dataProvider = Person.dataProvider) {
+            personGrid = grid<Person> {
                 flexGrow = 1.0
                 appendHeaderRow()
+                setDataLoader(Person.dataLoader)
                 val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
                 addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateToView(PersonView::class, person.id!!) }) {}
