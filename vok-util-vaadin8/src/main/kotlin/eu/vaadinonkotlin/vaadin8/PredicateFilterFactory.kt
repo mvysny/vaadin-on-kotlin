@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
  * A factory which produces predicates as filters. Intended to be used with in-memory [com.vaadin.data.provider.DataProvider]s
  * such as [com.vaadin.data.provider.ListDataProvider].
  */
-class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
+open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
     override fun and(filters: Set<SerializablePredicate<T>>): SerializablePredicate<T>? = when {
         filters.isEmpty() -> null
         filters.size == 1 -> filters.first()

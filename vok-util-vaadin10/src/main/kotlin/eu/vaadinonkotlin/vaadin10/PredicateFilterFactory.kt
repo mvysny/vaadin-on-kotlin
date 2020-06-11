@@ -14,7 +14,7 @@ import kotlin.reflect.KProperty1
  * such as [com.vaadin.data.provider.ListDataProvider].
  */
 @Deprecated("use DataLoaderFilterFactory and PredicateFilter")
-class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
+open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
     override fun and(filters: Set<SerializablePredicate<T>>): SerializablePredicate<T>? = when {
         filters.isEmpty() -> null
         filters.size == 1 -> filters.first()

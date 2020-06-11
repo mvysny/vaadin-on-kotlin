@@ -18,13 +18,13 @@ import kotlin.reflect.KClass
  * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param clazz the type of the entity, not null.
  */
-class DataLoaderFilterFactory<T : Any>(val clazz: Class<T>) : FilterFactory<Filter<T>> {
-    override fun and(filters: Set<Filter<T>>) = filters.and()
-    override fun or(filters: Set<Filter<T>>) = filters.or()
-    override fun eq(propertyName: String, value: Any?) = EqFilter<T>(propertyName, value)
-    override fun le(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.le)
-    override fun ge(propertyName: String, value: Any) = OpFilter<T>(propertyName, value as Comparable<Any>, CompareOperator.ge)
-    override fun ilike(propertyName: String, value: String) = ILikeFilter<T>(propertyName, value)
+open class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {
+    override fun and(filters: Set<Filter<F>>): Filter<F>? = filters.and()
+    override fun or(filters: Set<Filter<F>>): Filter<F>? = filters.or()
+    override fun eq(propertyName: String, value: Any?): Filter<F> = EqFilter(propertyName, value)
+    override fun le(propertyName: String, value: Any): Filter<F> = OpFilter(propertyName, value as Comparable<Any>, CompareOperator.le)
+    override fun ge(propertyName: String, value: Any): Filter<F> = OpFilter(propertyName, value as Comparable<Any>, CompareOperator.ge)
+    override fun ilike(propertyName: String, value: String): Filter<F> = ILikeFilter(propertyName, value)
 }
 
 /**
