@@ -1509,7 +1509,7 @@ class LoginService : Serializable {
     private set
 
     fun logout() {
-        VaadinSession.getCurrent().close()
+        Session.current.close()
         Page.getCurrent().reload()
     }
 

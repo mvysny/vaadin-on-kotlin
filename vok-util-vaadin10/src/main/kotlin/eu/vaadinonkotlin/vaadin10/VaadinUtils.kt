@@ -17,7 +17,7 @@ import kotlin.reflect.KProperty1
  * * As a first step, you can check whether the user has configured his language in his settings. Just get the current
  * user from the session, then do a database lookup for the user settings and retrieve the locale. If it's not null, use it.
  * * If user haven't configured his locale or your app doesn't support this kind of functionality, fall back and simply poll the browser
- * for the [com.vaadin.flow.server.WebBrowser.locale]: `VaadinSession.getCurrent().browser.locale`
+ * for the [com.vaadin.flow.server.WebBrowser.locale]: `Session.current.browser.locale`
  * * If the browser provided `null` locale, fall back to [java.util.Locale.ENGLISH].
  * * Set the value computed by the steps above to the UI: [UI.setLocale]
  *

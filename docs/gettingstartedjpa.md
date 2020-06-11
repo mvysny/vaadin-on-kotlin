@@ -1507,7 +1507,7 @@ object LoginService {
     }
     val currentUser: User? get() = Session[User::class]
     fun logout() {
-        VaadinSession.getCurrent().close()
+        Session.current.close()
         Page.getCurrent().reload()
     }
 }
