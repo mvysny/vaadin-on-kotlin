@@ -170,7 +170,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Ser
  * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
  * Allows you to write
  * expressions like this: `Person.dataProvider.withFilter { Person::age lt 25 }`
- * See [com.github.mvysny.vokdataloader.SqlWhereBuilder] for a complete list of applicable operators.
+ * See [com.github.mvysny.vokdataloader.FilterBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.

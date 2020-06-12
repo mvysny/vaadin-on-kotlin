@@ -43,27 +43,27 @@ fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDa
  * Produces a new data provider with unremovable filter which restricts rows returned by the receiver data provider.
  * Allows you to write
  * expressions like this: `Person.dataProvider.withFilter { Person::age lt 25 }`
- * See [SqlWhereBuilder] for a complete list of applicable operators.
+ * See [FilterBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will restrict the rows further.
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 @Deprecated("Use DataLoader API instead")
-inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
-    withFilter(block(SqlWhereBuilder(T::class.java)))
+inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: FilterBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
+    withFilter(block(FilterBuilder(T::class.java)))
 
 /**
  * Removes the original filter and sets the new filter. Allows you to write
  * expressions like this: `sqlDataProvider<Person>().setFilter { Person::age lt 25 }`.
- * See [SqlWhereBuilder] for a complete list of applicable operators.
+ * See [FilterBuilder] for a complete list of applicable operators.
  *
  * Invoking this method multiple times will overwrite the previous filter.
  * @param block the block which allows you to build the `where` expression.
  */
 @Deprecated("Use DataLoader API instead")
-inline fun <reified T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: SqlWhereBuilder<T>.()-> Filter<T>) {
-    setFilter(block(SqlWhereBuilder(T::class.java)))
+inline fun <reified T: Any> ConfigurableFilterDataProvider<T, Filter<T>?, Filter<T>?>.setFilter(block: FilterBuilder<T>.()-> Filter<T>) {
+    setFilter(block(FilterBuilder(T::class.java)))
 }
 
 /**
