@@ -399,10 +399,10 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
 }
 
 /**
- * Finalizes the [Binding]. A terminal operation; however, usually you wish to finalize
- * the [Binding] using [ilike] or other terminal operator functions.
+ * Finalizes the [FilterBar.Binding]. A terminal operation; however, usually you wish to finalize
+ * the [FilterBar.Binding] using [ilike] or other terminal operator functions.
  *
- * You are able to finalize the [Binding] only after you managed to configure [Builder]
+ * You are able to finalize the [FilterBar.Binding] only after you managed to configure [Builder]
  * to convert the field value to [FILTER].
  * @param BEAN the type of beans displayed in the [Grid]
  * @param FILTER the type of the filtering value accepted by the [com.vaadin.flow.data.provider.DataProvider].
@@ -417,7 +417,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bi
 }
 
 /**
- * Finalizes the [Binding] and compares [String] values using the ILIKE operator.
+ * Finalizes the [FilterBar.Binding] and compares [String] values using the ILIKE operator.
  */
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> {
     // first we need to have a converter, converting the component's value to a ILIKE filter
