@@ -201,6 +201,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * combine all filters into one and ultimately set it to the [com.vaadin.flow.data.provider.DataProvider].
      * @param BEAN the bean type as provided by the [com.vaadin.flow.data.provider.DataProvider].
      * @param F the filter type which the [com.vaadin.flow.data.provider.DataProvider] uses.
+     * For VoK it's usually [Filter].
      */
     class Binding<BEAN : Any, F : Any>(internal val builder: Builder<BEAN, F, F>) : Serializable {
         /**
