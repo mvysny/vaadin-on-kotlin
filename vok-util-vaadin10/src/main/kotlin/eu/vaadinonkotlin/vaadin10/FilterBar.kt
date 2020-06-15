@@ -402,11 +402,11 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
  * Finalizes the [FilterBar.Binding]. A terminal operation; however, usually you wish to finalize
  * the [FilterBar.Binding] using [ilike] or other terminal operator functions.
  *
- * You are able to finalize the [FilterBar.Binding] only after you managed to configure [Builder]
+ * You are able to finalize the [FilterBar.Binding] only after you managed to configure [FilterBar.Binding.Builder]
  * to convert the field value to [FILTER].
  * @param BEAN the type of beans displayed in the [Grid]
  * @param FILTER the type of the filtering value accepted by the [com.vaadin.flow.data.provider.DataProvider].
- * @return the finalized [Binding], with component properly configured and placed into
+ * @return the finalized [FilterBar.Binding], with component properly configured and placed into
  * the [HeaderRow].
  * @see [FilterBar.finalizeBinding] for more details.
  */
