@@ -273,11 +273,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             /**
              * Finalizes the [Binding]. Creates a [TARGETFILTER] which passes rows with value
              * equal to the value selected in the [TARGETFILTER] component.
+             * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun eq(): Binding<BEAN, TARGETFILTER> {
+            fun eq(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+                val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.eq(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.eq(propertyName, it) }
                 // now we can finalize the [Binding]
                 return builder.bind()
             }
@@ -285,11 +287,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             /**
              * Finalizes the [Binding]. Creates a [TARGETFILTER] which passes rows with value
              * less-than or equal to the value selected in the [TARGETFILTER] component.
+             * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun le(): Binding<BEAN, TARGETFILTER> {
+            fun le(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+                val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.le(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.le(propertyName, it) }
                 // now we can finalize the binding
                 return builder.bind()
             }
@@ -297,14 +301,32 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             /**
              * Finalizes the [Binding]. Creates a [TARGETFILTER] which passes rows with value
              * greater-than or equal to the value selected in the [TARGETFILTER] component.
+             * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun ge(): Binding<BEAN, TARGETFILTER> {
+            fun ge(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+                val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = withConverter { filterFactory.ge(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.ge(propertyName, it) }
                 // now we can finalize the binding
                 return builder.bind()
             }
+
+            /**
+             * Adds a trimming converter to the chain: if the value is a String then it's trimmed,
+             * otherwise the value is passed as-is.
+             *
+             * No need to use this with [ilike] or [fullText] since those filters will
+             * always perform trimming automatically.
+             */
+            fun trim(): Builder<BEAN, VALUE, TARGETFILTER> =
+                    withConverter {
+                        @Suppress("UNCHECKED_CAST")
+                        when (it) {
+                            is String -> it.trim() as VALUE // safe cast since VALUE is String
+                            else -> it
+                        }
+                    }
         }
     }
 
