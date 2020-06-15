@@ -177,7 +177,7 @@ fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterF
         }
     }
 
-    val filters = listOf(from?.toFilter(propertyName, filterFactory, fieldType, false), to?.toFilter(propertyName, filterFactory, fieldType, true)).filterNotNull()
+    val filters: List<F> = listOf(from?.toFilter(propertyName, filterFactory, fieldType, false), to?.toFilter(propertyName, filterFactory, fieldType, true)).filterNotNull()
     return filterFactory.and(filters.toSet())
 }
 
@@ -189,7 +189,7 @@ fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterF
  * The current date range is also displayed as the caption of the button.
  */
 class DateFilterPopup: CustomField<DateInterval?>() {
-    private val formatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale!!)
+    private val formatter: DateTimeFormatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale!!)
     private lateinit var fromField: InlineDateTimeField
     private lateinit var toField: InlineDateTimeField
     private lateinit var set: Button
@@ -198,7 +198,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
      * The desired resolution of this filter popup, defaults to [DateTimeResolution.MINUTE].
      */
     var resolution: DateTimeResolution = DateTimeResolution.MINUTE
-        set(value) {
+        set(value: DateTimeResolution) {
             field = value
             updateFields()
         }
