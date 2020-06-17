@@ -399,7 +399,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      *   also not to wait until the focus is lost from the [FILTER] - not a good UX since the user types in something and waits and waits and waits with nothing going on.
      */
     protected open fun configure(field: Component) {
-        (field as? HasSize)?.width = "100%"
+        (field as? HasSize)?.setWidthFull()
         // lots of repetition. https://github.com/vaadin/flow/issues/8443 filed
         (field as? TextField)?.isClearButtonVisible = true
         (field as? TextArea)?.isClearButtonVisible = true
