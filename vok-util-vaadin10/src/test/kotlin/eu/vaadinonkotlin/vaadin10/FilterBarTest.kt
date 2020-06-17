@@ -6,13 +6,14 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.component
 import com.github.mvysny.vokdataloader.Filter
-import com.github.mvysny.vokdataloader.ListDataLoader
 import com.github.mvysny.vokdataloader.buildFilter
 import com.vaadin.flow.component.Component
+import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.provider.ListDataProvider
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.expect
 import kotlin.test.fail
@@ -26,7 +27,7 @@ class FilterBarTest : DynaTest({
     test("Test simple auto-generated filters") {
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
         val grid: Grid<Person> = Grid(Person::class.java)
-        val filterBar = grid.appendHeaderRow().asFilterBar(grid, PredicateFilterFactory<Person>())
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
         filterBar.forField(NumberRangePopup(), grid.getColumnBy(Person::age)).inRange()
         filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange(Person::dob)
@@ -41,9 +42,9 @@ class FilterBarTest : DynaTest({
     test("string filter") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar = grid.appendHeaderRow().asFilterBar(grid, PredicateFilterFactory<Person>())
-        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
-        grid.setItems(Person("foo"))
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
+        grid.setDataLoaderItems(Person("foo"))
         expect(1) { grid.dataProvider._size() }
 
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
@@ -53,13 +54,31 @@ class FilterBarTest : DynaTest({
         expect(1) { grid.dataProvider._size() }
     }
 
+    /**
+     * https://github.com/mvysny/vaadin-on-kotlin/issues/49
+     */
+    test("day filter") {
+        data class Person(var dob: LocalDateTime)
+        val grid = Grid<Person>(Person::class.java)
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay(LocalDateTime::class)
+        grid.setDataLoaderItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
+        expect(1) { grid.dataProvider._size() }
+
+        val dayFilter: DatePicker = filterBar.getFilterComponent(Person::dob) as DatePicker
+        dayFilter._value = LocalDate.of(2020, 3, 21)
+        expect(0) { grid.dataProvider._size() }
+        dayFilter._value = LocalDate.of(2020, 3, 20)
+        expect(1) { grid.dataProvider._size() }
+    }
+
     test("filter components from cleared filter bar won't affect the grid anymore") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar = grid.appendHeaderRow().asFilterBar(grid, PredicateFilterFactory<Person>())
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
-        grid.setItems(Person("foo"))
-        val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
+        grid.setDataLoaderItems(Person("foo"))
+        val nameFilter: TextField = filterBar.getFilterComponent(Person::name) as TextField
 
         expect(1) { grid.dataProvider._size() }
         nameFilter._value = "bar"
@@ -76,7 +95,7 @@ class FilterBarTest : DynaTest({
     test("filter components from cleared filter bar gone") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar = grid.appendHeaderRow().asFilterBar(grid, PredicateFilterFactory<Person>())
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
         filterBar.removeAllBindings()
         expectList() { filterBar.getFilterComponents() }
@@ -92,11 +111,11 @@ class FilterBarTest : DynaTest({
         }
         expectList() { grid.dataProvider!!.getAll() }
 
-        val filterBar = grid.appendHeaderRow().asFilterBar(grid, PredicateFilterFactory<Person>())
-        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
+        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
 
         // now let's create and set another data provider. If the generateFilterComponents grabs the DP eagerly, it will ignore this second DP.
-        grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar")))
+        grid.setDataLoaderItems(Person("foobar"))
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
@@ -110,7 +129,7 @@ class FilterBarTest : DynaTest({
         val filterBar: FilterBar<Person, Filter<Person>> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.onFilterChanged = { fail("should not be called") }
         val filterField = TextField()
-        filterBar.forField(filterField, grid.getColumnBy(Person::name)).ilike()
+        filterBar.forField(filterField, grid.getColumnBy(Person::name)).istartsWith()
         grid.setDataLoaderItems(Person("foo"))
 
         var called = false

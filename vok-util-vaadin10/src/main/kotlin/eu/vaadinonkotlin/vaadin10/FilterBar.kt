@@ -15,11 +15,13 @@ import com.vaadin.flow.component.grid.HeaderRow
 import com.vaadin.flow.component.textfield.*
 import com.vaadin.flow.component.timepicker.TimePicker
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.flow.data.provider.ListDataProvider
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.shared.Registration
 import eu.vaadinonkotlin.FilterFactory
 import java.io.Serializable
+import java.lang.IllegalStateException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -110,6 +112,9 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
     private val customFilters: MutableMap<String, FILTER> = mutableMapOf()
 
     private fun applyFilterToGrid(filter: FILTER?) {
+        if (grid.dataProvider is ListDataProvider && filter is Filter<*>) {
+            throw IllegalStateException("Grid uses Vaadin built-in ListDataProvider however the filter is VoK's Filter, which is incompatible with Vaadin's ListDataProvider. Please use `grid.setDataLoaderItems()` to use the DataLoader API instead (which is much simpler anyway).")
+        }
         @Suppress("UNCHECKED_CAST")
         (grid.dataProvider as ConfigurableFilterDataProvider<BEAN, FILTER, FILTER>).setFilter(filter)
     }
@@ -442,7 +447,14 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bi
 /**
  * Finalizes the [FilterBar.Binding] and compares [String] values using the ILIKE operator.
  */
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> {
+@Deprecated("use istartsWith")
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> = istartsWith()
+
+/**
+ * Finalizes the [FilterBar.Binding] and compares [String] values using the [StartsWithFilter],
+ * case-insensitive.
+ */
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.istartsWith(): FilterBar.Binding<BEAN, FILTER> {
     // first we need to have a converter, converting the component's value to a ILIKE filter
     val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { if (it.isBlank()) null else filterFactory.ilike(propertyName, it) }
     // now we can finalize the binding
@@ -469,6 +481,27 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Dou
 @JvmName("dateIntervalInRange")
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
         inRange(fieldType.java)
+
+/**
+ * Terminal operation which matches dates in given day.
+ * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
+ * comparable with values coming from the underlying property. Supports [LocalDate],
+ * [LocalDateTime], [Instant], [Date] and [Calendar].
+ */
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
+        onDay(fieldType.java)
+
+/**
+ * Terminal operation which matches [Number]s in given range.
+ */
+@JvmName("numberIntervalInRange")
+fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+    // https://github.com/mvysny/vaadin-on-kotlin/issues/49
+    // first convert the LocalDate value to a DateInterval which spans given day
+    val builder: FilterBar.Binding.Builder<BEAN, DateInterval, FILTER> = withConverter { DateInterval.of(it) }
+    // now simply use inRange() to return a filter accepting instants in given day.
+    return builder.inRange(fieldType)
+}
 
 /**
  * Terminal operation which matches dates in given range.
