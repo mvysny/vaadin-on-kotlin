@@ -53,7 +53,7 @@ class PersonListView : KComposite() {
                     width = "90px"; isExpand = false
                 }
                 addColumnFor(Person::name) {
-                    filterBar.forField(TextField(), this).ilike()
+                    filterBar.forField(TextField(), this).istartsWith()
                 }
                 addColumnFor(Person::age) {
                     width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER

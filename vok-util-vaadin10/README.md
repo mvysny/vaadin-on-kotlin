@@ -46,23 +46,24 @@ When you want to use the NoSQL database:
 
 ## Support for Grid Filter Bar
 
-Hooking a Grid to a data provider is easy:
+Hooking a Grid to a data loader is easy:
 
 ```kotlin
-grid.dataProvider = Person.dataProvider  // uses vok-orm's DataLoader
+grid.setDataLoader(Person.dataLoader)  // uses vok-orm's DataLoader
 ```
 
-To create a filtering field, monitor its value and update the DataProvider filter accordingly,
+To create a filtering field, monitor its value and update the DataLoader filter accordingly,
 you need to do something along these lines:
 
 ```kotlin
-personGrid = grid(dataProvider = Person.dataProvider) {
+personGrid = grid<Person> {
   flexGrow = 1.0
   appendHeaderRow() // workaround for https://github.com/vaadin/vaadin-grid-flow/issues/973
+  setDataLoader(Person.dataLoader)
   val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
   addColumnFor(Person::name) {
-    filterBar.forField(TextField(), this).ilike()
+    filterBar.forField(TextField(), this).istartsWith()
   }
 }
 ```
@@ -82,7 +83,7 @@ Vaadin Grid, to perform filtering of the data shown in the Grid:
 
 In addition, you can use any Vaadin field component:
 
-* A `TextField` for ILIKE or full-text filtering.
+* A `TextField` for starts-with or full-text filtering.
 * A `ComboBox` with pre-populated values, to mimic `enumComboBox()` when
   there's a limited set of values present in the column.
 * Possibly others.
@@ -103,6 +104,84 @@ By default the [DataLoaderFilterFactory] is used: it produces `vok-dataloader`-c
 module. This detail is hidden within the `asFilterBar()` function.
 
 There is no support for JPA.
+
+### Filter Binder
+
+In order to produce a Filter from a filter component, a technique similar to [Vaadin Binder](https://vaadin.com/docs/flow/binding-data/tutorial-flow-components-binder.html)
+is used. In general you first create filter component, then gradually convert its
+value to a Filter using helper methods and custom converters, then you call `bind()`
+to register the binding into the FilterBar. The FilterBar then attaches value
+change listener into the filter component, computes the global filter on every
+filter component change, then sets it to the `VokDataLoader`.
+
+There are the following binding methods:
+
+`eq()` tests for value equality. Usually used with `EnumComboBox`, allowing you
+  to for example only show married people:
+  
+```kotlin
+addColumnFor(Person::maritalStatus) {
+    filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
+}
+```
+
+Alternative usage: `BooleanComboBox`:
+```kotlin
+addColumnFor(Person::alive) {
+    filterBar.forField(BooleanComboBox(), this).eq()
+}
+```
+
+`le()` tests that the value is less-or-equal to the one in the filter component;
+`ge()` tests that the value is greater-or-equal to the one in the filter component;
+not really that useful.
+
+`inRange()` is only applicable to filter values of type `NumberInterval<Double>`
+(for example produced by `NumberRangePopup`), allows you to filter numeric values of any type:
+```kotlin
+addColumnFor(Person::age) {
+    filterBar.forField(NumberRangePopup(), this).inRange()
+}
+```
+
+`inRange()` is also applicable to date-, and timestamp- based columns and filter
+values of type `DateInterval`. The `browserTimeZone` (comes from Karibu-DSL, please
+read [Karibu-DSL TimeZone](https://github.com/mvysny/karibu-dsl/tree/master/karibu-dsl#retrieving-timezone-from-the-browser)
+for more details) is used to match `Instant`, `Date` and `Calendar`-typed values
+with `LocalDate`s.
+```kotlin
+addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+    filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
+}
+```
+
+`istartsWith()` is applicable to `String`-typed filters and is most commonly
+used with plain Vaadin `TextField`:
+```kotlin
+addColumnFor(Person::name) {
+    filterBar.forField(TextField(), this).istartsWith()
+}
+```
+
+`fullText()` is a more powerful version of `istartsWith()` but it requires proper
+full-text support to be configured on your database column. See [vok-orm full-text filters](https://github.com/mvysny/vok-orm#full-text-filters)
+for exact SQL commands. Applicable to `String`-typed filters and is most commonly
+used with plain Vaadin `TextField`:
+```kotlin
+addColumnFor(Person::name) {
+    filterBar.forField(TextField(), this).fullText()
+}
+```
+
+`onDay()` matches date/datetime-based values to be on given day. Applicable to `LocalDate`-typed
+filters, simply use Vaadin's built-in `DatePicker`. Don't forget to set the time zone
+properly.
+
+```kotlin
+addColumnFor(Person::dateTimeOfBirth) {
+    filterBar.forField(DatePicker(), this).onDay(LocalDateTime::class)
+}
+```
 
 ### How this works: Wiring Filters To Custom Database Backend
 
@@ -125,7 +204,7 @@ automatized by a proper set of utility classes provided by VoK.
   appropriate filters and sets them to Grid's `DataProvider`.
   'bind' them to the `FilterRow`.
 * In order for the `FilterRow` to do that, it needs an implementation of
-  `FilterFactory` for your particular database backend. However, you usually
+  `FilterFactory` for your particular database backend. You usually
   use `DataLoaderFilterFactory` which produces VoK `Filter`s.
 
 The filter component call flow is as follows:
