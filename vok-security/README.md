@@ -18,7 +18,7 @@ To use this module, simply add the following to your `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-security:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-security:x.y.z")
 }
 ```
 

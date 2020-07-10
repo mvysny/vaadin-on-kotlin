@@ -1,9 +1,9 @@
 dependencies {
-    compile(project(":vok-framework"))
-    compile("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
-    compile("com.gitlab.mvysny.jdbiorm:jdbi-orm:0.5")
-    compile("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    implementation(project(":vok-framework"))
+    implementation("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
+    implementation("com.gitlab.mvysny.jdbiorm:jdbi-orm:0.5")
+    implementation("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit

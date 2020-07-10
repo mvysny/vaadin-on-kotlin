@@ -11,7 +11,7 @@ support for any particular database type. Includes the
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
 }
 ```
 

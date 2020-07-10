@@ -12,7 +12,7 @@ To use this module, simply add the following to your `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-db:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-db:x.y.z")
 }
 ```
 
@@ -34,7 +34,7 @@ First you will need to add the JDBC driver for your database as a dependency to 
 Then, you'll need to add Hikari-CP as a dependency (unless you're running on Spring/JavaEE):
 
 ```groovy
-compile("com.zaxxer:HikariCP:3.4.1")
+implementation("com.zaxxer:HikariCP:3.4.1")
 ```
 
 After that's done, you need to configure the `vok-db` database JDBC provider.

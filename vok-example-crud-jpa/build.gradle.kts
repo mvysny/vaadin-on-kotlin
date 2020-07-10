@@ -14,45 +14,45 @@ gretty {
 }
 
 dependencies {
-    compile(project(":vok-framework-jpa"))
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    implementation(project(":vok-framework-jpa"))
+    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
-    compile("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
-    compile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
+    implementation("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
+    implementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     // this will configure Vaadin to log to SLF4J
-    compile("org.slf4j:jul-to-slf4j:${properties["slf4j_version"]}")
+    implementation("org.slf4j:jul-to-slf4j:${properties["slf4j_version"]}")
 
     // Vaadin
-    compile("com.vaadin:vaadin-client-compiled:${properties["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-server:${properties["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-push:${properties["vaadin8_version"]}")
-    compile("com.vaadin:vaadin-themes:${properties["vaadin8_version"]}")
+    implementation("com.vaadin:vaadin-client-compiled:${properties["vaadin8_version"]}")
+    implementation("com.vaadin:vaadin-server:${properties["vaadin8_version"]}")
+    implementation("com.vaadin:vaadin-push:${properties["vaadin8_version"]}")
+    implementation("com.vaadin:vaadin-themes:${properties["vaadin8_version"]}")
     providedCompile("javax.servlet:javax.servlet-api:3.1.0")
 
     // db
-    compile("org.flywaydb:flyway-core:${properties["flyway_version"]}")
-    compile("org.hibernate:hibernate-hikaricp:5.2.11.Final") {
+    implementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")
+    implementation("org.hibernate:hibernate-hikaricp:5.2.11.Final") {
         exclude(mapOf("group" to "javax.enterprise"))
     }
-    compile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
-    compile("com.h2database:h2:${properties["h2_version"]}")
+    implementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
+    implementation("com.h2database:h2:${properties["h2_version"]}")
 
     // REST
-    compile(project(":vok-rest")) {
+    implementation(project(":vok-rest")) {
         exclude(module = "vok-db")
     }
     
     // easy development with Jetty
-    testCompile("org.eclipse.jetty:jetty-webapp:$jettyVer")
-    testCompile("org.eclipse.jetty:jetty-annotations:$jettyVer")
+    testImplementation("org.eclipse.jetty:jetty-webapp:$jettyVer")
+    testImplementation("org.eclipse.jetty:jetty-annotations:$jettyVer")
     // workaround for https://github.com/Atmosphere/atmosphere/issues/978
-    testCompile("org.eclipse.jetty:jetty-continuation:$jettyVer")
+    testImplementation("org.eclipse.jetty:jetty-continuation:$jettyVer")
     // make sure that JSR356 is on classpath, otherwise Atmosphere will use native Jetty Websockets which will result
     // in ClassNotFoundException: org.eclipse.jetty.websocket.WebSocketFactory$Acceptor
     // since the class is no longer there in Jetty 9.4
-    testCompile("org.eclipse.jetty.websocket:javax-websocket-server-impl:$jettyVer")
+    testImplementation("org.eclipse.jetty.websocket:javax-websocket-server-impl:$jettyVer")
 
     // Embedded Undertow is currently unsupported since it has no servlet/listener/... autodiscovery capabilities:
     // http://stackoverflow.com/questions/22307748/deploying-servlets-webapp-in-embedded-undertow
@@ -61,7 +61,7 @@ dependencies {
     // and we can't thus discover and preload JPA entities.
 
     // testing
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
-    testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
 }
 

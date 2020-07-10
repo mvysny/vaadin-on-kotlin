@@ -15,7 +15,7 @@ To use this module in your app just add the following dependency into your `buil
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-framework-jpa:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-framework-jpa:x.y.z")
 }
 ```
 

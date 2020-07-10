@@ -17,7 +17,7 @@ Include dependency on this module to your app; just add the following Gradle dep
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-rest:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-rest:x.y.z")
 }
 ```
 
@@ -102,8 +102,8 @@ You can easily start Javalin with Jetty which allows you to test your REST endpo
 
 ```gradle
 dependencies {
-    testCompile("com.github.vok:vok-rest-client:x.y.z")
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+    testImplementation("com.github.vok:vok-rest-client:x.y.z")
+    testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
 ```
 

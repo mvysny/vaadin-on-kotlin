@@ -23,7 +23,7 @@ Include dependency on this module to your app; just add the following Gradle dep
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-rest-client:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-rest-client:x.y.z")
 }
 ```
 
@@ -188,7 +188,7 @@ In order to start Javalin with Jetty, you also need to add Jetty to your test cl
 
 ```groovy
 dependencies {
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+    testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
 ```
 

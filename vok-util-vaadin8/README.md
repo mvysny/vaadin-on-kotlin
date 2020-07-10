@@ -11,7 +11,7 @@ provides additional Vaadin 8 Kotlin wrappers.
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-util-vaadin8:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-util-vaadin8:x.y.z")
 }
 ```
 

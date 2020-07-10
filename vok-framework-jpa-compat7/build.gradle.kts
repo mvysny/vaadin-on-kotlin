@@ -1,8 +1,8 @@
 dependencies {
-    compile(project(":vok-framework-jpa"))
-    compile("com.vaadin:vaadin-compatibility-server:${properties["vaadin8_version"]}")
+    implementation(project(":vok-framework-jpa"))
+    implementation("com.vaadin:vaadin-compatibility-server:${properties["vaadin8_version"]}")
 
-    compile("com.vaadin.addon:jpacontainer:4.0.0")
+    implementation("com.vaadin.addon:jpacontainer:4.0.0")
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
