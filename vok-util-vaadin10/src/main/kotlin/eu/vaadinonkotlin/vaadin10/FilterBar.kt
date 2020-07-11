@@ -448,7 +448,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bi
 /**
  * Finalizes the [FilterBar.Binding] and compares [String] values using the ILIKE operator.
  */
-@Deprecated("use istartsWith")
+@Deprecated("use istartsWith", ReplaceWith("istartsWith()"))
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> = istartsWith()
 
 /**
