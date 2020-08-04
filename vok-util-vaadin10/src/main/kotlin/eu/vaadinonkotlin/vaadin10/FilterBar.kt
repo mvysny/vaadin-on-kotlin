@@ -205,6 +205,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * After that's done, we can append the entire setup
      * into the [FilterBar]: [FilterBar] will now track changes to the filter component,
      * combine all filters into one and ultimately set it to the [com.vaadin.flow.data.provider.DataProvider].
+     *
+     * Call [forField] to start building a filter component for a grid column.
      * @param BEAN the bean type as provided by the [com.vaadin.flow.data.provider.DataProvider].
      * @param F the filter type which the [com.vaadin.flow.data.provider.DataProvider] uses.
      * For VoK it's usually [Filter].
@@ -261,9 +263,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
 
             /**
              * Adds a converter to the chain which converts the value from [filterComponent]
-             * (or rather from the previous [valueGetter]).
-             * @param closure never receives nulls nor blank [String]s: nulls are automatically
-             * short-circuited and converted to nulls of type [NEWVALUE]. Blank [String]s are
+             * (or rather from the previous [valueGetter]) to some kind of [NEWVALUE]. The converter
+             * usually directly produces [TARGETFILTER] out of the current [VALUE], but in some cases
+             * it's handy to have multiple intermediate converters.
+             *
+             * @param closure converts [VALUE] currently produced by [filterComponent] into
+             * a [NEWVALUE]. Never receives nulls nor blank [String]s: nulls are automatically
+             * short-circuited and converted to nulls of type [NEWVALUE]? . Blank [String]s are
              * automatically treated as nulls.
              * @param NEWVALUE the new value produced by the new [Builder] (which is now the head of the conversion chain).
              * @return the new converter chain head
@@ -286,7 +292,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             fun eq(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.eq(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
+                        .withConverter { filterFactory.eq(propertyName, it) }
                 // now we can finalize the [Binding]
                 return builder.bind()
             }
@@ -300,7 +307,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             fun le(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.le(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
+                        .withConverter { filterFactory.le(propertyName, it) }
                 // now we can finalize the binding
                 return builder.bind()
             }
@@ -314,7 +322,8 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
             fun ge(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
-                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self.withConverter { filterFactory.ge(propertyName, it) }
+                val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
+                        .withConverter { filterFactory.ge(propertyName, it) }
                 // now we can finalize the binding
                 return builder.bind()
             }
@@ -428,11 +437,16 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
 }
 
 /**
- * Finalizes the [FilterBar.Binding]. A terminal operation; however, usually you wish to finalize
- * the [FilterBar.Binding] using [ilike] or other terminal operator functions.
+ * A terminal operation which finalizes the [FilterBar.Binding] and makes the FilterBar
+ * listen on value changes of the filter component.
  *
- * You are able to finalize the [FilterBar.Binding] only after you managed to configure [FilterBar.Binding.Builder]
- * to convert the field value to [FILTER].
+ * Rarely called directly: usually it's far easier to finalize
+ * the [FilterBar.Binding] using helper filter-creating terminal functions:
+ * [istartsWith], [FilterBar.Binding.Builder.le], [FilterBar.Binding.Builder.ge],
+ * [FilterBar.Binding.Builder.eq], [onDay], [inRange], [fullText].
+ *
+ * You are only able to finalize the [FilterBar.Binding] after you manage to configure [FilterBar.Binding.Builder]
+ * to convert the filter component value to [FILTER].
  * @param BEAN the type of beans displayed in the [Grid]
  * @param FILTER the type of the filtering value accepted by the [com.vaadin.flow.data.provider.DataProvider].
  * @return the finalized [FilterBar.Binding], with component properly configured and placed into
@@ -500,6 +514,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>
  * Terminal operation which matches dates and datetimes in given day.
  *
  * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * It's important for your app to initialize [browserTimeZone] properly as described in the kdoc of that variable.
  */
 @JvmName("numberIntervalInRange")
 fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
