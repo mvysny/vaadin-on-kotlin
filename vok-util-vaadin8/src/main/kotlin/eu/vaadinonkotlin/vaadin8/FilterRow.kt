@@ -174,8 +174,8 @@ class FilterRow<T : Any, F : Any>(
         val properties: Map<String, PropertyDefinition<T, *>> =
                 BeanPropertySet.get(itemClass).properties.toList().associateBy { it.name }
         for (propertyId in grid.columns.mapNotNull { it.id }) {
-            val property = properties[propertyId]
-            val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property)
+            val property: PropertyDefinition<T, *>? = properties[propertyId]
+            val field: HasValue<*>? = if (property == null) null else filterFieldFactory.createField(property as PropertyDefinition<T, Any?>)
             (field as? HasValueChangeMode)?.valueChangeMode = valueChangeMode
             val cell = headerRow.getCell(propertyId)
             if (field != null) {
