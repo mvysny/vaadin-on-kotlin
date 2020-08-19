@@ -38,11 +38,14 @@ import java.util.*
  * @property allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  * @property allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader: DataLoader<T>,
-                                         val maxLimit: Long = Long.MAX_VALUE,
-                                         val defaultLimit: Long = maxLimit,
-                                         val allowSortColumns: Set<DataLoaderPropertyName>? = null,
-                                         val allowFilterColumns: Set<DataLoaderPropertyName>? = null) : CrudHandler {
+public open class DataLoaderCrudHandler<T : Any>(
+        public val itemClass: Class<T>,
+        public val dataLoader: DataLoader<T>,
+        public val maxLimit: Long = Long.MAX_VALUE,
+        public val defaultLimit: Long = maxLimit,
+        public val allowSortColumns: Set<DataLoaderPropertyName>? = null,
+        public val allowFilterColumns: Set<DataLoaderPropertyName>? = null
+) : CrudHandler {
     override fun getAll(ctx: Context) {
         // grab fetchRange from the query
         val limit: Long = ctx.queryParam<Long>("limit").getOrNull() ?: defaultLimit
@@ -140,8 +143,16 @@ open class DataLoaderCrudHandler<T: Any>(val itemClass: Class<T>, val dataLoader
         return convertedValue
     }
 
-    override fun create(ctx: Context) = throw UnauthorizedResponse()
-    override fun delete(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
-    override fun getOne(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
-    override fun update(ctx: Context, resourceId: String) = throw UnauthorizedResponse()
+    override fun create(ctx: Context) {
+        throw UnauthorizedResponse()
+    }
+    override fun delete(ctx: Context, resourceId: String) {
+        throw UnauthorizedResponse()
+    }
+    override fun getOne(ctx: Context, resourceId: String) {
+        throw UnauthorizedResponse()
+    }
+    override fun update(ctx: Context, resourceId: String) {
+        throw UnauthorizedResponse()
+    }
 }

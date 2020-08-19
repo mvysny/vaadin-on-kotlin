@@ -15,7 +15,7 @@ import io.javalin.plugin.json.ToJsonMapper
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
  * via Javalin's [Context.json], or parse incoming JSON via [Context.bodyAsClass].
  */
-fun Gson.configureToJavalin() {
+public fun Gson.configureToJavalin() {
     JavalinJson.fromJsonMapper = object : FromJsonMapper {
         override fun <T> map(json: String, targetClass: Class<T>): T = fromJson(json, targetClass)
     }
@@ -38,7 +38,7 @@ fun Gson.configureToJavalin() {
  * @param crudHandler retrieves bean instances; you can use [getCrudHandler] to automatically provide instances of vok-orm entities.
  * @param permittedRoles only these roles are allowed to access abovementioned endpoints. See Javalin [io.javalin.security.AccessManager] and the Javalin documentation for more details.
  */
-fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
+public fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
     val p = path.trim('/')
     if (p.contains('/')) {
         ApiBuilder.path(p.substringBeforeLast('/')) {
@@ -72,7 +72,7 @@ fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Ro
  * @param allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null.
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-inline fun <reified ID : Any, reified E : KEntity<ID>> Dao<E, ID>.getCrudHandler(allowModification: Boolean = false,
+public inline fun <reified ID : Any, reified E : KEntity<ID>> Dao<E, ID>.getCrudHandler(allowModification: Boolean = false,
                                                                                  maxLimit: Long = Long.MAX_VALUE,
                                                                                  defaultLimit: Long = maxLimit,
                                                                                  allowSortColumns: Set<String>? = null,

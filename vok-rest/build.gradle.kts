@@ -20,5 +20,9 @@ dependencies {
     testImplementation("org.apache.lucene:lucene-queryparser:8.5.2")
 }
 
+kotlin {
+    explicitApi()
+}
+
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-rest", "VoK: The REST support")

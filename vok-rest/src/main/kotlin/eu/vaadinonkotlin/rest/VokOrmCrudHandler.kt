@@ -33,12 +33,15 @@ import io.javalin.http.UnauthorizedResponse
  * @param allowSortColumns if not null, only these columns are allowed to be sorted upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
-open class VokOrmCrudHandler<ID: Any, E: KEntity<ID>>(idClass: Class<ID>, private val dao: Dao<E, ID>,
-                                                                       val allowsModification: Boolean,
-                                                                       maxLimit: Long = Long.MAX_VALUE,
-                                                                       defaultLimit: Long = maxLimit,
-                                                                       allowSortColumns: Set<String>? = null,
-                                                                       allowFilterColumns: Set<String>? = null) : CrudHandler {
+public open class VokOrmCrudHandler<ID : Any, E : KEntity<ID>>(
+        idClass: Class<ID>,
+        private val dao: Dao<E, ID>,
+        public val allowsModification: Boolean,
+        maxLimit: Long = Long.MAX_VALUE,
+        defaultLimit: Long = maxLimit,
+        allowSortColumns: Set<String>? = null,
+        allowFilterColumns: Set<String>? = null
+) : CrudHandler {
 
     /**
      * The [getAll] call delegates here.
@@ -76,7 +79,9 @@ open class VokOrmCrudHandler<ID: Any, E: KEntity<ID>>(idClass: Class<ID>, privat
         dao.deleteById(id)
     }
 
-    override fun getAll(ctx: Context) = getAllHandler.getAll(ctx)
+    override fun getAll(ctx: Context) {
+        getAllHandler.getAll(ctx)
+    }
 
     override fun getOne(ctx: Context, resourceId: String) {
         val id: ID = convertID(resourceId)
@@ -86,7 +91,7 @@ open class VokOrmCrudHandler<ID: Any, E: KEntity<ID>>(idClass: Class<ID>, privat
 
     override fun update(ctx: Context, resourceId: String) {
         checkAllowsModification()
-        val entity = ctx.bodyAsClass(dao.entityClass)
+        val entity: E = ctx.bodyAsClass(dao.entityClass)
         entity.id = idConverter(resourceId)
         db {
             if (!dao.existsById(entity.id!!)) {
