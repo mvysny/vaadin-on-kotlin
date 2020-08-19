@@ -13,7 +13,7 @@ import java.lang.reflect.Method
  * Closes [this] quietly - if [Closeable.close] fails, an INFO message is logged. The exception is not
  * rethrown.
  */
-fun Closeable.closeQuietly() {
+public fun Closeable.closeQuietly() {
     try {
         close()
     } catch (e: Exception) {
@@ -21,24 +21,25 @@ fun Closeable.closeQuietly() {
     }
 }
 
-val Instant.toDate: Date get() = Date(toEpochMilli())
+public val Instant.toDate: Date get() = Date(toEpochMilli())
 
-fun Iterable<String?>.filterNotBlank() = filterNotNull().filter { it.isNotBlank() }
+public fun Iterable<String?>.filterNotBlank(): List<String> =
+        filterNotNull().filter { it.isNotBlank() }
 
 // @todo remove these when kotlin.time.Duration becomes official
-val Int.days: Duration get() = toLong().days
-val Long.days: Duration get() = Duration.ofDays(this)
-val Int.hours: Duration get() = toLong().hours
-val Long.hours: Duration get() = Duration.ofHours(this)
-val Int.minutes: Duration get() = toLong().minutes
-val Long.minutes: Duration get() = Duration.ofMinutes(this)
-val Int.seconds: Duration get() = toLong().seconds
-val Long.seconds: Duration get() = Duration.ofSeconds(this)
+public val Int.days: Duration get() = toLong().days
+public val Long.days: Duration get() = Duration.ofDays(this)
+public val Int.hours: Duration get() = toLong().hours
+public val Long.hours: Duration get() = Duration.ofHours(this)
+public val Int.minutes: Duration get() = toLong().minutes
+public val Long.minutes: Duration get() = Duration.ofMinutes(this)
+public val Int.seconds: Duration get() = toLong().seconds
+public val Long.seconds: Duration get() = Duration.ofSeconds(this)
 
-operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
-infix operator fun Duration.plus(other: Duration): Duration = this.plus(other)
-infix operator fun Instant.plus(other: Duration): Instant = this.plus(other)
-infix operator fun Date.plus(other: Duration) = Date(time + other.toMillis())
+public operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
+public infix operator fun Duration.plus(other: Duration): Duration = this.plus(other)
+public infix operator fun Instant.plus(other: Duration): Instant = this.plus(other)
+public infix operator fun Date.plus(other: Duration): Date = Date(time + other.toMillis())
 
 /**
  * Allows you to add listeners for a particular event into your component like following:
@@ -71,7 +72,7 @@ public inline fun <reified T: Serializable> listeners(): Listeners<T> = Listener
  * onClickListeners.fire.onClick(2)
  * ```
  */
-class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializable {
+public class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializable {
     init {
         require(listenerType.isInterface) { "$listenerType must be an interface" }
     }
@@ -83,7 +84,7 @@ class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializab
      *
      * The equality of the listener is measured by using the standard [Any.equals] and [Any.hashCode].
      */
-    fun add(listener: T) {
+    public fun add(listener: T) {
         listeners.add(listener)
     }
 
@@ -93,7 +94,7 @@ class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializab
      *
      * The equality of the listener is measured by using the standard [Any.equals] and [Any.hashCode].
      */
-    fun remove(listener: T) {
+    public fun remove(listener: T) {
         listeners.remove(listener)
     }
 
@@ -109,7 +110,7 @@ class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializab
      * Not serializable!
      */
     @Suppress("UNCHECKED_CAST")
-    val fire: T get() = Proxy.newProxyInstance(listenerType.classLoader, arrayOf(listenerType)) { _, method: Method, args: Array<Any>? ->
+    public val fire: T get() = Proxy.newProxyInstance(listenerType.classLoader, arrayOf(listenerType)) { _, method: Method, args: Array<Any>? ->
         if (method.name == "toString") {
             "fire($this}"
         } else {
@@ -129,7 +130,7 @@ class Listeners<T: Serializable>(private val listenerType: Class<T>): Serializab
  * @return converts class of primitive type to appropriate non-primitive class; other classes are simply returned as-is.
  */
 @Suppress("UNCHECKED_CAST")
-val <T> Class<T>.nonPrimitive: Class<T>
+public val <T> Class<T>.nonPrimitive: Class<T>
     get() = when (this) {
         Integer.TYPE -> Integer::class.java as Class<T>
         java.lang.Long.TYPE -> Long::class.java as Class<T>
