@@ -24,7 +24,7 @@ import eu.vaadinonkotlin.vaadin10.withStringFilterOn as withStringFilterOn1
  * Example of use: `grid.dataProvider = Person.dataProvider`.
  */
 @Deprecated("Use dataLoader")
-inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
+public inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
     get() = dataLoader.asDataProvider()
 
 /**
@@ -33,7 +33,7 @@ inline val <reified T: KEntity<*>> Dao<T, *>.dataProvider: VokDataProvider<T>
  *
  * Example of use: `grid.setDataLoader(Person.dataLoader)`.
  */
-inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
+public inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
     get() = EntityDataLoader(this)
 
 /**
@@ -75,7 +75,7 @@ inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
  * @author mavi
  */
 @Deprecated("Use SqlDataLoader class directly")
-fun <T: Any> sqlDataProvider(clazz: Class<T>,
+public fun <T: Any> sqlDataProvider(clazz: Class<T>,
                              sql: String,
                              params: Map<String, Any?> = mapOf(),
                              idMapper: (T)->Any) : VokDataProvider<T>
@@ -85,25 +85,25 @@ fun <T: Any> sqlDataProvider(clazz: Class<T>,
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
  * as a (configurable) [Grid.getDataProvider].
  */
-fun <T: KEntity<*>> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>) {
+public fun <T: KEntity<*>> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>) {
     setDataProvider(dataLoader.asDataProvider())
 }
 
 /**
  * Returns a [VokDataProvider] which loads data from this [DataLoader].
  */
-fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }
+public fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
-fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
+public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
         withStringFilterOn(property.name)
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
-fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
+public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withStringFilterOn1(property) { it.id!! }

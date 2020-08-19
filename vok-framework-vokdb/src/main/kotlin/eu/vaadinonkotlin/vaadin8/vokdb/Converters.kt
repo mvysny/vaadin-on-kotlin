@@ -13,8 +13,8 @@ import com.vaadin.data.ValueContext
  * @param T the type of the entity
  * @param ID the type of the ID field of the entity
  */
-class EntityToIdConverter<ID: Any, T: KEntity<ID>>(val dao: Dao<T, ID>) : Converter<T?, ID?> {
-    constructor(clazz: Class<T>) : this(Dao<T, ID>(clazz))
+public class EntityToIdConverter<ID: Any, T: KEntity<ID>>(public val dao: Dao<T, ID>) : Converter<T?, ID?> {
+    public constructor(clazz: Class<T>) : this(Dao<T, ID>(clazz))
     override fun convertToModel(value: T?, context: ValueContext?): Result<ID?> =
         Result.ok(value?.id)
 
@@ -41,5 +41,5 @@ class EntityToIdConverter<ID: Any, T: KEntity<ID>>(val dao: Dao<T, ID>) : Conver
  * }
  * ```
  */
-inline fun <BEAN, ID: Any, reified ENTITY: KEntity<ID>> Binder.BindingBuilder<BEAN, ENTITY?>.toId(): Binder.BindingBuilder<BEAN, ID?> =
+public inline fun <BEAN, ID: Any, reified ENTITY: KEntity<ID>> Binder.BindingBuilder<BEAN, ENTITY?>.toId(): Binder.BindingBuilder<BEAN, ID?> =
     withConverter(EntityToIdConverter(ENTITY::class.java))

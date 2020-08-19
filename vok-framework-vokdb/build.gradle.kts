@@ -16,6 +16,10 @@ dependencies {
     testCompile("org.mariadb.jdbc:mariadb-java-client:2.2.3")
 }
 
+kotlin {
+    explicitApi()
+}
+
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-framework-vokdb", "VoK: provides integration of Vaadin8 and vok-db")
 
