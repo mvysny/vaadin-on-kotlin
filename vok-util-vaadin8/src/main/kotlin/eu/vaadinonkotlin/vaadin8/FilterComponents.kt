@@ -17,13 +17,13 @@ import java.time.format.FormatStyle
  * @property min the minimum accepted value, inclusive. If `null` then the numeric range has no lower limit.
  * @property max the maximum accepted value, inclusive. If `null` then the numeric range has no upper limit.
  */
-data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
+public data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
 
     /**
      * Creates a filter out of this interval, using given [filterFactory].
      * @return a filter which matches the same set of numbers as this interval. Returns `null` for universal set interval.
      */
-    fun <F> toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? {
+    public fun <F> toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? {
         if (isSingleItem) return filterFactory.eq(propertyName, max!!)
         if (max != null && min != null) {
             return filterFactory.between(propertyName, min!!, max!!)
@@ -53,7 +53,7 @@ data class NumberInterval<T : Number>(var min: T?, var max: T?) : Serializable {
  *
  * The current numeric range is also displayed as the caption of the button.
  */
-class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
+public class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
 
     private lateinit var ltInput: TextField
     private lateinit var gtInput: TextField
@@ -139,9 +139,9 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
         updateCaption()
     }
 
-    override fun getValue() = internalValue?.copy()
+    override fun getValue(): NumberInterval<Double>? = internalValue?.copy()
 
-    var isPopupVisible: Boolean
+    public var isPopupVisible: Boolean
         get() = (content as KPopupView).isPopupVisible
         set(value) {
             (content as KPopupView).isPopupVisible = value
@@ -153,7 +153,7 @@ class NumberFilterPopup : CustomField<NumberInterval<Double>?>() {
  * @return converts class of primitive type to appropriate non-primitive class; other classes are simply returned as-is.
  */
 @Suppress("UNCHECKED_CAST")
-val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
+public val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
     Integer.TYPE -> Integer::class.java as Class<T>
     java.lang.Long.TYPE -> Long::class.java as Class<T>
     java.lang.Float.TYPE -> Float::class.java as Class<T>
@@ -163,7 +163,7 @@ val <T> Class<T>.nonPrimitive: Class<T> get() = when(this) {
     else -> this
 }
 
-fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>): F? {
+public fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterFactory<F>, fieldType: Class<*>): F? {
     fun <T : Comparable<T>, F> T.legeFilter(propertyName: String, filterFactory: FilterFactory<F>, isLe: Boolean): F =
             if (isLe) filterFactory.le(propertyName, this) else filterFactory.ge(propertyName, this)
 
@@ -188,7 +188,7 @@ fun <F : Any> DateInterval.toFilter(propertyName: String, filterFactory: FilterF
  *
  * The current date range is also displayed as the caption of the button.
  */
-class DateFilterPopup: CustomField<DateInterval?>() {
+public class DateFilterPopup: CustomField<DateInterval?>() {
     private val formatter: DateTimeFormatter get() = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(UI.getCurrent().locale!!)
     private lateinit var fromField: InlineDateTimeField
     private lateinit var toField: InlineDateTimeField
@@ -197,7 +197,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
     /**
      * The desired resolution of this filter popup, defaults to [DateTimeResolution.MINUTE].
      */
-    var resolution: DateTimeResolution = DateTimeResolution.MINUTE
+    public var resolution: DateTimeResolution = DateTimeResolution.MINUTE
         set(value: DateTimeResolution) {
             field = value
             updateFields()
@@ -224,7 +224,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         }
     }
 
-    override fun getValue() = internalValue?.copy()
+    override fun getValue(): DateInterval? = internalValue?.copy()
 
     private fun format(date: LocalDateTime?) = if (date == null) "" else formatter.format(date)
 
@@ -317,7 +317,7 @@ class DateFilterPopup: CustomField<DateInterval?>() {
         }
     }
 
-    var isPopupVisible: Boolean
+    public var isPopupVisible: Boolean
         get() = (content as KPopupView).isPopupVisible
         set(value) {
             (content as KPopupView).isPopupVisible = value
@@ -325,7 +325,10 @@ class DateFilterPopup: CustomField<DateInterval?>() {
 }
 
 @VaadinDsl
-fun (@VaadinDsl HasComponents).dateRangePopup(value: DateInterval? = null, block: (@VaadinDsl DateFilterPopup).()->Unit = {}) = init(DateFilterPopup()) {
-    if (value != null) this.value = value
-    block()
+public fun (@VaadinDsl HasComponents).dateRangePopup(value: DateInterval? = null, block: (@VaadinDsl DateFilterPopup).()->Unit = {}): DateFilterPopup {
+    val popup = DateFilterPopup()
+    if (value != null) {
+        popup.value = value
+    }
+    return init(popup, block)
 }

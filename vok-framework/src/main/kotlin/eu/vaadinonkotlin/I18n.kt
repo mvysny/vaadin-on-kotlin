@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
+public val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
     override fun getContents(): Array<Array<Any>> = arrayOf()
 }
 
@@ -25,7 +25,7 @@ val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
  * Currently there is no support for parameters nor expressions in the messages.
  * @property locale the locale to use, not null.
  */
-class I18n internal constructor(val locale: Locale) {
+public class I18n internal constructor(public val locale: Locale) {
     private val standardMessages: ResourceBundle = ResourceBundle.getBundle("eu.vaadinonkotlin.VokMessages", locale)
     private val customMessages: ResourceBundle = try {
         ResourceBundle.getBundle("VokMessages", locale)
@@ -40,7 +40,7 @@ class I18n internal constructor(val locale: Locale) {
      * Instead, it should provide a key wrapped with indicators that a message is missing, for example
      * `!{key}!`.
      */
-    operator fun get(key: String): String {
+    public operator fun get(key: String): String {
         if (customMessages.containsKey(key)) {
             return customMessages.getString(key)
         }
@@ -53,9 +53,9 @@ class I18n internal constructor(val locale: Locale) {
     /**
      * Checks whether there is a message under given [key]. If not, [get] will return `!{key}!`.
      */
-    fun contains(key: String): Boolean = customMessages.containsKey(key) || standardMessages.containsKey(key)
+    public fun contains(key: String): Boolean = customMessages.containsKey(key) || standardMessages.containsKey(key)
 
-    companion object {
+    public companion object {
         @JvmStatic
         private val log = LoggerFactory.getLogger(I18n::class.java)
     }
@@ -67,7 +67,7 @@ class I18n internal constructor(val locale: Locale) {
  * of the i18n bundles. For production, the [I18n] instances are cached
  * so that the key lookup is very quick.
  */
-fun getI18nProvider(production: Boolean): (Locale)-> I18n = when (production) {
+public fun getI18nProvider(production: Boolean): (Locale)-> I18n = when (production) {
     true -> productionI18nProvider
     else -> { locale -> I18n(locale) }
 }

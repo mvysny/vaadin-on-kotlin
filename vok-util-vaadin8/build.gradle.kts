@@ -18,6 +18,10 @@ dependencies {
     testCompile("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 }
 
+kotlin {
+    explicitApi()
+}
+
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-util-vaadin8", "VOK: Basic utility classes for Vaadin 8")
 

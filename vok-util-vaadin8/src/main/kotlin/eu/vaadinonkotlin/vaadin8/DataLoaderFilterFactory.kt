@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
  * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param clazz the type of the entity, not null.
  */
-open class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory<Filter<F>> {
+public open class DataLoaderFilterFactory<F : Any>(public val clazz: Class<F>) : FilterFactory<Filter<F>> {
     override fun and(filters: Set<Filter<F>>): Filter<F>? = filters.and()
     override fun or(filters: Set<Filter<F>>): Filter<F>? = filters.or()
     override fun eq(propertyName: String, value: Any?): Filter<F> = EqFilter(propertyName, value)
@@ -46,7 +46,7 @@ open class DataLoaderFilterFactory<F : Any>(val clazz: Class<F>) : FilterFactory
  * @return the [FilterRow] row with filter components already generated.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> HeaderRow.generateFilterComponents(
+public fun <T : Any> HeaderRow.generateFilterComponents(
         grid: Grid<T>, itemClass: KClass<T>,
         filterFieldFactory: FilterFieldFactory<T, Filter<T>> = DefaultFilterFieldFactory(DataLoaderFilterFactory<T>(itemClass.java)),
         valueChangeMode: ValueChangeMode = ValueChangeMode.LAZY,

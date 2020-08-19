@@ -26,7 +26,7 @@ import kotlin.reflect.KProperty1
  * label(vt["createUser.caption"])
  * ```
  */
-val vt: I18n
+public val vt: I18n
     get() {
     val ui = checkUIThread()
     val locale = ui.locale
@@ -40,12 +40,12 @@ val vt: I18n
  * @return the UI instance, not null.
  * @throws IllegalStateException if not run in the UI thread or [UI.init] is ongoing.
  */
-fun checkUIThread() = UI.getCurrent() ?: throw IllegalStateException("Not called in the UI thread")
+public fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException("Not called in the UI thread")
 
 /**
  * Returns the Vaadin's [PropertyDefinition] for Kotlin [KProperty1].
  */
 @Suppress("UNCHECKED_CAST")
-inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?>
+public inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?>
     get() =
         BeanPropertySet.get(T::class.java).getProperty(name).get() as PropertyDefinition<T, V?>

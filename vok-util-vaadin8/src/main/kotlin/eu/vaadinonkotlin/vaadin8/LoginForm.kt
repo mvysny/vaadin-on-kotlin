@@ -49,14 +49,14 @@ import com.vaadin.ui.themes.ValoTheme
  *
  * If only parts of the app are protected, you may simply show the LoginForm class in a `Window`, when your app-specific login button is pressed.
  */
-class LoginForm(appName: String) : Panel() {
-    lateinit var appNameLabel: Label
+public class LoginForm(appName: String) : Panel() {
+    public lateinit var appNameLabel: Label
         private set
-    lateinit var usernameField: TextField
+    public lateinit var usernameField: TextField
         private set
-    lateinit var passwordField: TextField
+    public lateinit var passwordField: TextField
         private set
-    lateinit var loginButton: Button
+    public lateinit var loginButton: Button
         private set
     init {
         w = 500.px
@@ -114,9 +114,10 @@ class LoginForm(appName: String) : Panel() {
      * log in the user (e.g. by storing the user into the session) and reload the page ([com.vaadin.server.Page.reload]) (so that the UI
      * is re-created and redraws the welcome page for the user, if the entire app is user-protected), or navigate to the user's welcome view.
      */
-    fun onLogin(loginHandler: (username: String, password: String)->Unit) {
+    public fun onLogin(loginHandler: (username: String, password: String)->Unit) {
         onLoginHandler = loginHandler
     }
 }
 
-fun (@VaadinDsl HasComponents).loginForm(appName: String, block: LoginForm.()->Unit = {}) = init(LoginForm(appName), block)
+public fun (@VaadinDsl HasComponents).loginForm(appName: String, block: LoginForm.()->Unit = {}): LoginForm =
+        init(LoginForm(appName), block)

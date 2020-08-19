@@ -6,35 +6,39 @@ import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 
-object VaadinOnKotlin {
+public object VaadinOnKotlin {
     /**
      * Initializes the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
-    fun init() = synchronized(this) {
-        // TomEE also has by default 5 threads, so I guess this is okay :-D
-        executor = Executors.newScheduledThreadPool(5, threadFactory)
-        val plugins = pluginsLoader.toList()
-        plugins.forEach { it.init() }
-        log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
+    public fun init() {
+        synchronized(this) {
+            // TomEE also has by default 5 threads, so I guess this is okay :-D
+            executor = Executors.newScheduledThreadPool(5, threadFactory)
+            val plugins: List<VOKPlugin> = pluginsLoader.toList()
+            plugins.forEach { it.init() }
+            log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
+        }
     }
 
     /**
      * Destroys the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
-    fun destroy() = synchronized(this) {
-        if (isStarted) {
-            pluginsLoader.forEach { it.destroy() }
-            executor!!.shutdown()
-            executor!!.awaitTermination(1, TimeUnit.DAYS)
-            executor = null
+    public fun destroy() {
+        synchronized(this) {
+            if (isStarted) {
+                pluginsLoader.forEach { it.destroy() }
+                executor!!.shutdown()
+                executor!!.awaitTermination(1, TimeUnit.DAYS)
+                executor = null
+            }
         }
     }
 
     /**
      * True if [init] has been called.
      */
-    val isStarted: Boolean
-    get() = synchronized(this) { executor != null }
+    public val isStarted: Boolean
+        get() = synchronized(this) { executor != null }
 
     private var executor: ScheduledExecutorService? = null
 
@@ -45,7 +49,7 @@ object VaadinOnKotlin {
     /**
      * The executor used by [async] and [scheduleAtFixedRate]. You can submit your own tasks as you wish.
      */
-    val asyncExecutor: ScheduledExecutorService
+    public val asyncExecutor: ScheduledExecutorService
         get() = synchronized(this) { checkStarted(); executor!! }
 
     /**
@@ -55,7 +59,7 @@ object VaadinOnKotlin {
      * Needs to be set before [init] is called.
      */
     @Volatile
-    var threadFactory: ThreadFactory = object : ThreadFactory {
+    public var threadFactory: ThreadFactory = object : ThreadFactory {
         private val id = AtomicInteger()
         override fun newThread(r: Runnable): Thread? {
             val thread = Thread(r)
@@ -89,7 +93,7 @@ object VaadinOnKotlin {
  * @throws RejectedExecutionException if the task cannot be
  *         scheduled for execution
  */
-fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(Callable<R> {
+public fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(Callable<R> {
     try {
         block.invoke()
     } catch (t: Throwable) {
@@ -123,7 +127,7 @@ fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(C
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*>
+public fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*>
         = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate({
             try {
                 command.invoke()

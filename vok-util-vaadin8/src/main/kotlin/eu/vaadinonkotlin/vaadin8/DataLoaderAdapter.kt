@@ -18,9 +18,9 @@ import java.util.stream.Stream
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-class DataLoaderAdapter<T : Any>(val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
+public class DataLoaderAdapter<T : Any>(public val loader: DataLoader<T>, private val idResolver: (T)->Any) : AbstractBackEndDataProvider<T, Filter<T>?>() {
     override fun getId(item: T): Any = idResolver(item)
-    override fun toString() = "DataLoaderAdapter($loader)"
+    override fun toString(): String = "DataLoaderAdapter($loader)"
     override fun sizeInBackEnd(query: Query<T, Filter<T>?>?): Int {
         val count: Long = loader.getCount(query?.filter?.orElse(null))
         return count.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
@@ -45,5 +45,5 @@ class DataLoaderAdapter<T : Any>(val loader: DataLoader<T>, private val idResolv
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
+public fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
         DataLoaderAdapter(this, idResolver).withConfigurableFilter2()

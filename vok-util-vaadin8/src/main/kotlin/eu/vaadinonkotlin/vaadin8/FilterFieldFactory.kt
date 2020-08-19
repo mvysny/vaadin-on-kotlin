@@ -32,7 +32,7 @@ import kotlin.reflect.KProperty1
  * @param F the type of the filter accepted by the [com.vaadin.data.provider.DataProvider]
  * @author mvy
  */
-interface FilterFieldFactory<T : Any, F> : Serializable {
+public interface FilterFieldFactory<T : Any, F> : Serializable {
     /**
      * Creates the filtering component for given bean property, or Grid column.
      * The component may not necessarily produce values of given data types - for example,
@@ -58,7 +58,7 @@ interface FilterFieldFactory<T : Any, F> : Serializable {
      * @return A field that produces values which can be used to filter the property value.
      * May return null if filtering of given data type with given field type is unsupported.
      */
-    fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<V?>?
+    public fun <V> createField(property: PropertyDefinition<T, V?>): HasValue<V?>?
 
     /**
      * Creates a new Container Filter based on given value.
@@ -67,7 +67,7 @@ interface FilterFieldFactory<T : Any, F> : Serializable {
      * @param property the property
      * @return a filter, may be null if no filtering is needed or if the value indicates that the filtering is disabled for this column.
      */
-    fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
+    public fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): F?
 }
 
 /**
@@ -88,7 +88,7 @@ interface FilterFieldFactory<T : Any, F> : Serializable {
  * @author mvy, stolen from Teppo Kurki's FilterTable.
  */
 @Suppress("UNUSED_PARAMETER")
-open class DefaultFilterFieldFactory<T : Any, F : Any>(val filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F> {
+public open class DefaultFilterFieldFactory<T : Any, F : Any>(public val filterFactory: FilterFactory<F>) : FilterFieldFactory<T, F> {
     /**
      * If true, number filters will be shown as a popup, which allows the user to set eq, less-than and greater-than fields.
      * If false, a simple in-place editor will be shown, which only allows to enter the eq number.
@@ -144,7 +144,7 @@ open class DefaultFilterFieldFactory<T : Any, F : Any>(val filterFactory: Filter
         return popup
     }
 
-    protected fun createNumericField(type: Class<*>, property: PropertyDefinition<T, *>) = NumberFilterPopup()
+    protected fun createNumericField(type: Class<*>, property: PropertyDefinition<T, *>): HasValue<NumberInterval<Double>?> = NumberFilterPopup()
 
     /**
      * Don't forget that the returned field must be tri-state - true, false, null (to disable filtering).
@@ -184,11 +184,13 @@ open class DefaultFilterFieldFactory<T : Any, F : Any>(val filterFactory: Filter
 /**
  * Utility method which creates [DefaultFilterFieldFactory] with VOK filters.
  */
-inline fun <reified T : Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
+public inline fun <reified T : Any> vokDefaultFilterFieldFactory(): DefaultFilterFieldFactory<T, Filter<T>> =
         DefaultFilterFieldFactory(DataLoaderFilterFactory(T::class.java))
 
-class FullTextFilterFieldFactory<T : Any>(val delegate: FilterFieldFactory<T, Filter<T>>,
-                                          val property: DataLoaderPropertyName) : FilterFieldFactory<T, Filter<T>> by delegate {
+public class FullTextFilterFieldFactory<T : Any>(
+        public val delegate: FilterFieldFactory<T, Filter<T>>,
+        public val property: DataLoaderPropertyName
+) : FilterFieldFactory<T, Filter<T>> by delegate {
     override fun <V> createFilter(value: V?, filterField: HasValue<V?>, property: PropertyDefinition<T, V?>): Filter<T>? {
         if (property.name == this.property) {
             if (value == null) {
@@ -208,11 +210,11 @@ class FullTextFilterFieldFactory<T : Any>(val delegate: FilterFieldFactory<T, Fi
  * Creates a new factory which produces [FullTextFilter] for given [property], but delegates
  * all other filter creations to [this].
  */
-fun <T : Any> FilterFieldFactory<T, Filter<T>>.withFullTextOn(property: KProperty1<T, String?>): FilterFieldFactory<T, Filter<T>> =
+public fun <T : Any> FilterFieldFactory<T, Filter<T>>.withFullTextOn(property: KProperty1<T, String?>): FilterFieldFactory<T, Filter<T>> =
         FullTextFilterFieldFactory(this, property.name)
 
 /**
  * Utility method which creates field for a Kotlin property. Calls [FilterFieldFactory.createField].
  */
-inline fun <reified T : Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KProperty1<T, V>): HasValue<V?>? =
+public inline fun <reified T : Any, V> FilterFieldFactory<T, *>.createFieldFor(prop: KProperty1<T, V>): HasValue<V?>? =
         createField(prop.definition)

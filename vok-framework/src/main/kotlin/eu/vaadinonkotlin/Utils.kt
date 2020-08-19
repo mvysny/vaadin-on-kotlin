@@ -46,7 +46,7 @@ infix operator fun Date.plus(other: Duration) = Date(time + other.toMillis())
  * val onFilterChangeListeners = listeners<OnClickListener>()
  * ```
  */
-inline fun <reified T: Serializable> listeners() = Listeners(T::class.java)
+public inline fun <reified T: Serializable> listeners(): Listeners<T> = Listeners(T::class.java)
 
 /**
  * Allows you to add listeners for a particular event into your component.

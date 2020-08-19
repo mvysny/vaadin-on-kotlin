@@ -10,13 +10,13 @@ package eu.vaadinonkotlin
  *
  * You can e.g. use this feature to attach extension fields to [VaadinOnKotlin] and initialize them.
  */
-interface VOKPlugin {
+public interface VOKPlugin {
     /**
      * Called from [VaadinOnKotlin.init].
      */
-    fun init()
+    public fun init()
     /**
      * Called from [VaadinOnKotlin.destroy].
      */
-    fun destroy()
+    public fun destroy()
 }
