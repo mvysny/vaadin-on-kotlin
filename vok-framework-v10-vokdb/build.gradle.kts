@@ -10,11 +10,6 @@ dependencies {
     testCompile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
 
     testCompile("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
-    testCompile("org.zeroturnaround:zt-exec:1.10")
-
-    testCompile("org.postgresql:postgresql:42.2.1")
-    testCompile("mysql:mysql-connector-java:5.1.45")
-    testCompile("org.mariadb.jdbc:mariadb-java-client:2.2.3")
 }
 
 kotlin {
