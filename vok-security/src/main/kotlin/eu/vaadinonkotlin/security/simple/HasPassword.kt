@@ -14,19 +14,20 @@ package eu.vaadinonkotlin.security.simple
  * You can see the example of this mixin interface in the [vok-security-demo User.kt](https://github.com/mvysny/vok-security-demo/blob/master/web/src/main/kotlin/com/example/vok/User.kt)
  * class.
  */
-interface HasPassword {
-    var hashedPassword: String
+public interface HasPassword {
+    public var hashedPassword: String
 
     /**
      * Checks if the [password] provided by the user at login matches with whatever password user provided during the registration.
      */
-    fun passwordMatches(password: String) = PasswordHash.validatePassword(password, hashedPassword)
+    public fun passwordMatches(password: String): Boolean =
+            PasswordHash.validatePassword(password, hashedPassword)
 
     /**
      * When the user attempts to change the password, or a new user is created, call this function with the user-provided [password]
      * to populate the [hashedPassword] field properly.
      */
-    fun setPassword(password: String) {
+    public fun setPassword(password: String) {
         hashedPassword = PasswordHash.createHash(password)
     }
 }

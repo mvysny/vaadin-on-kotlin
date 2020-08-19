@@ -21,7 +21,7 @@ import eu.vaadinonkotlin.VaadinOnKotlin
  * no users will qualify and the view remains inaccessible.
  */
 @Target(AnnotationTarget.CLASS)
-annotation class AllowRoles(vararg val roles: String)
+public annotation class AllowRoles(vararg val roles: String)
 
 /**
  * Allows anybody to see this view, even if there is no user logged in.
@@ -36,7 +36,7 @@ annotation class AllowRoles(vararg val roles: String)
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
-annotation class AllowAll
+public annotation class AllowAll
 
 /**
  * Allows any logged-in user to see this view.
@@ -51,4 +51,4 @@ annotation class AllowAll
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
-annotation class AllowAllUsers
+public annotation class AllowAllUsers

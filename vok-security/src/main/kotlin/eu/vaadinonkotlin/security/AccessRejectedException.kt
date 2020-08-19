@@ -12,4 +12,8 @@ package eu.vaadinonkotlin.security
  * @property missingRoles which roles were missing. May be empty if the exception is thrown because the [AllowRoles] annotation is missing on the view, or there
  * is some other reason for which the set of missing roles can not be provided.
  */
-open class AccessRejectedException(message: String, val viewClass: Class<*>, val missingRoles: Set<String>) : Exception(message)
+public open class AccessRejectedException(
+        message: String,
+        public val viewClass: Class<*>,
+        public val missingRoles: Set<String>
+) : Exception(message)
