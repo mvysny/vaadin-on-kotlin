@@ -33,13 +33,18 @@ import okhttp3.RequestBody.Companion.toRequestBody
  * val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurableFilter2()
  * grid.dataProvider = dp
  * ```
- * @param baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
- * @param converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
+ * @property baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
+ * @property converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
  * zone; it is pretty much recommended to set a specific time zone.
+ * @property client which HTTP client to use, defaults to [OkHttpClientVokPlugin.okHttpClient].
+ * @property converter converts filter values to strings when querying for data.
+ * Defaults to [QueryParameterConverter].
  */
-class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
-                         val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!,
-                         val converter: Converter<in Any, String> = QueryParameterConverter()) : DataLoader<T> {
+public class CrudClient<T: Any>(
+        public val baseUrl: String,
+        public val itemClass: Class<T>,
+        public val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!,
+        public val converter: Converter<in Any, String> = QueryParameterConverter()) : DataLoader<T> {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
     }
@@ -53,8 +58,8 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
      * @param range offset and limit to fetch
      * @return a list of items matching the query, may be empty.
      */
-    fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
-        val url = baseUrl.buildUrl {
+    public fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
+        val url: HttpUrl = baseUrl.buildUrl {
             if (range != 0..Long.MAX_VALUE) {
                 addQueryParameter("offset", range.first.toString())
                 addQueryParameter("limit", range.length.toString())
@@ -66,7 +71,7 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
                 addFilterQueryParameters(filter)
             }
         }
-        val request = url.buildRequest()
+        val request: Request = url.buildRequest()
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
@@ -105,32 +110,32 @@ class CrudClient<T: Any>(val baseUrl: String, val itemClass: Class<T>,
         }
     }
 
-    fun getOne(id: String): T {
+    public fun getOne(id: String): T {
         val request: Request = "$baseUrl$id".buildUrl().buildRequest()
         return client.exec(request) { response -> response.json(itemClass) }
     }
 
-    fun create(entity: T) {
+    public fun create(entity: T) {
         val json: String = OkHttpClientVokPlugin.gson.toJson(entity)
         val body: RequestBody = json.toRequestBody(mediaTypeJson)
         val request: Request = baseUrl.buildUrl().buildRequest { post(body) }
         client.exec(request) {}
     }
 
-    fun update(id: String, entity: T) {
+    public fun update(id: String, entity: T) {
         val json: String = OkHttpClientVokPlugin.gson.toJson(entity)
         val body: RequestBody = json.toRequestBody(mediaTypeJson)
         val request: Request = "$baseUrl$id".buildUrl().buildRequest { patch(body) }
         client.exec(request) {}
     }
 
-    fun delete(id: String) {
+    public fun delete(id: String) {
         val request: Request = "$baseUrl$id".buildUrl().buildRequest { delete() }
         client.exec(request) {}
     }
 
-    companion object {
-        val mediaTypeJson: MediaType = "application/json; charset=utf-8".toMediaType()
+    public companion object {
+        public val mediaTypeJson: MediaType = "application/json; charset=utf-8".toMediaType()
     }
 
     override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T> =

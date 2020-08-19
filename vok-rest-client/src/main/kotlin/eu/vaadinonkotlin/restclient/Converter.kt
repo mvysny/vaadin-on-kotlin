@@ -10,8 +10,8 @@ import java.util.*
  * Converter which converts from [F] to [T].
  * @author mavi
  */
-interface Converter<F, T> {
-    fun convert(value: F): T
+public interface Converter<F, T> {
+    public fun convert(value: F): T
 }
 
 /**
@@ -22,7 +22,7 @@ interface Converter<F, T> {
  * * Fails for everything else.
  * @param zoneId used to convert [LocalDate] and [LocalDateTime] to UTC Epoch.
  */
-open class QueryParameterConverter(val zoneId: ZoneId = ZoneId.systemDefault()) : Converter<Any, String> {
+public open class QueryParameterConverter(public val zoneId: ZoneId = ZoneId.systemDefault()) : Converter<Any, String> {
     protected fun convertNumber(number: Number): String = when(number) {
         is Int, is Short, is Byte, is Long, is BigInteger -> number.toString()
         is BigDecimal -> number.stripTrailingZeros().toPlainString()
