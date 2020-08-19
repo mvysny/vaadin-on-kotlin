@@ -14,14 +14,14 @@ import kotlin.reflect.KProperty1
  * such as [com.vaadin.data.provider.ListDataProvider].
  */
 @Deprecated("use DataLoaderFilterFactory and PredicateFilter")
-open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
+public open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {
     override fun and(filters: Set<SerializablePredicate<T>>): SerializablePredicate<T>? = when {
         filters.isEmpty() -> null
         filters.size == 1 -> filters.first()
         else -> And(filters)
     }
 
-    data class And<T>(val filters: Set<SerializablePredicate<T>>) : SerializablePredicate<T> {
+    public data class And<T>(val filters: Set<SerializablePredicate<T>>) : SerializablePredicate<T> {
         override fun test(t: T): Boolean = filters.all { it.test(t) }
         override fun toString(): String = filters.joinToString(" AND ", "(", ")")
     }
@@ -32,7 +32,7 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
         else -> Or(filters)
     }
 
-    data class Or<T>(val filters: Set<SerializablePredicate<T>>) : SerializablePredicate<T> {
+    public data class Or<T>(val filters: Set<SerializablePredicate<T>>) : SerializablePredicate<T> {
         override fun test(t: T): Boolean = filters.any { it.test(t) }
         override fun toString(): String = filters.joinToString(" OR ", "(", ")")
     }
@@ -42,9 +42,9 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
     /**
      * Filters beans by comparing given [propertyName] to some expected [value]. Check out implementors for further details.
      */
-    abstract class BeanPropertyPredicate<T: Any> : SerializablePredicate<T> {
-        abstract val propertyName: String
-        abstract val value: Any?
+    public abstract class BeanPropertyPredicate<T: Any> : SerializablePredicate<T> {
+        public abstract val propertyName: String
+        public abstract val value: Any?
         @Transient
         private var readMethod: Method? = null
         private fun getGetter(item: T): Method {
@@ -58,14 +58,14 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
         protected fun getValue(item: T): Any? = getGetter(item).invoke(item)
     }
 
-    data class Eq<T: Any>(override val propertyName: String, override val value: Any?) : BeanPropertyPredicate<T>() {
+    public data class Eq<T: Any>(override val propertyName: String, override val value: Any?) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean = getValue(t) == value
         override fun toString(): String = "$propertyName = $value"
     }
 
     override fun le(propertyName: String, value: Any): SerializablePredicate<T> = Le(propertyName, value)
 
-    data class Le<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
+    public data class Le<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean {
             @Suppress("UNCHECKED_CAST")
             val value = getValue(t) as Comparable<Any>? ?: return false
@@ -76,7 +76,7 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
 
     override fun ge(propertyName: String, value: Any): SerializablePredicate<T> = Ge(propertyName, value)
 
-    data class Ge<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
+    public data class Ge<T: Any>(override val propertyName: String, override val value: Any) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean {
             @Suppress("UNCHECKED_CAST")
             val value = getValue(t) as Comparable<Any>? ?: return false
@@ -87,7 +87,7 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
 
     override fun ilike(propertyName: String, value: String): SerializablePredicate<T> = Ilike(propertyName, value)
 
-    data class Ilike<T: Any>(override val propertyName: String, override val value: String) : BeanPropertyPredicate<T>() {
+    public data class Ilike<T: Any>(override val propertyName: String, override val value: String) : BeanPropertyPredicate<T>() {
         override fun test(t: T): Boolean {
             val value = getValue(t) as String? ?: return false
             return value.contains(this.value, ignoreCase = true)
@@ -105,14 +105,14 @@ open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<
  * This looks like too much Kotlin syntax magic. Promise me to use this for simple Entities and/or programmatic WHERE clause creation only ;)
  */
 @Deprecated("Use DataLoader API with PredicateFilter")
-class PredicateFilterBuilder<T: Any> {
+public class PredicateFilterBuilder<T: Any> {
     private val ff = PredicateFilterFactory<T>()
 
-    infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): SerializablePredicate<T> = ff.eq(name, value)
+    public infix fun <R: Serializable?> KProperty1<T, R>.eq(value: R): SerializablePredicate<T> = ff.eq(name, value)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R> KProperty1<T, R?>.le(value: R): SerializablePredicate<T> = ff.le(name, value as Comparable<Any>)
+    public infix fun <R> KProperty1<T, R?>.le(value: R): SerializablePredicate<T> = ff.le(name, value as Comparable<Any>)
     @Suppress("UNCHECKED_CAST")
-    infix fun <R> KProperty1<T, R?>.ge(value: R): SerializablePredicate<T> = ff.ge(name, value as Comparable<Any>)
+    public infix fun <R> KProperty1<T, R?>.ge(value: R): SerializablePredicate<T> = ff.ge(name, value as Comparable<Any>)
     @Suppress("UNCHECKED_CAST")
 
     /**
@@ -126,16 +126,16 @@ class PredicateFilterBuilder<T: Any> {
      * @param value the substring, automatically appended with `%` when the SQL query is constructed. The substring is matched
      * case-insensitive.
      */
-    infix fun KProperty1<T, String?>.ilike(value: String): SerializablePredicate<T> = ff.ilike(name, value)
+    public infix fun KProperty1<T, String?>.ilike(value: String): SerializablePredicate<T> = ff.ilike(name, value)
     /**
      * Matches only values contained in given range.
      * @param range the range
      */
-    infix fun <R> KProperty1<T, R?>.between(range: ClosedRange<R>): SerializablePredicate<T> where R: Number, R: Comparable<R> =
+    public infix fun <R> KProperty1<T, R?>.between(range: ClosedRange<R>): SerializablePredicate<T> where R: Number, R: Comparable<R> =
         this.ge(range.start as Number).and(this.le(range.endInclusive as Number))
 
-    val KProperty1<T, Boolean?>.isTrue: SerializablePredicate<T> get() = eq(true)
-    val KProperty1<T, Boolean?>.isFalse: SerializablePredicate<T> get() = eq(false)
+    public val KProperty1<T, Boolean?>.isTrue: SerializablePredicate<T> get() = eq(true)
+    public val KProperty1<T, Boolean?>.isFalse: SerializablePredicate<T> get() = eq(false)
 }
 
 /**
@@ -143,7 +143,7 @@ class PredicateFilterBuilder<T: Any> {
  * @return a new data provider which can be outfitted with a custom filter.
  */
 @Deprecated("Use DataLoader API with PredicateFilter")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilter2() : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+public fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilter2() : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withConfigurableFilter({ f1: SerializablePredicate<T>?, f2: SerializablePredicate<T>? -> when {
         f1 == null && f2 == null -> null
         f1 == null -> f2
@@ -159,7 +159,7 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withConfigurableFilte
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 @Deprecated("Use DataLoader API with PredicateFilter")
-fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+public fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withConfigurableFilter2().apply {
         // wrap the current DP so that we won't change the filter
         setFilter(other)
@@ -177,5 +177,5 @@ fun <T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(other: Ser
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
 @Deprecated("Use DataLoader API with PredicateFilter")
-inline fun <reified T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: PredicateFilterBuilder<T>.()-> SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
+public inline fun <reified T: Any> DataProvider<T, in SerializablePredicate<T>?>.withFilter(block: PredicateFilterBuilder<T>.()-> SerializablePredicate<T>) : ConfigurableFilterDataProvider<T, SerializablePredicate<T>, SerializablePredicate<T>> =
     withFilter(block(PredicateFilterBuilder()))

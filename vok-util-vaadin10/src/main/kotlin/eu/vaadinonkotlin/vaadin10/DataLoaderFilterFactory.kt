@@ -11,7 +11,7 @@ import eu.vaadinonkotlin.FilterFactory
  * (via the `vok-db` module). See the `vok-framework-v10-vokdb`'s `sqlDataProvider()` function and the `Dao.dataProvider` for more details.
  * @param T the bean of type filtered by [Filter].
  */
-open class DataLoaderFilterFactory<T : Any> : FilterFactory<Filter<T>> {
+public open class DataLoaderFilterFactory<T : Any> : FilterFactory<Filter<T>> {
     override fun and(filters: Set<Filter<T>>): Filter<T>? = filters.and()
     override fun or(filters: Set<Filter<T>>): Filter<T>? = filters.or()
     override fun eq(propertyName: String, value: Any?): Filter<T> = EqFilter(propertyName, value)

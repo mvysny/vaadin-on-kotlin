@@ -1,22 +1,14 @@
 package eu.vaadinonkotlin.vaadin10
 
-import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.vaadin10.VokSecurity.checkPermissionsOfView
-import eu.vaadinonkotlin.vaadin10.VokSecurity.install
-import com.github.mvysny.karibudsl.v10.*
-import eu.vaadinonkotlin.security.loggedInUserResolver
+import com.github.mvysny.karibudsl.v10.init
 import com.vaadin.flow.component.Component
-import com.vaadin.flow.component.HasComponents
-import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.icon.Icon
-import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.textfield.PasswordField
-import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.Route
-import javax.validation.constraints.NotBlank
+import eu.vaadinonkotlin.VaadinOnKotlin
+import eu.vaadinonkotlin.security.loggedInUserResolver
+import eu.vaadinonkotlin.vaadin10.VokSecurity.checkPermissionsOfView
+import eu.vaadinonkotlin.vaadin10.VokSecurity.install
 
 /**
  * The security provider. Since Vaadin 10 applications typically don't define their own UIs but use the approach of setting [Route.layout],
@@ -44,12 +36,12 @@ import javax.validation.constraints.NotBlank
  * }
  * ```
  */
-object VokSecurity {
+public object VokSecurity {
     /**
      * Checks the permissions of given view. If the parent layout is also annotated with [Route], we'll recursively check that as well.
      * @param viewClass the Vaadin 10 view. Must be a [Component] annotated with [Route].
      */
-    fun checkPermissionsOfView(viewClass: Class<*>) {
+    public fun checkPermissionsOfView(viewClass: Class<*>) {
         if (viewClass == InternalServerError::class.java) {
             // allow
             return
@@ -68,7 +60,7 @@ object VokSecurity {
      * If you have your own custom UI, then simply call this function from your [UI.init] method. It will install [UI.addBeforeEnterListener]
      * and will check all views.
      */
-    fun install() {
+    public fun install() {
         UI.getCurrent().addBeforeEnterListener { e -> checkPermissionsOfView(e.navigationTarget) }
     }
 }

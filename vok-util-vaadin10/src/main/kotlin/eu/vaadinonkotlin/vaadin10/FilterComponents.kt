@@ -20,7 +20,7 @@ private fun <T : Comparable<T>, F> T.legeFilter(propertyName: String, filterFact
  *
  * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  */
-fun <T: Any> LocalDate.toFilter(propertyName: String,
+public fun <T: Any> LocalDate.toFilter(propertyName: String,
                        fieldType: Class<*>): Filter<T> =
         DateInterval.of(this).toFilter<Filter<T>>(propertyName, DataLoaderFilterFactory(), fieldType)!!
 
@@ -69,7 +69,7 @@ private fun <F> LocalDate.toFilter(
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  * @throws IllegalArgumentException if [fieldType] is of unsupported type.
  */
-fun <F : Any> DateInterval.toFilter(
+public fun <F : Any> DateInterval.toFilter(
         propertyName: String,
         filterFactory: FilterFactory<F>,
         fieldType: Class<*>
@@ -85,7 +85,7 @@ fun <F : Any> DateInterval.toFilter(
  * Creates a filter out of this interval, using given [filterFactory].
  * @return a filter which matches the same set of numbers as this interval. Returns `null` for universal set interval.
  */
-fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? where N: Number, N: Comparable<N> = when {
+public fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? where N: Number, N: Comparable<N> = when {
     isSingleItem -> filterFactory.eq(propertyName, endInclusive!!)
     isBound -> filterFactory.between(propertyName, start!!, endInclusive!!)
     endInclusive != null -> filterFactory.le(propertyName, endInclusive!!)
@@ -100,7 +100,7 @@ fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: Filte
  * * `true` (passes only `true` values)
  * * `false` (passes only `false` values)
  */
-open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
+public open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
 
 /**
  * Creates a very simple [ComboBox] with all enum constants as items. Perfect for
@@ -108,7 +108,7 @@ open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
  * @param E the enum type
  * @param items options in the combo box, defaults to all constants of [E].
  */
-inline fun <reified E: Enum<E>> enumComboBox(
+public inline fun <reified E: Enum<E>> enumComboBox(
         items: List<E> = E::class.java.enumConstants.toList()
 ): ComboBox<E?> = ComboBox<E?>().apply {
     // no need to explicitly add the `null` item here since the ComboBox is clearable:

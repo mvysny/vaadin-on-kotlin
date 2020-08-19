@@ -16,7 +16,7 @@ import java.util.stream.Stream
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any)
+public class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val idResolver: (T)->Any)
         : AbstractBackEndDataProvider<T, Filter<T>?>(), VokDataProvider<T> {
 
     override fun getId(item: T): Any = idResolver(item)
@@ -49,7 +49,7 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
     /**
      * The currently configured filter, may be null if no filter has been configured yet.
      */
-    var filter: Filter<T>? = null
+    public var filter: Filter<T>? = null
         private set
 
     override fun setFilter(filter: Filter<T>?) {
@@ -65,7 +65,7 @@ class DataLoaderAdapter<T : Any>(private val loader: DataLoader<T>, private val 
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
+public fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvider<T> =
         DataLoaderAdapter(this, idResolver)
 
 /**
@@ -76,7 +76,7 @@ fun <T: Any> DataLoader<T>.asDataProvider(idResolver: (T) -> Any): VokDataProvid
  * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
  * including the item itself.
  */
-fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
+public fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
     setDataProvider(dataLoader.asDataProvider(idResolver))
 }
 
@@ -85,7 +85,7 @@ fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, idResol
  * @param items the items list. The [ListDataLoader] reflects changes in the list,
  * but the [Grid] needs to be refreshed in order to re-display the items properly.
  */
-inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline idResolver: (T) -> Any = { it }) {
+public inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline idResolver: (T) -> Any = { it }) {
     // don't use List.dataProvider() since that may return EmptyDataProvider which doesn't reflect List modifications.
     setDataLoader(ListDataLoader(T::class.java, items), idResolver)
 }
@@ -93,6 +93,6 @@ inline fun <reified T: Any> Grid<T>.setDataLoaderItems(items: List<T>, noinline 
 /**
  * An utility method to set [ListDataLoader] to the Grid.
  */
-inline fun <reified T: Any> Grid<T>.setDataLoaderItems(vararg items: T, noinline idResolver: (T) -> Any = { it }) {
+public inline fun <reified T: Any> Grid<T>.setDataLoaderItems(vararg items: T, noinline idResolver: (T) -> Any = { it }) {
     setDataLoaderItems(items.toList(), idResolver)
 }

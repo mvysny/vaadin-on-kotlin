@@ -36,10 +36,10 @@ import kotlin.reflect.KProperty1
  * val filterBar = grid.appendHeaderRow().asFilterBar(grid, DataLoaderFilterFactory<Person>())
  * ```
  */
-fun <T : Any, F : Any> HeaderRow.asFilterBar(grid: Grid<T>, filterFactory: FilterFactory<F>): FilterBar<T, F> =
+public fun <T : Any, F : Any> HeaderRow.asFilterBar(grid: Grid<T>, filterFactory: FilterFactory<F>): FilterBar<T, F> =
         FilterBar(this, grid, filterFactory)
 
-typealias VokFilterBar<T> = FilterBar<T, Filter<T>>
+public typealias VokFilterBar<T> = FilterBar<T, Filter<T>>
 
 /**
  * Creates a [FilterBar] which produces VOK [Filter]s. Perfect for using with the
@@ -50,8 +50,8 @@ typealias VokFilterBar<T> = FilterBar<T, Filter<T>>
  * @param T the bean type present in the [grid]
  * @param grid the owner grid
  */
-fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
-        asFilterBar(grid, DataLoaderFilterFactory<T>())
+public fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
+        asFilterBar(grid, DataLoaderFilterFactory())
 
 /**
  * Wraps [HeaderRow] and helps you build [Filter] components. Call [forField] to
@@ -89,16 +89,16 @@ fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): VokFilterBar<T> =
  * @param filterFactory used to combine [FILTER] values when multiple [FILTER]s are applied
  * (using the [FilterFactory.and] function).
  */
-open class FilterBar<BEAN : Any, FILTER : Any>(
-        val headerRow: HeaderRow,
-        val grid: Grid<BEAN>,
-        val filterFactory: FilterFactory<FILTER>
+public open class FilterBar<BEAN : Any, FILTER : Any>(
+        public val headerRow: HeaderRow,
+        public val grid: Grid<BEAN>,
+        public val filterFactory: FilterFactory<FILTER>
 ) : Serializable {
 
     /**
      * The current [FILTER]. Defaults to null.
      */
-    var currentFilter: FILTER? = null
+    public var currentFilter: FILTER? = null
         private set
 
     /**
@@ -126,7 +126,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      *
      * Invoked after the [FILTER] has already been set to [Grid]'s [com.vaadin.flow.data.provider.DataProvider].
      */
-    var onFilterChanged: () -> Unit = {}
+    public var onFilterChanged: () -> Unit = {}
 
     /**
      * Along with component/column-scoped [FILTER]s, you can add a completely custom [FILTER]s
@@ -141,7 +141,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * an existing key overwrites the old [FILTER] stored under that key.
      * @param filter the new [FILTER] to set. Pass `null` to remove the [FILTER].
      */
-    fun setCustomFilter(key: String, filter: FILTER?) {
+    public fun setCustomFilter(key: String, filter: FILTER?) {
         if (filter == null) {
             customFilters.remove(key)
         } else {
@@ -187,7 +187,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * }
      * ```
      */
-    fun <VALUE : Any> forField(component: HasValue<*, VALUE?>, column: Grid.Column<BEAN>): Binding.Builder<BEAN, VALUE, FILTER> {
+    public fun <VALUE : Any> forField(component: HasValue<*, VALUE?>, column: Grid.Column<BEAN>): Binding.Builder<BEAN, VALUE, FILTER> {
         require(!column.key.isNullOrBlank()) { "The column needs to have the property name as its key" }
         // start with a very simple getter which simply polls the component for its value.
         val fieldValueGetter: ()->VALUE? = {
@@ -211,35 +211,35 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * @param F the filter type which the [com.vaadin.flow.data.provider.DataProvider] uses.
      * For VoK it's usually [Filter].
      */
-    class Binding<BEAN : Any, F : Any>(internal val builder: Builder<BEAN, F, F>) : Serializable {
+    public class Binding<BEAN : Any, F : Any>(internal val builder: Builder<BEAN, F, F>) : Serializable {
         /**
          * Returns the current filter from the filter component.
          */
-        fun getFilter(): F? = builder.valueGetter()
+        public fun getFilter(): F? = builder.valueGetter()
 
         /**
          * Registers a [filterChangeListener], fired when the filter is changed.
          * @return the listener registration; use [Registration.remove] to remove the listener.
          */
-        fun addFilterChangeListener(filterChangeListener: () -> Unit) : Registration =
+        public fun addFilterChangeListener(filterChangeListener: () -> Unit) : Registration =
             (filterComponent as HasValue<*, *>).addValueChangeListener { filterChangeListener() }
 
         /**
          * Removes the filter component from the [FilterBar] and stops listening for value changes.
          */
-        fun unbind() {
+        public fun unbind() {
             builder.filterBar.unregisterBinding(this)
         }
 
         /**
          * The filter component.
          */
-        val filterComponent: Component get() = builder.filterComponent
+        public val filterComponent: Component get() = builder.filterComponent
 
         /**
          * Clears the [filterComponent] value - e.g. sets the empty [String] value `""` to a [TextField].
          */
-        fun clearFilter() {
+        public fun clearFilter() {
             (filterComponent as HasValue<*, *>).clear()
         }
 
@@ -253,13 +253,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
          * @param filterComponent the Vaadin filter component, ultimately placed into the [Grid]'s [HeaderRow].
          * @param valueGetter retrieves the current value of type [VALUE] from the [filterComponent].
          */
-        class Builder<BEAN : Any, VALUE : Any, TARGETFILTER : Any>(
-                val filterFactory: FilterFactory<TARGETFILTER>,
+        public class Builder<BEAN : Any, VALUE : Any, TARGETFILTER : Any>(
+                public val filterFactory: FilterFactory<TARGETFILTER>,
                 internal val filterBar: FilterBar<BEAN, TARGETFILTER>,
-                val column: Grid.Column<BEAN>,
+                public val column: Grid.Column<BEAN>,
                 internal val filterComponent: Component,
                 internal val valueGetter: () -> VALUE?) : Serializable {
-            val propertyName: String get() = requireNotNull(column.key) { "The column needs to have the property name as its key" }
+            public val propertyName: String get() = requireNotNull(column.key) { "The column needs to have the property name as its key" }
 
             /**
              * Adds a converter to the chain which converts the value from [filterComponent]
@@ -274,7 +274,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * @param NEWVALUE the new value produced by the new [Builder] (which is now the head of the conversion chain).
              * @return the new converter chain head
              */
-            fun <NEWVALUE : Any> withConverter(closure: (VALUE) -> NEWVALUE?): Builder<BEAN, NEWVALUE, TARGETFILTER> {
+            public fun <NEWVALUE : Any> withConverter(closure: (VALUE) -> NEWVALUE?): Builder<BEAN, NEWVALUE, TARGETFILTER> {
                 val chainedValueGetter: () -> NEWVALUE? = {
                     val prevValue: VALUE? = valueGetter()
                     val isBlankString: Boolean = (prevValue as? String)?.isBlank() ?: false
@@ -289,7 +289,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun eq(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+            public fun eq(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
                 val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
@@ -304,7 +304,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun le(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+            public fun le(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
                 val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
@@ -319,7 +319,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
-            fun ge(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
+            public fun ge(trim: Boolean = true): Binding<BEAN, TARGETFILTER> {
                 val self: Builder<BEAN, VALUE, TARGETFILTER> = if (trim) trim() else this
                 // first we need to have a converter, converting the component's value to a filter
                 val builder: Builder<BEAN, TARGETFILTER, TARGETFILTER> = self
@@ -335,7 +335,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
              * No need to use this with [ilike] or [fullText] since those filters will
              * always perform trimming automatically.
              */
-            fun trim(): Builder<BEAN, VALUE, TARGETFILTER> =
+            public fun trim(): Builder<BEAN, VALUE, TARGETFILTER> =
                     withConverter {
                         @Suppress("UNCHECKED_CAST")
                         when (it) {
@@ -371,19 +371,19 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
     /**
      * Clears all [FILTER] components, which effectively removes any [FILTER]s.
      */
-    fun clear() {
+    public fun clear() {
         bindings.keys.forEach { it.clearFilter() }
     }
 
     /**
      * Returns all currently active [Binding]s.
      */
-    fun getBindings(): List<Binding<BEAN, FILTER>> = bindings.keys.toList()
+    public fun getBindings(): List<Binding<BEAN, FILTER>> = bindings.keys.toList()
 
     /**
      * Removes all [FILTER] components from this [FilterBar] and stops listening for value changes.
      */
-    fun removeAllBindings() {
+    public fun removeAllBindings() {
         bindings.keys.toList().forEach { it.unbind() }
     }
 
@@ -391,13 +391,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * Return the [FILTER] [Binding] for given [Grid] [column]. Fails if no [FILTER]
      * [Binding] has been configured for given [column].
      */
-    fun getBindingFor(column: Grid.Column<BEAN>): Binding<BEAN, FILTER> {
+    public fun getBindingFor(column: Grid.Column<BEAN>): Binding<BEAN, FILTER> {
         val binding: Binding<BEAN, FILTER>? = bindings.keys.firstOrNull { it.builder.column == column }
         checkNotNull(binding) { "No binding for column ${column.key}: $column" }
         return binding
     }
 
-    fun getBindingFor(property: KProperty1<BEAN, *>): Binding<BEAN, FILTER> =
+    public fun getBindingFor(property: KProperty1<BEAN, *>): Binding<BEAN, FILTER> =
             getBindingFor(grid.getColumnBy(property))
 
     /**
@@ -427,13 +427,13 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
      * Return the filtering component for given [column]. Fails if no [FILTER]
      * [Binding] has been configured for given [column].
      */
-    fun getFilterComponent(column: Grid.Column<BEAN>): Component = getBindingFor(column).filterComponent
+    public fun getFilterComponent(column: Grid.Column<BEAN>): Component = getBindingFor(column).filterComponent
 
     /**
      * Return the filtering component for given [property]. Fails if no [FILTER]
      * [Binding] has been configured for given [property].
      */
-    fun getFilterComponent(property: KProperty1<BEAN, *>): Component = getFilterComponent(grid.getColumnBy(property))
+    public fun getFilterComponent(property: KProperty1<BEAN, *>): Component = getFilterComponent(grid.getColumnBy(property))
 }
 
 /**
@@ -453,7 +453,7 @@ open class FilterBar<BEAN : Any, FILTER : Any>(
  * the [HeaderRow].
  * @see [FilterBar.finalizeBinding] for more details.
  */
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bind(): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bind(): FilterBar.Binding<BEAN, FILTER> {
     val binding: FilterBar.Binding<BEAN, FILTER> = FilterBar.Binding(this)
     filterBar.finalizeBinding(binding)
     return binding
@@ -463,13 +463,13 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FILTER>.bi
  * Finalizes the [FilterBar.Binding] and compares [String] values using the ILIKE operator.
  */
 @Deprecated("use istartsWith", ReplaceWith("istartsWith()"))
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> = istartsWith()
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.ilike(): FilterBar.Binding<BEAN, FILTER> = istartsWith()
 
 /**
  * Finalizes the [FilterBar.Binding] and compares [String] values using the [StartsWithFilter],
  * case-insensitive.
  */
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.istartsWith(): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.istartsWith(): FilterBar.Binding<BEAN, FILTER> {
     // first we need to have a converter, converting the component's value to a ILIKE filter
     val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { if (it.isBlank()) null else filterFactory.ilike(propertyName, it) }
     // now we can finalize the binding
@@ -480,7 +480,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.is
  * Terminal operation which matches [Number]s in given range.
  */
 @JvmName("numberIntervalInRange")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>, FILTER>.inRange(): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>, FILTER>.inRange(): FilterBar.Binding<BEAN, FILTER> {
     // first we need to have a converter, converting the component's value to a range filter
     val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { it.toFilter(propertyName, filterFactory) }
     // now we can finalize the binding
@@ -496,7 +496,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Dou
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
 @JvmName("dateIntervalInRange")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
         inRange(fieldType.java)
 
 /**
@@ -507,7 +507,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILT
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
         onDay(fieldType.java)
 
 /**
@@ -517,7 +517,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>
  * It's important for your app to initialize [browserTimeZone] properly as described in the kdoc of that variable.
  */
 @JvmName("numberIntervalInRange")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
     // https://github.com/mvysny/vaadin-on-kotlin/issues/49
     // first convert the LocalDate value to a DateInterval which spans given day
     val builder: FilterBar.Binding.Builder<BEAN, DateInterval, FILTER> = withConverter { DateInterval.of(it) }
@@ -534,7 +534,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
 @JvmName("dateIntervalInRange2")
-fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
     // first we need to have a converter, converting the component's value to a range filter
     val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { it.toFilter(propertyName, filterFactory, fieldType) }
     // now we can finalize the binding
@@ -549,7 +549,7 @@ fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILT
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
-inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(property: KProperty1<BEAN, V>): FilterBar.Binding<BEAN, FILTER> =
+public inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(property: KProperty1<BEAN, V>): FilterBar.Binding<BEAN, FILTER> =
         inRange(V::class)
 
 /**
@@ -558,7 +558,7 @@ inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, 
  * Please read the [FullTextFilter] documentation on how to properly prepare your database
  * for full-text search.
  */
-fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> {
+public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> {
     // first we need to have a converter, converting the component's value to a range filter
     val builder: FilterBar.Binding.Builder<BEAN, Filter<BEAN>, Filter<BEAN>> = withConverter<Filter<BEAN>> { if (it.isBlank()) null else FullTextFilter<BEAN>(propertyName, it) }
     // now we can finalize the binding
