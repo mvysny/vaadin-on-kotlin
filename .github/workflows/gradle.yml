@@ -24,9 +24,14 @@ jobs:
         paths: |
           ~/.gradle/caches
           ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+    - name: Cache pnpm packages
+      uses: actions/cache@v2
+      with:
+        paths: |
           ~/.vaadin
           ~/.pnpm-store
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
     - name: Build with Gradle
       run: ./gradlew
 
