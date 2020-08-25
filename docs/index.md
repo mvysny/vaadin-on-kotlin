@@ -184,3 +184,10 @@ The following is a complete list of all example projects demonstrating vok or it
 * [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10): Vaadin 14, Kotlin, Gradle, Karibu-Testing, DynaTest
 
 <sub><sup>This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/)</sup></sub>
+
+# Further Links
+
+* Visit [Vaadin Forums](https://vaadin.com/forum/category/203413/07-add-ons) to discuss any issues
+  or questions regarding Vaadin-on-Kotlin
+* Please file bug reports at the [VoK Bug Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues)
+* Chat freely at [VoK Gitter](https://gitter.im/vaadin/vaadin-on-kotlin)
