@@ -245,6 +245,13 @@ if (button.w.isFillParent) { ... }
 If you prefer the evil you are accustomed to, then you can find the very simple
 sample JPA-based application here: [vok-example-crud-jpa](vok-example-crud-jpa).
 
+# Further Links
+
+* Visit [Vaadin Forums](https://vaadin.com/forum/category/203413/07-add-ons) to discuss any issues
+  or questions regarding Vaadin-on-Kotlin
+* Please file bug reports at the [VoK Bug Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues)
+* Chat freely at [VoK Gitter](https://gitter.im/vaadin/vaadin-on-kotlin)
+
 # License
 
 Licensed under the [MIT License](https://opensource.org/licenses/MIT).
