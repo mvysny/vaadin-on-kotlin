@@ -21,7 +21,11 @@ jobs:
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
-        path: [~/.gradle/caches, ~/.gradle/wrapper, ~/.vaadin, ~/.pnpm-store]
+        path:
+          - ~/.gradle/caches
+          - ~/.gradle/wrapper
+          - ~/.vaadin
+          - ~/.pnpm-store
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
     - name: Build with Gradle
