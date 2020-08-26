@@ -33,5 +33,5 @@ jobs:
           ~/.pnpm-store
         key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json') }}
     - name: Build with Gradle
-      run: ./gradlew --stacktrace
+      run: ./gradlew --stacktrace --info --no-daemon
 
