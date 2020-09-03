@@ -53,6 +53,11 @@ subprojects {
         }
     }
 
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
     // creates a reusable function which configures proper deployment to Bintray
     ext["configureBintray"] = { artifactId: String, description: String ->
 
