@@ -9,7 +9,6 @@ dependencies {
     testCompile("com.h2database:h2:${properties["h2_version"]}")
     testCompile("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
     testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
-    testCompile("org.zeroturnaround:zt-exec:1.10")
 
     testCompile("org.postgresql:postgresql:42.2.1")
     testCompile("mysql:mysql-connector-java:5.1.45")
@@ -22,4 +21,3 @@ kotlin {
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-framework-vokdb", "VoK: provides integration of Vaadin8 and vok-db")
-

@@ -68,7 +68,9 @@ fun DynaNodeGroup.usingH2Database() {
 
     afterGroup { JdbiOrm.destroy() }
 
-    fun clearDb() = Person.deleteAll()
+    fun clearDb() {
+        Person.deleteAll()
+    }
     beforeEach { clearDb() }
     afterEach { clearDb() }
 }
