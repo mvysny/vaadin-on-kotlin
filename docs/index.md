@@ -191,3 +191,4 @@ The following is a complete list of all example projects demonstrating vok or it
   or questions regarding Vaadin-on-Kotlin
 * Please file bug reports at the [VoK Bug Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues)
 * Chat freely at [VoK Gitter](https://gitter.im/vaadin/vaadin-on-kotlin)
+* For troubleshooting, please check the [Vaadin Troubleshooting](https://mvysny.github.io/Vaadin-troubleshooting/) article.
