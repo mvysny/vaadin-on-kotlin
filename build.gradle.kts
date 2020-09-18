@@ -9,7 +9,7 @@ plugins {
     id("org.gretty") version "3.0.3"
     id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
-    id("org.jetbrains.dokka") version "0.9.17"
+    id("org.jetbrains.dokka") version "1.4.0"
     id("com.vaadin") version "0.8.0" apply(false)
 }
 
@@ -20,7 +20,7 @@ allprojects {
     version = "0.8.3-SNAPSHOT"
 
     repositories {
-        mavenCentral()
+        jcenter() // dokka is not in mavenCentral()
         maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
         maven { setUrl("https://maven.vaadin.com/vaadin-prereleases/") }
     }
@@ -76,12 +76,8 @@ subprojects {
         }
 
         val javadocJar = task("javadocJar", Jar::class) {
-            val javadoc = tasks.findByName("dokka") as DokkaTask
-            javadoc.outputFormat = "javadoc"
-            javadoc.outputDirectory = "$buildDir/javadoc"
-            dependsOn(javadoc)
-            classifier = "javadoc"
-            from(javadoc.outputDirectory)
+            from(tasks["dokkaJavadoc"])
+            archiveClassifier.set("javadoc")
         }
 
         publishing {
