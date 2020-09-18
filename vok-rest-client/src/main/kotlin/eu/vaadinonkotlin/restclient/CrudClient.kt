@@ -95,8 +95,7 @@ public class CrudClient<T: Any>(
                 is EqFilter -> value
                 is IsNotNullFilter -> "isnotnull:"
                 is IsNullFilter -> "isnull:"
-                is LikeFilter -> "like:$value"
-                is ILikeFilter ->  "ilike:$value"
+                is StartsWithFilter -> if (filter.ignoreCase) "ilike:$value" else "like:$value"
                 is OpFilter -> "${opToRest(filter.operator)}:$value"
                 is FullTextFilter -> "fulltext:$value"
                 else -> throw IllegalArgumentException("Unsupported filter $filter")

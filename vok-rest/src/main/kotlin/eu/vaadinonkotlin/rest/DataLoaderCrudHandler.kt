@@ -118,8 +118,8 @@ public open class DataLoaderCrudHandler<T : Any>(
             value.startsWith("lt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.lt)
             value.startsWith("isnull:") -> IsNullFilter(name)
             value.startsWith("isnotnull:") -> IsNotNullFilter(name)
-            value.startsWith("like:") -> LikeFilter(name, value.substring(5))
-            value.startsWith("ilike:") -> ILikeFilter(name, value.substring(6))
+            value.startsWith("like:") -> StartsWithFilter(name, value.substring(5), false)
+            value.startsWith("ilike:") -> StartsWithFilter(name, value.substring(6), true)
             value.startsWith("fulltext:") -> FullTextFilter(name, value.substring(9))
             else -> EqFilter(name, convertToDatabase(value, prop.propertyType))
         }

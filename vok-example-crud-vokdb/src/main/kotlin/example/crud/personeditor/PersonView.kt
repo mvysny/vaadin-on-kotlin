@@ -5,7 +5,6 @@ import com.github.mvysny.karibudsl.v8.AutoView
 import com.github.mvysny.karibudsl.v8.navigateToView
 import com.github.mvysny.karibudsl.v8.parameterList
 import com.github.mvysny.karibudsl.v8.verticalLayout
-import com.github.vokorm.findById
 import com.vaadin.navigator.View
 import com.vaadin.navigator.ViewChangeListener
 import com.vaadin.ui.Composite

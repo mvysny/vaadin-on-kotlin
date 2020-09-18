@@ -82,7 +82,6 @@ fun DynaNodeGroup.usingDb() {
             username = "sa"
             password = ""
         }
-        VokOrm.databaseVariant = DatabaseVariant.H2
         JdbiOrm.setDataSource(HikariDataSource(config))
         val flyway: Flyway = Flyway.configure()
                 .dataSource(VaadinOnKotlin.dataSource)
