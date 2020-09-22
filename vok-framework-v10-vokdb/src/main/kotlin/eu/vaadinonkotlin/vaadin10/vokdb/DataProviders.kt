@@ -2,7 +2,6 @@ package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.DataLoaderPropertyName
-import com.github.mvysny.vokdataloader.ILikeFilter
 import com.github.vokorm.KEntity
 import com.github.vokorm.dataloader.EntityDataLoader
 import com.github.vokorm.dataloader.SqlDataLoader
@@ -96,14 +95,14 @@ public fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = 
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
  */
 public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
         withStringFilterOn(property.name)
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
  */
 public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withStringFilterOn1(property) { it.id!! }

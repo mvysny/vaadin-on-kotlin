@@ -31,6 +31,7 @@ public fun <T: Any> DataProvider<T, in Filter<T>?>.withConfigurableFilter2() : V
  * Invoking this method multiple times will chain the data providers and restrict the rows further.
  * @param other applies this filter
  */
+@Suppress("DEPRECATION")
 @Deprecated("Use DataLoader API instead")
 public fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) : VokDataProvider<T> =
     withConfigurableFilter2().apply {
@@ -49,6 +50,7 @@ public fun <T: Any> DataProvider<T, in Filter<T>?>.withFilter(other: Filter<T>) 
  * @param block the block which allows you to build the `where` expression.
  * @return a [VokDataProvider]; setting the [ConfigurableFilterDataProvider.setFilter] won't overwrite the filter specified in this method.
  */
+@Suppress("DEPRECATION")
 @Deprecated("Use DataLoader API instead")
 public inline fun <reified T: Any> DataProvider<T, in Filter<T>?>.withFilter(block: FilterBuilder<T>.()-> Filter<T>) : VokDataProvider<T> =
     withFilter(block(FilterBuilder(T::class.java)))
@@ -94,6 +96,7 @@ public class AppendSortDataProvider<T, F> (private val append: List<QuerySortOrd
  * @receiver delegate all data fetching calls to here
  * @param sort append these sort criteria. May be empty - in that case just returns the receiver.
  */
+@Suppress("DEPRECATION")
 @Deprecated("Use DataLoader API instead")
 public fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): VokDataProvider<T> = when {
     sort.isEmpty() -> this
@@ -104,6 +107,7 @@ public fun <T: Any> VokDataProvider<T>.sortedBy(vararg sort: QuerySortOrder): Vo
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
+@Suppress("DEPRECATION")
 @Deprecated("Use DataLoader API instead")
 public fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
         withStringFilterOn(property.name)
@@ -112,6 +116,7 @@ public fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
  */
+@Suppress("DEPRECATION")
 @Deprecated("Use DataLoader API instead")
 public fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withConvertedFilter<String> { filter ->
@@ -131,5 +136,5 @@ public fun <T : Any> DataLoader<T>.withStringFilterOn(property: KProperty1<T, St
  */
 public fun <T : Any> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName, idResolver: (T) -> Any): DataProvider<T, String?> =
         asDataProvider(idResolver).withConvertedFilter<String> { filter: String? ->
-            if (filter.isNullOrBlank()) null else ILikeFilter(property, filter.trim())
+            if (filter.isNullOrBlank()) null else StartsWithFilter(property, filter.trim())
         }

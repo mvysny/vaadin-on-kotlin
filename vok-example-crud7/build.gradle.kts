@@ -2,11 +2,6 @@ plugins {
     war
 }
 
-// don't update Jetty carelessly, it tends to break Atmosphere and Push support!
-// test before commit :-)
-// see https://github.com/vaadin/framework/issues/8134 for details
-val jettyVer = "9.4.2.v20170220"
-
 dependencies {
     compile("com.github.mvysny.karibudsl:karibu-dsl-v8compat7:${properties["karibudsl_version"]}")
 
@@ -35,11 +30,4 @@ dependencies {
 
     // REST
     compile(project(":vok-rest"))
-    
-    // easy development with Jetty
-    testCompile("org.eclipse.jetty:jetty-webapp:$jettyVer")
-    testCompile("org.eclipse.jetty:jetty-annotations:$jettyVer")
-    // workaround for https://github.com/Atmosphere/atmosphere/issues/978
-    testCompile("org.eclipse.jetty:jetty-continuation:$jettyVer")
 }
-

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package eu.vaadinonkotlin.vaadin10
 
 import eu.vaadinonkotlin.FilterFactory
@@ -10,8 +12,7 @@ import java.lang.reflect.Method
 import kotlin.reflect.KProperty1
 
 /**
- * A factory which produces predicates as filters. Intended to be used with in-memory [com.vaadin.data.provider.DataProvider]s
- * such as [com.vaadin.data.provider.ListDataProvider].
+ * A factory which produces predicates as filters. Intended to be used with in-memory [DataProvider].
  */
 @Deprecated("use DataLoaderFilterFactory and PredicateFilter")
 public open class PredicateFilterFactory<T: Any> : FilterFactory<SerializablePredicate<T>> {

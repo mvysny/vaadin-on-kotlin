@@ -549,6 +549,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterva
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
+@Suppress("UNUSED_PARAMETER")
 public inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(property: KProperty1<BEAN, V>): FilterBar.Binding<BEAN, FILTER> =
         inRange(V::class)
 

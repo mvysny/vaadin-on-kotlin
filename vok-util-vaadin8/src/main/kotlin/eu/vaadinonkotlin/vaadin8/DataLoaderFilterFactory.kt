@@ -24,7 +24,7 @@ public open class DataLoaderFilterFactory<F : Any>(public val clazz: Class<F>) :
     override fun eq(propertyName: String, value: Any?): Filter<F> = EqFilter(propertyName, value)
     override fun le(propertyName: String, value: Any): Filter<F> = OpFilter(propertyName, value as Comparable<Any>, CompareOperator.le)
     override fun ge(propertyName: String, value: Any): Filter<F> = OpFilter(propertyName, value as Comparable<Any>, CompareOperator.ge)
-    override fun ilike(propertyName: String, value: String): Filter<F> = ILikeFilter(propertyName, value)
+    override fun ilike(propertyName: String, value: String): Filter<F> = StartsWithFilter(propertyName, value)
 }
 
 /**

@@ -106,5 +106,5 @@ public fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: KProperty1<
  */
 public fun <T : Any> VokDataProvider<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withConvertedFilter<String> { filter ->
-            if (filter.isNullOrBlank()) null else ILikeFilter(property, filter.trim())
+            if (filter.isNullOrBlank()) null else StartsWithFilter(property, filter.trim())
         }

@@ -3,11 +3,6 @@ plugins {
     id("org.gretty")
 }
 
-// don't update Jetty carelessly, it tends to break Atmosphere and Push support!
-// test before commit :-)
-// see https://github.com/vaadin/framework/issues/8134 for details
-val jettyVer = "9.4.2.v20170220"
-
 gretty {
     contextPath = "/"
     servletContainer = "jetty9.4"
@@ -44,24 +39,7 @@ dependencies {
         exclude(module = "vok-db")
     }
     
-    // easy development with Jetty
-    testCompile("org.eclipse.jetty:jetty-webapp:$jettyVer")
-    testCompile("org.eclipse.jetty:jetty-annotations:$jettyVer")
-    // workaround for https://github.com/Atmosphere/atmosphere/issues/978
-    testCompile("org.eclipse.jetty:jetty-continuation:$jettyVer")
-    // make sure that JSR356 is on classpath, otherwise Atmosphere will use native Jetty Websockets which will result
-    // in ClassNotFoundException: org.eclipse.jetty.websocket.WebSocketFactory$Acceptor
-    // since the class is no longer there in Jetty 9.4
-    testCompile("org.eclipse.jetty.websocket:javax-websocket-server-impl:$jettyVer")
-
-    // Embedded Undertow is currently unsupported since it has no servlet/listener/... autodiscovery capabilities:
-    // http://stackoverflow.com/questions/22307748/deploying-servlets-webapp-in-embedded-undertow
-
-    // Embedded Tomcat is currently unsupported since it always starts its own class loader which is only known on Tomcat start time
-    // and we can't thus discover and preload JPA entities.
-
     // testing
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
     testCompile("com.github.mvysny.kaributesting:karibu-testing-v8:${properties["kaributesting_version"]}")
 }
-
