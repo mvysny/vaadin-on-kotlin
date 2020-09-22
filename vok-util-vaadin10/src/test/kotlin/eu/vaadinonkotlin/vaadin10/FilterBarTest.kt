@@ -28,7 +28,7 @@ class FilterBarTest : DynaTest({
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
         val grid: Grid<Person> = Grid(Person::class.java)
         val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
-        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
+        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.forField(NumberRangePopup(), grid.getColumnBy(Person::age)).inRange()
         filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange(Person::dob)
         filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dateOfMarriage)).inRange(Person::dateOfMarriage)
@@ -76,7 +76,7 @@ class FilterBarTest : DynaTest({
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
-        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
+        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         grid.setDataLoaderItems(Person("foo"))
         val nameFilter: TextField = filterBar.getFilterComponent(Person::name) as TextField
 
@@ -96,7 +96,7 @@ class FilterBarTest : DynaTest({
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
-        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).ilike()
+        filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.removeAllBindings()
         expectList() { filterBar.getFilterComponents() }
     }
@@ -105,7 +105,7 @@ class FilterBarTest : DynaTest({
     test("grid's data provider is polled lazily on filter change") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterRow = grid.appendHeaderRow()
+        grid.appendHeaderRow()
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).apply {
             setFilter { false }
         }

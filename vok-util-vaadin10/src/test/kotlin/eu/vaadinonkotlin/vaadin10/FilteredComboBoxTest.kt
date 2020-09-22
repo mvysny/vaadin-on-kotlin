@@ -5,6 +5,7 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.getSuggestions
 import com.github.mvysny.kaributesting.v10.setUserInput
+import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.dataLoader
 import com.vaadin.flow.component.combobox.ComboBox
 import kotlin.test.expect
@@ -14,9 +15,9 @@ class FilteredComboBoxTest : DynaTest({
     afterEach { MockVaadin.tearDown() }
 
     test("combo box filtering") {
-        val dp = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader().asDataProvider { it.id!! }
-        val cb = ComboBox<Person>().apply {
-            setDataProvider(dp.withStringFilterOn(Person::personName))
+        val dp: DataLoader<Person> = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader()
+        val cb: ComboBox<Person> = ComboBox<Person>().apply {
+            setDataProvider(dp.withStringFilterOn(Person::personName) { it.id!! })
             setItemLabelGenerator { it.personName }
         }
         expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
