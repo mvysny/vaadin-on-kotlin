@@ -1,7 +1,6 @@
 dependencies {
     compile(project(":vok-framework"))
     compile("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
-    compile("com.gitlab.mvysny.jdbiorm:jdbi-orm:0.5")
     compile("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
     testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 }
