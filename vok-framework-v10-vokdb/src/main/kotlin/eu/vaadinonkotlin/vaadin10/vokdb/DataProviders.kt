@@ -16,10 +16,11 @@ import eu.vaadinonkotlin.vaadin10.withStringFilterOn as withStringFilterOn1
 
 /**
  * Provides instances of this entity from a database. Does not support joins on any of the like; supports filtering
- * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [sqlDataProvider].
+ * and sorting. Only supports simple views over one database table (one entity) - for anything more complex please use [com.github.vokorm.dataloader.SqlDataLoader].
  *
  * Example of use: `grid.setDataLoader(Person.dataLoader)`.
  */
+@Deprecated("Use vok-orm Dao.dataLoader")
 public inline val <reified T: KEntity<*>> Dao<T, *>.dataLoader: DataLoader<T>
     get() = EntityDataLoader(this)
 
