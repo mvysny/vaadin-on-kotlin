@@ -10,7 +10,7 @@ plugins {
     id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
     id("org.jetbrains.dokka") version "1.4.0"
-    id("com.vaadin") version "0.8.0" apply(false)
+    id("com.vaadin") version "0.14.3.7" apply(false)
 }
 
 defaultTasks("clean", "build")
