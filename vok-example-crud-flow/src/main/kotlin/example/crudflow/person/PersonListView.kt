@@ -2,6 +2,7 @@ package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
+import com.github.vokorm.dataloader.dataLoader
 import com.github.vokorm.db
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.button.Button
@@ -16,7 +17,6 @@ import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin10.*
-import eu.vaadinonkotlin.vaadin10.vokdb.dataLoader
 import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
 import example.crudflow.MainLayout
 import java.time.LocalDate
