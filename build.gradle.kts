@@ -17,7 +17,7 @@ defaultTasks("clean", "build")
 
 allprojects {
     group = "eu.vaadinonkotlin"
-    version = "0.9.0"
+    version = "0.9.1-SNAPSHOT"
 
     repositories {
         jcenter() // dokka is not in mavenCentral()
