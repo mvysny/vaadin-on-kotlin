@@ -3,8 +3,6 @@ package eu.vaadinonkotlin.vaadin10.vokdb
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.DataLoaderPropertyName
 import com.github.vokorm.KEntity
-import com.github.vokorm.dataloader.EntityDataLoader
-import com.gitlab.mvysny.jdbiorm.Dao
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.HasDataProvider
