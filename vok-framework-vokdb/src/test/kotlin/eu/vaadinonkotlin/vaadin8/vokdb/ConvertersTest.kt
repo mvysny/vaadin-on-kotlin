@@ -11,23 +11,48 @@ import kotlin.test.expect
 class ConvertersTest : DynaTest({
     beforeEach { MockVaadin.setup() }
     afterEach { MockVaadin.tearDown() }
-    test("toId() test") {
-        data class Category(override var id: Long? = null, var name: String = "") : KEntity<Long>
-        data class Review(override var id: Long? = null, var category: Long? = null) : KEntity<Long>
+    usingH2Database()
 
+    lateinit var person: Person
+    beforeEach {
+        person = Person(personName = "cat")
+        person.create()
+    }
+
+    test("toId() test") {
         val binder = BeanValidationBinder(Review::class.java)
-        val categoryBox = ComboBox<Category>("Choose a category").apply {
-            setItemCaptionGenerator { it.name }
+        val categoryBox = ComboBox<Person>("Choose person").apply {
+            setItemCaptionGenerator { it.personName }
             isTextInputAllowed = false
-            setItems(Category(1L, "cat"))
-            bind(binder).toId().bind(Review::category)
+            setItems(Person.findAll())
+            bind(binder).toId().bind(Review::personId)
         }
 
         val r = Review()
         binder.readBean(r)
         expect(null) { categoryBox.value }
-        categoryBox.value = Category(1L, "cat")
+        categoryBox.value = person
         binder.writeBean(r)
-        expect(1L) { r.category }
+        expect(person.id) { r.personId }
+    }
+
+    test("toPresentation() test") {
+        val binder = BeanValidationBinder(Review::class.java)
+        val categoryBox = ComboBox<Person>("Choose person").apply {
+            setItemCaptionGenerator { it.personName }
+            isTextInputAllowed = false
+            setItems(Person.findAll())
+            bind(binder).toId().bind(Review::personId)
+        }
+
+        expect(null) { categoryBox.value }
+        val r = Review(personId = person.id)
+        binder.readBean(r)
+        expect(person) { categoryBox.value }
+        categoryBox.value = null
+        binder.writeBean(r)
+        expect(null) { r.personId }
     }
 })
+
+data class Review(override var id: Long? = null, var personId: Long? = null, var score: Int? = null) : KEntity<Long>

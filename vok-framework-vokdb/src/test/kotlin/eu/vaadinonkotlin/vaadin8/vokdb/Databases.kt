@@ -13,7 +13,6 @@ import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.LocalDate
 import java.util.*
 
-@Table("Test")
 data class Person(override var id: Long? = null,
                   @field:ColumnName("name") var personName: String = "",
                   var age: Int = -1,
@@ -53,7 +52,7 @@ fun DynaNodeGroup.usingH2Database() {
         JdbiOrm.setDataSource(HikariDataSource(config))
         db {
             handle.createUpdate(
-                """create table if not exists Test (
+                """create table if not exists Person (
                 id bigint primary key auto_increment,
                 name varchar not null,
                 age integer not null,

@@ -44,7 +44,7 @@ class DataProvidersTest : DynaTest({
         // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
         test("sql data provider") {
             (0..10).forEach { Person( null, "foo $it", it).save() }
-            val dp = sqlDataProvider(Person::class.java, "select * from Test where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
+            val dp = sqlDataProvider(Person::class.java, "select * from Person where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}", idMapper = { it.id!! })
             val cb = ComboBox<Person>().apply {
                 setItemCaptionGenerator { it.personName }
                 setDataProvider(dp.withStringFilterOn("name"))
