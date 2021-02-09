@@ -46,13 +46,16 @@ public class PasswordHash
 	public static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
 
 	// The following constants may be changed without breaking existing hashes.
-	public static final int SALT_BYTE_SIZE = 24;
-	public static final int HASH_BYTE_SIZE = 24;
-	public static final int PBKDF2_ITERATIONS = 1000;
+	public static volatile int SALT_BYTE_SIZE = 8;
+	// Spring uses 256/8=32 byte size
+	public static volatile int HASH_BYTE_SIZE = 32;
+	// Spring uses 185000; according to https://en.wikipedia.org/wiki/PBKDF2
+	// the recommended number of iterations for server-side hashing is at least 100000
+	public static volatile int PBKDF2_ITERATIONS = 185000;
 
-	public static final int ITERATION_INDEX = 0;
-	public static final int SALT_INDEX = 1;
-	public static final int PBKDF2_INDEX = 2;
+	private static final int ITERATION_INDEX = 0;
+	private static final int SALT_INDEX = 1;
+	private static final int PBKDF2_INDEX = 2;
 
 	/**
 	 * Returns a salted PBKDF2 hash of the password.
@@ -73,13 +76,18 @@ public class PasswordHash
 	 * @return              a salted PBKDF2 hash of the password
 	 */
 	public static String createHash(char[] password)
-			throws NoSuchAlgorithmException, InvalidKeySpecException
-	{
+			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// Generate a random salt
 		SecureRandom random = new SecureRandom();
 		byte[] salt = new byte[SALT_BYTE_SIZE];
 		random.nextBytes(salt);
 
+		return createHash(password, salt);
+	}
+
+	// visible for testing
+	static String createHash(char[] password, byte[] salt)
+			throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// Hash the password
 		byte[] hash = pbkdf2(password, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
 		// format iterations:salt:hash
