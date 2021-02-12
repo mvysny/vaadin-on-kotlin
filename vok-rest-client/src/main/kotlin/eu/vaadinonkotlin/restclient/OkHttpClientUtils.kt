@@ -2,14 +2,11 @@ package eu.vaadinonkotlin.restclient
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import eu.vaadinonkotlin.VOKPlugin
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.io.Reader
-import java.lang.reflect.Type
 
 /**
  * Destroys the [OkHttpClient] including the dispatcher, connection pool, everything. WARNING: THIS MAY AFFECT
@@ -73,22 +70,6 @@ public fun <T> ResponseBody.json(clazz: Class<T>): T = OkHttpClientVokPlugin.gso
 public fun <T> ResponseBody.jsonArray(clazz: Class<T>): List<T> = OkHttpClientVokPlugin.gson.fromJsonArray(charStream(), clazz)
 
 /**
- * Parses [json] as a list of items with class [itemClass] and returns that.
- */
-public fun <T> Gson.fromJsonArray(json: String, itemClass: Class<T>): List<T> {
-    val type: Type = TypeToken.getParameterized(List::class.java, itemClass).type
-    return fromJson<List<T>>(json, type)
-}
-
-/**
- * Parses JSON from a [reader] as a list of items with class [itemClass] and returns that.
- */
-public fun <T> Gson.fromJsonArray(reader: Reader, itemClass: Class<T>): List<T> {
-    val type: Type = TypeToken.getParameterized(List::class.java, itemClass).type
-    return fromJson<List<T>>(reader, type)
-}
-
-/**
  * Runs given [request] synchronously and then runs [responseBlock] with the response body.
  * Everything including the [Response] and [ResponseBody] is properly closed afterwards.
  *
@@ -110,14 +91,6 @@ public fun <T> OkHttpClient.exec(request: Request, responseBlock: (ResponseBody)
  * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [OkHttpClientVokPlugin.gson].
  */
 public fun <V> ResponseBody.jsonMap(valueClass: Class<V>): Map<String, V> = OkHttpClientVokPlugin.gson.fromJsonMap(charStream(), valueClass)
-
-/**
- * Parses [json] as a map of items with class [valueClass] and returns that.
- */
-public fun <T> Gson.fromJsonMap(reader: Reader, valueClass: Class<T>): Map<String, T> {
-    val type: Type = TypeToken.getParameterized(Map::class.java, String::class.java, valueClass).type
-    return fromJson<Map<String, T>>(reader, type)
-}
 
 /**
  * Parses this string as a `http://` or `https://` URL. You can configure the URL

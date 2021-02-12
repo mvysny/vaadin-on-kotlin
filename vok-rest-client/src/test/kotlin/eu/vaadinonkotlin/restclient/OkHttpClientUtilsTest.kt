@@ -12,7 +12,9 @@ import java.io.IOException
 import java.lang.IllegalStateException
 import kotlin.test.expect
 
-data class Person(var name: String, var surname: String)
+data class Person(var name: String? = null,
+                  var surname: String? = null,
+                  var age: Int? = null)
 
 class OkHttpClientUtilsTest : DynaTest({
     fun String.get(): Request = Request.Builder().url(this).get().build()
