@@ -43,6 +43,12 @@ I encourage you to experiment with the [Karibu-DSL Hello World Example](https://
 at any point since VoK uses Karibu-DSL under the hood, therefore the lessons learned
 in the Karibu-DSL Hello World example will come in handy later on in all VoK-based apps.
 
+## Completed Example
+
+If you get stuck, or you'd simply love to skip forward and see the complete sources in action quickly,
+you can find the complete sources at [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10),
+the "complete" git branch.
+
 ## What is Vaadin-on-Kotlin?
 
 VoK is a glue between Vaadin, Kotlin and other frameworks which allows you to write web apps smoothly. 
@@ -1639,13 +1645,11 @@ Remember you don't have to do everything without help. As you need assistance ge
 
 ## Feedback
 
-You're encouraged to help improve the quality of this guide.
+We encourage you to help improve the quality of this guide, for the benefit of all.
 
-Please contribute if you see any typos or factual errors. To get started, you can read our
+Please contribute if you see any typos or factual errors, compilation errors, outdated code or incomplete content.
+To get started, you can read our
 [documentation contributions](contributing.html) section.
-
-You may also find incomplete content, or stuff that is not up to date. Please do add any missing documentation for master.
-Check the [Vaadin On Kotlin Guides Guidelines](todo) for style and conventions.
 
 If for whatever reason you spot something to fix but cannot patch it yourself, please [open an issue](https://github.com/mvysny/vaadin-on-kotlin/issues).
 
