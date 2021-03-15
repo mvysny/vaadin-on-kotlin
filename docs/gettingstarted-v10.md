@@ -765,7 +765,6 @@ And we'll also add one to the `ArticleView.kt` template as well, so that there's
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.router.*
 
@@ -899,7 +898,6 @@ Then do the same for the `EditArticleView.kt` view:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.router.*
 
 @Route("edit-article")
@@ -1154,7 +1152,6 @@ So first, we'll wire up the `ArticleView.kt` view to let us make a new comment:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
@@ -1253,7 +1250,6 @@ in the future, the `div` component will no longer suffice. Create the `web/src/m
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 
@@ -1349,7 +1345,6 @@ to make use of the `NewCommentForm` component, and register itself to `NewCommen
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.router.*
 
@@ -1404,7 +1399,6 @@ Let's add a link button to the `CommentsComponent.kt` file:
 package com.example.vok
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.getById
 import com.vaadin.flow.component.HasComponents
 import com.vaadin.flow.component.button.ButtonVariant
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
