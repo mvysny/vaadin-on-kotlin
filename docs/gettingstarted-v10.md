@@ -553,8 +553,10 @@ class ArticlesView: KComposite(), AfterNavigationObserver {
         verticalLayout {
             setSizeFull()
             h1("Listing Articles")
-            grid = grid(dataProvider = Article.dataProvider) {
+            grid = grid {
                 isExpand = true; setSizeFull()
+                setDataLoader(Article.dataLoader)
+
                 addColumnFor(Article::id)
                 addColumnFor(Article::title)
                 addColumnFor(Article::text)
@@ -743,9 +745,10 @@ that now to `ArticlesView.kt` to make it appear next to the "Show" link.
 Just change the `grid {}` block as follows:
 
 ```kotlin
-        grid = grid(dataProvider = Article.dataProvider) {
+        grid = grid {
             isExpand = true; setSizeFull()
-            addColumnFor(Article::id)
+            setDataLoader(Article.dataLoader)
+
             addColumnFor(Article::title)
             addColumnFor(Article::text)
             addColumn(NativeButtonRenderer<Article>("Show", { ArticleView.navigateTo(it.id!!) }))
@@ -943,8 +946,10 @@ class ArticlesView: KComposite(), AfterNavigationObserver {
             setSizeFull()
             h1("Listing Articles")
             routerLink(text = "New Article", viewType = CreateArticleView::class)
-            grid = grid(dataProvider = Article.dataProvider) {
+            grid = grid {
                 isExpand = true; setSizeFull()
+                setDataLoader(Article.dataLoader)
+
                 addColumnFor(Article::id)
                 addColumnFor(Article::title)
                 addColumnFor(Article::text)
