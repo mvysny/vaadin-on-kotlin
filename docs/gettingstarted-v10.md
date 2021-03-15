@@ -43,7 +43,7 @@ I encourage you to experiment with the [Karibu-DSL Hello World Example](https://
 at any point since VoK uses Karibu-DSL under the hood, therefore the lessons learned
 in the Karibu-DSL Hello World example will come in handy later on in all VoK-based apps.
 
-## Completed Example
+## Completed App
 
 If you get stuck, or you'd simply love to skip forward and see the complete sources in action quickly,
 you can find the complete sources at [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10),
