@@ -11,7 +11,7 @@ it is time to put the complex frameworks to rest and move beyond.
 
 Quoting [Gregor Riegler on simplicity](http://gregorriegler.com/2019/08/10/who-needs-lombok-anyhow.html):
 
-> I don’t want any magic in my code. It is the thing that makes behaviour non-transparent. It makes you fire up your debugger, because you don’t actually understand what is going on behind the scenes. There should be no behind the scenes. Everything should be as explicit as possible, for economic reasons.
+> I don't want any magic in my code. It is the thing that makes behaviour non-transparent. It makes you fire up your debugger, because you don't actually understand what is going on behind the scenes. There should be no behind the scenes. Everything should be as explicit as possible, for economic reasons.
 
 Simplicity is the highest value of Vaadin on Kotlin.
 
@@ -24,6 +24,7 @@ a (free) GitHub account in order to submit an issue, to comment on them, or
 to create pull requests.
 
 ## Contributing to the Documentation
+
 Vaadin on Kotlin has two main sets of documentation: the guides, which help you learn
 about Vaadin on Kotlin, and the API, which serves as a reference.
 
