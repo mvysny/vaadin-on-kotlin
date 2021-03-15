@@ -47,6 +47,10 @@ You can target broader audience if you offer your app in multiple languages.
 
 * The [Browserless Testing Guide](https://github.com/mvysny/karibu-testing)
 
+## Contributing
+
+* [Contributing To Vaadin On Kotlin](contributing.md)
+
 # Vaadin-on-Kotlin Guides for Vaadin 8
 
 Vaadin 8 is stable and battle-proven framework. Start here if you need to be production-ready.
