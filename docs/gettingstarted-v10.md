@@ -322,6 +322,36 @@ In the next section, you will add the ability to create new articles in your app
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
 
+Before going any further, please create a Kotlin file named `web/src/main/kotlin/com/example/vok/MainLayout.kt` with the following
+contents:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.KComposite
+import com.github.mvysny.karibudsl.v10.div
+import com.vaadin.flow.component.page.Viewport
+import com.vaadin.flow.router.RouterLayout
+
+/**
+ * The main layout:
+ * * provides application frame around all views
+ * * handles redirect to the [LoginView] if no user is logged in.
+ */
+@Viewport(Viewport.DEVICE_DIMENSIONS)
+class MainLayout : KComposite(), RouterLayout {
+  private val root = ui {
+    div {
+      setSizeFull()
+    }
+  }
+}
+```
+
+This is the main application layout or application frame, into which all
+views will be nested. This will allow you to add an application menu or
+more controls shared for all views.
+
 ### Laying down the groundwork
 
 Firstly, you need a place within the application to create a new article. A great place for that
@@ -342,7 +372,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.router.Route
 
-@Route("create-article")
+@Route("create-article", layout = MainLayout::class)
 class CreateArticleView : KComposite() {
     private val binder = beanValidationBinder<Article>()
     private val root = ui {
@@ -374,7 +404,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.router.Route
 
-@Route("create-article")
+@Route("create-article", layout = MainLayout::class)
 class CreateArticleView: KComposite() {
     private val binder = beanValidationBinder<Article>()
     private val root = ui {
@@ -475,7 +505,7 @@ import com.github.vokorm.getById
 import com.vaadin.flow.component.*
 import com.vaadin.flow.router.*
 
-@Route("article")
+@Route("article", layout = MainLayout::class)
 class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var title: Text
     private lateinit var text: Text
@@ -546,7 +576,7 @@ import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.router.*
 import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
 
-@Route("articles")
+@Route("articles", layout = MainLayout::class)
 class ArticlesView: KComposite(), AfterNavigationObserver {
     private lateinit var grid: Grid<Article>
     private val root = ui {
@@ -585,7 +615,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.router.Route
 
-@Route("")
+@Route("", layout = MainLayout::class)
 class MyWelcomeView: KComposite() {
     private val root = ui {
         verticalLayout {
@@ -695,7 +725,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.github.vokorm.getById
 import com.vaadin.flow.router.*
 
-@Route("edit-article")
+@Route("edit-article", layout = MainLayout::class)
 class EditArticleView: KComposite(), HasUrlParameter<Long> {
     private val binder = beanValidationBinder<Article>()
     private var article: Article? = null
@@ -768,7 +798,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.*
 import com.vaadin.flow.router.*
 
-@Route("article")
+@Route("article", layout = MainLayout::class)
 class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var editLink: RouterLink
     private lateinit var title: Text
@@ -878,7 +908,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.router.Route
 
-@Route("create-article")
+@Route("create-article", layout = MainLayout::class)
 class CreateArticleView: KComposite() {
     private lateinit var editor: ArticleEditor
     private val root = ui {
@@ -900,7 +930,7 @@ package com.example.vok
 import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.router.*
 
-@Route("edit-article")
+@Route("edit-article", layout = MainLayout::class)
 class EditArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var editor: ArticleEditor
     private val root = ui {
@@ -936,7 +966,7 @@ import com.vaadin.flow.data.renderer.NativeButtonRenderer
 import com.vaadin.flow.router.*
 import eu.vaadinonkotlin.vaadin10.vokdb.dataProvider
 
-@Route("articles")
+@Route("articles", layout = MainLayout::class)
 class ArticlesView: KComposite(), AfterNavigationObserver {
     private lateinit var grid: Grid<Article>
     private val root = ui {
@@ -1157,7 +1187,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.router.*
 
-@Route("article")
+@Route("article", layout = MainLayout::class)
 class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var article: Article
     private lateinit var editLink: RouterLink
@@ -1348,7 +1378,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.vaadin.flow.component.*
 import com.vaadin.flow.router.*
 
-@Route("article")
+@Route("article", layout = MainLayout::class)
 class ArticleView: KComposite(), HasUrlParameter<Long> {
     private lateinit var editLink: RouterLink
     private lateinit var title: Text
@@ -1538,28 +1568,42 @@ class LoginView : KComposite(), BeforeEnterObserver {
 ```
 
 Now we need to intercept every navigation event and check whether the user is logged in,
-redirecting to the `LoginView` if it isn't. Open the `Bootstrap.kt` class and
-add the following to the end of the file:
+redirecting to the `LoginView` if it isn't. Open the `MainLayout` class and
+add modify it as follows:
 
 ```kotlin
-/**
- * The Vaadin servlet which handles Vaadin framework requests.
- */
-@WebServlet(urlPatterns = ["/*"], name = "VaadinServlet", asyncSupported = true)
-@VaadinServletConfiguration(ui = MyUI::class, productionMode = false)
-class AppServlet : VaadinServlet()
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.KComposite
+import com.github.mvysny.karibudsl.v10.div
+import com.vaadin.flow.component.page.Viewport
+import com.vaadin.flow.router.BeforeEnterEvent
+import com.vaadin.flow.router.BeforeEnterObserver
+import com.vaadin.flow.router.RouterLayout
+import eu.vaadinonkotlin.vaadin10.Session
 
 /**
- * The root of the component hierarchy.
+ * The main layout:
+ * * provides application frame around all views
+ * * handles redirect to the [LoginView] if no user is logged in.
  */
-class MyUI : UI() {
-    override fun init(request: VaadinRequest) {
-        addBeforeEnterListener { event ->
-            if (event.navigationTarget != LoginView::class.java && !Session.loginService.isLoggedIn) {
-                event.rerouteTo(LoginView::class.java)
-            }
-        }
+@Viewport(Viewport.DEVICE_DIMENSIONS)
+class MainLayout : KComposite(), RouterLayout, BeforeEnterObserver {
+  private val root = ui {
+    div {
+      setSizeFull()
     }
+  }
+
+  /**
+   * Invoked before a view is shown. We will perform security checks here - if
+   * no user is logged in, we'll simply redirect to the LoginView.
+   */
+  override fun beforeEnter(event: BeforeEnterEvent) {
+    if (event.navigationTarget != LoginView::class.java && !Session.loginService.isLoggedIn) {
+      event.rerouteTo(LoginView::class.java)
+    }
+  }
 }
 ```
 
