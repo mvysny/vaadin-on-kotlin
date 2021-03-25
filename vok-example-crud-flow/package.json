@@ -5,11 +5,11 @@
     "dependencies": {
       "@polymer/polymer": "3.2.0",
       "@webcomponents/webcomponentsjs": "^2.2.10",
-      "@vaadin/vaadin-grid": "5.7.9",
+      "@vaadin/vaadin-grid": "5.7.11",
       "@vaadin/vaadin-icons": "4.3.2",
       "@vaadin/vaadin-split-layout": "4.3.0",
       "@vaadin/vaadin-combo-box": "5.4.7",
-      "@vaadin/vaadin-core-shrinkwrap": "14.4.9",
+      "@vaadin/vaadin-core-shrinkwrap": "14.5.1",
       "@vaadin/vaadin-upload": "4.4.1",
       "@vaadin/vaadin-dialog": "2.5.2",
       "@vaadin/vaadin-select": "2.4.0",
@@ -22,8 +22,8 @@
       "@vaadin/vaadin-login": "1.2.0",
       "@vaadin/vaadin-button": "2.4.0",
       "@vaadin/vaadin-date-picker": "4.4.1",
-      "@vaadin/vaadin-text-field": "2.8.3",
-      "@vaadin/vaadin-menu-bar": "1.2.1",
+      "@vaadin/vaadin-text-field": "2.8.4",
+      "@vaadin/vaadin-menu-bar": "1.2.2",
       "@vaadin/vaadin-custom-field": "1.3.0",
       "@vaadin/vaadin-form-layout": "2.3.0",
       "@vaadin/vaadin-accordion": "1.2.0",
@@ -38,7 +38,8 @@
       "@vaadin/vaadin-tabs": "3.2.0",
       "@vaadin/vaadin-lumo-styles": "1.6.0",
       "@vaadin/vaadin-material-styles": "1.3.2",
-      "lit-element": "^2.2.1"
+      "lit-element": "2.4.0",
+      "@vaadin/vaadin-avatar": "1.0.4"
     },
     "devDependencies": {
       "webpack-babel-multi-target-plugin": "2.3.3",
@@ -50,18 +51,20 @@
       "terser": "4.6.7",
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.11.0",
-      "chokidar": "^3.5.0"
+      "chokidar": "^3.5.0",
+      "ts-loader": "8.0.12",
+      "typescript": "4.0.3"
     },
-    "hash": "00914519b2f56c005453ef9d9fe7027e5bc5d6ac71886873d5db429fc20a427d"
+    "hash": "f8f27008d68df7fc8a96420d813b4116d92e028e07cd2bf29270b89622b69020"
   },
   "dependencies": {
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/vaadin-grid": "5.7.9",
+    "@vaadin/vaadin-grid": "5.7.11",
     "@vaadin/vaadin-icons": "4.3.2",
     "@vaadin/vaadin-split-layout": "4.3.0",
     "@vaadin/vaadin-combo-box": "5.4.7",
-    "@vaadin/vaadin-core-shrinkwrap": "14.4.9",
+    "@vaadin/vaadin-core-shrinkwrap": "14.5.1",
     "@vaadin/vaadin-upload": "4.4.1",
     "@vaadin/vaadin-dialog": "2.5.2",
     "@vaadin/vaadin-select": "2.4.0",
@@ -74,8 +77,8 @@
     "@vaadin/vaadin-login": "1.2.0",
     "@vaadin/vaadin-button": "2.4.0",
     "@vaadin/vaadin-date-picker": "4.4.1",
-    "@vaadin/vaadin-text-field": "2.8.3",
-    "@vaadin/vaadin-menu-bar": "1.2.1",
+    "@vaadin/vaadin-text-field": "2.8.4",
+    "@vaadin/vaadin-menu-bar": "1.2.2",
     "@vaadin/vaadin-custom-field": "1.3.0",
     "@vaadin/vaadin-form-layout": "2.3.0",
     "@vaadin/vaadin-accordion": "1.2.0",
@@ -90,7 +93,8 @@
     "@vaadin/vaadin-tabs": "3.2.0",
     "@vaadin/vaadin-lumo-styles": "1.6.0",
     "@vaadin/vaadin-material-styles": "1.3.2",
-    "lit-element": "^2.2.1"
+    "lit-element": "2.4.0",
+    "@vaadin/vaadin-avatar": "1.0.4"
   },
   "devDependencies": {
     "webpack-babel-multi-target-plugin": "2.3.3",
@@ -102,6 +106,8 @@
     "terser": "4.6.7",
     "webpack-merge": "4.2.2",
     "webpack-dev-server": "3.11.0",
-    "chokidar": "^3.5.0"
+    "chokidar": "^3.5.0",
+    "ts-loader": "8.0.12",
+    "typescript": "4.0.3"
   }
 }
