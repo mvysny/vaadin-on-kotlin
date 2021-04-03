@@ -3,9 +3,9 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
-title: Index
+title: Welcome
 permalink: /
-nav_exclude: true
+nav_order: 1
 ---
 
 Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes
@@ -60,14 +60,11 @@ Thanks to this approach, VoK feels more like a desktop widget library (such as S
 
 # How to Start
 
-First of all you have to decide on which version on Vaadin you want to work.
+Vok is based on Vaadin 14, the last LTS.
 
-Version 14 is the last LTS and is your better choice to start with.  
-Version 8 is the previous LTS and probably you need this to integrate to an old project.
+You can follow the [tutorial](/tutorial) or read the [guides](/guides).
 
-You can follow the tutorial ([Vok-14](/vok-14/gettingstarted.html) - [Vok-8](/vok-14/gettingstarted.html)) or read the guides ([Vok-14](/vok-14) - [Vok-8](/vok-8)).
-
-In the side panel you will find full navigation divided by version.
+In the side panel you will find full navigation. 
 
 # Further Reading
 

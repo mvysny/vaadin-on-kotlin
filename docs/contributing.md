@@ -2,7 +2,7 @@
 layout: default
 title: Contributing
 permalink: /contributing/
-nav_order: 3
+nav_order: 99
 ---
 
 # Contributing To Vaadin On Kotlin

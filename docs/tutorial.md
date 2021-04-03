@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Getting Started
-parent: Vok-14
-nav_order: 1
+title: Tutorial
+permalink: /tutorial/
+nav_order: 2
 ---
 
 <br/>
@@ -36,7 +36,7 @@ After reading this guide, you will be able to:
 - Understand the general layout of a VoK application.
 - Write the starting pieces of a VoK application.
 
-> **Note:** To skip the introduction and dive straight into the code, just skip to [Chapter 3.2](#3_2)
+> **Note:** To skip the introduction and dive straight into the code, just skip to [Creating a new Vok project](/tutorial/#creating-a-new-vok-project)
 
 ## Guide Assumptions
 
@@ -62,7 +62,7 @@ in the Karibu-DSL Hello World example will come in handy later on in all VoK-bas
 ## Completed App
 
 If you get stuck, or you'd simply love to skip forward and see the complete sources in action quickly,
-you can find the complete sources at [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10),
+you can find the complete sources at [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v14/tree/complete),
 the "complete" git branch.
 
 ## What is Vaadin-on-Kotlin?
@@ -136,7 +136,7 @@ Kotlin support including auto-completion. You can use IDEA Community edition, wh
 gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
 servers, and also offers awesome database integration tools.
 
-### Creating the Blog Application<a name="3_2"></a>
+### Creating the Blog Application
 
 Getting the example application is really easy. If you have Git installed, just open a command line and run the
 following command:
@@ -145,7 +145,7 @@ following command:
 $ git clone https://github.com/mvysny/vok-helloworld-app-v10
 ```
 
-If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app-v10/archive/master.zip](https://github.com/mvysny/vok-helloworld-app-v10/archive/master.zip).
+If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app-v14/archive/master.zip](https://github.com/mvysny/vok-helloworld-app-v14/archive/master.zip).
 
 After you create the blog application, switch to its folder:
 
@@ -173,7 +173,7 @@ folders:
 | `README.md`              | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on.                                                                                                |
 | .gitignore               | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files.                                                                       |
 
-## Hello, Vaadin-on-Kotlin!<a name="4"></a>
+## Hello, Vaadin-on-Kotlin!
 
 To begin with, let's get some text up on screen quickly. To do this, you need to get a web server running.
 
@@ -189,7 +189,11 @@ $ ./gradlew clean web:appRun
 This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
 to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
-![Welcome VoK](images/welcome_vok_v10.png)
+<hr>
+
+![Welcome VoK](/assets/images/welcome_vok_v10.png)
+
+<hr>
 
 > **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped
 > you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $.
@@ -345,7 +349,11 @@ select * from Article [42102-196]
 That is to be expected since we haven't yet created the table for Articles. We'll do that in a minute.
 In the next section, you will add the ability to create new articles in your application and be able to view them. This is the "C" and the "R" from CRUD: create and read. The form for doing this will look like this:
 
-![Create Article Screenshot](images/create_article_v10.png)
+<hr>
+
+![Create Article Screenshot](/assets/images/create_article_v10.png)
+
+<hr>
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
 
@@ -384,7 +392,11 @@ more controls shared for all views.
 Firstly, you need a place within the application to create a new article. A great place for that
 would be at `create-article`. Navigate to [http://localhost:8080/create-article](http://localhost:8080/create-article) and you'll see a general error:
 
-![Navigator Error](images/navigator_error_v10.png)
+<hr>
+
+![Navigator Error](/assets/images/navigator_error_v10.png)
+
+<hr>
 
 This happens because there is no View yet, mapped to the `create-article` route.
 
@@ -592,7 +604,11 @@ right below the `article.save()` call as follows:
 With this change, you should finally be able to create new articles. Visit
 [http://localhost:8080/create-article](http://localhost:8080/create-article) and give it a try!
 
-![Show Article](images/show_article_v10.png)
+<hr>
+
+![Show Article](/assets/images/show_article_v10.png)
+
+<hr>
 
 ### Listing All Articles
 
@@ -865,7 +881,11 @@ class ArticleView: KComposite(), HasUrlParameter<Long> {
 
 And here's how our app looks so far:
 
-![Article List View](images/article_list_view_v10.png)
+<hr>
+
+![Article List View](/assets/images/article_list_view_v10.png)
+
+<hr>
 
 ### Creating components to clean up duplication in views
 
@@ -1045,7 +1065,11 @@ and refresh the Grid, to display the new data. To get rid of the confirmation di
 > **Note:** To see the definition of the function,
 > just open up Intellij IDEA and click your mouse on the `confirmDialog` function name while holding the `Control` key.
 
-![Delete Article](images/delete_article_v10.png)
+<hr>
+
+![Delete Article](/assets/images/delete_article_v10.png)
+
+<hr>
 
 Congratulations, you can now create, show, list, update and destroy articles.
 
@@ -1295,7 +1319,11 @@ This exactly is done by the `refreshComments()` function.
 
 Now you can add articles and comments to your blog and have them show up in the right places.
 
-![Create and List Comments](images/comments_create_list.png)
+<hr>
+
+![Create and List Comments](/assets/images/comments_create_list.png)
+
+<hr>
 
 > **Note:** in the `refreshComments()` the `getAll()` function will re-fetch the fresh list of `comments`; the comments are not cached
 > in the `Article.comments` field. If you need to access the comment list multiple times, it is best to store the list of comments
@@ -1645,7 +1673,11 @@ class MainLayout : KComposite(), RouterLayout, BeforeEnterObserver {
 
 This is how the `LoginView` component looks like:
 
-![Login View](images/login_form-v10.png)
+<hr>
+
+![Login View](/assets/images/login_form-v10.png)
+
+<hr>
 
 The `LoginService` class handles the process of login/logout. Upon login, we will store the information about the currently logged-in
 user into the session. This will serve as a marker that there is someone logged in. We will also tell the browser to reload the page - this
