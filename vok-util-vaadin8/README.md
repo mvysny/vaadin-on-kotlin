@@ -31,9 +31,10 @@ When you want to also use the SQL database with the recommended approach ([vok-d
 
 When you want to also use the SQL database plus JPA:
 
-* Depend on the [vok-framework-jpa](../vok-framework-jpa) module instead - it will include this
-  module, JPA+Hibernate and will implement proper filters which work with the JPA Criterion API.
-  
+* Unfortunately that's not supported directly. However,
+  there used to be a JPA module in this project called `vok-framework-jpa`, you
+  can scavenge git for the sources.
+
 When you want to also use the SQL database plus some other ORM library, or the JDBC directly:
 
 * Depend on this module and implement the proper `FilterFactory` implementation yourself, in order
@@ -70,9 +71,7 @@ perform filtering of the data shown in the Grid:
 
 Note that the filter components need an implementation of the `FilterFactory` to properly
 generate filter objects for a particular database backend. The [vok-framework-vokdb](../vok-framework-vokdb) module
-provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader);
-The [vok-framework-jpa](../vok-framework-jpa) module
-provides such implementation for filtering with the JPA framework.
+provides such implementation for filtering with the VoK-ORM framework (recommended) via the [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader).
 
 ### Wiring Filters To Custom Database Backend
 

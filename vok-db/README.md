@@ -22,7 +22,9 @@ dependencies {
 
 Use this module if you wish to use the recommended way to access the SQL database.
 
-If you want to use JPA, then use this module instead: [vok-framework-jpa](../vok-framework-jpa).
+If you want to use JPA, unfortunately that's not supported directly. However,
+there used to be a JPA module in this project called `vok-framework-jpa`, you
+can scavenge git for the sources.
 
 If you want to use NoSQL, then you will have to implement such module tailored towards your
 particular NoSQL database yourself; you can consult the sources of this module for hints on how

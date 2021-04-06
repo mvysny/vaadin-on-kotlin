@@ -107,9 +107,6 @@ The list of modules:
   You typically include this module when you build your Vaadin10-based app with VoK.
 * [vok-framework-vokdb](vok-framework-vokdb) - when you want to have additional support for Vaadin 8 and
   the support for the database using the recommended approach. Includes [vok-util-vaadin8](vok-util-vaadin8) and [vok-db](vok-db).
-* [vok-framework-jpa](vok-framework-jpa) - when you want to have additional support for Vaadin 8 and
-  the support for the database using the JPA access approach. Includes [vok-util-vaadin8](vok-util-vaadin8).
-* [vok-framework-jpa-compat7](vok-framework-jpa-compat7) - when you need Vaadin7-compat JPA Containers. Includes [vok-framework-jpa](vok-framework-jpa).
 * [vok-framework-v10-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 14 and
   the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 14.
   Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).

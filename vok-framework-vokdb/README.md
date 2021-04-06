@@ -38,7 +38,9 @@ This module provides:
 Use this module if you intend to build a Vaadin8-based app which accesses your SQL database
 using the recommended approach.
 
-If you plan to use JPA, then use the [vok-framework-jpa](../vok-framework-jpa) module instead.
+If you want to use JPA, unfortunately that's not supported directly. However,
+there used to be a JPA module in this project called `vok-framework-jpa`, you
+can scavenge git for the sources.
 
 If you plan to use NoSQL database or some other form of data fetching, then only use the
 [vok-util-vaadin8](../vok-util-vaadin8) module. You will then have to write your own data fetching

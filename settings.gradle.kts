@@ -1,9 +1,5 @@
 rootProject.name = "vaadin-on-kotlin"
 include("vok-framework",
-        "vok-example-crud-jpa",
-        "vok-example-crud7",
-        "vok-framework-jpa",
-        "vok-framework-jpa-compat7",
         "vok-framework-vokdb",
         "vok-example-crud-vokdb",
         "vok-db",
