@@ -1,4 +1,9 @@
-[Index](index.html) | [Getting Started](gettingstarted-v10.html) | [Guides](vok-guides.html)
+---
+layout: default
+title: Contributing
+permalink: /contributing/
+nav_order: 99
+---
 
 # Contributing To Vaadin On Kotlin
 

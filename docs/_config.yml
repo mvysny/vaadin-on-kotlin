@@ -1,2 +1,42 @@
-theme: jekyll-theme-dinky
-include: [ 'contributing.md' ]
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+#
+# If you need help with YAML syntax, here are some quick references for you:
+# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
+# https://learnxinyminutes.com/docs/yaml/
+#
+# Site settings
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+title: vaadin-on-kotlin
+email: martin@vysny.me
+description: >- # this means to ignore newlines until "baseurl:"
+  Writing full-stack statically-typed web apps on JVM at its simplest.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: jekyllrb
+github_username: jekyll
+
+# Build settings
+theme: just-the-docs
+color_scheme: light+
+logo: "/assets/images/vok_logo.svg"
+heading_anchors: true
+# Aux links for the upper right navigation
+aux_links:
+  "View on GitHub":
+    - "https://github.com/mvysny/vaadin-on-kotlin"
+
+# Makes Aux links open in a new tab. Default is false
+aux_links_new_tab: true
+footer_content: 'Copyright &copy; 2017-2021 Martin Vysny. Distributed by an <a href="https://github.com/pmarsceill/just-the-docs/tree/master/LICENSE.txt">MIT license.</a>'
