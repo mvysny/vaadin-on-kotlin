@@ -110,9 +110,9 @@ Vaadin 14 documentation on how to integrate web component into Vaadin 14.
 
 ## Creating Views
 
-Please git clone the [VoK Hello World App Vaadin 14](https://github.com/mvysny/vok-helloworld-app-v10) - we're going to experiment on that app.
+Please git clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) - we're going to experiment on that app.
 
-If you open the [WelcomeView.kt](https://github.com/mvysny/vok-helloworld-app-v14/blob/master/web/src/main/kotlin/com/example/vok/WelcomeView.kt)
+If you open the [WelcomeView.kt](https://github.com/mvysny/vok-helloworld-app/blob/master/web/src/main/kotlin/com/example/vok/WelcomeView.kt)
 file, you'll notice that it extends from the `VerticalLayout`. By extending the `VerticalLayout` we state that the root layout of this view is going to be vertical.
 
 > Vaadin 14 no longer introduces its own layout manager but uses

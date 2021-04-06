@@ -62,7 +62,7 @@ in the Karibu-DSL Hello World example will come in handy later on in all VoK-bas
 ## Completed App
 
 If you get stuck, or you'd simply love to skip forward and see the complete sources in action quickly,
-you can find the complete sources at [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v14/tree/complete),
+you can find the complete sources at [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app/tree/complete),
 the "complete" git branch.
 
 ## What is Vaadin-on-Kotlin?
@@ -142,15 +142,15 @@ Getting the example application is really easy. If you have Git installed, just 
 following command:
 
 ```bash
-$ git clone https://github.com/mvysny/vok-helloworld-app-v10
+$ git clone https://github.com/mvysny/vok-helloworld-app
 ```
 
-If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app-v14/archive/master.zip](https://github.com/mvysny/vok-helloworld-app-v14/archive/master.zip).
+If you don't have Git, you can simply download the application as a zip file from GitHub: [https://github.com/mvysny/vok-helloworld-app/archive/master.zip](https://github.com/mvysny/vok-helloworld-app/archive/master.zip).
 
 After you create the blog application, switch to its folder:
 
 ```bash
-$ cd vok-helloworld-app-v10
+$ cd vok-helloworld-app
 $ ./gradlew
 ```
 
@@ -159,7 +159,7 @@ This will download everything necessary and will compile the example application
 > **Note:** WAR (Web ARchive) is Java standard for packaging web applications. WAR file is a zip file which
 > can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
 
-The `vok-helloworld-app-v10` directory has a number of files and folders that make up the
+The `vok-helloworld-app` directory has a number of files and folders that make up the
 structure of a VoK application. Most of the work in this tutorial will happen in the
 `src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and
 folders:
@@ -180,7 +180,7 @@ To begin with, let's get some text up on screen quickly. To do this, you need to
 ### Starting up the Web Server
 
 You actually have a functional VoK application already. To see it, you need to start a web server on your development machine.
-You can do this by running the following in the `vok-helloworld-app-v10` directory:
+You can do this by running the following in the `vok-helloworld-app` directory:
 
 ```bash
 $ ./gradlew clean web:appRun
@@ -1692,7 +1692,7 @@ Security, especially in web applications, is a broad and detailed area. You can 
 and instead use the HTTP Basic Auth, thus letting the web server handle the security completely. You can also employ
 other security options. This is however out of scope of this tutorial.
 
-Please see the [Vaadin-on-Kotlin Security Demo](https://github.com/mvysny/vok-security-demo-v10) sample project for more details.
+Please see the [Vaadin-on-Kotlin Security Demo](https://github.com/mvysny/vok-security-demo) sample project for more details.
 
 ## What's Next?
 

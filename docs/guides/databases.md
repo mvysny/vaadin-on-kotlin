@@ -79,9 +79,9 @@ Please read the [Usage examples](https://github.com/mvysny/vok-orm#usage-example
 the `vok-orm` documentation on how to write Kotlin classes that correspond to a particular SQL database
 table, and how to create rows in that particular database tables.
 
-In this tutorial, we will modify the [vok-helloworld-app-v10](https://github.com/mvysny/vok-helloworld-app-v10) project:
+In this tutorial, we will modify the [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app) project:
 it contains all moving parts but not much of an actual code which makes it ideal for experimenting. Just run
-`git clone https://github.com/mvysny/vok-helloworld-app-v10` and open the project in your IDE and you're good to go.
+`git clone https://github.com/mvysny/vok-helloworld-app` and open the project in your IDE and you're good to go.
 
 > Note: please read the [Tutorial](/tutorial) on information on these files.
 

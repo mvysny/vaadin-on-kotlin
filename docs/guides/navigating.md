@@ -17,6 +17,8 @@ nav_order: 3
 </details>
 <br/>
 
+TODO: This is Vaadin8-related and needs to be rewritten to Vaadin 14.
+
 # Navigating In Your App
 
 The Vaadin `Navigator` resolves http paths to views, in order to show different parts of the app to the user. For example,

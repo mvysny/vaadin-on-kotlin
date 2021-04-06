@@ -220,8 +220,8 @@ with role-based authorization and users stored in a SQL database.
 VoK also provide basic login forms and the documentation on how to integrate them
 with your app. There is also a set of example projects:
 
-* For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 14 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
+* The [vok-security-demo](https://github.com/mvysny/vok-security-demo)
+* The [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK Authorization
 
@@ -277,8 +277,8 @@ and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
 Please find example projects below. Both projects are using the username+password authentication with users
 stored in the SQL database:
 
-* For Vaadin 8 there's [vok-security-demo](https://github.com/mvysny/vok-security-demo)
-* For Vaadin 14 there's [vok-security-demo-v10](https://github.com/mvysny/vok-security-demo-v10) and [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
+* [vok-security-demo](https://github.com/mvysny/vok-security-demo)
+* [Bookstore Demo](https://github.com/mvysny/bookstore-vok)
 
 ## VoK-Security Simple
 

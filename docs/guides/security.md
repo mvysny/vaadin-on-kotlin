@@ -182,7 +182,7 @@ with role-based authorization and users stored in a SQL database.
 VoK also provide basic login forms and the documentation on how to integrate them
 with your app. There is also a set of example projects:
 
-* [Security Demo](https://github.com/mvysny/vok-security-demo-v10)
+* [Security Demo](https://github.com/mvysny/vok-security-demo)
 * [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
 ## VoK Authorization
