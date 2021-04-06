@@ -12,3 +12,5 @@ webpack.generated.js
 target
 pnpmfile.js
 
+.bundle/
+.jekyll-cache/
