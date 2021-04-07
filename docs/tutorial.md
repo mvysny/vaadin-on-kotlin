@@ -16,7 +16,7 @@ nav_order: 2
 </details>
 <br/>
 
-# Getting started with Vaadin-on-Kotlin Vaadin 14
+# Getting started with Vaadin-on-Kotlin
 
 VoK is an opinionated web application framework which uses Vaadin for its front-end
 and Kotlin for its back-end. While Vaadin lets you forget the web and program user interfaces
