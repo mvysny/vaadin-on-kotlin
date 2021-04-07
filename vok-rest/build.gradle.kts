@@ -1,12 +1,12 @@
 dependencies {
-    compile(project(":vok-framework"))
+    api(project(":vok-framework"))
 
-    compile("io.javalin:javalin:${properties["javalin_version"]}") {
+    api("io.javalin:javalin:${properties["javalin_version"]}") {
         exclude(mapOf("group" to "org.eclipse.jetty"))
         exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
     }
-    compile("com.google.code.gson:gson:2.8.5")
-    compile(project(":vok-db"))
+    api("com.google.code.gson:gson:2.8.5")
+    api(project(":vok-db"))
 
     // testing of the CRUD interface
     testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")

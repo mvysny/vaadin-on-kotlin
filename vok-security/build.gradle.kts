@@ -1,6 +1,6 @@
 dependencies {
-    compile(project(":vok-framework"))
-    testCompile("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    api(project(":vok-framework"))
+    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 }
 
 kotlin {
