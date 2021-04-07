@@ -18,7 +18,8 @@ programming in Vaadin resembles programming in a traditional client-side framewo
 
 The database access layer is covered by the [vok-orm](https://github.com/mvysny/vok-orm) library.
 `vok-orm` allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
-Of course, you may decide not to use vok-orm and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and [Hibernate](http://hibernate.org/orm/).
+Using `vok-orm` is the recommended approach to access SQL databases.
+Of course, you may decide not to use vok-orm and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and/or [Hibernate](http://hibernate.org/orm/).
 
 Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
 programming language, which makes Vaadin-on-Kotlin a perfect starting point for beginner programmers.
@@ -101,15 +102,11 @@ The list of modules:
 * [vok-framework](vok-framework) - the very core of Vaadin-on-Kotlin which contains machinery
   for developing VoK plugins, and also the means to bootstrap/teardown the VoK runtime.
   Always included in your project when you build your app with VoK.
-* [vok-util-vaadin8](vok-util-vaadin8) - when you want to have additional support for Vaadin 8.
-  You typically include this module when you build your Vaadin8-based app with VoK.
-* [vok-util-vaadin10](vok-util-vaadin10) - when you want to have additional support for Vaadin 14.
+* [vok-util-vaadin](vok-util-vaadin) - when you want to have additional support for Vaadin 14.
   You typically include this module when you build your Vaadin10-based app with VoK.
-* [vok-framework-vokdb](vok-framework-vokdb) - when you want to have additional support for Vaadin 8 and
-  the support for the database using the recommended approach. Includes [vok-util-vaadin8](vok-util-vaadin8) and [vok-db](vok-db).
-* [vok-framework-v10-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 14 and
-  the support for the database using the recommended approach. Note that there is no JPA support for Vaadin 14.
-  Includes [vok-util-vaadin10](vok-util-vaadin10) and [vok-db](vok-db).
+* [vok-framework-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 14 and
+  the support for the database using the recommended approach.
+  Includes [vok-util-vaadin](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to expose data from your VoK app to other REST-consuming clients.
 * [vok-rest-client](vok-rest-client) - when you want to consume data in your VoK app from other REST servers.
 * [vok-db](vok-db) - Provides access to the database; uses [VoK-ORM](https://github.com/mvysny/vok-orm)
@@ -126,17 +123,11 @@ button("Save", { db { person.save() } })
 
 See [vok-orm](https://github.com/mvysny/vok-orm) for an explanation on how this works.
 
-JPA:
-
-```kotlin
-button("Save", { db { em.persist(person) } })
-```
-
 ### Prepare your database
 
 Simply use [Flyway](http://flywaydb.org): write Flyway scripts, add a Gradle dependency:
 ```groovy
-compile 'org.flywaydb:flyway-core:5.2.4'
+compile 'org.flywaydb:flyway-core:7.1.1'
 ```
 and introduce a context listener, to auto-update your database to the newest version before your app starts:
 ```kotlin
@@ -235,11 +226,6 @@ button {
 }
 if (button.w.isFillParent) { ... }
 ```
-
-### Sample application which uses JPA
-
-If you prefer the evil you are accustomed to, then you can find the very simple
-sample JPA-based application here: [vok-example-crud-jpa](vok-example-crud-jpa).
 
 # Further Links
 
