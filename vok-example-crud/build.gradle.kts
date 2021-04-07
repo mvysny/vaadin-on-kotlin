@@ -10,8 +10,8 @@ gretty {
 }
 
 dependencies {
-    implementation(project(":vok-framework-v10-vokdb"))
-    implementation("com.vaadin:vaadin-core:${properties["vaadin10_version"]}") {
+    implementation(project(":vok-framework-vokdb"))
+    implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
         // Webjars are only needed when running in Vaadin 13 compatibility mode
         listOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
                 "org.webjars.bowergithub.polymer", "org.webjars.bowergithub.polymerelements",

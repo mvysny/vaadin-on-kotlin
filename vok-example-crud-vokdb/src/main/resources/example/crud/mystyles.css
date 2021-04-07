@@ -1,6 +1,0 @@
-/* targets buttons produced by the ButtonRenderer; allows us to have borderless buttons */
-.v-grid-cell.borderless button.v-nativebutton {
-    border: none;
-    background: none;
-    cursor: pointer;
-}

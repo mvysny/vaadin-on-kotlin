@@ -1,5 +1,5 @@
 dependencies {
-    compile(project(":vok-framework-v10-vokdb")) {
+    compile(project(":vok-framework-vokdb")) {
         exclude(module = "vaadin-core")
     }
     compile("com.vaadin:vaadin-core:${properties["vaadin17_version"]}")
