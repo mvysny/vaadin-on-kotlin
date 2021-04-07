@@ -26,8 +26,7 @@ Need a button? Write `button {}`. Need a text field? Write `textField {}`.
 
 Build own components and views by composing existing components with layouts.
 
-Navigate to components by marking them with a `@Route("path")` (for
-Vaadin 14-based apps) or `@AutoView("path")` (for Vaadin 8-based apps) annotation.
+Navigate to components by marking them with a `@Route("path")` annotation.
 
 ## Simplicity
 
