@@ -18,8 +18,6 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter() // Gretty is not in mavenCentral()
-        maven { setUrl("https://maven.vaadin.com/vaadin-addons") }  // because of JPA Container
-        maven { setUrl("https://maven.vaadin.com/vaadin-prereleases/") }
     }
 
     tasks {
