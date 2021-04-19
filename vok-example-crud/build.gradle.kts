@@ -40,6 +40,3 @@ dependencies {
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
 
-vaadin {
-    pnpmEnable = true
-}
