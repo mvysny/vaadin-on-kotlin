@@ -1,4 +1,4 @@
-[![Powered By Vaadin on Kotlin](http://vaadinonkotlin.eu/iconography/vok_badge.svg)](http://vaadinonkotlin.eu)
+[![Powered By Vaadin on Kotlin](https://www.vaadinonkotlin.eu/iconography/vok_badge.svg)](https://www.vaadinonkotlin.eu)
 [![Join the chat at https://gitter.im/vaadin/vaadin-on-kotlin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vaadin/vaadin-on-kotlin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework)
@@ -6,9 +6,9 @@
 # Welcome to Vaadin-On-Kotlin
 
 Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications.
-Please see the official documentation at [www.vaadinonkotlin.eu](http://www.vaadinonkotlin.eu).
+Please see the official documentation at [www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu).
 
-Vaadin-on-Kotlin does not enforce you to use [Model-View-Controller (MVC)](http://en.wikipedia.org/wiki/Model-view-controller),
+Vaadin-on-Kotlin does not enforce you to use [Model-View-Controller (MVC)](https://en.wikipedia.org/wiki/Model-view-controller),
 Dependency Injection (DI) nor [Service-Oriented Architecture (SOA)](https://en.wikipedia.org/wiki/Service_(systems_architecture)).
 It by default does not use Spring nor JavaEE. Instead, Vaadin-on-Kotlin focuses on simplicity.
  
@@ -19,13 +19,13 @@ programming in Vaadin resembles programming in a traditional client-side framewo
 The database access layer is covered by the [vok-orm](https://github.com/mvysny/vok-orm) library.
 `vok-orm` allows you to present the data from database rows as objects and embellish these data objects with business logic methods.
 Using `vok-orm` is the recommended approach to access SQL databases.
-Of course, you may decide not to use vok-orm and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and/or [Hibernate](http://hibernate.org/orm/).
+Of course, you may decide not to use vok-orm and integrate with NoSQL instead, or use [JPA](https://en.wikipedia.org/wiki/Java_Persistence_API) and/or [Hibernate](https://hibernate.org/orm/).
 
 Everything is combined with the conciseness of the [Kotlin](https://kotlinlang.org/)
 programming language, which makes Vaadin-on-Kotlin a perfect starting point for beginner programmers.
 And Kotlin is statically-typed, so you can always Ctrl+Click on a code and learn how it works under the hood! 
 
-For a Getting Started guide please see the official documentation at [http://www.vaadinonkotlin.eu/](http://www.vaadinonkotlin.eu/).
+For a Getting Started guide please see the official documentation at [www.vaadinonkotlin.eu/](https://www.vaadinonkotlin.eu/).
 
 ## Getting Started
 
@@ -43,7 +43,7 @@ For a Getting Started guide please see the official documentation at [http://www
 
 4. Follow the guidelines to start developing your application. You may find the following resources handy:
 
-    * [Getting Started](http://www.vaadinonkotlin.eu/gettingstarted.html)
+    * [Getting Started](https://www.vaadinonkotlin.eu/gettingstarted.html)
 
 5. For easy development, we encourage you to edit the project sources in [Intellij IDEA](https://www.jetbrains.com/idea/);
   the Community Edition is enough.
@@ -125,7 +125,7 @@ See [vok-orm](https://github.com/mvysny/vok-orm) for an explanation on how this 
 
 ### Prepare your database
 
-Simply use [Flyway](http://flywaydb.org): write Flyway scripts, add a Gradle dependency:
+Simply use [Flyway](https://flywaydb.org): write Flyway scripts, add a Gradle dependency:
 ```groovy
 compile 'org.flywaydb:flyway-core:7.1.1'
 ```
