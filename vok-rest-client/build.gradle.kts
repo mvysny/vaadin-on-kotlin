@@ -2,7 +2,7 @@ dependencies {
     api(project(":vok-framework"))
 
     api("com.google.code.gson:gson:2.8.5")
-    api("com.squareup.moshi:moshi:1.11.0")
+    api("com.squareup.moshi:moshi:1.12.0")
     api("com.squareup.okhttp3:okhttp:4.0.0")
     api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
 
@@ -12,7 +12,8 @@ dependencies {
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
     // temporary: add kotlin-reflect until https://github.com/mvysny/vaadin-on-kotlin/issues/60 is sorted out.
-    testImplementation("com.squareup.moshi:moshi-kotlin:1.11.0")
+    testImplementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+    testImplementation(kotlin("reflect")) // make sure to use the same kotlin-reflect version as the kotlin language itself.
 }
 
 kotlin {
