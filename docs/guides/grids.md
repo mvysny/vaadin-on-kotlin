@@ -198,20 +198,15 @@ You can do quite a lot with the data providers - please see the (Databases Guide
 
 Often it is required to change the cell formating of a Vaadin grid depending on
 the rows content, for example in order to highlight certain values.
-Vaadin 14 currently does not support styling cells directly; there is a feature
-request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
-In order to achieve custom formatting you need to use a `ComponentRenderer`
-for that particular column, which renders a `Div` styled in any way you wish.
-
-For example, to center text inside of a column you can use something like this:
+In order to achieve that, simply use the `Grid.Column.setClassNameGenerator()`
+function as follows:
 
 ```kotlin
-fun <T> Grid<T>.center(vp: (T)->String?): Renderer<T> =
-    ComponentRenderer<Div, T>({ it:T -> Div().apply { text = vp(it); style.set("text-align", "center") }})
-
-grid(dataProvider = Person.dataProvider) {
-    addColumnFor(Person::age, center({it.age?.toString()}))
+addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
+  filterBar.forField(DateRangePopup(), this).inRange(Person::created)
+  setClassNameGenerator { it -> "black" }
 }
 ```
 
-Another option is to use the `TemplateRenderer` as described here: [Bug 146](https://github.com/vaadin/vaadin-grid-flow/issues/146)
+Most commonly you only need to align the text within the column cell; for that
+there's `Grid.Column.setTextAlign()` function provided by Vaadin directly.
