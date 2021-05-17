@@ -1,12 +1,16 @@
 package eu.vaadinonkotlin.vaadin10.vokdb
 
+import com.github.mvysny.karibudsl.v10.sort
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.DataLoaderPropertyName
+import com.github.mvysny.vokdataloader.SortClause
 import com.github.vokorm.KEntity
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.HasDataProvider
 import com.vaadin.flow.data.provider.DataProvider
+import com.vaadin.flow.data.provider.QuerySortOrder
+import com.vaadin.flow.data.provider.SortDirection
 import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin10.VokDataProvider
 import kotlin.reflect.KProperty1
@@ -38,3 +42,31 @@ public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty
  */
 public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
         withStringFilterOn1(property) { it.id!! }
+
+private fun SortClause.toQuerySortOrder() =
+    QuerySortOrder(propertyName, if (asc) SortDirection.ASCENDING else SortDirection.DESCENDING)
+
+public fun <T> Grid<T>.sort(criteria: List<SortClause>) {
+    sort(*criteria.toTypedArray())
+}
+
+/**
+ * Forces a defined sort [criteria] for the columns in the Grid. Setting
+ * empty list resets the ordering of all columns.
+ * Columns not mentioned in the list are reset to the unsorted state.
+ *
+ * For Grids with multi-sorting, the index of a given column inside the list
+ * defines the sort priority. For example, the column at index 0 of the list
+ * is sorted first, then on the index 1, and so on.
+ *
+ * Exampe of usage:
+ * ```
+ * grid<Person> {
+ *   addColumnFor(Person::name)
+ *   sort(Person::name.asc)
+ * }
+ * ```
+ */
+public fun <T> Grid<T>.sort(vararg criteria: SortClause) {
+    sort(*criteria.map { it.toQuerySortOrder() } .toTypedArray())
+}

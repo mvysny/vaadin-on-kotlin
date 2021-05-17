@@ -114,19 +114,34 @@ itself. Please see above for the example.
 
 The Grid is initially unsorted and shows the data in the whatever order the `DataProvider` considers the default one. In entity data providers
 the data is typically sorted by the primary key by default, which makes little sense for the user. You can hence create a data provider which
-provides a different default sorting instead: `grid(dataProvider = Person.dataProvider.sortedBy(Person::name.asc)) {}`
+provides a different default sorting instead:
 
-Even better would be to tell the Grid to initially sort by given column, by calling something like `Grid.sort()`. That way, a visual
-sort indicator would be displayed for the user as well. Unfortunately this is not yet supported by Vaadin 14.
+```kotlin
+grid<Person> {
+  setDataLoader(Person.dataLoader.sortedBy(Person::name.asc))
+}
+```
+
+However, this doesn't cause a sorting indicator to appear in the Grid Column's header.
+Therefore, it's better to configure the Grid itself to sort by given column.
+That can be achieved by calling `Grid.sort()`. That way, a visual
+sort indicator would be displayed for the user as well:
+
+```kotlin
+grid<Person> {
+  setDataLoader(Person.dataLoader)
+  sort(Person::name.asc)
+}
+```
 
 > Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
-> Note: `Grid.sort()` is not yet implemented; feature request: [Bug 200](https://github.com/vaadin/vaadin-grid-flow/issues/200).
-
 ## Column Widths
 
-All columns are by default expanded, with the expand ratio of `1`. That means they all use the same portion of available width space and hence
-they all have the same width. You can turn off this behavior by setting column's `isExpand` to false (which is an alias for setting `flexGrow` to 0):
+All columns are by default expanded, with the expand ratio of `1`. That means
+they all use the same portion of available width space and hence
+they all have the same width. You can turn off this behavior by setting column's
+`isExpand` to false (which is an alias for setting `flexGrow` to 0):
 
 ```kotlin
 grid(...) {
@@ -155,11 +170,8 @@ In the simplest case, when you do not wish to fine-tune the filter appearance, y
 grid(dataProvider = Person.dataProvider) {
     // ..
     val filterBar = appendHeaderRow().asFilterBar(this)
-    addColumnFor(Person::id, sortable = false) {
-        filterBar.forField(NumberRangePopup(), this).inRange()
-    }
     addColumnFor(Person::name) {
-        filterBar.forField(TextField(), this).ilike()
+        filterBar.forField(TextField(), this).istartsWith()
     }
     addColumnFor(Person::age) {
         filterBar.forField(NumberRangePopup(), this).inRange()
@@ -168,23 +180,28 @@ grid(dataProvider = Person.dataProvider) {
         filterBar.forField(BooleanComboBox(), this).eq()
     }
     addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
-        filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
+        filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
     }
 }
 ```
 
-VoK provides means to auto-generate filter components for all bean properties shown in the Grid itself. For more information on this topic
-please read the [VoK Vaadin 14 Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin10/README.md).
+You need to create the filter component themselves, but VoK provides the means
+to bind auto-generate filter components for all bean properties shown in the Grid itself. For more information on this topic
+please read the [VoK Vaadin Utils Documentation](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-util-vaadin/README.md).
 
-> Note: please make sure to create appropriate database index for every filtrable column, otherwise the database SELECTs would be quite slow.
+> Note: please make sure to create appropriate database index for every filtrable
+> column, otherwise the database SELECTs would be quite slow.
 
-You can do quite a lot with the data providers - please see the (Databases Guide)[databases-v10.md] for more details.
+You can do quite a lot with the data providers - please see the (Databases Guide)[databases.md] for more details.
 
 ## Conditional Row/Cell formats
 
-Often it is required to change the cell formating of a Vaadin grid depending on the rows content, for example in order to highlight certain values.
-Vaadin 14 currently does not support styling cells directly; there is a feature request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
-In order to achieve custom formatting you need to use a `ComponentRenderer` for that particular column, which renders a `Div` styled in any way you wish.
+Often it is required to change the cell formating of a Vaadin grid depending on
+the rows content, for example in order to highlight certain values.
+Vaadin 14 currently does not support styling cells directly; there is a feature
+request: [Bug 185](https://github.com/vaadin/vaadin-grid-flow/issues/185)
+In order to achieve custom formatting you need to use a `ComponentRenderer`
+for that particular column, which renders a `Div` styled in any way you wish.
 
 For example, to center text inside of a column you can use something like this:
 

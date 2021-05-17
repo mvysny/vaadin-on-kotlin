@@ -2,6 +2,7 @@ package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
+import com.github.mvysny.vokdataloader.asc
 import com.github.vokorm.dataloader.dataLoader
 import com.github.vokorm.db
 import com.vaadin.flow.component.Key.KEY_G
@@ -18,6 +19,7 @@ import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin10.*
 import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
+import eu.vaadinonkotlin.vaadin10.vokdb.sort
 import example.crudflow.MainLayout
 import java.time.LocalDate
 
@@ -79,6 +81,8 @@ class PersonListView : KComposite() {
                     item("edit", { person: Person? -> if (person != null) createOrEditPerson(person) })
                     item("delete", { person: Person? -> if (person != null) { person.delete(); refresh() } })
                 }
+
+                sort(Person::name.asc)
             }
         }
     }
