@@ -40,18 +40,21 @@ a particular height set, e.g. `200.px`) and so on.
 
 ## Binding to Data
 
-VoK entities automatically provide a `DataProvider` instances. It is the means to populate Grid with the data. The simplest Grid
+VoK entities automatically provide a `DataLoader` instance.
+The `DataLoader` interface automatically fetches pages of entities lazily from
+the underlying database table, supporting all optional features such as sorting
+and filtering.
+
+A simplest Grid loading data from such a `DataLoader`
 can be constructed as follows:
 
 ```kotlin
-grid(dataProvider = Person.dataProvider) {
+grid<Person> {
+  setDataLoader(Person.dataLoader)
 }
 ```
 
-This `DataProvider` automatically fetches pages of data lazily from a database table, supporting all optional features such as sorting
-and filtering.
-
-> Note: if you wish to display an outcome of a complex SELECT JOIN, please read the [Showing an arbitrary output of any SQL SELECT command](databases-v10.md)
+> Note: if you wish to display an outcome of a complex SELECT JOIN, please read the [Showing an arbitrary output of any SQL SELECT command](databases.md)
 section.
 
 You can configure the `Person.dataProvider` in multiple ways:

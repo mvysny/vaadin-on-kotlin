@@ -41,7 +41,7 @@ class PersonListView : KComposite() {
             }
             personGrid = grid<Person> {
                 flexGrow = 1.0
-                appendHeaderRow()
+                appendHeaderRow() // because of https://github.com/vaadin/vaadin-grid/issues/1870
                 setDataLoader(Person.dataLoader)
                 val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
