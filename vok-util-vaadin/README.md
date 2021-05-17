@@ -11,7 +11,7 @@ support for any particular database type. Includes the
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
+    compile("eu.vaadinonkotlin:vok-util-vaadin:x.y.z")
 }
 ```
 
@@ -27,12 +27,12 @@ include additional modules - read below.
 When you want to also use the SQL database with the
 recommended approach ([vok-db](../vok-db)):
 
-* Depend on the [vok-framework-v10-vokdb](../vok-framework-v10-vokdb) module
+* Depend on the [vok-framework-vokdb](../vok-framework-vokdb) module
 instead - it will include this module, the [vok-db](../vok-db) module which
 sports VoK-ORM, and will implement proper filters which work with SQL databases.
 
-VoK currently does not support usage of Vaadin 14 with JPA.
-  
+VoK offers no direct support for JPA.
+
 When you want to also use the SQL database plus some other ORM library, or the JDBC directly:
 
 * Depend on this module and implement the proper `FilterFactory` implementation
