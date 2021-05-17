@@ -192,7 +192,7 @@ please read the [VoK Vaadin Utils Documentation](https://github.com/mvysny/vaadi
 > Note: please make sure to create appropriate database index for every filtrable
 > column, otherwise the database SELECTs would be quite slow.
 
-You can do quite a lot with the data providers - please see the (Databases Guide)[databases.md] for more details.
+You can do quite a lot with the data providers - please see the [Databases Guide](databases.md) for more details.
 
 ## Conditional Row/Cell formats
 
