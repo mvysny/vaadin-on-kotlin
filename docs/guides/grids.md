@@ -57,31 +57,47 @@ grid<Person> {
 > Note: if you wish to display an outcome of a complex SELECT JOIN, please read the [Showing an arbitrary output of any SQL SELECT command](databases.md)
 section.
 
-You can configure the `Person.dataProvider` in multiple ways:
+You can further configure the `DataLoader` by for example adding a default sorting,
+or adding an unremovable filter. If the user has not selected any particular sorting
+in the Grid, you can provide a default one:
 
-* If the user has not selected any particular sorting in the Grid, you can provide a default one: `grid(dataProvider = Person.dataProvider.sortedBy(Person::name.asc)) {}`
-* You can also impose an unremovable filter which limits the data the user is able to see: `grid(dataProvider = Person.dataProvider.withFilter { Person::age ge 18 }) {}`
+```kotlin
+grid<Person> {
+  setDataLoader(Person.dataLoader.sortedBy(Person::name.asc))
+}
+```
+
+You can also impose an unremovable filter which limits the data the user is able
+to see:
+
+```kotlin
+grid<Person> {
+  setDataLoader(Person.dataLoader.withFilter { Person::age ge 18 })
+}
+```
 
 ## Adding columns
 
 By default the Grid will show no columns. You can add columns easily, by calling the `addColumnFor()` function as follows:
 
 ```kotlin
-personGrid = grid(dataProvider = Person.dataProvider) {
-    flexGrow = 1.0
-    addColumnFor(Person::id, sortable = false)
-    addColumnFor(Person::name)
-    addColumnFor(Person::age)
-    addColumnFor(Person::alive)
-    addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
-    addColumnFor(Person::maritalStatus)
-    // example of a custom renderer which converts value to a displayable string.
-    addColumnFor(Person::created, converter = { it?.toString() })
+personGrid = grid<Person> {
+  flexGrow = 1.0
+  setDataLoader(Person.dataLoader)
 
-    // add additional columns with buttons
-    addColumn(NativeButtonRenderer<Person>("View", { person -> navigateToView<Long, PersonView>(person.id!!) }))
-    addColumn(NativeButtonRenderer<Person>("Edit", { person -> createOrEditPerson(person) }))
-    addColumn(NativeButtonRenderer<Person>("Delete", { person -> person.delete(); refresh() }))
+  addColumnFor(Person::id, sortable = false)
+  addColumnFor(Person::name)
+  addColumnFor(Person::age)
+  addColumnFor(Person::alive)
+  addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
+  addColumnFor(Person::maritalStatus)
+  // example of a custom renderer which converts value to a displayable string.
+  addColumnFor(Person::created, converter = { it?.toString() })
+
+  // add additional columns with buttons
+  addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateToView(PersonView::class, person.id!!) }) {}
+  addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
+  addButtonColumn(VaadinIcon.TRASH, "delete", { person: Person -> person.delete(); refresh() }) {}
 }
 ```
 
@@ -106,6 +122,7 @@ sort indicator would be displayed for the user as well. Unfortunately this is no
 > Note: please make sure to create appropriate database index for every sortable column, otherwise the database SELECTs would be quite slow.
 
 > Note: `Grid.sort()` is not yet implemented; feature request: [Bug 200](https://github.com/vaadin/vaadin-grid-flow/issues/200).
+
 ## Column Widths
 
 All columns are by default expanded, with the expand ratio of `1`. That means they all use the same portion of available width space and hence
