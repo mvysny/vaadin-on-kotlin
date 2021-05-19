@@ -74,8 +74,6 @@ class PersonListView : KComposite() {
                 }
                 addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     filterBar.forField(DateRangePopup(), this).inRange(Person::created)
-                    setClassNameGenerator { it -> "black" }
-                        this.setTextAlign(ColumnTextAlign.END)
                 }
 
                 gridContextMenu = gridContextMenu {
