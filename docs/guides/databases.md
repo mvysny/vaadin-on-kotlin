@@ -101,7 +101,7 @@ Let's first create a migration script which will prepare the database for us. Cr
 named `web/src/main/resources/db/migration/V01__CreatePerson.sql`, with the following DDL script, depending on your database:
 
 The PostgreSQL DDL script which creates such table is simple:
-```postgresql
+```sql
 create table Person (
     id bigserial primary key,
     name varchar(400) not null,
@@ -114,7 +114,7 @@ create table Person (
 ```
 
 The MySQL/MariaDB DDL script:
-```mysql
+```sql
 create table Person (
     id bigint primary key auto_increment,
     name varchar(400) not null,
@@ -127,7 +127,7 @@ create table Person (
 ```
 
 Finally, the H2 script:
-```h2
+```sql
 create table Person (
     id bigint primary key auto_increment,
     name varchar not null,
