@@ -9,6 +9,10 @@ object DummyUserResolver : LoggedInUserResolver {
     override fun getCurrentUserRoles(): Set<String> = userWithRoles ?: setOf()
 }
 
+private fun checkPermissionsOnClass(clazz: Class<*>) {
+    DummyUserResolver.checkPermissionsOnClass(clazz, clazz)
+}
+
 class LoggedInUserResolverTest : DynaTest({
     @AllowAll
     class MyAllowAll
@@ -21,72 +25,72 @@ class LoggedInUserResolverTest : DynaTest({
 
     test("test logged out") {
         DummyUserResolver.userWithRoles = null
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAll::class.java)
+        checkPermissionsOnClass(MyAllowAll::class.java)
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowNobody, you're not logged in") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowNobody::class.java)
+            checkPermissionsOnClass(MyAllowNobody::class.java)
         }
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowAdmin, you're not logged in") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdmin::class.java)
+            checkPermissionsOnClass(MyAllowAdmin::class.java)
         }
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowAdminOrUser, you're not logged in") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
+            checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
         }
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowAllUsers, you're not logged in") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAllUsers::class.java)
+            checkPermissionsOnClass(MyAllowAllUsers::class.java)
         }
     }
 
     test("test logged in but with no roles") {
         DummyUserResolver.userWithRoles = setOf()
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAll::class.java)
+        checkPermissionsOnClass(MyAllowAll::class.java)
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowNobody, nobody can access it") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowNobody::class.java)
+            checkPermissionsOnClass(MyAllowNobody::class.java)
         }
         expectThrows(AccessRejectedException::class, "Can not access MyAllowAdmin, you are not admin") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdmin::class.java)
+            checkPermissionsOnClass(MyAllowAdmin::class.java)
         }
         expectThrows(AccessRejectedException::class, "Can not access MyAllowAdminOrUser, you are not admin or user") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
+            checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
         }
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAllUsers::class.java)
+        checkPermissionsOnClass(MyAllowAllUsers::class.java)
     }
 
     test("test logged in user") {
         DummyUserResolver.userWithRoles = setOf("user")
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAll::class.java)
+        checkPermissionsOnClass(MyAllowAll::class.java)
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowNobody, nobody can access it") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowNobody::class.java)
+            checkPermissionsOnClass(MyAllowNobody::class.java)
         }
         expectThrows(AccessRejectedException::class, "Can not access MyAllowAdmin, you are not admin") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdmin::class.java)
+            checkPermissionsOnClass(MyAllowAdmin::class.java)
         }
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAllUsers::class.java)
+        checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
+        checkPermissionsOnClass(MyAllowAllUsers::class.java)
     }
 
     test("test logged in admin") {
         DummyUserResolver.userWithRoles = setOf("admin")
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAll::class.java)
+        checkPermissionsOnClass(MyAllowAll::class.java)
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowNobody, nobody can access it") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowNobody::class.java)
+            checkPermissionsOnClass(MyAllowNobody::class.java)
         }
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAdmin::class.java)
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAllUsers::class.java)
+        checkPermissionsOnClass(MyAllowAdmin::class.java)
+        checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
+        checkPermissionsOnClass(MyAllowAllUsers::class.java)
     }
 
     test("test logged in other") {
         DummyUserResolver.userWithRoles = setOf("other")
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAll::class.java)
+        checkPermissionsOnClass(MyAllowAll::class.java)
         expectThrows(AccessRejectedException::class, "Cannot access MyAllowNobody, nobody can access it") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowNobody::class.java)
+            checkPermissionsOnClass(MyAllowNobody::class.java)
         }
         expectThrows(AccessRejectedException::class, "Can not access MyAllowAdmin, you are not admin") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdmin::class.java)
+            checkPermissionsOnClass(MyAllowAdmin::class.java)
         }
         expectThrows(AccessRejectedException::class, "Can not access MyAllowAdminOrUser, you are not admin or user") {
-            DummyUserResolver.checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
+            checkPermissionsOnClass(MyAllowAdminOrUser::class.java)
         }
-        DummyUserResolver.checkPermissionsOnClass(MyAllowAllUsers::class.java)
+        checkPermissionsOnClass(MyAllowAllUsers::class.java)
     }
 })

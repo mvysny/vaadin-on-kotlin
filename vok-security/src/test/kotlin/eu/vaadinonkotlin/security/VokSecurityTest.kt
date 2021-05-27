@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.security
 
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
@@ -9,7 +9,6 @@ import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.ParentLayout
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouterLayout
-import eu.vaadinonkotlin.security.*
 
 /**
  * A view with no parent layout.
@@ -54,12 +53,6 @@ class SalesView : VerticalLayout()
 @AllowRoles("sales", "user")
 @Route("rejectall", layout = MyIntermediateLayout::class)
 class RejectAllView : VerticalLayout()
-
-object DummyUserResolver : LoggedInUserResolver {
-    var userWithRoles: Set<String>? = null
-    override fun isLoggedIn(): Boolean = userWithRoles != null
-    override fun getCurrentUserRoles(): Set<String> = userWithRoles ?: setOf()
-}
 
 class VokSecurityTest : DynaTest({
     beforeGroup { VaadinOnKotlin.loggedInUserResolver = DummyUserResolver }

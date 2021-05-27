@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.security
 
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI

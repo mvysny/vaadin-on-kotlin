@@ -177,15 +177,6 @@ To convert your app to this new security paradigm:
 2. Instead of assigning users roles, you assign them permissions.
 3. A view listing users will then be annotated with `@AllowRoles('can-view-users')`
 
-### The vok-security module
-
-This module only provides basic API classes which lays out the foundation of the
-security mechanism. The actual integration code differs for Vaadin 8 and Vaadin 14
-and is therefore located in the [vok-util-vaadin8](../vok-util-vaadin8) and
-[vok-util-vaadin10](../vok-util-vaadin10) modules:
-* For Vaadin 8, please see the [VokSecurity](../vok-util-vaadin8/src/main/kotlin/eu/vaadinonkotlin/vaadin8/VokSecurity.kt) class;
-* For Vaadin 14 please see the [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
-
 ## Example projects
 
 Please find example projects below. Both projects are using the username+password authentication with users

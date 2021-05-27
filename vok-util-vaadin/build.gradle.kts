@@ -1,6 +1,5 @@
 dependencies {
     api(project(":vok-framework"))
-    api(project(":vok-security"))
 
     api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
 
