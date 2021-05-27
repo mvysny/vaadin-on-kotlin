@@ -37,33 +37,18 @@ In this example, we will have three roles, `administrator`, `bookkeeper` and `sa
 the admin user which will then create other users and assign the roles. We will then annotate Vaadin views
 so that `OrdersView` can only be viewed by the `sales` users:
 
-Vaadin 8:
-
-```kotlin
-@AllowRoles("sales")
-class OrdersView : VerticalLayout(), View { ... }
-
-@AllowRoles("administrator")
-class UsersView : VerticalLayout(), View { ... }
-
-@AllowRoles("bookkeeper", "administrator")
-class BookListView : VerticalLayout(), View { ... }
-```
-
-Vaadin 14:
-
 ```kotlin
 @Route("orders", layout = MainLayout::class)
 @AllowRoles("sales")
-class OrdersView : VerticalLayout() { ... }
+class OrdersView : VerticalLayout() {  }
 
 @Route("users", layout = MainLayout::class)
 @AllowRoles("administrator")
-class UsersView : VerticalLayout() { ... }
+class UsersView : VerticalLayout() {  }
 
 @Route("booklist", layout = MainLayout::class)
 @AllowRoles("bookkeeper", "administrator")
-class BookListView : VerticalLayout() { ... }
+class BookListView : VerticalLayout() {  }
 ```
 
 The remaining rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
@@ -72,25 +57,6 @@ the view may not be viewed by anybody else than the user which created the order
 group. We therefore need to check whether the current is user is `sales` user, or the
 order in question belongs to the
 currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
-
-Vaadin 8:
-
-```kotlin
-@AllowAllUsers
-class OrderView : VerticalLayout(), View {
-  override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-    val user: User = Session.loginManager.loggedInUser!!
-    val order: Order = Order.getById(event.parameterList[0].toLong())
-    val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
-    if (!authorized) {
-      throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf())
-    }
-    // .. rest of the code, init the view, show the details about the order
-  }
-}
-```
-
-Vaadin 14:
 
 ```kotlin
 @AllowAllUsers
@@ -122,59 +88,7 @@ VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
 }
 ```
 
-Now, to the hook itself. For Vaadin 8 we simply install the security hook in the `UI.init()`:
-
-```kotlin
-class MyUI : UI() {
-
-    override fun init(request: VaadinRequest?) {
-        if (!Session.loginManager.isLoggedIn) {
-            // If no user is logged in, then simply show the LoginView (a full-screen login form) and bail out.
-            // When the user logs in, we will simply reload the page, which recreates the UI instance; since the user is stored in a session
-            // and therefore logged in, the code will skip this block and will initialize the UI properly.
-            content = LoginView()
-            return
-        }
-
-        navigator = Navigator(this, content as ViewDisplay)
-        navigator.addProvider(autoViewProvider)
-        VokSecurity.install()
-        ...
-    }
-}
-```
-
-#### Vaadin 14
-
-For Vaadin 14 the situation is a bit more complex. If you have UI, you can simply override `UI.init()` method and check the security there:
-```kotlin
-class MyUI: UI() {
-    override fun init(request: VaadinRequest) {
-        addBeforeEnterListener { enterEvent ->
-            if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
-                enterEvent.rerouteTo(LoginScreen::class.java)
-            } else {
-                VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
-            }
-        }
-    }
-}
-```
-
-If you don't have the UI class but you have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
-```kotlin
-class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
-    override fun beforeEnter(event: BeforeEnterEvent) {
-        if (!Session.loginManager.isLoggedIn) {
-            event.rerouteTo(LoginView::class.java)
-        } else {
-            VokSecurity.checkPermissionsOfView(event.navigationTarget)
-        }
-    }
-}
-```
-
-Otherwise you can provide your own init listener:
+You can then register the resolver in the init listener:
 
 ```kotlin
 class BookstoreInitListener : VaadinServiceInitListener {

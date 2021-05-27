@@ -27,32 +27,38 @@ public interface LoggedInUserResolver {
     public fun hasRole(role: String): Boolean = getCurrentUserRoles().contains(role)
 
     /**
-     * Checks that given `View` can be viewed by current user.
+     * Checks that given [checkedClass] can be viewed by current user.
+     * The [routeClass] is just for a reference: if an exception is thrown, the message
+     * will contain [routeClass] as the target route.
+     * @param routeClass only for display purposes
+     * @param checkedClass the class being checked, usually a `@Route` or a `RouterLayout`.
      */
-    public fun checkPermissionsOnClass(viewClass: Class<*>) {
+    public fun checkPermissionsOnClass(routeClass: Class<*>, checkedClass: Class<*>) {
         val annotationClasses = listOf(AllowRoles::class.java, AllowAll::class.java, AllowAllUsers::class.java)
-        val annotations: List<Annotation> = annotationClasses.mapNotNull { viewClass.getAnnotation(it) }
+        val annotations: List<Annotation> = annotationClasses.mapNotNull { checkedClass.getAnnotation(it) }
         if (annotations.isEmpty()) {
-            throw AccessRejectedException("The view ${viewClass.simpleName} is missing one of the ${annotationClasses.map { it.simpleName }} annotation", viewClass, setOf())
+            throw AccessRejectedException("Route ${routeClass.simpleName}: The class ${checkedClass.simpleName} is missing one of the ${annotationClasses.map { it.simpleName }} annotation", routeClass, checkedClass, setOf())
         }
         require(annotations.size == 1) {
-            "The view ${viewClass.simpleName} contains multiple security annotations which is illegal: $annotations"
+            "The class ${checkedClass.simpleName} contains multiple security annotations which is illegal: $annotations"
         }
         val annotation = annotations[0]
         when(annotation) {
             is AllowAll -> {} // okay
-            is AllowAllUsers -> if (!isLoggedIn()) throw AccessRejectedException("Cannot access ${viewClass.simpleName}, you're not logged in", viewClass, setOf())
+            is AllowAllUsers -> if (!isLoggedIn()) {
+                throw AccessRejectedException("Route ${routeClass.simpleName}: Cannot access ${checkedClass.simpleName}, you're not logged in", routeClass, checkedClass, setOf())
+            }
             is AllowRoles -> {
                 if (!isLoggedIn()) {
-                    throw AccessRejectedException("Cannot access ${viewClass.simpleName}, you're not logged in", viewClass, setOf())
+                    throw AccessRejectedException("Route ${routeClass.simpleName}: Cannot access ${checkedClass.simpleName}, you're not logged in", routeClass, checkedClass, setOf())
                 }
                 val requiredRoles: Set<String> = annotation.roles.toSet()
                 if (requiredRoles.isEmpty()) {
-                    throw AccessRejectedException("Cannot access ${viewClass.simpleName}, nobody can access it", viewClass, setOf())
+                    throw AccessRejectedException("Route ${routeClass.simpleName}: Cannot access ${checkedClass.simpleName}, nobody can access it", routeClass, checkedClass, setOf())
                 }
                 val currentUserRoles: Set<String> = getCurrentUserRoles()
                 if (requiredRoles.intersect(currentUserRoles).isEmpty()) {
-                    throw AccessRejectedException("Can not access ${viewClass.simpleName}, you are not ${requiredRoles.joinToString(" or ")}", viewClass, requiredRoles)
+                    throw AccessRejectedException("Route ${routeClass.simpleName}: Can not access ${checkedClass.simpleName}, you are not ${requiredRoles.joinToString(" or ")}", routeClass, checkedClass, requiredRoles)
                 }
             }
         }

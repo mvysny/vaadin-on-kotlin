@@ -1,14 +1,12 @@
 package eu.vaadinonkotlin.vaadin10
 
-import com.github.mvysny.karibudsl.v10.init
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.router.InternalServerError
+import com.vaadin.flow.router.ParentLayout
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.security.loggedInUserResolver
-import eu.vaadinonkotlin.vaadin10.VokSecurity.checkPermissionsOfView
-import eu.vaadinonkotlin.vaadin10.VokSecurity.install
 
 /**
  * The security provider. Since Vaadin 10 applications typically don't define their own UIs but use the approach of setting [Route.layout],
@@ -16,25 +14,8 @@ import eu.vaadinonkotlin.vaadin10.VokSecurity.install
  *
  * Don't forget to install a proper [VaadinOnKotlin.loggedInUserResolver] for your project.
  *
- * ## If you have your own UI class
- *
- * Simply call [install] - the function will add the [UI.addBeforeEnterListener] which will check permissions on all views.
- *
- * ## If you do not have your own UI class
- *
- * Then you typically have a main layout to which all your [Route]s reference by the means of [Route.layout]. You just need to call the [checkPermissionsOfView]
- * function before the View is displayed.
- *
- * Make your `MainLayout` class implement the `BeforeEnterObserver`, then implement the `beforeEnter()` function as follows:
- * ```
- * override fun beforeEnter(event: BeforeEnterEvent) {
- *   if (!Session.loginManager.isLoggedIn) {
- *     event.rerouteTo(LoginView::class.java)
- *   } else {
- *     VokSecurity.checkPermissionsOfView(event.navigationTarget)
- *   }
- * }
- * ```
+ * See [vok-security README](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md)
+ * on how to use this class properly.
  */
 public object VokSecurity {
     /**
@@ -46,21 +27,26 @@ public object VokSecurity {
             // allow
             return
         }
-        require(Component::class.java.isAssignableFrom(viewClass)) { "$viewClass is not a subclass of Component" }
-        val route = requireNotNull(viewClass.getAnnotation(Route::class.java)) { "The view $viewClass is not annotated with @Route" }
-        val user = checkNotNull(VaadinOnKotlin.loggedInUserResolver) { "The VaadinOnKotlin.loggedInUserResolver has not been set" }
-        user.checkPermissionsOnClass(viewClass)
-        if (route.layout != UI::class && route.layout.java.getAnnotation(Route::class.java) != null) {
-            // recursively check for permissions on the parent layout
-            checkPermissionsOfView(route.layout.java)
-        }
+        requireNotNull(viewClass.getAnnotation(Route::class.java)) { "The view $viewClass is not annotated with @Route" }
+        checkPermissions(viewClass, viewClass)
     }
 
-    /**
-     * If you have your own custom UI, then simply call this function from your [UI.init] method. It will install [UI.addBeforeEnterListener]
-     * and will check all views.
-     */
-    public fun install() {
-        UI.getCurrent().addBeforeEnterListener { e -> checkPermissionsOfView(e.navigationTarget) }
+    private fun checkPermissions(routeClass: Class<*>, checkedClazz: Class<*>) {
+        require(Component::class.java.isAssignableFrom(checkedClazz)) { "$checkedClazz is not a subclass of Component" }
+        // check permissions
+        val user = checkNotNull(VaadinOnKotlin.loggedInUserResolver) { "The VaadinOnKotlin.loggedInUserResolver has not been set" }
+        user.checkPermissionsOnClass(routeClass, checkedClazz)
+
+        // check parent layout if necessary
+        val route: Route? = checkedClazz.getAnnotation(Route::class.java)
+        val parentLayout: ParentLayout? = checkedClazz.getAnnotation(ParentLayout::class.java)
+        if (route != null && route.layout != UI::class) {
+            // recursively check for permissions on the parent layout
+            checkPermissions(routeClass, route.layout.java)
+        }
+        if (parentLayout != null) {
+            // recursively check for permissions on the parent layout
+            checkPermissions(routeClass, parentLayout.value.java)
+        }
     }
 }
