@@ -6,7 +6,6 @@ import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.ParentLayout
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.security.loggedInUserResolver
 
 /**
  * The security provider. Since Vaadin 10 applications typically don't define their own UIs but use the approach of setting [Route.layout],
