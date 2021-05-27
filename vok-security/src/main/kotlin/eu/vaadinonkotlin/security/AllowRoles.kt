@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.security
 
 import eu.vaadinonkotlin.VaadinOnKotlin
+import java.lang.annotation.Inherited
 
 /**
  * Allows any user with one of the listed roles to see the view.
@@ -21,6 +22,7 @@ import eu.vaadinonkotlin.VaadinOnKotlin
  * no users will qualify and the view remains inaccessible.
  */
 @Target(AnnotationTarget.CLASS)
+@Inherited
 public annotation class AllowRoles(vararg val roles: String)
 
 /**
@@ -36,6 +38,7 @@ public annotation class AllowRoles(vararg val roles: String)
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
+@Inherited
 public annotation class AllowAll
 
 /**
@@ -51,4 +54,5 @@ public annotation class AllowAll
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
 @Target(AnnotationTarget.CLASS)
+@Inherited
 public annotation class AllowAllUsers
