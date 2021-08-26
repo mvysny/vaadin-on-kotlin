@@ -19,14 +19,30 @@ public fun OkHttpClient.destroy() {
 }
 
 /**
+ * Documents a HTTP failure.
+ * @property statusCode the HTTP status code, one of [javax.servlet.http.HttpServletResponse] `SC_*` constants.
+ * @property requestUrl the URL requested from the server
+ * @property response the response body received from the server, may provide further information to the nature of the failure.
+ * May be blank.
+ */
+public class HttpResponseException(
+    public val statusCode: Int,
+    public val requestUrl: String,
+    public val response: String,
+    cause: Throwable? = null
+) : IOException("$statusCode: $response (${requestUrl})", cause)
+
+/**
  * Fails if the response is not in 200..299 range; otherwise returns [this].
- * @throws IOException if the response is not in 200..299 ([Response.isSuccessful] returns false). Uses [FileNotFoundException] for 404.
+ * @throws FileNotFoundException if the HTTP response was 404
+ * @throws HttpResponseException if the response is not in 200..299 ([Response.isSuccessful] returns false)
+ * @throws IOException on I/O error.
  */
 public fun Response.checkOk(): Response {
     if (!isSuccessful) {
-        val msg = "$code: ${body!!.string()} (${request.url})"
-        if (code == 404) throw FileNotFoundException(msg)
-        throw IOException(msg)
+        val response = body!!.string()
+        if (code == 404) throw FileNotFoundException("$code: $response (${request.url})")
+        throw HttpResponseException(code, request.url.toString(), response)
     }
     return this
 }

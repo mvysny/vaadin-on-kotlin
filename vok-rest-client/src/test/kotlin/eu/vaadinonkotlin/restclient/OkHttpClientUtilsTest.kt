@@ -6,10 +6,7 @@ import com.github.mvysny.dynatest.expectThrows
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.intellij.lang.annotations.Language
 import java.io.FileNotFoundException
-import java.io.IOException
-import java.lang.IllegalStateException
 import kotlin.test.expect
 
 data class Person(var name: String? = null,
@@ -30,7 +27,7 @@ class OkHttpClientUtilsTest : DynaTest({
     beforeEach {
         javalin = Javalin.create { it.showJavalinBanner = false }
                 .get("foo") { ctx -> ctx.result(content) }
-                .get("fail") { _ -> throw RuntimeException() }
+                .get("fail") { throw RuntimeException() }
                 .start(54444)
     }
     afterEach { javalin.stop() }
@@ -47,7 +44,7 @@ class OkHttpClientUtilsTest : DynaTest({
     }
 
     test("500") {
-        expectThrows(IOException::class, "500: Internal server error (http://localhost:54444/fail)") {
+        expectThrows(HttpResponseException::class, "500: Internal server error (http://localhost:54444/fail)") {
             client().exec("http://localhost:54444/fail".get()) {}
         }
     }
