@@ -30,7 +30,9 @@ public class HttpResponseException(
     public val requestUrl: String,
     public val response: String,
     cause: Throwable? = null
-) : IOException("$statusCode: $response (${requestUrl})", cause)
+) : IOException("$statusCode: $response", cause) {
+    override fun toString(): String = "${javaClass.simpleName}: $message ($requestUrl)"
+}
 
 /**
  * Fails if the response is not in 200..299 range; otherwise returns [this].
