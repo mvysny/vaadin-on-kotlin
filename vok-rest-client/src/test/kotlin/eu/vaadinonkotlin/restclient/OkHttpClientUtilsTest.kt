@@ -44,7 +44,7 @@ class OkHttpClientUtilsTest : DynaTest({
     }
 
     test("500") {
-        expectThrows(HttpResponseException::class, "500: Internal server error (http://localhost:54444/fail)") {
+        expectThrows(HttpResponseException::class, "500: Internal server error") {
             client().exec("http://localhost:54444/fail".get()) {}
         }
     }
