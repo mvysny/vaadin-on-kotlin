@@ -1,6 +1,6 @@
 package eu.vaadinonkotlin.vaadin10.vokdb
 
-import com.github.mvysny.karibudsl.v10.sort
+import com.github.mvysny.kaributools.sort
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.DataLoaderPropertyName
 import com.github.mvysny.vokdataloader.SortClause

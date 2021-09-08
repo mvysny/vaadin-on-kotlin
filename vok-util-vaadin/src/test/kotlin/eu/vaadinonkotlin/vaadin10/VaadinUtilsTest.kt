@@ -3,6 +3,7 @@ package eu.vaadinonkotlin.vaadin10
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.kaributools.caption
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest
 import java.lang.IllegalStateException

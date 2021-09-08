@@ -4,7 +4,9 @@ import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
-import com.github.mvysny.karibudsl.v10.component
+import com.github.mvysny.kaributools.component
+import com.github.mvysny.kaributools.fetchAll
+import com.github.mvysny.kaributools.getColumnBy
 import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.buildFilter
 import com.vaadin.flow.component.Component
@@ -113,7 +115,7 @@ class FilterBarTest : DynaTest({
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).apply {
             setFilter { false }
         }
-        expectList() { grid.dataProvider!!.getAll() }
+        expectList() { grid.dataProvider!!._findAll() }
 
         val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
@@ -124,7 +126,7 @@ class FilterBarTest : DynaTest({
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
         nameFilter.value = "foobar"
-        expectList(Person("foobar")) { grid.dataProvider!!.getAll() }
+        expectList(Person("foobar")) { grid.dataProvider!!._findAll() }
     }
 
     test("onFilterChanged invoked") {

@@ -2,8 +2,7 @@ package eu.vaadinonkotlin.vaadin10
 
 import com.github.mvysny.karibudsl.v10.DateInterval
 import com.github.mvysny.karibudsl.v10.NumberInterval
-import com.github.mvysny.karibudsl.v10.browserTimeZone
-import com.github.mvysny.karibudsl.v10.getColumnBy
+import com.github.mvysny.kaributools.getColumnBy
 import com.github.mvysny.vokdataloader.Filter
 import com.github.mvysny.vokdataloader.FullTextFilter
 import com.vaadin.flow.component.Component
@@ -332,7 +331,7 @@ public open class FilterBar<BEAN : Any, FILTER : Any>(
              * Adds a trimming converter to the chain: if the value is a String then it's trimmed,
              * otherwise the value is passed as-is.
              *
-             * No need to use this with [ilike] or [fullText] since those filters will
+             * No need to use this with [istartsWith] or [fullText] since those filters will
              * always perform trimming automatically.
              */
             public fun trim(): Builder<BEAN, VALUE, TARGETFILTER> =
@@ -460,7 +459,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, FILTER, FIL
 }
 
 /**
- * Finalizes the [FilterBar.Binding] and compares [String] values using the [StartsWithFilter],
+ * Finalizes the [FilterBar.Binding] and compares [String] values using the [com.github.mvysny.vokdataloader.StartsWithFilter],
  * case-insensitive.
  */
 public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, String, FILTER>.istartsWith(): FilterBar.Binding<BEAN, FILTER> {
@@ -484,7 +483,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInter
 /**
  * Terminal operation which matches dates in given range.
  *
- * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
@@ -496,7 +495,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterva
 /**
  * Terminal operation which matches dates in given day.
  *
- * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
@@ -507,8 +506,8 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, 
 /**
  * Terminal operation which matches dates and datetimes in given day.
  *
- * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * It's important for your app to initialize [browserTimeZone] properly as described in the kdoc of that variable.
+ * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * It's important for your app to initialize [com.github.mvysny.kaributools.BrowserTimeZone] properly as described in the kdoc of that variable.
  */
 @JvmName("numberIntervalInRange")
 public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
@@ -522,7 +521,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, 
 /**
  * Terminal operation which matches dates in given range.
  *
- * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
@@ -538,7 +537,7 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterva
 /**
  * Terminal operation which matches dates in given range.
  *
- * Note: [browserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
+ * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  * @param property the type of the property is used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].

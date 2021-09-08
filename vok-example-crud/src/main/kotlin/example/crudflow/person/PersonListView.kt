@@ -1,7 +1,9 @@
 package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.mvysny.karibudsl.v10.ModifierKey.Alt
+import com.github.mvysny.karibudsl.v10.addColumnFor
+import com.github.mvysny.kaributools.*
+import com.github.mvysny.kaributools.ModifierKey.*
 import com.github.mvysny.vokdataloader.asc
 import com.github.vokorm.dataloader.dataLoader
 import com.github.vokorm.db
@@ -47,7 +49,7 @@ class PersonListView : KComposite() {
                 setDataLoader(Person.dataLoader)
                 val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
-                addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateToView(PersonView::class, person.id!!) }) {}
+                addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateTo(PersonView::class, person.id!!) }) {}
                 addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
                 addButtonColumn(VaadinIcon.TRASH, "delete", { person: Person -> person.delete(); refresh() }) {}
 
@@ -77,7 +79,7 @@ class PersonListView : KComposite() {
                 }
 
                 gridContextMenu = gridContextMenu {
-                    item("view", { person: Person? -> if (person != null) navigateToView(PersonView::class, person.id!!) })
+                    item("view", { person: Person? -> if (person != null) navigateTo(PersonView::class, person.id!!) })
                     item("edit", { person: Person? -> if (person != null) createOrEditPerson(person) })
                     item("delete", { person: Person? -> if (person != null) { person.delete(); refresh() } })
                 }
@@ -98,7 +100,7 @@ class PersonListView : KComposite() {
             (0..85).forEach {
                 Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true,
                         dateOfBirth = LocalDate.of(1990, 1, 1).plusDays(it.toLong()),
-                        created = LocalDate.of(2011, 1, 1).plusDays(it.toLong()).atStartOfDay(browserTimeZone).toInstant().toDate).save()
+                        created = LocalDate.of(2011, 1, 1).plusDays(it.toLong()).atStartOfDay(BrowserTimeZone.get).toInstant().toDate).save()
             }
         }
         personGrid.dataProvider.refreshAll()
