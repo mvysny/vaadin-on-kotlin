@@ -38,7 +38,7 @@ class OkHttpClientUtilsTest : DynaTest({
     }
 
     test("404") {
-        expectThrows(FileNotFoundException::class, "404: Not found (http://localhost:54444/bar)") {
+        expectThrows(FileNotFoundException::class, "404: Not found (GET http://localhost:54444/bar)") {
             client().exec("http://localhost:54444/bar".get()) {}
         }
     }

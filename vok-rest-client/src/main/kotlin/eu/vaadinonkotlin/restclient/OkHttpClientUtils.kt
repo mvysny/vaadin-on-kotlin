@@ -21,17 +21,19 @@ public fun OkHttpClient.destroy() {
 /**
  * Documents a HTTP failure.
  * @property statusCode the HTTP status code, one of [javax.servlet.http.HttpServletResponse] `SC_*` constants.
+ * @property method the request method, e.g. `"GET"`
  * @property requestUrl the URL requested from the server
  * @property response the response body received from the server, may provide further information to the nature of the failure.
  * May be blank.
  */
 public class HttpResponseException(
     public val statusCode: Int,
+    public val method: String,
     public val requestUrl: String,
     public val response: String,
     cause: Throwable? = null
 ) : IOException("$statusCode: $response", cause) {
-    override fun toString(): String = "${javaClass.simpleName}: $message ($requestUrl)"
+    override fun toString(): String = "${javaClass.simpleName}: $message ($method $requestUrl)"
 }
 
 /**
@@ -43,8 +45,8 @@ public class HttpResponseException(
 public fun Response.checkOk(): Response {
     if (!isSuccessful) {
         val response = body!!.string()
-        if (code == 404) throw FileNotFoundException("$code: $response (${request.url})")
-        throw HttpResponseException(code, request.url.toString(), response)
+        if (code == 404) throw FileNotFoundException("$code: $response (${request.method} ${request.url})")
+        throw HttpResponseException(code, request.method, request.url.toString(), response)
     }
     return this
 }
