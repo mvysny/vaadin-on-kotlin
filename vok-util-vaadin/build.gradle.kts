@@ -25,4 +25,4 @@ kotlin {
 }
 
 val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
-configureBintray("vok-util-vaadin10", "VOK: Basic utility classes for Vaadin 10")
+configureBintray("vok-util-vaadin", "VOK: Basic utility classes for Vaadin 10")
