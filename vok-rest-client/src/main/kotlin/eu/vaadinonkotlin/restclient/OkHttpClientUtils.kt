@@ -1,5 +1,6 @@
 package eu.vaadinonkotlin.restclient
 
+import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.VOKPlugin
@@ -75,8 +76,12 @@ public class OkHttpClientVokPlugin : VOKPlugin {
          * The default [Gson] interface used by all serialization/deserialization methods. Simply reassign with another [Gson]
          * instance to reconfigure. To be thread-safe, do the reassignment in your `ServletContextListener`.
          */
-        public var gson: Gson = GsonBuilder().create()
+        public var gson: Gson = GsonBuilder().registerJavaTimeAdapters().create()
     }
+}
+
+private fun GsonBuilder.registerJavaTimeAdapters(): GsonBuilder = apply {
+    Converters.registerAll(this)
 }
 
 /**

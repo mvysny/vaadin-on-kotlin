@@ -6,6 +6,8 @@ dependencies {
         exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
     }
     api("com.google.code.gson:gson:${properties["gson_version"]}")
+    // workaround for https://github.com/google/gson/issues/1059
+    implementation("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1")
     api(project(":vok-db"))
 
     // testing of the CRUD interface

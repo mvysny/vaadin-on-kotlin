@@ -12,6 +12,7 @@ import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.time.LocalDate
+import java.util.*
 import kotlin.test.expect
 
 class PersonRestClient(val baseUrl: String) {
@@ -26,6 +27,10 @@ class PersonRestClient(val baseUrl: String) {
     fun getAll(): List<Person> {
         val request = Request.Builder().url("${baseUrl}/person").build()
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
+    }
+    fun getAllRaw(): String {
+        val request = Request.Builder().url("${baseUrl}/person").build()
+        return client.exec(request) { response -> response.string() }
     }
 }
 
@@ -44,6 +49,13 @@ class PersonRestTest : DynaTest({
 
     test("hello world") {
         expect("Hello World") { client.helloWorld() }
+    }
+
+    test("LocalDate serialization") {
+        val p = Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        p.save()
+        val all = client.getAllRaw()
+        expect(true, all) { all.contains(""""dateOfBirth":"1980-05-01"""") }
     }
 
     test("get all users") {

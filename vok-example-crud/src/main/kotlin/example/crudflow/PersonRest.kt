@@ -4,7 +4,7 @@ import example.crudflow.person.Person
 import eu.vaadinonkotlin.rest.configureToJavalin
 import eu.vaadinonkotlin.rest.crud2
 import eu.vaadinonkotlin.rest.getCrudHandler
-import com.google.gson.GsonBuilder
+import eu.vaadinonkotlin.rest.VokRest
 import io.javalin.Javalin
 import io.javalin.http.JavalinServlet
 import javax.servlet.annotation.WebServlet
@@ -27,8 +27,7 @@ class JavalinRestServlet : HttpServlet() {
 }
 
 fun Javalin.configureRest(): Javalin {
-    val gson = GsonBuilder().create()
-    gson.configureToJavalin()
+    VokRest.gson.configureToJavalin()
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     crud2("/rest/person", Person.getCrudHandler(true))
     return this
