@@ -40,6 +40,7 @@ public object VaadinOnKotlin {
     public val isStarted: Boolean
         get() = synchronized(this) { executor != null }
 
+    // guarded-by: this
     private var executor: ScheduledExecutorService? = null
 
     private fun checkStarted() {
@@ -61,9 +62,13 @@ public object VaadinOnKotlin {
     @Volatile
     public var threadFactory: ThreadFactory = object : ThreadFactory {
         private val id = AtomicInteger()
-        override fun newThread(r: Runnable): Thread? {
+        override fun newThread(r: Runnable): Thread {
             val thread = Thread(r)
             thread.name = "async-${id.incrementAndGet()}"
+            // not a good idea to create daemon threads: if the executor is not shut
+            // down properly and the JVM terminates, daemon threads are killed on the spot,
+            // without even calling finally blocks on them, as the JVM halts.
+            // See Section 7.4.2 of the "Java Concurrency In Practice" Book for more info.
             return thread
         }
     }
@@ -89,16 +94,21 @@ public object VaadinOnKotlin {
  *
  * @param block the task to submit
  * @param <R> the type of the task's result
+ * @param logException if true (default) and the [block] throws an exception, the exception is logged via slf4j.
+ * This prevents the exception from being lost silently if nobody calls [Future.get].
  * @return a Future representing pending completion of the task
  * @throws RejectedExecutionException if the task cannot be
  *         scheduled for execution
  */
-public fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(Callable<R> {
+public fun <R> async(logException: Boolean = true, block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.submit(Callable<R> {
     try {
         block.invoke()
     } catch (t: Throwable) {
         // log the exception - if nobody is waiting on the Future, the exception would have been lost.
-        LoggerFactory.getLogger(block::class.java).error("Async failed: $t", t)
+        if (logException) {
+            LoggerFactory.getLogger(block::class.java)
+                .error("Async failed: $t", t)
+        }
         throw t
     }
 })
@@ -119,7 +129,8 @@ public fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.s
  *
  * @param command the task to execute
  * @param initialDelay the time to delay first execution, in millis. You can use expressions like `5.days + 2.seconds` to compute this value.
- * @param period the period between successive executions, in millis
+ * @param period the period between successive executions, in millis.
+ * @param logException if true (default) and the [command] throws an exception, the exception is logged via slf4j.
  * @return a ScheduledFuture representing pending completion of
  *         the task, and whose `get()` method will throw an
  *         exception upon cancellation
@@ -127,13 +138,16 @@ public fun <R> async(block: () -> R): Future<R> = VaadinOnKotlin.asyncExecutor.s
  *         scheduled for execution
  * @throws IllegalArgumentException if period less than or equal to zero
  */
-public fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, command: ()->Unit): ScheduledFuture<*>
+public fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, logException: Boolean = true, command: ()->Unit): ScheduledFuture<*>
         = VaadinOnKotlin.asyncExecutor.scheduleAtFixedRate({
             try {
                 command.invoke()
             } catch (t: Throwable) {
                 // if nobody is using Future to wait for the result of this op, the exception is lost. better log it here.
-                LoggerFactory.getLogger(command::class.java).error("Async failed: $t", t)
+                if (logException) {
+                    LoggerFactory.getLogger(command::class.java)
+                        .error("Async failed: $t", t)
+                }
                 throw t
             }
         }, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
