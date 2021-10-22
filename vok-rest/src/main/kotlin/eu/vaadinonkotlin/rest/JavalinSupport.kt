@@ -13,7 +13,7 @@ import io.javalin.plugin.json.ToJsonMapper
 
 /**
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
- * via Javalin's [Context.json], or parse incoming JSON via [Context.bodyAsClass].
+ * via Javalin's [io.javalin.http.Context.json], or parse incoming JSON via [io.javalin.http.Context.bodyAsClass].
  */
 public fun Gson.configureToJavalin() {
     JavalinJson.fromJsonMapper = object : FromJsonMapper {
