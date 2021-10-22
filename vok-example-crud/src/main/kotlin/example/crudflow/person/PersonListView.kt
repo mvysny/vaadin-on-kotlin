@@ -1,7 +1,6 @@
 package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
-import com.github.mvysny.karibudsl.v10.addColumnFor
 import com.github.mvysny.kaributools.*
 import com.github.mvysny.kaributools.ModifierKey.*
 import com.github.mvysny.vokdataloader.asc
@@ -53,28 +52,28 @@ class PersonListView : KComposite() {
                 addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
                 addButtonColumn(VaadinIcon.TRASH, "delete", { person: Person -> person.delete(); refresh() }) {}
 
-                addColumnFor(Person::id, sortable = false) {
+                columnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
                 }
-                addColumnFor(Person::name) {
+                columnFor(Person::name) {
                     filterBar.forField(TextField(), this).istartsWith()
                 }
-                addColumnFor(Person::age) {
+                columnFor(Person::age) {
                     width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER
                     filterBar.forField(NumberRangePopup(), this).inRange()
                 }
-                addColumnFor(Person::alive) {
+                columnFor(Person::alive) {
                     width = "130px"; isExpand = false
                     filterBar.forField(BooleanComboBox(), this).eq()
                 }
-                addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+                columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
                     filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
                 }
-                addColumnFor(Person::maritalStatus) {
+                columnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
                     filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
                 }
-                addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
+                columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     filterBar.forField(DateRangePopup(), this).inRange(Person::created)
                 }
 
