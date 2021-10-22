@@ -3,7 +3,7 @@ dependencies {
     api(project(":vok-db"))
     api(project(":vok-util-vaadin"))
 
-    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     testImplementation("com.h2database:h2:${properties["h2_version"]}")
     testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")

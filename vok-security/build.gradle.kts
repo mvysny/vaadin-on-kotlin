@@ -7,7 +7,7 @@ dependencies {
             "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
             .forEach { group -> exclude(group = group) }
     }
-    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
 }
 

@@ -11,7 +11,7 @@ dependencies {
     api(project(":vok-db"))
 
     // testing of the CRUD interface
-    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation(project(":vok-rest-client"))
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.43.v20210629")
     testImplementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")

@@ -9,7 +9,7 @@ dependencies {
     implementation("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1")
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
-    testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
+    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("io.javalin:javalin:${properties["javalin_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
