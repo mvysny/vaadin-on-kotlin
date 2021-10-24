@@ -6,22 +6,52 @@ import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.CrudHandler
-import io.javalin.core.security.Role
-import io.javalin.plugin.json.FromJsonMapper
-import io.javalin.plugin.json.JavalinJson
-import io.javalin.plugin.json.ToJsonMapper
+import io.javalin.core.security.RouteRole
+import io.javalin.plugin.json.*
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.nio.charset.Charset
 
 /**
  * Configures Gson to Javalin. You need to call this if you wish to produce JSON
  * via Javalin's [io.javalin.http.Context.json], or parse incoming JSON via [io.javalin.http.Context.bodyAsClass].
  */
-public fun Gson.configureToJavalin() {
-    JavalinJson.fromJsonMapper = object : FromJsonMapper {
-        override fun <T> map(json: String, targetClass: Class<T>): T = fromJson(json, targetClass)
+@Deprecated("Use javalin.gsonMapper()")
+public fun Gson.configureToJavalin(javalin: Javalin) {
+    javalin.gsonMapper(this)
+}
+
+public fun Javalin.gsonMapper(gson: Gson, charset: Charset = Charsets.UTF_8) {
+    attribute(JSON_MAPPER_KEY, GsonMapper(gson, charset))
+}
+
+public class GsonMapper(public val gson: Gson, public val charset: Charset = Charsets.UTF_8) : JsonMapper {
+    override fun toJsonString(obj: Any): String {
+        return when (obj) {
+            is String -> obj // the default mapper treats strings as if they are already JSON
+            else -> gson.toJson(obj) // convert object to JSON
+        }
     }
-    JavalinJson.toJsonMapper = object : ToJsonMapper {
-        override fun map(obj: Any): String = toJson(obj)
+
+    override fun toJsonStream(obj: Any): InputStream {
+        return when (obj) {
+            is String -> obj.byteInputStream() // the default mapper treats strings as if they are already JSON
+            else -> PipedStreamUtil.getInputStream { pipedOutputStream ->
+                gson.toJson(obj, OutputStreamWriter(pipedOutputStream, charset))
+            }
+        }
     }
+
+    override fun <T : Any?> fromJsonString(
+        json: String,
+        targetClass: Class<T>
+    ): T = gson.fromJson(json, targetClass)
+
+    override fun <T : Any?> fromJsonStream(
+        json: InputStream,
+        targetClass: Class<T>
+    ): T = gson.fromJson(InputStreamReader(json, charset), targetClass)
 }
 
 /**
@@ -38,14 +68,14 @@ public fun Gson.configureToJavalin() {
  * @param crudHandler retrieves bean instances; you can use [getCrudHandler] to automatically provide instances of vok-orm entities.
  * @param permittedRoles only these roles are allowed to access abovementioned endpoints. See Javalin [io.javalin.security.AccessManager] and the Javalin documentation for more details.
  */
-public fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<Role> = setOf()): Javalin = routes {
+public fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles: Set<RouteRole> = setOf()): Javalin = routes {
     val p = path.trim('/')
     if (p.contains('/')) {
         ApiBuilder.path(p.substringBeforeLast('/')) {
-            ApiBuilder.crud(p.substringAfterLast('/') + "/:id", crudHandler, permittedRoles)
+            ApiBuilder.crud(p.substringAfterLast('/') + "/{id}", crudHandler, *permittedRoles.toTypedArray())
         }
     } else {
-        ApiBuilder.crud(path, crudHandler, permittedRoles)
+        ApiBuilder.crud(path, crudHandler, *permittedRoles.toTypedArray())
     }
 }
 

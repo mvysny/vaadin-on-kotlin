@@ -21,7 +21,7 @@ import java.time.temporal.ChronoField
 import kotlin.test.expect
 
 fun Javalin.configureRest(): Javalin {
-    VokRest.gson.configureToJavalin()
+    gsonMapper(VokRest.gson)
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     crud2("/rest/person", Person.getCrudHandler(true))
     return this

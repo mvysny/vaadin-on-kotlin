@@ -2,8 +2,9 @@ dependencies {
     api(project(":vok-framework"))
 
     api("io.javalin:javalin:${properties["javalin_version"]}") {
-        exclude(mapOf("group" to "org.eclipse.jetty"))
-        exclude(mapOf("group" to "org.eclipse.jetty.websocket"))
+        exclude(group = "org.eclipse.jetty")
+        exclude(group = "org.eclipse.jetty.websocket")
+        exclude(group = "com.fasterxml.jackson.core")
     }
     api("com.google.code.gson:gson:${properties["gson_version"]}")
     // workaround for https://github.com/google/gson/issues/1059

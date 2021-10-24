@@ -1,10 +1,7 @@
 package example.crudflow
 
+import eu.vaadinonkotlin.rest.*
 import example.crudflow.person.Person
-import eu.vaadinonkotlin.rest.configureToJavalin
-import eu.vaadinonkotlin.rest.crud2
-import eu.vaadinonkotlin.rest.getCrudHandler
-import eu.vaadinonkotlin.rest.VokRest
 import io.javalin.Javalin
 import io.javalin.http.JavalinServlet
 import javax.servlet.annotation.WebServlet
@@ -19,7 +16,7 @@ import javax.servlet.http.HttpServletResponse
 class JavalinRestServlet : HttpServlet() {
     val javalin: JavalinServlet = Javalin.createStandalone()
             .configureRest()
-            .servlet()
+            .javalinServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
         javalin.service(req, resp)
@@ -27,7 +24,7 @@ class JavalinRestServlet : HttpServlet() {
 }
 
 fun Javalin.configureRest(): Javalin {
-    VokRest.gson.configureToJavalin()
+    gsonMapper(VokRest.gson)
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     crud2("/rest/person", Person.getCrudHandler(true))
     return this

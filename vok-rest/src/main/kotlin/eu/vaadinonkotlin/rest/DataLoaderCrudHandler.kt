@@ -48,9 +48,9 @@ public open class DataLoaderCrudHandler<T : Any>(
 ) : CrudHandler {
     override fun getAll(ctx: Context) {
         // grab fetchRange from the query
-        val limit: Long = ctx.queryParam<Long>("limit").getOrNull() ?: defaultLimit
+        val limit: Long = ctx.queryParamAsClass<Long>("limit").getOrDefault(defaultLimit)
         if (limit !in 0..maxLimit) throw BadRequestResponse("invalid limit $limit, must be 0..$maxLimit")
-        val offset = ctx.queryParam<Long>("offset").getOrNull() ?: 0
+        val offset = ctx.queryParamAsClass<Long>("offset").getOrDefault(0)
         if (offset < 0) throw BadRequestResponse("invalid offset $offset, must be 0 or greater")
         val fetchRange = offset until (offset + limit)
 

@@ -10,7 +10,9 @@ dependencies {
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("io.javalin:javalin:${properties["javalin_version"]}")
+    testImplementation("io.javalin:javalin:${properties["javalin_version"]}") {
+        exclude(group = "com.fasterxml.jackson.core")
+    }
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
     // temporary: add kotlin-reflect until https://github.com/mvysny/vaadin-on-kotlin/issues/60 is sorted out.
