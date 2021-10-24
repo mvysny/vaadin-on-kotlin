@@ -39,4 +39,3 @@ dependencies {
     testImplementation(project(":vok-rest-client"))
     testImplementation("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
 }
-
