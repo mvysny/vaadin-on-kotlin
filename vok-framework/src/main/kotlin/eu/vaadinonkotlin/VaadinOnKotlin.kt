@@ -11,47 +11,42 @@ public object VaadinOnKotlin {
      * Initializes the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
     public fun init() {
-        synchronized(this) {
+        if (!::asyncExecutor.isInitialized) {
             // TomEE also has by default 5 threads, so I guess this is okay :-D
-            executor = Executors.newScheduledThreadPool(5, threadFactory)
-            val plugins: List<VOKPlugin> = pluginsLoader.toList()
-            plugins.forEach { it.init() }
-            log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
+            asyncExecutor = Executors.newScheduledThreadPool(5, threadFactory)
         }
+        val plugins: List<VOKPlugin> = pluginsLoader.toList()
+        plugins.forEach { it.init() }
+        isStarted = true
+        log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
     }
 
     /**
      * Destroys the Vaadin-On-Kotlin framework. Just call this from your context listener.
      */
     public fun destroy() {
-        synchronized(this) {
-            if (isStarted) {
-                pluginsLoader.forEach { it.destroy() }
-                executor!!.shutdown()
-                executor!!.awaitTermination(1, TimeUnit.DAYS)
-                executor = null
-            }
+        if (isStarted) {
+            isStarted = false
+            pluginsLoader.forEach { it.destroy() }
+            asyncExecutor.shutdown()
+            asyncExecutor.awaitTermination(1, TimeUnit.DAYS)
         }
     }
 
     /**
      * True if [init] has been called.
      */
-    public val isStarted: Boolean
-        get() = synchronized(this) { executor != null }
-
-    // guarded-by: this
-    private var executor: ScheduledExecutorService? = null
-
-    private fun checkStarted() {
-        if (!isStarted) throw IllegalStateException("init() has not been called, or VaadinOnKotlin is already destroyed")
-    }
+    @Volatile
+    public var isStarted: Boolean = false
+        private set
 
     /**
      * The executor used by [async] and [scheduleAtFixedRate]. You can submit your own tasks as you wish.
+     *
+     * You can set your own custom executor, but do so before [init] is called.
      */
-    public val asyncExecutor: ScheduledExecutorService
-        get() = synchronized(this) { checkStarted(); executor!! }
+    @Volatile
+    public lateinit var asyncExecutor: ScheduledExecutorService
 
     /**
      * The thread factory used by the [async] method. By default the factory
@@ -73,13 +68,13 @@ public object VaadinOnKotlin {
         }
     }
 
-    internal val log = LoggerFactory.getLogger(javaClass)
+    private val log = LoggerFactory.getLogger(javaClass)
 
     /**
      * Discovers VOK plugins, so that they can be inited in [init] and closed on [destroy]. Uses a standard [ServiceLoader]
      * machinery for discovery.
      */
-    private val pluginsLoader = ServiceLoader.load(VOKPlugin::class.java)
+    private val pluginsLoader: ServiceLoader<VOKPlugin> = ServiceLoader.load(VOKPlugin::class.java)
 }
 
 /**
