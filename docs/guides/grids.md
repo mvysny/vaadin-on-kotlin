@@ -78,21 +78,21 @@ grid<Person> {
 
 ## Adding columns
 
-By default the Grid will show no columns. You can add columns easily, by calling the `addColumnFor()` function as follows:
+By default the Grid will show no columns. You can add columns easily, by calling the `columnFor()` function as follows:
 
 ```kotlin
 personGrid = grid<Person> {
   flexGrow = 1.0
   setDataLoader(Person.dataLoader)
 
-  addColumnFor(Person::id, sortable = false)
-  addColumnFor(Person::name)
-  addColumnFor(Person::age)
-  addColumnFor(Person::alive)
-  addColumnFor(Person::dateOfBirth, converter = { it?.toString() })
-  addColumnFor(Person::maritalStatus)
+  columnFor(Person::id, sortable = false)
+  columnFor(Person::name)
+  columnFor(Person::age)
+  columnFor(Person::alive)
+  columnFor(Person::dateOfBirth, converter = { it?.toString() })
+  columnFor(Person::maritalStatus)
   // example of a custom renderer which converts value to a displayable string.
-  addColumnFor(Person::created, converter = { it?.toString() })
+  columnFor(Person::created, converter = { it?.toString() })
 
   // add additional columns with buttons
   addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateToView(PersonView::class, person.id!!) }) {}
@@ -101,12 +101,12 @@ personGrid = grid<Person> {
 }
 ```
 
-The `addColumnFor()` will set the column header automatically, by converting `dateOfBirth` camelCase to `Date Of Birth` Human Friendly
+The `columnFor()` will set the column header automatically, by converting `dateOfBirth` camelCase to `Date Of Birth` Human Friendly
 format. It will also use the default renderer/converter pair which simply calls `.toString()` on any value of that particular property.
 The column is also by default sortable. To override this behavior, you can provide a configuration block to the `addColumnFor()` function
 which will allow you to configure the column further (simply by calling setters/methods on the `Grid.Column` receiver).
 
-The `addColumnFor()` function is tailored towards creating columns bound to a bean property. If you wish to create columns not backed by
+The `columnFor()` function is tailored towards creating columns bound to a bean property. If you wish to create columns not backed by
 any property (say, a column with the "Show Details" link), you can simply use the `addColumn()` function as provided by the Vaadin Grid
 itself. Please see above for the example.
 
@@ -170,16 +170,16 @@ In the simplest case, when you do not wish to fine-tune the filter appearance, y
 grid(dataProvider = Person.dataProvider) {
     // ..
     val filterBar = appendHeaderRow().asFilterBar(this)
-    addColumnFor(Person::name) {
+    columnFor(Person::name) {
         filterBar.forField(TextField(), this).istartsWith()
     }
-    addColumnFor(Person::age) {
+    columnFor(Person::age) {
         filterBar.forField(NumberRangePopup(), this).inRange()
     }
-    addColumnFor(Person::alive) {
+    columnFor(Person::alive) {
         filterBar.forField(BooleanComboBox(), this).eq()
     }
-    addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+    columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
         filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
     }
 }
@@ -202,7 +202,7 @@ In order to achieve that, simply use the `Grid.Column.setClassNameGenerator()`
 function as follows:
 
 ```kotlin
-addColumnFor(Person::created, converter = { it!!.toInstant().toString() }) {
+columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
   filterBar.forField(DateRangePopup(), this).inRange(Person::created)
   setClassNameGenerator { it -> "black" }
 }

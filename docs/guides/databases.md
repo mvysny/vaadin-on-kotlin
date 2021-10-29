@@ -379,14 +379,14 @@ class WelcomeView: VerticalLayout() {
         grid(dataProvider = Person.dataProvider) {
             setSizeFull()
 
-            addColumnFor(Person::id)
-            addColumnFor(Person::name)
-            addColumnFor(Person::age)
-            addColumnFor(Person::dateOfBirth)
-            addColumnFor(Person::maritalStatus)
-            addColumnFor(Person::alive)
+            columnFor(Person::id)
+            columnFor(Person::name)
+            columnFor(Person::age)
+            columnFor(Person::dateOfBirth)
+            columnFor(Person::maritalStatus)
+            columnFor(Person::alive)
             // example of a custom renderer which converts value to a displayable string.
-            addColumnFor(Person::modified, converter = { it.toString() })
+            columnFor(Person::modified, converter = { it.toString() })
             addColumn(NativeButtonRenderer<Person>("Delete", { item -> item.delete(); this@grid.refresh() }))
         }
     }
@@ -405,27 +405,28 @@ for changes in these components, then it will construct the final filter
 which will then be passed to the `DataProvider`:
 
 ```kotlin
-    grid(dataProvider = Person.dataProvider) {
-        setSizeFull()
-        val filterBar = appendHeaderRow().asFilterBar()
-        addColumnFor(Person::id) {
-            filterBar.forField(NumberRangePopup(), this).inRange()
-        }
-        addColumnFor(Person::name) {
-            filterBar.forField(TextField(), this).ilike()
-        }
-        addColumnFor(Person::age) {
-            filterBar.forField(NumberRangePopup(), this).inRange()
-        }
-        addColumnFor(Person::dateOfBirth) {
-            filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
-        }
-        addColumnFor(Person::maritalStatus) {
-            filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
-        }
-        addColumnFor(Person::alive) {
-            filterBar.forField(BooleanComboBox(), this).eq()
-        }
+grid(dataProvider = Person.dataProvider) {
+  setSizeFull()
+  val filterBar = appendHeaderRow().asFilterBar()
+  columnFor(Person::id) {
+    filterBar.forField(NumberRangePopup(), this).inRange()
+  }
+  columnFor(Person::name) {
+    filterBar.forField(TextField(), this).ilike()
+  }
+  columnFor(Person::age) {
+    filterBar.forField(NumberRangePopup(), this).inRange()
+  }
+  columnFor(Person::dateOfBirth) {
+    filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
+  }
+  columnFor(Person::maritalStatus) {
+    filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
+  }
+  columnFor(Person::alive) {
+    filterBar.forField(BooleanComboBox(), this).eq()
+  }
+}
 ```
 
 All filter components will be monitored for a value change events, and a proper filter
@@ -509,10 +510,10 @@ class MyUI : UI {
         grid(dataProvider = PersonDept.dataProvider) {
             setSizeFull()
             val filterBar = appendHeaderRow().asFilterBar()
-            addColumnFor(PersonDept::personName) {
+            columnFor(PersonDept::personName) {
                 filterBar.forField(TextField(), this).ilike()
             }
-            addColumnFor(PersonDept::deptName) {
+            columnFor(PersonDept::deptName) {
                 filterBar.forField(TextField(), this).ilike()
             }
         }
@@ -601,10 +602,10 @@ class WelcomeView: VerticalLayout() {
         grid(dataProvider = dp.withConfigurableFilter2()) {
             setSizeFull()
             val filterBar = appendHeaderRow().asFilterBar()
-            addColumnFor(PersonDept::personName) {
+            columnFor(PersonDept::personName) {
                 filterBar.forField(TextField(), this).ilike()
             }
-            addColumnFor(PersonDept::deptName) {
+            columnFor(PersonDept::deptName) {
                 filterBar.forField(TextField(), this).ilike()
             }
         }

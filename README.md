@@ -187,16 +187,16 @@ grid<User>(dataProvider = Person.dataProvider) {
   
   val filterBar = appendHeaderRow().asFilterBar(this)
 
-  addColumnFor(User::id) {
+  columnFor(User::id) {
       filterBar.forField(NumberRangePopup(), this).inRange()
   }
-  addColumnFor(User::username) {
+  columnFor(User::username) {
       filterBar.forField(TextField(), this).ilike()
   }
-  addColumnFor(User::roles) {
+  columnFor(User::roles) {
       filterBar.forField(TextField(), this).ilike()
   }
-  addColumnFor(User::hashedPassword)
+  columnFor(User::hashedPassword)
   addButtonColumn(VaadinIcon.EDIT, "edit", { createOrEditUser(it) }) {}
   addButtonColumn(VaadinIcon.TRASH, "delete", { it.delete(); refresh() }) {}
 }

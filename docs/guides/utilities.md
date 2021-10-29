@@ -80,7 +80,7 @@ personGrid = grid<Person> {
   setDataLoader(Person.dataLoader)
   val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
 
-  addColumnFor(Person::name) {
+  columnFor(Person::name) {
     filterBar.forField(TextField(), this).istartsWith()
   }
 }
@@ -138,14 +138,14 @@ There are the following binding methods:
   to for example only show married people:
   
 ```kotlin
-addColumnFor(Person::maritalStatus) {
+columnFor(Person::maritalStatus) {
     filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
 }
 ```
 
 Alternative usage: `BooleanComboBox`:
 ```kotlin
-addColumnFor(Person::alive) {
+columnFor(Person::alive) {
     filterBar.forField(BooleanComboBox(), this).eq()
 }
 ```
@@ -157,7 +157,7 @@ not really that useful.
 `inRange()` is only applicable to filter values of type `NumberInterval<Double>`
 (for example produced by `NumberRangePopup`), allows you to filter numeric values of any type:
 ```kotlin
-addColumnFor(Person::age) {
+columnFor(Person::age) {
     filterBar.forField(NumberRangePopup(), this).inRange()
 }
 ```
@@ -168,7 +168,7 @@ read [Karibu-DSL TimeZone](https://github.com/mvysny/karibu-dsl/tree/master/kari
 for more details) is used to match `Instant`, `Date` and `Calendar`-typed values
 with `LocalDate`s.
 ```kotlin
-addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
     filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
 }
 ```
@@ -176,7 +176,7 @@ addColumnFor(Person::dateOfBirth, converter = { it?.toString() }) {
 `istartsWith()` is applicable to `String`-typed filters and is most commonly
 used with plain Vaadin `TextField`:
 ```kotlin
-addColumnFor(Person::name) {
+columnFor(Person::name) {
     filterBar.forField(TextField(), this).istartsWith()
 }
 ```
@@ -186,7 +186,7 @@ full-text support to be configured on your database column. See [vok-orm full-te
 for exact SQL commands. Applicable to `String`-typed filters and is most commonly
 used with plain Vaadin `TextField`:
 ```kotlin
-addColumnFor(Person::name) {
+columnFor(Person::name) {
     filterBar.forField(TextField(), this).fullText()
 }
 ```
@@ -196,7 +196,7 @@ filters, simply use Vaadin's built-in `DatePicker`. Don't forget to set the time
 properly.
 
 ```kotlin
-addColumnFor(Person::dateTimeOfBirth) {
+columnFor(Person::dateTimeOfBirth) {
     filterBar.forField(DatePicker(), this).onDay(LocalDateTime::class)
 }
 ```
@@ -275,7 +275,7 @@ val dataLoader: DataLoader<Person> = CrudClient("http://localhost:8080/rest/pers
 val dataProvider: VokDataProvider<Person> = dataLoader.asDataProvider {it.id!!}
 grid.dataProvider = dataProvider
 val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(this)
-grid.addColumnFor(Person::name) {
+grid.columnFor(Person::name) {
   filterBar.forField(TextField(), this).ilike()
 }
 ```
@@ -286,7 +286,7 @@ to a Grid directly:
 val dataLoader = // as above
 grid.setDataLoader(dataLoader) { it.id!! }
 val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(this)
-grid.addColumnFor(Person::name) {
+grid.columnFor(Person::name) {
   filterBar.forField(TextField(), this).ilike()
 }
 ```
