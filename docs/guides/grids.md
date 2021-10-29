@@ -103,7 +103,7 @@ personGrid = grid<Person> {
 
 The `columnFor()` will set the column header automatically, by converting `dateOfBirth` camelCase to `Date Of Birth` Human Friendly
 format. It will also use the default renderer/converter pair which simply calls `.toString()` on any value of that particular property.
-The column is also by default sortable. To override this behavior, you can provide a configuration block to the `addColumnFor()` function
+The column is also by default sortable. To override this behavior, you can provide a configuration block to the `columnFor()` function
 which will allow you to configure the column further (simply by calling setters/methods on the `Grid.Column` receiver).
 
 The `columnFor()` function is tailored towards creating columns bound to a bean property. If you wish to create columns not backed by
