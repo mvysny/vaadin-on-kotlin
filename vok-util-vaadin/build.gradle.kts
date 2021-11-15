@@ -5,6 +5,7 @@ dependencies {
 
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl:${properties["karibudsl_version"]}")
+    api("com.github.mvysny.karibu-tools:karibu-tools:0.7")
     api("com.vaadin:vaadin-core:${properties["vaadin10_version"]}") {
         // Webjars are only needed when running in Vaadin 13 compatibility mode
         listOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
