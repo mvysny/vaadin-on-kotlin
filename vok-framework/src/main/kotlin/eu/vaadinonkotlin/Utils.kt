@@ -3,11 +3,12 @@ package eu.vaadinonkotlin
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.lang.reflect.Proxy
-import java.time.Duration
 import java.time.Instant
 import java.util.*
 import java.io.*
 import java.lang.reflect.Method
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 /**
  * Closes [this] quietly - if [Closeable.close] fails, an INFO message is logged. The exception is not
@@ -26,20 +27,8 @@ public val Instant.toDate: Date get() = Date(toEpochMilli())
 public fun Iterable<String?>.filterNotBlank(): List<String> =
         filterNotNull().filter { it.isNotBlank() }
 
-// @todo remove these when kotlin.time.Duration becomes official
-public val Int.days: Duration get() = toLong().days
-public val Long.days: Duration get() = Duration.ofDays(this)
-public val Int.hours: Duration get() = toLong().hours
-public val Long.hours: Duration get() = Duration.ofHours(this)
-public val Int.minutes: Duration get() = toLong().minutes
-public val Long.minutes: Duration get() = Duration.ofMinutes(this)
-public val Int.seconds: Duration get() = toLong().seconds
-public val Long.seconds: Duration get() = Duration.ofSeconds(this)
-
-public operator fun Duration.times(other: Int): Duration = multipliedBy(other.toLong())
-public infix operator fun Duration.plus(other: Duration): Duration = this.plus(other)
-public infix operator fun Instant.plus(other: Duration): Instant = this.plus(other)
-public infix operator fun Date.plus(other: Duration): Date = Date(time + other.toMillis())
+public infix operator fun Instant.plus(other: Duration): Instant = this.plus(other.toJavaDuration())
+public infix operator fun Date.plus(other: Duration): Date = Date(time + other.inWholeMilliseconds)
 
 /**
  * Allows you to add listeners for a particular event into your component like following:

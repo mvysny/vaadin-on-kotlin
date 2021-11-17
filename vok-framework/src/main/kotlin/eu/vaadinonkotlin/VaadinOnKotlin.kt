@@ -1,10 +1,10 @@
 package eu.vaadinonkotlin
 
 import org.slf4j.LoggerFactory
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.time.Duration
 
 public object VaadinOnKotlin {
     /**
@@ -145,4 +145,4 @@ public fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, logExce
                 }
                 throw t
             }
-        }, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS)
+        }, initialDelay.inWholeMilliseconds, period.inWholeMilliseconds, TimeUnit.MILLISECONDS)
