@@ -25,8 +25,9 @@ class LoggedInUserResolverTest : DynaTest({
     @AllowAllUsers
     class MyAllowAllUsers
     /**
-     * inherits "admin" role from [MyAllowAdmin]
+     * No inheritance, need to repeat the annotations
      */
+    @AllowRoles("admin")
     class MyAdminRoute : MyAllowAdmin()
 
     test("test logged out") {

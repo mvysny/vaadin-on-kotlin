@@ -52,7 +52,7 @@ public interface LoggedInUserResolver {
                 if (!isLoggedIn()) {
                     throw AccessRejectedException("Route ${routeClass.simpleName}: Cannot access ${checkedClass.simpleName}, you're not logged in", routeClass, checkedClass, setOf())
                 }
-                val requiredRoles: Set<String> = annotation.roles.toSet()
+                val requiredRoles: Set<String> = annotation.value.toSet()
                 if (requiredRoles.isEmpty()) {
                     throw AccessRejectedException("Route ${routeClass.simpleName}: Cannot access ${checkedClass.simpleName}, nobody can access it", routeClass, checkedClass, setOf())
                 }

@@ -2,6 +2,8 @@ package eu.vaadinonkotlin.security
 
 import eu.vaadinonkotlin.VaadinOnKotlin
 import java.lang.annotation.Inherited
+import javax.annotation.security.PermitAll
+import javax.annotation.security.RolesAllowed
 
 /**
  * Allows any user with one of the listed roles to see the view.
@@ -18,12 +20,12 @@ import java.lang.annotation.Inherited
  *
  * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
- * @property roles the current user must possess any of the roles listed here, in order to pass the authorization. If the [roles] array is empty,
+ *
+ * [RolesAllowed.value]: the current user must possess any of the roles listed here, in order to pass the authorization. If the [RolesAllowed.value] array is empty,
  * no users will qualify and the view remains inaccessible.
  */
-@Target(AnnotationTarget.CLASS)
-@Inherited
-public annotation class AllowRoles(vararg val roles: String)
+@Deprecated("Use RolesAllowed")
+public typealias AllowRoles = RolesAllowed
 
 /**
  * Allows anybody to see this view, even if there is no user logged in.
@@ -53,6 +55,5 @@ public annotation class AllowAll
  * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
-@Target(AnnotationTarget.CLASS)
-@Inherited
-public annotation class AllowAllUsers
+@Deprecated("Use PermitAll")
+public typealias AllowAllUsers = PermitAll
