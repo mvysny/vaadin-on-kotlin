@@ -18,7 +18,7 @@ private fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException
 
 object DummyUserResolver : LoggedInUserResolver {
     var userWithRoles: Set<String>? = null
-    override fun getPrincipal(): Principal? {
+    override fun getCurrentUser(): Principal? {
         checkUIThread()
         return if (userWithRoles == null) null else BasicUserPrincipal("dummy")
     }

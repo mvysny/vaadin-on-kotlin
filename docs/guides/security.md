@@ -27,7 +27,7 @@ When securing your apps, you generally need to perform two duties:
 * Only allow users with appropriate rights to access particular parts of the app: *authorization*.
   For example you'd only want administrators to manage users in the app.
 
-Vaadin-on-Kotlin uses *role-based* authorization. Every user in the app is assigned
+Vaadin-on-Kotlin offers *role-based* authorization built-in. Every user in the app is assigned
 a set of roles - a set of duties it is expected to perform in the app. Every Vaadin view
 then declares roles allowed to see that particular view; only users which are assigned at least one
 of the roles declared on the view are then allowed to visit that view.
@@ -40,19 +40,21 @@ dependencies {
 }
 ```
 
-> Note: to obtain the newest version see above for the most recent tag
+Note that you don't have to use the built-in authorization at all if it doesn't suit your need -
+you are free to use your favourite framework or implement your own authorization from scratch.
 
 ## The 'Fictional Book Shop' Example
 
-In a fictional book shop:
+Let's create a fictional book shop, with the following set of access rules:
 
-* Only the users which are assigned to the `administrator` role are allowed to create/delete other users
-* Only users with the `bookkeeper` and `administrator` role may edit the book information;
-* Only `sales` users may view/edit any orders
-* Every user should be able to see its own orders.
+1. Only the users which are assigned to the `administrator` role are allowed to create/delete other users
+2. Only users with the `bookkeeper` and `administrator` role may edit the book information;
+3. Only `sales` users may view/edit any orders
+4. Every user should be able to see its own orders.
 
-In this example, we will have three roles, `administrator`, `bookkeeper` and `sales`. We will pre-create
-the admin user which will then create other users and assign the roles. We will then annotate Vaadin views
+We can use the role-based authorization scheme, to implement the rules.
+We can solve the task by having three roles, `administrator`, `bookkeeper` and `sales`. We will pre-create
+the admin user which will then create other users and assign the roles. We will then annotate Vaadin routes
 so that `OrdersView` can only be viewed by the `sales` users:
 
 ```kotlin
@@ -71,7 +73,7 @@ class UsersView : VerticalLayout() { ... }
 class BookListView : VerticalLayout() { ... }
 ```
 
-The remaining rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
+The last rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
 (specified in the URL as an order ID). Since the view will contain sensitive data (say a delivery address),
 the view may not be viewed by anybody else than the user which created the order, and the members of the `sales`
 group. We therefore need to check whether the current is user is `sales` user, or the
@@ -86,7 +88,7 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
   override fun beforeEnter(event: BeforeEnterEvent) {
     val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @PermitAll
     val order: Order = Order.getById(event.parameterList[0].toLong())
-    val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
+    val authorized: Boolean = user.hasRole("sales") || order.userId == user.id
     if (!authorized) {
       throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf())
     }
@@ -97,54 +99,40 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
 
 ### Making The Annotations Work
 
-In order to enforce the rules set by the annotations, you need to hook into the navigator: before a view is rendered, we will check whether
-it can be navigated to.
+In order to enforce the rules set by the annotations, we need to hook into the navigation cycle.
+Before a view is rendered, we will check whether it can be navigated to.
 
 First step is to register the `loggedInUserResolver`. It doesn't do anything on its own, but will serve current user
 to a function which we will setup next:
 
 ```kotlin
 VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
-    override fun isLoggedIn(): Boolean = Session.loginManager.isLoggedIn
+    override fun getCurrentUser(): Principal? = Session.loginManager.currentUser
     override fun getCurrentUserRoles(): Set<String> = Session.loginManager.getCurrentUserRoles()
 }
 ```
 
-Now, to the hook itself. 
-
-If you only have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
-```kotlin
-class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
-    override fun beforeEnter(event: BeforeEnterEvent) {
-        if (!Session.loginManager.isLoggedIn) {
-            event.rerouteTo(LoginView::class.java)
-        } else {
-            VokSecurity.checkPermissionsOfView(event.navigationTarget)
-        }
-    }
-}
-```
-
-However, the best way is to provide your own init listener:
+Now, to the hook itself. The best way is to provide your own init listener, which will handle all
+layouts, even future ones that haven't been created yet:
 
 ```kotlin
 class BookstoreInitListener : VaadinServiceInitListener {
     override fun serviceInit(initEvent: ServiceInitEvent) {
         initEvent.source.addUIInitListener { uiInitEvent ->
-            uiInitEvent.ui.addBeforeEnterListener { enterEvent ->
-                if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
-                    enterEvent.rerouteTo(LoginScreen::class.java)
-                } else {
-                    VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
-                }
-            }
+            val checker = VokViewAccessChecker()
+            checker.setLoginView(LoginView::class.java)
+            uiInitEvent.ui.addBeforeEnterListener(checker)
         }
     }
 }
 ```
 
-Don't forget to register it though: create a file in your `src/main/resources/META-INF/services` named `com.vaadin.flow.server.VaadinServiceInitListener`
+Don't forget to register the init listener: create a file in your `src/main/resources/META-INF/services` named `com.vaadin.flow.server.VaadinServiceInitListener`
 containing the full class name of your `BookstoreInitListener` class.
+
+The `VokViewAccessChecker` builds on Vaadin's built-in ViewAccessChecker which
+checks whether current user has access to the route being navigated to.
+The current user is obtained via `VaadinOnKotlin.loggedInUserResolver`.
 
 ## VoK Authentication
 
@@ -165,7 +153,7 @@ particular authentication scheme.
 We rely on the programmer to read the tutorials, the documentation and copy-paste
 from code examples to create authentication mechanism that's best tailored for his project.
 
-> Note: sorry, currently there are no other tutorials beside the most simple username+password authentication,
+> Note: We apologize, but currently there are no other tutorials beside the most simple username+password authentication,
 with role-based authorization and users stored in a SQL database.
 
 VoK also provide basic login forms and the documentation on how to integrate them
@@ -178,7 +166,7 @@ with your app. There is also a set of example projects:
 
 The VoK API authorization API uses role-based authorization on Vaadin views. There are
 three annotations available,
-and your view must list exactly one of them otherwise it will be inaccessible:
+and your view must list at least one of them otherwise it will be inaccessible:
 
 * `javax.annotation.security.RolesAllowed` lists roles that are allowed to visit that view;
    the user must be logged in and must be assigned at least one of the roles listed in the annotation
@@ -186,8 +174,8 @@ and your view must list exactly one of them otherwise it will be inaccessible:
 * `javax.annotation.security.PermitAll` allows any logged-in user to see this view.
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
-define more complex rules as a Kotlin code in the `View.enter()` which is invoked on navigation
-to that particular view. For Vaadin, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
+define more complex rules as a Kotlin code in the `BeforeEnterObserver.beforeEnter()` function
+of a particular route.
 
 For example, the View may check e.g. whether given user has the right
 to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
@@ -218,7 +206,8 @@ To convert your app to this new security paradigm:
 
 This module only provides basic API classes which lays out the foundation of the
 security mechanism. The actual integration code is located in the [vok-util](/utilities) module:
-* [VokSecurity](../vok-util-vaadin10/src/main/kotlin/eu/vaadinonkotlin/vaadin10/VokSecurity.kt) class;
+
+* [VokViewAccessChecker](../vok-util-vaadin/src/main/kotlin/eu/vaadinonkotlin/vaadin/VokViewAccessChecker.kt) class
 
 ## VoK-Security Simple
 

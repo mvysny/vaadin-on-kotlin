@@ -17,12 +17,12 @@ public class VokAccessAnnotationChecker : AccessAnnotationChecker() {
     ): Boolean {
         val userResolver: LoggedInUserResolver =
             VaadinOnKotlin.loggedInUserResolver ?: LoggedInUserResolver.NO_USER
-        return hasAccess(cls, userResolver.getPrincipal()) { role -> userResolver.hasRole(role) }
+        return hasAccess(cls, userResolver.getCurrentUser()) { role -> userResolver.hasRole(role) }
     }
 }
 
 /**
- * Checks that an user is logged in. Uses standard Vaadin [ViewAccessChecker] but
+ * Checks that a user is logged in. Uses standard Vaadin [ViewAccessChecker] but
  * obtains the user from [VaadinOnKotlin.loggedInUserResolver] rather than from
  * [HttpServletRequest.getUserPrincipal] and [HttpServletRequest.isUserInRole].
  *
