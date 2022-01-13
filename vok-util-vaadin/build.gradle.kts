@@ -5,7 +5,7 @@ dependencies {
 
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl:${properties["karibudsl_version"]}")
-    api("com.github.mvysny.karibu-tools:karibu-tools:0.7")
+    api("com.github.mvysny.karibu-tools:karibu-tools:0.8")
     api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
     api("javax.servlet:javax.servlet-api:3.1.0")
 
