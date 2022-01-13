@@ -8,7 +8,7 @@ import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.button.Button
 import eu.vaadinonkotlin.VaadinOnKotlin
 
-class Vaadin10UtilPluginTest : DynaTest({
+class VaadinUtilPluginTest : DynaTest({
     beforeEach { VaadinOnKotlin.init(); MockVaadin.setup() }
     afterEach { MockVaadin.tearDown(); VaadinOnKotlin.destroy() }
     test("test i18n") {
