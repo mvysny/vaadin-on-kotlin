@@ -1,22 +1,32 @@
 package eu.vaadinonkotlin.security
 
-import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.Routes
 import com.github.mvysny.kaributesting.v10.expectView
 import com.github.mvysny.kaributesting.v10.mock.MockedUI
 import com.github.mvysny.kaributools.navigateTo
 import com.vaadin.flow.component.UI
-import eu.vaadinonkotlin.VaadinOnKotlin
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.*
+import com.vaadin.flow.router.Route
+import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.VaadinRequest
-import com.vaadin.flow.server.auth.AccessAnnotationChecker
-import com.vaadin.flow.server.auth.ViewAccessChecker
-import java.io.Serializable
+import eu.vaadinonkotlin.VaadinOnKotlin
 import java.security.Principal
-import javax.servlet.http.HttpServletRequest
+
+private fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
+
+object DummyUserResolver : LoggedInUserResolver {
+    var userWithRoles: Set<String>? = null
+    override fun getPrincipal(): Principal? {
+        checkUIThread()
+        return if (userWithRoles == null) null else BasicUserPrincipal("dummy")
+    }
+    override fun getCurrentUserRoles(): Set<String> {
+        checkUIThread()
+        return userWithRoles ?: setOf()
+    }
+}
 
 /**
  * A view with no parent layout.

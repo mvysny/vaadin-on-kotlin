@@ -3,7 +3,6 @@ package eu.vaadinonkotlin.security
 import com.vaadin.flow.server.auth.AccessAnnotationChecker
 import com.vaadin.flow.server.auth.ViewAccessChecker
 import eu.vaadinonkotlin.VaadinOnKotlin
-import java.security.Principal
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -16,15 +15,21 @@ public class VokAccessAnnotationChecker : AccessAnnotationChecker() {
         cls: Class<*>,
         request: HttpServletRequest
     ): Boolean {
-        // instead of using
         val userResolver: LoggedInUserResolver =
             VaadinOnKotlin.loggedInUserResolver ?: LoggedInUserResolver.NO_USER
-        val principal: Principal? =
-            if (userResolver.isLoggedIn()) BasicUserPrincipal("Dummy") else null
-        return hasAccess(cls, principal) { role -> userResolver.hasRole(role) }
+        return hasAccess(cls, userResolver.getPrincipal()) { role -> userResolver.hasRole(role) }
     }
 }
 
+/**
+ * Checks that an user is logged in. Uses standard Vaadin [ViewAccessChecker] but
+ * obtains the user from [VaadinOnKotlin.loggedInUserResolver] rather than from
+ * [HttpServletRequest.getUserPrincipal] and [HttpServletRequest.isUserInRole].
+ *
+ * * Don't forget to install a proper [VaadinOnKotlin.loggedInUserResolver] for your project.
+ * * Install this as a [com.vaadin.flow.router.BeforeEnterListener] into your UI,
+ *   usually via the [com.vaadin.flow.server.VaadinServiceInitListener].
+ */
 public class VokViewAccessChecker : ViewAccessChecker(VokAccessAnnotationChecker()) {
     init {
         enable()
