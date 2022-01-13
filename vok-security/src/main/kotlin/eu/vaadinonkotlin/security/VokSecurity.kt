@@ -6,6 +6,8 @@ import com.vaadin.flow.router.InternalServerError
 import com.vaadin.flow.router.ParentLayout
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.VaadinOnKotlin
+import java.io.Serializable
+import java.security.Principal
 
 /**
  * The security provider. Since Vaadin 10 applications typically don't define their own UIs but use the approach of setting [Route.layout],
@@ -48,4 +50,8 @@ public object VokSecurity {
             checkPermissions(routeClass, parentLayout.value.java)
         }
     }
+}
+
+public data class BasicUserPrincipal(val username: String) : Principal, Serializable {
+    override fun getName(): String = username
 }

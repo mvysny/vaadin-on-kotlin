@@ -3,12 +3,20 @@ package eu.vaadinonkotlin.security
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.kaributesting.v10.Routes
+import com.github.mvysny.kaributesting.v10.expectView
+import com.github.mvysny.kaributesting.v10.mock.MockedUI
+import com.github.mvysny.kaributools.navigateTo
+import com.vaadin.flow.component.UI
 import eu.vaadinonkotlin.VaadinOnKotlin
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.InternalServerError
-import com.vaadin.flow.router.ParentLayout
-import com.vaadin.flow.router.Route
-import com.vaadin.flow.router.RouterLayout
+import com.vaadin.flow.router.*
+import com.vaadin.flow.server.VaadinRequest
+import com.vaadin.flow.server.auth.AccessAnnotationChecker
+import com.vaadin.flow.server.auth.ViewAccessChecker
+import java.io.Serializable
+import java.security.Principal
+import javax.servlet.http.HttpServletRequest
 
 /**
  * A view with no parent layout.
@@ -17,18 +25,11 @@ import com.vaadin.flow.router.RouterLayout
 @Route("admin")
 class AdminView : VerticalLayout()
 
+@Route("login")
+class LoginView : VerticalLayout()
+
 @AllowAll
 class MyLayout : VerticalLayout(), RouterLayout
-
-@AllowRoles()
-class RejectAllLayout : VerticalLayout(), RouterLayout
-
-/**
- * This layout can not be effectively viewed with anybody, because of [RejectAllLayout]
- */
-@ParentLayout(RejectAllLayout::class)
-@AllowAll
-class MyIntermediateLayout: VerticalLayout(), RouterLayout
 
 /**
  * A view with parent layout.
@@ -48,75 +49,94 @@ class SalesLayout : VerticalLayout(), RouterLayout
 class SalesView : VerticalLayout()
 
 /**
- * This view can not be effectively viewed with anybody, because of [RejectAllLayout]
+ * This view can not be effectively viewed with anybody.
  */
-@AllowRoles("sales", "user")
-@Route("rejectall", layout = MyIntermediateLayout::class)
+@AllowRoles()
+@Route("rejectall")
 class RejectAllView : VerticalLayout()
 
 class VokSecurityTest : DynaTest({
-    beforeGroup { VaadinOnKotlin.loggedInUserResolver = DummyUserResolver }
-    beforeEach { MockVaadin.setup() }
-    afterEach { MockVaadin.tearDown() }
+    group("ViewAccessChecker") {
+        lateinit var routes: Routes
+        beforeGroup {
+            VaadinOnKotlin.loggedInUserResolver = DummyUserResolver
+            routes = Routes().autoDiscoverViews("eu.vaadinonkotlin.security")
+        }
+        beforeEach {
+            DummyUserResolver.userWithRoles = null
+            MockVaadin.setup(routes, uiFactory = { MockedUIWithViewAccessChecker() })
+        }
+        afterEach {
+            MockVaadin.tearDown()
+            DummyUserResolver.userWithRoles = null
+        }
 
-    group("checkPermissionsOfView()") {
         test("no user logged in") {
             DummyUserResolver.userWithRoles = null
-            expectThrows(AccessRejectedException::class, "Route AdminView: Cannot access AdminView, you're not logged in") {
-                VokSecurity.checkPermissionsOfView(AdminView::class.java)
-            }
-            expectThrows(AccessRejectedException::class, "Route UserView: Cannot access UserView, you're not logged in") {
-                VokSecurity.checkPermissionsOfView(UserView::class.java)
-            }
-            expectThrows(AccessRejectedException::class, "Route SalesView: Cannot access SalesView, you're not logged in") {
-                VokSecurity.checkPermissionsOfView(SalesView::class.java)
-            }
-            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
-            expectThrows(AccessRejectedException::class, "Route RejectAllView: Cannot access RejectAllView, you're not logged in") {
-                VokSecurity.checkPermissionsOfView(RejectAllView::class.java)
-            }
+            navigateTo<AdminView>()
+            expectView<LoginView>()
+
+            navigateTo<UserView>()
+            expectView<LoginView>()
+
+            navigateTo<SalesView>()
+            expectView<LoginView>()
+
+            navigateTo<RejectAllView>()
+            expectView<LoginView>()
         }
         test("admin logged in") {
             DummyUserResolver.userWithRoles = setOf("admin")
-            VokSecurity.checkPermissionsOfView(AdminView::class.java)
-            expectThrows(AccessRejectedException::class, "Route UserView: Can not access UserView, you are not user") {
-                VokSecurity.checkPermissionsOfView(UserView::class.java)
-            }
-            expectThrows(AccessRejectedException::class, "Route SalesView: Can not access SalesView, you are not sales or user") {
-                VokSecurity.checkPermissionsOfView(SalesView::class.java)
-            }
-            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
-            expectThrows(AccessRejectedException::class, "Can not access RejectAllView, you are not sales or user") {
-                VokSecurity.checkPermissionsOfView(RejectAllView::class.java)
-            }
+            navigateTo<AdminView>()
+            expectView<AdminView>()
+
+            navigateTo<UserView>()
+            expectView<LoginView>()
+
+            navigateTo<SalesView>()
+            expectView<LoginView>()
+
+            navigateTo<RejectAllView>()
+            expectView<LoginView>() // always allow to display this
         }
         test("user logged in") {
             DummyUserResolver.userWithRoles = setOf("user")
-            expectThrows(AccessRejectedException::class, "Route AdminView: Can not access AdminView, you are not admin") {
-                VokSecurity.checkPermissionsOfView(AdminView::class.java)
-            }
-            VokSecurity.checkPermissionsOfView(UserView::class.java)
-            expectThrows(AccessRejectedException::class, "Route SalesView: Can not access SalesLayout, you are not sales") {
-                VokSecurity.checkPermissionsOfView(SalesView::class.java)
-            }
-            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
-            expectThrows(AccessRejectedException::class, "Route RejectAllView: Cannot access RejectAllLayout, nobody can access it") {
-                VokSecurity.checkPermissionsOfView(RejectAllView::class.java)
-            }
+
+            navigateTo<AdminView>()
+            expectView<LoginView>()
+
+            navigateTo<UserView>()
+            expectView<UserView>()
+
+            navigateTo<SalesView>()
+            expectView<SalesView>()
+
+            navigateTo<RejectAllView>()
+            expectView<LoginView>()
         }
         test("sales logged in") {
             DummyUserResolver.userWithRoles = setOf("sales")
-            expectThrows(AccessRejectedException::class, "Route AdminView: Can not access AdminView, you are not admin") {
-                VokSecurity.checkPermissionsOfView(AdminView::class.java)
-            }
-            expectThrows(AccessRejectedException::class, "Route UserView: Can not access UserView, you are not user") {
-                VokSecurity.checkPermissionsOfView(UserView::class.java)
-            }
-            expectThrows(AccessRejectedException::class, "Route RejectAllView: Cannot access RejectAllLayout, nobody can access it") {
-                VokSecurity.checkPermissionsOfView(RejectAllView::class.java)
-            }
-            VokSecurity.checkPermissionsOfView(SalesView::class.java)
-            VokSecurity.checkPermissionsOfView(InternalServerError::class.java) // always allow to display this
+
+            navigateTo<AdminView>()
+            expectView<LoginView>()
+
+            navigateTo<UserView>()
+            expectView<LoginView>()
+
+            navigateTo<SalesView>()
+            expectView<SalesView>()
+
+            navigateTo<RejectAllView>()
+            expectView<LoginView>()
         }
     }
 })
+
+class MockedUIWithViewAccessChecker : MockedUI() {
+    override fun init(request: VaadinRequest) {
+        super.init(request)
+        val checker = VokViewAccessChecker()
+        checker.setLoginView(LoginView::class.java)
+        addBeforeEnterListener(checker)
+    }
+}

@@ -63,6 +63,14 @@ public interface LoggedInUserResolver {
             }
         }
     }
+
+    public companion object {
+        public val NO_USER: LoggedInUserResolver =
+            object : LoggedInUserResolver {
+                override fun isLoggedIn(): Boolean = false
+                override fun getCurrentUserRoles(): Set<String> = setOf()
+            }
+    }
 }
 
 private var resolver: LoggedInUserResolver? = null
