@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.security
 
+import com.vaadin.flow.server.auth.AnonymousAllowed
 import eu.vaadinonkotlin.VaadinOnKotlin
-import java.lang.annotation.Inherited
 import javax.annotation.security.PermitAll
 import javax.annotation.security.RolesAllowed
 
@@ -39,9 +39,8 @@ public typealias AllowRoles = RolesAllowed
  * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.
  */
-@Target(AnnotationTarget.CLASS)
-@Inherited
-public annotation class AllowAll
+@Deprecated("Use Vaadin's AnonymousAllowed")
+public typealias AllowAll = AnonymousAllowed
 
 /**
  * Allows any logged-in user to see this view.

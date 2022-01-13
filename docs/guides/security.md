@@ -56,16 +56,18 @@ the admin user which will then create other users and assign the roles. We will 
 so that `OrdersView` can only be viewed by the `sales` users:
 
 ```kotlin
+import javax.annotation.security.RolesAllowed
+
 @Route("orders", layout = MainLayout::class)
-@AllowRoles("sales")
+@RolesAllowed("sales")
 class OrdersView : VerticalLayout() { ... }
 
 @Route("users", layout = MainLayout::class)
-@AllowRoles("administrator")
+@RolesAllowed("administrator")
 class UsersView : VerticalLayout() { ... }
 
 @Route("booklist", layout = MainLayout::class)
-@AllowRoles("bookkeeper", "administrator")
+@RolesAllowed("bookkeeper", "administrator")
 class BookListView : VerticalLayout() { ... }
 ```
 
@@ -77,10 +79,12 @@ order in question belongs to the
 currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
 
 ```kotlin
-@AllowAllUsers
+import javax.annotation.security.PermitAll
+
+@PermitAll
 class OrderView : VerticalLayout(), BeforeEnterObserver {
   override fun beforeEnter(event: BeforeEnterEvent) {
-    val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @AllowAllUsers
+    val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @PermitAll
     val order: Order = Order.getById(event.parameterList[0].toLong())
     val authorized: Boolean = user.hasRole("sales") || order.userId != user.id
     if (!authorized) {
@@ -108,22 +112,7 @@ VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
 
 Now, to the hook itself. 
 
-If you have UI, you can simply override `UI.init()` method and check the security there:
-```kotlin
-class MyUI: UI() {
-    override fun init(request: VaadinRequest) {
-        addBeforeEnterListener { enterEvent ->
-            if (!Session.loginManager.isLoggedIn && enterEvent.navigationTarget != LoginScreen::class.java) {
-                enterEvent.rerouteTo(LoginScreen::class.java)
-            } else {
-                VokSecurity.checkPermissionsOfView(enterEvent.navigationTarget)
-            }
-        }
-    }
-}
-```
-
-If you don't have the UI class but you have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
+If you only have one root layout, you can make the root layout implement `BeforeEnterObserver`, and then override the `beforeEnter()`:
 ```kotlin
 class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
     override fun beforeEnter(event: BeforeEnterEvent) {
@@ -136,7 +125,7 @@ class MainLayout : AppHeaderLayout(), RouterLayout, BeforeEnterObserver {
 }
 ```
 
-Otherwise you can provide your own init listener:
+However, the best way is to provide your own init listener:
 
 ```kotlin
 class BookstoreInitListener : VaadinServiceInitListener {
@@ -188,12 +177,13 @@ with your app. There is also a set of example projects:
 ## VoK Authorization
 
 The VoK API authorization API uses role-based authorization on Vaadin views. There are
-three annotations in the [AllowRoles.kt](src/main/kotlin/eu/vaadinonkotlin/security/AllowRoles.kt) file,
+three annotations available,
 and your view must list exactly one of them otherwise it will be inaccessible:
 
-* `AllowRoles` lists roles that are allowed to visit that view; the user must be logged in and must be assigned at least one of the roles listed in the annotation
-* `AllowAll` allows anybody to see this view, even if there is no user logged in.
-* `AllowAllUsers` allows any logged-in user to see this view.
+* `javax.annotation.security.RolesAllowed` lists roles that are allowed to visit that view;
+   the user must be logged in and must be assigned at least one of the roles listed in the annotation
+* `com.vaadin.flow.server.auth.AnonymousAllowed` allows anybody to see this view, even if there is no user logged in.
+* `javax.annotation.security.PermitAll` allows any logged-in user to see this view.
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
 define more complex rules as a Kotlin code in the `View.enter()` which is invoked on navigation
@@ -222,7 +212,7 @@ To convert your app to this new security paradigm:
 
 1. Introduce a permission for every action, say, `can-view-users`, `can-create-order`.
 2. Instead of assigning users roles, you assign them permissions.
-3. A view listing users will then be annotated with `@AllowRoles('can-view-users')`
+3. A view listing users will then be annotated with `@RolesAllowed("can-view-users")`
 
 ### The vok-security module
 
