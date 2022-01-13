@@ -7,9 +7,9 @@ has_children: true
 has_toc: false
 ---
 
-# Vaadin-on-Kotlin Guides for Vaadin 14
+# Vaadin-on-Kotlin Guides for Vaadin
 
-Vaadin 14 uses Vaadin Flow. Vaadin Flow is a web framework that allows you to write UI 100% in Java (Kotlin) without getting bogged down in JS, HTML, and CSS. If you prefer, you can also create layouts in HTML or with a visual designer. Your apps run on the server and handle all communication automatically and securely. Building on the strong Java ecosystem, Flow works with your favorite IDEs, tools, and libraries.
+vok uses Vaadin Flow. Vaadin Flow is a web framework that allows you to write UI 100% in Java (Kotlin) without getting bogged down in JS, HTML, and CSS. If you prefer, you can also create layouts in HTML or with a visual designer. Your apps run on the server and handle all communication automatically and securely. Building on the strong Java ecosystem, Flow works with your favorite IDEs, tools, and libraries.
 
 ## Getting Started Guides
 

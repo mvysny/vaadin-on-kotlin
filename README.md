@@ -103,9 +103,9 @@ The list of modules:
 * [vok-framework](vok-framework) - the very core of Vaadin-on-Kotlin which contains machinery
   for developing VoK plugins, and also the means to bootstrap/teardown the VoK runtime.
   Always included in your project when you build your app with VoK.
-* [vok-util-vaadin](vok-util-vaadin) - when you want to have additional support for Vaadin 14.
-  You typically include this module when you build your Vaadin10-based app with VoK.
-* [vok-framework-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin 14 and
+* [vok-util-vaadin](vok-util-vaadin) - when you want to have additional support for Vaadin.
+  You typically include this module when you build your Vaadin-based app with VoK.
+* [vok-framework-vokdb](vok-framework-v10-vokdb) - when you want to have additional support for Vaadin and
   the support for the database using the recommended approach.
   Includes [vok-util-vaadin](vok-util-vaadin10) and [vok-db](vok-db).
 * [vok-rest](vok-rest) - when you want to expose data from your VoK app to other REST-consuming clients.

@@ -149,13 +149,12 @@ and your view must list exactly one of them otherwise it will be inaccessible:
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
 define more complex rules as a Kotlin code in the `View.enter()` which is invoked on navigation
-to that particular view. For Vaadin 14, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
+to that particular view. For Vaadin, simply check the rules in the `BeforeEnterObserver.beforeEnter()` function.
 
 For example, the View may check e.g. whether given user has the right
 to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
-The exception is then caught by the Vaadin exception handler and either
-an error notification "access rejected" should be shown (Vaadin 8), or
-the user will be presented by the "access rejected" page with HTTP 403 (Vaadin 14).
+The exception is then caught by the Vaadin exception handler and
+the user will be presented by the "access rejected" page with HTTP 403.
 
 The API is intended to be very simple so that it can be backed easily by any kind
 of auth scheme you need: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)

@@ -1,12 +1,12 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-util-vaadin10/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-util-vaadin10)
 
-# VoK additional utilities for Vaadin 14
+# VoK additional utilities for Vaadin
 
-Provides utilities for creating UIs with Vaadin 14, but does not introduce
+Provides utilities for creating UIs with Vaadin, but does not introduce
 support for any particular database type. Includes the
 [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library, depends on the
-[vok-framework core](../vok-framework) and provides additional Vaadin 14 Kotlin wrappers.
+[vok-framework core](../vok-framework) and provides additional Vaadin Kotlin wrappers.
 
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
@@ -19,7 +19,7 @@ dependencies {
 
 ## When to use this module
 
-Use this module when you want to use Vaadin 14+ and you need to have additional
+Use this module when you want to use Vaadin and you need to have additional
 support for Session and Vaadin Grid (namely for filter components).
 Since VoK includes built-in support for SQL databases you may also want to
 include additional modules - read below.

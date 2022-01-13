@@ -10,7 +10,7 @@ public val emptyResourceBundle: ResourceBundle = object : ListResourceBundle() {
 
 /**
  * Localizes VoK messages such as exception messages, texts found in the filter components etc. To obtain instance of
- * this class, just use the `vt` property (provided both for Vaadin 8 and Vaadin 14)
+ * this class, just use the `vt` property
  * which will lookup proper [locale] from the current UI. See the `vt` property documentation for more details.
  *
  * The standard Java [ResourceBundle] mechanism is used.

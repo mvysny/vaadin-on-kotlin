@@ -25,7 +25,7 @@ It also allows you to sort and filter for particular column.
 Vaadin Grid is probably the most versatile and complex component, and it may take some time to learn all of its capabilities.
 Just take things slow and you'll be used to Grid in no time.
 
-You can learn about Grid capabilities in the [official Vaadin 14 Grid Documentation page](https://vaadin.com/docs/v14/flow/components/tutorial-flow-grid.html).
+You can learn about Grid capabilities in the [official Vaadin Grid Documentation page](https://vaadin.com/docs/flow/components/tutorial-flow-grid.html).
 
 There are more ways of using Grid; in the tutorial we will use the easiest way as endorsed by the VoK framework.
 

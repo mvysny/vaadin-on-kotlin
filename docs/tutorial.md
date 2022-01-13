@@ -53,7 +53,7 @@ and get familiar with both Vaadin and Kotlin first:
   - [Kotlin Koans](https://kotlinlang.org/docs/tutorials/koans.html)
 - If you have no prior experience with Vaadin, take a look at the official documentation:
   - [Official Vaadin website](https://www.vaadin.com)
-  - [Vaadin 14 Documentation](https://vaadin.com/docs/v14/flow/Overview.html) - we recommend to download and read the Vaadin Book PDF.
+  - [Vaadin Documentation](https://vaadin.com/docs/flow/Overview.html) - we recommend to download and read the Vaadin Book PDF.
 
 I encourage you to experiment with the [Karibu-DSL Hello World Example](https://github.com/mvysny/karibu10-helloworld-application)
 at any point since VoK uses Karibu-DSL under the hood, therefore the lessons learned
@@ -534,7 +534,7 @@ we will redirect to an `ArticleView` which we'll define later.
 If you submit the form again now, VoK will just stay on the form. That's
 not very useful though, so let's add the show action before proceeding.
 
-Vaadin 14 supports adding parameters after the view name. This way, we
+Vaadin supports adding parameters after the view name. This way, we
 can pass the Article ID to the `ArticleView` as follows:
 [http://localhost:8080/article/12](http://localhost:8080/article/12). As
 we did before, we need to add the `web/src/main/kotlin/com/example/vok/ArticleView.kt` file:
@@ -1701,7 +1701,7 @@ Now that you've seen your first VoK application, you should feel free to update 
 Remember you don't have to do everything without help. As you need assistance getting up and running with VoK, feel free to consult these support resources:
 
 - The [Vaadin-on-Kotlin Guides](vok-guides.md)
-- The [Vaadin 14 Tutorial](https://vaadin.com/docs/v14/flow/Overview.html) for documentation on pure Vaadin and Java
+- The [Vaadin Tutorial](https://vaadin.com/docs/flow/Overview.html) for documentation on pure Vaadin and Java
 - The [Vaadin Forums](https://vaadin.com/forum) for anything Vaadin-on-Kotlin-related
 - The [Kotlin Forums](https://discuss.kotlinlang.org/) for Kotlin-related questions
 

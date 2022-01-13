@@ -5,9 +5,9 @@ permalink: /quick-starters/
 nav_order: 97
 ---
 
-## Vaadin 14 Quick Starters
+## Vaadin Quick Starters
 
-Vaadin 14 components are based on the Web Components standard; Vaadin 14-based apps
+Vaadin components are based on the Web Components standard; Vaadin-based apps
 are also themable more easily than Vaadin 8-based apps.
 
 Every VoK project tends to have several files (database migrations,

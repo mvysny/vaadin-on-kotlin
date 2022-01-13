@@ -68,7 +68,7 @@ class PersonForm : FormLayout() {
 
 ## Binding Values
 
-Vaadin 14 uses the `Binder` class to bind bean properties into particular UI fields such as `TextField` or `CheckBox`.
+Vaadin uses the `Binder` class to bind bean properties into particular UI fields such as `TextField` or `CheckBox`.
 Say that we have the following bean `Person`:
 ```kotlin
 data class Person(

@@ -21,15 +21,15 @@ nav_order: 10
 
 Repository: [vok-util-vaadin10](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
 
-Provides utilities for creating UIs with Vaadin 14, but does not introduce
+Provides utilities for creating UIs with Vaadin, but does not introduce
 support for any particular database type. Includes the
 [Karibu-DSL](https://github.com/mvysny/karibu-dsl) library, depends on the
-[vok-framework core](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework) and provides additional Vaadin 14 Kotlin wrappers.
+[vok-framework core](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework) and provides additional Vaadin Kotlin wrappers.
 
 Just add the following to your Gradle script, to depend on this module:
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-util-vaadin10:x.y.z")
+    compile("eu.vaadinonkotlin:vok-util-vaadin:x.y.z")
 }
 ```
 
@@ -37,7 +37,7 @@ dependencies {
 
 ## When to use this module
 
-Use this module when you want to use Vaadin 14+ and you need to have additional
+Use this module when you want to use Vaadin and you need to have additional
 support for Session and Vaadin Grid (namely for filter components).
 Since VoK includes built-in support for SQL databases you may also want to
 include additional modules - read below.
@@ -49,7 +49,7 @@ recommended approach ([vok-db](../vok-db)):
 instead - it will include this module, the [vok-db](../vok-db) module which
 sports VoK-ORM, and will implement proper filters which work with SQL databases.
 
-VoK currently does not support usage of Vaadin 14 with JPA.
+VoK currently does not support usage of Vaadin with JPA.
   
 When you want to also use the SQL database plus some other ORM library, or the JDBC directly:
 

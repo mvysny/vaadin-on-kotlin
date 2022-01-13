@@ -17,7 +17,7 @@ nav_order: 3
 </details>
 <br/>
 
-TODO: This is Vaadin8-related and needs to be rewritten to Vaadin 14.
+TODO: This is Vaadin8-related and needs to be rewritten to Vaadin 23.
 
 # Navigating In Your App
 

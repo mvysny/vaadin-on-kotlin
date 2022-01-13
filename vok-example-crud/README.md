@@ -1,12 +1,12 @@
 # VoK-CRUD Example application
 
 A simple demo of a full-stack example application which you can inspire from.
-Uses Vaadin 14. You can launch the app simply from your terminal:
+You can launch the app simply from your terminal:
 
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
-./gradlew vok-example-crud-flow:appRun
+./gradlew vok-example-crud:appRun
 ```
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
