@@ -1,5 +1,7 @@
 package example.crudflow
 
+import com.vaadin.flow.component.page.AppShellConfigurator
+import com.vaadin.flow.server.PWA
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import eu.vaadinonkotlin.VaadinOnKotlin
@@ -52,3 +54,6 @@ class Bootstrap: ServletContextListener {
         private val log = LoggerFactory.getLogger(Bootstrap::class.java)
     }
 }
+
+@PWA(name = "Project Base for Vaadin", shortName = "Project Base")
+class AppShell: AppShellConfigurator
