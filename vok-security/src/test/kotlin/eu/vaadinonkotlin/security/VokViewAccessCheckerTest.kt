@@ -13,6 +13,7 @@ import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.VaadinRequest
 import eu.vaadinonkotlin.VaadinOnKotlin
 import java.security.Principal
+import javax.annotation.security.PermitAll
 
 private fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
 
@@ -38,8 +39,11 @@ class AdminView : VerticalLayout()
 @Route("login")
 class LoginView : VerticalLayout()
 
-@AllowAll
 class MyLayout : VerticalLayout(), RouterLayout
+
+@Route("", layout = MyLayout::class)
+@PermitAll
+class WelcomeView : VerticalLayout()
 
 /**
  * A view with parent layout.
@@ -94,6 +98,9 @@ class VokViewAccessCheckerTest : DynaTest({
 
             navigateTo<RejectAllView>()
             expectView<LoginView>()
+
+            navigateTo<LoginView>()
+            expectView<LoginView>()
         }
         test("admin logged in") {
             DummyUserResolver.userWithRoles = setOf("admin")
@@ -107,7 +114,12 @@ class VokViewAccessCheckerTest : DynaTest({
             expectView<LoginView>()
 
             navigateTo<RejectAllView>()
-            expectView<LoginView>() // always allow to display this
+            expectView<LoginView>()
+
+            // VokViewAccessChecker won't navigate away from LoginView - it's the app's
+            // responsibility to navigate to some welcome view after successful login.
+            navigateTo<LoginView>()
+            expectView<LoginView>()
         }
         test("user logged in") {
             DummyUserResolver.userWithRoles = setOf("user")
@@ -123,6 +135,11 @@ class VokViewAccessCheckerTest : DynaTest({
 
             navigateTo<RejectAllView>()
             expectView<LoginView>()
+
+            // VokViewAccessChecker won't navigate away from LoginView - it's the app's
+            // responsibility to navigate to some welcome view after successful login.
+            navigateTo<LoginView>()
+            expectView<LoginView>()
         }
         test("sales logged in") {
             DummyUserResolver.userWithRoles = setOf("sales")
@@ -137,6 +154,11 @@ class VokViewAccessCheckerTest : DynaTest({
             expectView<SalesView>()
 
             navigateTo<RejectAllView>()
+            expectView<LoginView>()
+
+            // VokViewAccessChecker won't navigate away from LoginView - it's the app's
+            // responsibility to navigate to some welcome view after successful login.
+            navigateTo<LoginView>()
             expectView<LoginView>()
         }
     }

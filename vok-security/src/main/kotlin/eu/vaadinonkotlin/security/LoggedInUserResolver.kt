@@ -11,6 +11,8 @@ import java.security.Principal
  * Methods on this interface can only be called from the UI thread.
  */
 public interface LoggedInUserResolver {
+    public val isLoggedIn: Boolean get() = getCurrentUser() != null
+
     /**
      * Checks whether there is a user currently logged in.
      * @return logged-in user if any, null if no user is currently logged in.

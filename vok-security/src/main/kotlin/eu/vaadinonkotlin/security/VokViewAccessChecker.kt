@@ -10,13 +10,12 @@ import javax.servlet.http.HttpServletRequest
  * [HttpServletRequest.getUserPrincipal] and [HttpServletRequest.isUserInRole],
  * it checks the [VaadinOnKotlin.loggedInUserResolver] instead.
  */
-public class VokAccessAnnotationChecker : AccessAnnotationChecker() {
+public object VokAccessAnnotationChecker : AccessAnnotationChecker() {
     override fun hasAccess(
         cls: Class<*>,
         request: HttpServletRequest
     ): Boolean {
-        val userResolver: LoggedInUserResolver =
-            VaadinOnKotlin.loggedInUserResolver ?: LoggedInUserResolver.NO_USER
+        val userResolver: LoggedInUserResolver = VaadinOnKotlin.loggedInUserResolver
         return hasAccess(cls, userResolver.getCurrentUser()) { role -> userResolver.hasRole(role) }
     }
 }
@@ -33,7 +32,7 @@ public class VokAccessAnnotationChecker : AccessAnnotationChecker() {
  * See [vok-security README](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md)
  * on how to use this class properly.
  */
-public class VokViewAccessChecker : ViewAccessChecker(VokAccessAnnotationChecker()) {
+public class VokViewAccessChecker : ViewAccessChecker(VokAccessAnnotationChecker) {
     init {
         enable()
     }

@@ -134,6 +134,10 @@ The `VokViewAccessChecker` builds on Vaadin's built-in ViewAccessChecker which
 checks whether current user has access to the route being navigated to.
 The current user is obtained via `VaadinOnKotlin.loggedInUserResolver`.
 
+**Important:** `VokAccessAnnotationChecker` will not navigate away from the `LoginView`. It is
+the application's responsibility to navigate to appropriate welcome view after successful login,
+otherwise the user will be endlessly presented `LoginView`.
+
 ## VoK Authentication
 
 Authentication identifies the user and tries to prove that it's indeed the user who's
