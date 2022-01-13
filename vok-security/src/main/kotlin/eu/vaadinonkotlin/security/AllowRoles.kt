@@ -15,8 +15,10 @@ import javax.annotation.security.RolesAllowed
  * Intended to be attached to Vaadin8 `View` or Vaadin10 `@Route`-annotated component, to restrict which users can see the page.
  * The logic which checks this annotation is present in the `vok-util-vaadin8` or `vok-util-vaadin10` project.
  *
- * Only one of the [AllowRoles], [AllowAll] and [AllowAllUsers] can be present. If more than one is present, it's a configuration error and a [RuntimeException] will be thrown.
- * If none is present, nobody can see that view. This is to prevent views accidentally exposed by omitting the security annotation on them.
+ * Only one of the [AllowRoles], [AllowAll] and [AllowAllUsers] should be present,
+ * to keep the security rules as simple as possible.
+ * If none is present, nobody can see that view. This is to prevent views accidentally
+ * exposed by omitting the security annotation on them.
  *
  * To activate the security mechanism, implement [LoggedInUserResolver] properly and set it to [VaadinOnKotlin.loggedInUserResolver].
  * That alone is not enough. To make Vaadin actually check for permissions, see the `vok-security` `README.md` for more details.

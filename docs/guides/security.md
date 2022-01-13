@@ -83,7 +83,7 @@ currently logged-in user. We can't express this complex rule with annotations al
 ```kotlin
 import javax.annotation.security.PermitAll
 
-@PermitAll
+@PermitAll // since the currently logged-in user may not be from the "sales" group but may still see his order.
 class OrderView : VerticalLayout(), BeforeEnterObserver {
   override fun beforeEnter(event: BeforeEnterEvent) {
     val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @PermitAll
