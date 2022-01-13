@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.vokdataloader.*
 import com.vaadin.flow.component.combobox.ComboBox

@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.vokdb
+package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.kaributools.sort
 import com.github.mvysny.vokdataloader.DataLoader
@@ -11,10 +11,10 @@ import com.vaadin.flow.data.binder.HasDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.data.provider.SortDirection
-import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin10.VokDataProvider
+import eu.vaadinonkotlin.vaadin.DataLoaderAdapter
+import eu.vaadinonkotlin.vaadin.VokDataProvider
 import kotlin.reflect.KProperty1
-import eu.vaadinonkotlin.vaadin10.withStringFilterOn as withStringFilterOn1
+import eu.vaadinonkotlin.vaadin.withStringFilterOn as withStringFilterOn1
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it

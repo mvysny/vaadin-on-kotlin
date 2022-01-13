@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.vokdb
+package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.karibudsl.v10.grid
@@ -6,7 +6,7 @@ import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10._findAll
 import com.github.vokorm.dataloader.dataLoader
 import com.vaadin.flow.component.UI
-import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
+import eu.vaadinonkotlin.vaadin.vokdb.setDataLoader
 import kotlin.test.expect
 
 class HasDataViewUtilsTest : DynaTest({

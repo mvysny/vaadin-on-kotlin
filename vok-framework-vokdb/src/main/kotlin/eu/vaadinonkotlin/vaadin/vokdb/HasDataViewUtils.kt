@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.vokdb
+package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.Filter
@@ -6,8 +6,8 @@ import com.github.vokorm.KEntity
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.DataView
 import com.vaadin.flow.data.provider.HasDataView
-import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin10.asDataProvider
+import eu.vaadinonkotlin.vaadin.DataLoaderAdapter
+import eu.vaadinonkotlin.vaadin.asDataProvider
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader

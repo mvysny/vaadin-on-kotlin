@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.karibudsl.v10.karibuDslI18n
 import eu.vaadinonkotlin.VOKPlugin

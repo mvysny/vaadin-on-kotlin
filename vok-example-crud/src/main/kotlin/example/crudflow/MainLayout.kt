@@ -1,10 +1,8 @@
 package example.crudflow
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.page.AppShellConfigurator
 import com.vaadin.flow.router.RouterLayout
-import com.vaadin.flow.server.PWA
-import eu.vaadinonkotlin.vaadin10.Session
+import eu.vaadinonkotlin.vaadin.Session
 import java.util.*
 
 /**

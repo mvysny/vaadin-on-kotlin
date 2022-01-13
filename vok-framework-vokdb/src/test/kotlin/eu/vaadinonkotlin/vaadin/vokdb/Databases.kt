@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10.vokdb
+package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vokorm.*

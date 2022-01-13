@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.cloneBySerialization

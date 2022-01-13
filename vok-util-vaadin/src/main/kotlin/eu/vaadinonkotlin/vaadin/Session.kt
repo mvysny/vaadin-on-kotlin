@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.vaadin.flow.server.VaadinRequest
 import com.vaadin.flow.server.VaadinResponse

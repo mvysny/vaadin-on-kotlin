@@ -18,9 +18,9 @@ import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
-import eu.vaadinonkotlin.vaadin10.*
-import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
-import eu.vaadinonkotlin.vaadin10.vokdb.sort
+import eu.vaadinonkotlin.vaadin.*
+import eu.vaadinonkotlin.vaadin.vokdb.setDataLoader
+import eu.vaadinonkotlin.vaadin.vokdb.sort
 import example.crudflow.MainLayout
 import java.time.LocalDate
 

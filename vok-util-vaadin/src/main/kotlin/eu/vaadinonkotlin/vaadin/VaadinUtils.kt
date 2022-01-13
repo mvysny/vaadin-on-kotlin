@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.data.binder.BeanPropertySet

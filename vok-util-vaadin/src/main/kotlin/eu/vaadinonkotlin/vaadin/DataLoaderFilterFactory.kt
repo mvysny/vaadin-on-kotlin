@@ -1,6 +1,6 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package eu.vaadinonkotlin.vaadin10
+package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.vokdataloader.*
 import eu.vaadinonkotlin.FilterFactory
