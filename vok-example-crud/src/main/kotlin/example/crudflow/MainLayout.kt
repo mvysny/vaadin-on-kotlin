@@ -14,7 +14,6 @@ import java.util.*
  */
 @BodySize(width = "100vw", height = "100vh")
 @Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
-@Theme(Lumo::class)
 class MainLayout : VerticalLayout(), RouterLayout {
     init {
         setSizeFull()

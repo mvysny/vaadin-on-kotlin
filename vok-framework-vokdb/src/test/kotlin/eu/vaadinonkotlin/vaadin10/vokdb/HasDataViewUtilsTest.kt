@@ -1,4 +1,4 @@
-package eu.vaadinonkotlin.vaadin17.vokdb
+package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.karibudsl.v10.grid
@@ -9,7 +9,7 @@ import com.vaadin.flow.component.UI
 import eu.vaadinonkotlin.vaadin10.vokdb.setDataLoader
 import kotlin.test.expect
 
-class DataProvidersTest : DynaTest({
+class HasDataViewUtilsTest : DynaTest({
     group("API test: populating components with data providers") {
         usingH2Database()
         beforeEach { MockVaadin.setup() }

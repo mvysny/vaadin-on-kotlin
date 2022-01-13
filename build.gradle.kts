@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     id("org.gretty") version "3.0.6"
     `maven-publish`
-    id("com.vaadin") version "0.14.7.5" apply(false)
+    id("com.vaadin") version "23.0.0.alpha1" apply(false)
     signing
 }
 
@@ -17,6 +17,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
     }
 
     tasks {

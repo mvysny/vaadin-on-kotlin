@@ -80,6 +80,19 @@ public fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, 
     setDataProvider(dataLoader.asDataProvider(idResolver))
 }
 
+public fun <T: Any, V: DataView<T>> HasDataView<T, Void, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
+    @Suppress("UNCHECKED_CAST") val dataProvider =
+        dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Void>
+    return setItems(dataProvider)
+}
+
+@JvmName("setDataLoaderFilter")
+public fun <T: Any, V: DataView<T>> HasDataView<T, Filter<T>?, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
+    @Suppress("UNCHECKED_CAST") val dataProvider =
+        dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Filter<T>?>
+    return setItems(dataProvider)
+}
+
 /**
  * An utility method to set [ListDataLoader] to the Grid.
  * @param items the items list. The [ListDataLoader] reflects changes in the list,

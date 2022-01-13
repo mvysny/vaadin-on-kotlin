@@ -1,8 +1,5 @@
 dependencies {
-    api(project(":vok-framework-vokdb")) {
-        exclude(module = "vaadin-core")
-    }
-    api("com.vaadin:vaadin-core:${properties["vaadin17_version"]}")
+    api(project(":vok-framework-vokdb"))
 
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")

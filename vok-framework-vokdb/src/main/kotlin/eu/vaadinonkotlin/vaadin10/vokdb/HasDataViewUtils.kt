@@ -1,13 +1,12 @@
-package eu.vaadinonkotlin.vaadin17.vokdb
+package eu.vaadinonkotlin.vaadin10.vokdb
 
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.Filter
 import com.github.vokorm.KEntity
 import com.vaadin.flow.data.provider.DataProvider
-import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin10.vokdb.asDataProvider
-import com.vaadin.flow.data.provider.HasDataView
 import com.vaadin.flow.data.provider.DataView
+import com.vaadin.flow.data.provider.HasDataView
+import eu.vaadinonkotlin.vaadin10.DataLoaderAdapter
 import eu.vaadinonkotlin.vaadin10.asDataProvider
 
 /**
