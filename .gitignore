@@ -15,4 +15,5 @@ pnpmfile.js
 .bundle/
 .jekyll-cache/
 
-frontend/generated
+vok-example-crud/frontend/generated
+
