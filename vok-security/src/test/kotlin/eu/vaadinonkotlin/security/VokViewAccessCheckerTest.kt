@@ -65,7 +65,7 @@ class SalesView : VerticalLayout()
 @Route("rejectall")
 class RejectAllView : VerticalLayout()
 
-class VokSecurityTest : DynaTest({
+class VokViewAccessCheckerTest : DynaTest({
     group("ViewAccessChecker") {
         lateinit var routes: Routes
         beforeGroup {

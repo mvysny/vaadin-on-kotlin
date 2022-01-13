@@ -29,6 +29,9 @@ public class VokAccessAnnotationChecker : AccessAnnotationChecker() {
  * * Don't forget to install a proper [VaadinOnKotlin.loggedInUserResolver] for your project.
  * * Install this as a [com.vaadin.flow.router.BeforeEnterListener] into your UI,
  *   usually via the [com.vaadin.flow.server.VaadinServiceInitListener].
+ *
+ * See [vok-security README](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md)
+ * on how to use this class properly.
  */
 public class VokViewAccessChecker : ViewAccessChecker(VokAccessAnnotationChecker()) {
     init {
