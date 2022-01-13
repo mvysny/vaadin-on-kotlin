@@ -3,6 +3,7 @@ package eu.vaadinonkotlin.security
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.Routes
+import com.github.mvysny.kaributesting.v10._expectInternalServerError
 import com.github.mvysny.kaributesting.v10.expectView
 import com.github.mvysny.kaributesting.v10.mock.MockedUI
 import com.github.mvysny.kaributools.navigateTo
@@ -160,6 +161,13 @@ class VokViewAccessCheckerTest : DynaTest({
             // responsibility to navigate to some welcome view after successful login.
             navigateTo<LoginView>()
             expectView<LoginView>()
+        }
+        test("error route not hijacked by the LoginView") {
+            UI.getCurrent().addBeforeEnterListener { e ->
+                e.rerouteToError(RuntimeException("Simulated"), "Simulated")
+            }
+            navigateTo(WelcomeView::class)
+            _expectInternalServerError("Simulated")
         }
     }
 })
