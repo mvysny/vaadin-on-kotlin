@@ -18,7 +18,7 @@ dependencies {
                 "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
                 .forEach { group -> exclude(group = group) }
     }
-    providedCompile("javax.servlet:javax.servlet-api:3.1.0")
+    providedCompile("javax.servlet:javax.servlet-api:4.0.1")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
