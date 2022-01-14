@@ -37,13 +37,13 @@ class PersonRestClient(val baseUrl: String) {
     }
 }
 
-@DynaNodeDsl
+@DynaTestDsl
 fun DynaNodeGroup.usingRestClient() {
     beforeGroup { OkHttpClientVokPlugin().init() }
     afterGroup { OkHttpClientVokPlugin().destroy() }
 }
 
-@DynaNodeDsl
+@DynaTestDsl
 fun DynaNodeGroup.usingJavalin() {
     lateinit var javalin: Javalin
     beforeGroup {

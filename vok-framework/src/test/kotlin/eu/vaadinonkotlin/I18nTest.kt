@@ -2,6 +2,7 @@ package eu.vaadinonkotlin
 
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.DynaTestDsl
 import java.util.*
 import kotlin.test.expect
 
@@ -14,6 +15,7 @@ class I18nTest : DynaTest({
     }
 })
 
+@DynaTestDsl
 fun DynaNodeGroup.i18nTestBattery(production: Boolean) {
     fun i18n(locale: Locale) = getI18nProvider(production)(locale)
 

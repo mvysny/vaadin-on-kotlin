@@ -20,7 +20,7 @@ dependencies {
     testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     // for testing fulltext search
-    testImplementation("org.apache.lucene:lucene-queryparser:8.5.2")
+    testImplementation("org.apache.lucene:lucene-queryparser:8.11.1")
 }
 
 kotlin {

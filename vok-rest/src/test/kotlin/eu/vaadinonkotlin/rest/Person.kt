@@ -1,7 +1,7 @@
 package eu.vaadinonkotlin.rest
 
-import com.github.mvysny.dynatest.DynaNodeDsl
 import com.github.mvysny.dynatest.DynaNodeGroup
+import com.github.mvysny.dynatest.DynaTestDsl
 import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vokdb.dataSource
 import com.github.vokorm.*
@@ -75,7 +75,7 @@ enum class MaritalStatus {
     Widowed
 }
 
-@DynaNodeDsl
+@DynaTestDsl
 fun DynaNodeGroup.usingDb() {
     beforeGroup {
         val config = HikariConfig().apply {

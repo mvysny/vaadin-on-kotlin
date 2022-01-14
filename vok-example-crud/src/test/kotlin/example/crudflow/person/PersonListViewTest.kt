@@ -1,30 +1,12 @@
 package example.crudflow.person
 
-import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.kaributesting.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
-import example.crudflow.Bootstrap
+import example.crudflow.usingApp
 import java.time.LocalDate
-
-/**
- * When called from a dyna test, it configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.
- *
- * A demo of reusable test lifecycle; see https://github.com/mvysny/dynatest#patterns for details.
- */
-fun DynaNodeGroup.usingApp() {
-    lateinit var routes: Routes
-    beforeGroup { routes = Routes().autoDiscoverViews("example"); Bootstrap().contextInitialized(null) }
-    afterGroup { Bootstrap().contextDestroyed(null) }
-
-    beforeEach { MockVaadin.setup(routes) }
-    afterEach { MockVaadin.tearDown() }
-    fun cleanupDb() { Person.deleteAll() }
-    beforeEach { cleanupDb() }
-    afterEach { cleanupDb() }
-}
 
 class PersonListViewTest : DynaTest({
 

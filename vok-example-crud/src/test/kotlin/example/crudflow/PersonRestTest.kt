@@ -4,7 +4,6 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import example.crudflow.person.MaritalStatus
 import example.crudflow.person.Person
-import example.crudflow.person.usingApp
 import eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin
 import eu.vaadinonkotlin.restclient.exec
 import eu.vaadinonkotlin.restclient.jsonArray
@@ -12,7 +11,6 @@ import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.time.LocalDate
-import java.util.*
 import kotlin.test.expect
 
 class PersonRestClient(val baseUrl: String) {
