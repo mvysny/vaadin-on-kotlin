@@ -1,9 +1,6 @@
 package eu.vaadinonkotlin.rest
 
-import com.github.mvysny.dynatest.DynaNodeGroup
-import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectList
-import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.dynatest.*
 import com.github.mvysny.vokdataloader.FullTextFilter
 import com.github.mvysny.vokdataloader.SortClause
 import com.github.mvysny.vokdataloader.asc
@@ -20,7 +17,7 @@ import java.time.LocalDate
 import java.time.temporal.ChronoField
 import kotlin.test.expect
 
-fun Javalin.configureRest(): Javalin {
+private fun Javalin.configureRest(): Javalin {
     gsonMapper(VokRest.gson)
     get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
     crud2("/rest/person", Person.getCrudHandler(true))
@@ -40,19 +37,25 @@ class PersonRestClient(val baseUrl: String) {
     }
 }
 
+@DynaNodeDsl
 fun DynaNodeGroup.usingRestClient() {
     beforeGroup { OkHttpClientVokPlugin().init() }
     afterGroup { OkHttpClientVokPlugin().destroy() }
 }
 
-class PersonRestTest : DynaTest({
+@DynaNodeDsl
+fun DynaNodeGroup.usingJavalin() {
     lateinit var javalin: Javalin
     beforeGroup {
         javalin = Javalin.create { it.showJavalinBanner = false }
         javalin.configureRest().start(9876)
     }
     afterGroup { javalin.stop() }
+}
 
+class PersonRestTest : DynaTest({
+
+    usingJavalin()
     usingDb()  // to have access to the database.
     usingRestClient()
 
