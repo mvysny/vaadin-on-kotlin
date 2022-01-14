@@ -1,6 +1,8 @@
 package example.crudflow
 
+import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.DynaTestDsl
 import com.github.mvysny.dynatest.expectList
 import example.crudflow.person.MaritalStatus
 import example.crudflow.person.Person
@@ -32,15 +34,19 @@ class PersonRestClient(val baseUrl: String) {
     }
 }
 
-class PersonRestTest : DynaTest({
+@DynaTestDsl
+private fun DynaNodeGroup.usingJavalin() {
     lateinit var javalin: Javalin
     beforeGroup {
         javalin = Javalin.create { it.showJavalinBanner = false }
         javalin.configureRest().start(9876)
     }
     afterGroup { javalin.stop() }
+}
 
+class PersonRestTest : DynaTest({
     usingApp()  // to bootstrap the app to have access to the database.
+    usingJavalin() // bootstrap REST server
 
     lateinit var client: PersonRestClient
     beforeEach { client = PersonRestClient("http://localhost:9876/rest") }
