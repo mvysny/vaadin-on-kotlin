@@ -9,7 +9,6 @@ import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.HasDataProvider
 import com.vaadin.flow.data.provider.BackEndDataProvider
-import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.data.provider.SortDirection
 import eu.vaadinonkotlin.vaadin.DataLoaderAdapter

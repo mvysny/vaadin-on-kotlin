@@ -1,5 +1,6 @@
 package eu.vaadinonkotlin.vaadin.vokdb
 
+import com.github.mvysny.dynatest.DynaNodeDsl
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
@@ -41,6 +42,7 @@ enum class MaritalStatus {
     Widowed
 }
 
+@DynaNodeDsl
 fun DynaNodeGroup.usingH2Database() {
     beforeGroup {
         val config = HikariConfig().apply {
