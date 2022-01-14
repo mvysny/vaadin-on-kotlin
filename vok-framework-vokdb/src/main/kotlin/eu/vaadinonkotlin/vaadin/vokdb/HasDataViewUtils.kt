@@ -3,58 +3,47 @@ package eu.vaadinonkotlin.vaadin.vokdb
 import com.github.mvysny.vokdataloader.DataLoader
 import com.github.mvysny.vokdataloader.Filter
 import com.github.vokorm.KEntity
-import com.vaadin.flow.data.provider.DataProvider
-import com.vaadin.flow.data.provider.DataView
-import com.vaadin.flow.data.provider.HasDataView
+import com.vaadin.flow.data.provider.*
 import eu.vaadinonkotlin.vaadin.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin.asDataProvider
 
 /**
  * Sets given data loader to this Grid, by the means of wrapping the data loader
  * via [DataLoaderAdapter] and setting it
  * as a (configurable) data provider.
  */
-public fun <T: KEntity<*>, V: DataView<T>> HasDataView<T, Filter<T>, V>.setDataLoader(dataLoader: DataLoader<T>) {
+public fun <T: KEntity<*>, V: DataView<T>> HasDataView<T, Filter<T>, V>.setDataLoader(dataLoader: DataLoader<T>): V =
     setItems(dataLoader.asDataProvider())
-}
 
 /**
- * Sets given data loader to this Grid, by the means of wrapping the data loader
+ * Sets given [dataLoader] to this Grid, by the means of wrapping the data loader
  * via [DataLoaderAdapter] and setting it
  * as a (configurable) data provider.
  */
 @JvmName("setDataLoader2")
-public fun <T: KEntity<*>, V: DataView<T>> HasDataView<T, Void, V>.setDataLoader(dataLoader: DataLoader<T>) {
+public fun <T: KEntity<*>, V: DataView<T>> HasDataView<T, Void, V>.setDataLoader(dataLoader: DataLoader<T>): V {
     // this cast is okay since HasDataView with Void filter type will never try to set any filters to the DataProvider.
     @Suppress("UNCHECKED_CAST")
     val dataProvider: DataProvider<T, Void> = dataLoader.asDataProvider() as DataProvider<T, Void>
-    setItems(dataProvider)
+    return setItems(dataProvider)
 }
 
 /**
- * Sets given [dataLoader] to this [Grid], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
- * as a (configurable) [Grid.getDataProvider].
- * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
- * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically every item
- * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
- * including the item itself.
+ * Sets given data loader to this Grid, by the means of wrapping the data loader
+ * via [DataLoaderAdapter] and setting it
+ * as a (configurable) data provider.
  */
-public fun <T: Any, V: DataView<T>> HasDataView<T, Filter<T>, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
-    setItems(dataLoader.asDataProvider(idResolver))
-}
+public fun <T: KEntity<*>, V: LazyDataView<T>> HasLazyDataView<T, Filter<T>, V>.setLazyDataLoader(dataLoader: DataLoader<T>): V =
+    setItems(dataLoader.asDataProvider())
 
 /**
- * Sets given [dataLoader] to this [Grid], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
- * as a (configurable) [Grid.getDataProvider].
- * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
- * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically every item
- * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
- * including the item itself.
+ * Sets given [dataLoader] to this Grid, by the means of wrapping the data loader
+ * via [DataLoaderAdapter] and setting it
+ * as a (configurable) data provider.
  */
 @JvmName("setDataLoader2")
-public fun <T: Any, V: DataView<T>> HasDataView<T, Void, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any) {
+public fun <T: KEntity<*>, V: LazyDataView<T>> HasLazyDataView<T, Void, V>.setLazyDataLoader(dataLoader: DataLoader<T>): V {
     // this cast is okay since HasDataView with Void filter type will never try to set any filters to the DataProvider.
     @Suppress("UNCHECKED_CAST")
-    val dataProvider: DataProvider<T, Void> = dataLoader.asDataProvider(idResolver) as DataProvider<T, Void>
-    setItems(dataProvider)
+    val dataProvider: BackEndDataProvider<T, Void> = dataLoader.asDataProvider() as BackEndDataProvider<T, Void>
+    return setItems(dataProvider)
 }

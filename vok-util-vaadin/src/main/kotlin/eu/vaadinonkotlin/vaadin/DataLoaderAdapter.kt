@@ -80,14 +80,61 @@ public fun <T: Any> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>, 
     setDataProvider(dataLoader.asDataProvider(idResolver))
 }
 
+/**
+ * Sets given [dataLoader] to this [DataView], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
+ * as a (configurable) data provider.
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically, every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
 public fun <T: Any, V: DataView<T>> HasDataView<T, Void, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
     @Suppress("UNCHECKED_CAST") val dataProvider =
         dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Void>
     return setItems(dataProvider)
 }
 
+/**
+ * Sets given [dataLoader] to this [DataView], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
+ * as a (configurable) [Grid.getDataProvider].
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically, every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
 @JvmName("setDataLoaderFilter")
 public fun <T: Any, V: DataView<T>> HasDataView<T, Filter<T>?, V>.setDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
+    @Suppress("UNCHECKED_CAST") val dataProvider =
+        dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Filter<T>?>
+    return setItems(dataProvider)
+}
+
+/**
+ * Sets given [dataLoader] to this [DataView], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
+ * as a (configurable) data provider.
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically, every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+@JvmName("setLazyDataLoader")
+public fun <T: Any, V: LazyDataView<T>> HasLazyDataView<T, Void, V>.setLazyDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
+    // this cast is okay since HasDataView with Void filter type will never try to set any filters to the DataProvider.
+    @Suppress("UNCHECKED_CAST") val dataProvider =
+        dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Void>
+    return setItems(dataProvider)
+}
+
+/**
+ * Sets given [dataLoader] to this [DataView], by the means of wrapping the [dataLoader] via [DataLoaderAdapter] and setting it
+ * as a (configurable) [Grid.getDataProvider].
+ * @param idResolver provides unique ID for every item. The ID is then used to differentiate items.
+ * See [com.vaadin.flow.data.provider.DataProvider.getId] for more details. Typically, every item
+ * has a primary key of type [Long], but any Java/Kotlin object with properly written [Any.equals] and [Any.hashCode] can act as the ID,
+ * including the item itself.
+ */
+@JvmName("setLazyDataLoaderFilter")
+public fun <T: Any, V: LazyDataView<T>> HasLazyDataView<T, Filter<T>?, V>.setLazyDataLoader(dataLoader: DataLoader<T>, idResolver: (T)->Any): V {
     @Suppress("UNCHECKED_CAST") val dataProvider =
         dataLoader.asDataProvider(idResolver) as BackEndDataProvider<T, Filter<T>?>
     return setItems(dataProvider)

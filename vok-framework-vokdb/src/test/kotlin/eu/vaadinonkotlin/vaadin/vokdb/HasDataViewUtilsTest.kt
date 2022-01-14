@@ -16,12 +16,17 @@ class HasDataViewUtilsTest : DynaTest({
         afterEach { MockVaadin.tearDown() }
 
         group("grid") {
-            // test that the EntityDataProvider and SqlDataProviders are compatible with Vaadin ComboBox
-            // since ComboBox emits String as a filter (it emits whatever the user typed into the ComboBox).
             test("entity data provider") {
                 (0..10).forEach { Person(null, "foo $it", it).save() }
                 val cb = UI.getCurrent().grid<Person> {
                     setDataLoader(Person.dataLoader)
+                }
+                expect((0..10).map { "foo $it" }) { cb._findAll().map { it.personName } }
+            }
+            test("lazy entity data provider") {
+                (0..10).forEach { Person(null, "foo $it", it).save() }
+                val cb = UI.getCurrent().grid<Person> {
+                    setLazyDataLoader(Person.dataLoader)
                 }
                 expect((0..10).map { "foo $it" }) { cb._findAll().map { it.personName } }
             }
