@@ -28,7 +28,7 @@ class DataProvidersTest : DynaTest({
                 val dp = Person.dataLoader
                 val cb = ComboBox<Person>().apply {
                     setItemLabelGenerator { it.personName }
-                    setDataProvider(dp.withStringFilterOn(Person::personName))
+                    setItems(dp.withStringFilterOn(Person::personName))
                 }
                 expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
                 cb.setUserInput("foo 1")
@@ -42,7 +42,7 @@ class DataProvidersTest : DynaTest({
                 val dp = SqlDataLoader(Person::class.java, "select * from Test where 1=1 {{WHERE}} order by 1=1{{ORDER}} {{PAGING}}")
                 val cb = ComboBox<Person>().apply {
                     setItemLabelGenerator { it.personName }
-                    setDataProvider(dp.withStringFilterOn("name"))
+                    setItems(dp.withStringFilterOn("name"))
                 }
                 expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
                 cb.setUserInput("foo 1")

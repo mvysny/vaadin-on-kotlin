@@ -8,6 +8,7 @@ import com.github.vokorm.KEntity
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.HasDataProvider
+import com.vaadin.flow.data.provider.BackEndDataProvider
 import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.data.provider.SortDirection
@@ -33,14 +34,14 @@ public fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = 
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
  */
-public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): DataProvider<T, String?> =
+public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): BackEndDataProvider<T, String?> =
         withStringFilterOn(property.name)
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
  * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
  */
-public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): DataProvider<T, String?> =
+public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): BackEndDataProvider<T, String?> =
         withStringFilterOn1(property) { it.id!! }
 
 private fun SortClause.toQuerySortOrder() =

@@ -17,7 +17,7 @@ class FilteredComboBoxTest : DynaTest({
     test("combo box filtering") {
         val dp: DataLoader<Person> = (0..10).map { Person(it.toLong(), "foo $it", it) } .dataLoader()
         val cb: ComboBox<Person> = ComboBox<Person>().apply {
-            setDataProvider(dp.withStringFilterOn(Person::personName) { it.id!! })
+            setItems(dp.withStringFilterOn(Person::personName) { it.id!! })
             setItemLabelGenerator { it.personName }
         }
         expect((0..10).map { "foo $it" }) { cb.getSuggestions() }
