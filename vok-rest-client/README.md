@@ -188,7 +188,7 @@ In order to start Javalin with Jetty, you also need to add Jetty to your test cl
 
 ```groovy
 dependencies {
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927")
 }
 ```
 

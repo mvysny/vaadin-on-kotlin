@@ -103,7 +103,7 @@ You can easily start Javalin with Jetty which allows you to test your REST endpo
 ```gradle
 dependencies {
     testCompile("com.github.vok:vok-rest-client:x.y.z")
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.12.v20180830")
+    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927")
 }
 ```
 
