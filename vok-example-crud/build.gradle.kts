@@ -9,6 +9,8 @@ gretty {
     servletContainer = "jetty9.4"
 }
 
+val staging by configurations.creating
+
 dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
@@ -34,4 +36,26 @@ dependencies {
     testImplementation("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
     testImplementation(project(":vok-rest-client"))
     testImplementation("org.eclipse.jetty.websocket:websocket-server:${properties["jetty_version"]}")
+
+    // heroku app runner
+    staging("com.heroku:webapp-runner-main:9.0.52.1")
+}
+
+vaadin {
+    if (gradle.startParameter.taskNames.contains("stage")) {
+        productionMode = true
+    }
+    nodeVersion = "v16.13.2" // workaround for https://github.com/vaadin/flow/issues/12732
+}
+
+// Heroku
+tasks {
+    val copyToLib by registering(Copy::class) {
+        into("$buildDir/server")
+        from(staging) {
+            include("webapp-runner*")
+        }
+    }
+
+    getByName("stage").dependsOn("build", copyToLib)
 }
