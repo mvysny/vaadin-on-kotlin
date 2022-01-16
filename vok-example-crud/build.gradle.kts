@@ -12,11 +12,7 @@ gretty {
 dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
-        // Webjars are only needed when running in Vaadin 13 compatibility mode
-        listOf("com.vaadin.webjar", "org.webjars.bowergithub.insites",
-                "org.webjars.bowergithub.polymer", "org.webjars.bowergithub.polymerelements",
-                "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents")
-                .forEach { group -> exclude(group = group) }
+        exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
     }
     providedCompile("javax.servlet:javax.servlet-api:4.0.1")
 
