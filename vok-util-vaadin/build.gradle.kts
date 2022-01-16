@@ -9,7 +9,7 @@ dependencies {
     api("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
         exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
     }
-    api("javax.servlet:javax.servlet-api:3.1.0")
+    api("javax.servlet:javax.servlet-api:4.0.1")
 
     // testing
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
