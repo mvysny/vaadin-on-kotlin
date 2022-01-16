@@ -6,7 +6,9 @@ dependencies {
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl:${properties["karibudsl_version"]}")
     api("com.github.mvysny.karibu-tools:karibu-tools:0.8")
-    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
+    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
+        exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
+    }
     api("javax.servlet:javax.servlet-api:3.1.0")
 
     // testing
