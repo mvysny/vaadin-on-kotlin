@@ -7,9 +7,8 @@ import java.util.*
 plugins {
     kotlin("jvm") version "1.5.32"
     id("org.gretty") version "3.0.3"
-    id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
-    id("org.jetbrains.dokka") version "1.4.0"
+    signing
     id("com.vaadin") version "0.14.3.7" apply(false)
 }
 
@@ -37,8 +36,7 @@ subprojects {
     apply {
         plugin("maven-publish")
         plugin("kotlin")
-        plugin("com.jfrog.bintray")
-        plugin("org.jetbrains.dokka")
+        plugin("org.gradle.signing")
     }
 
     tasks.withType<KotlinCompile> {
@@ -61,26 +59,25 @@ subprojects {
     // creates a reusable function which configures proper deployment to Bintray
     ext["configureBintray"] = { artifactId: String, description: String ->
 
-        val local = Properties()
-        val localProperties: File = rootProject.file("local.properties")
-        if (localProperties.exists()) {
-            localProperties.inputStream().use { local.load(it) }
+        java {
+            withJavadocJar()
+            withSourcesJar()
         }
 
-        val java: JavaPluginConvention = convention.getPluginByName("java")
-
-        val sourceJar = task("sourceJar", Jar::class) {
-            dependsOn(tasks.findByName("classes"))
-            classifier = "sources"
-            from(java.sourceSets["main"].allSource)
-        }
-
-        val javadocJar = task("javadocJar", Jar::class) {
-            from(tasks["dokkaJavadoc"])
-            archiveClassifier.set("javadoc")
+        tasks.withType<Javadoc> {
+            isFailOnError = false
         }
 
         publishing {
+            repositories {
+                maven {
+                    setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    credentials {
+                        username = project.properties["ossrhUsername"] as String? ?: "Unknown user"
+                        password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
+                    }
+                }
+            }
             publications {
                 create("mavenJava", MavenPublication::class.java).apply {
                     groupId = project.group.toString()
@@ -108,28 +105,13 @@ subprojects {
                             url.set("https://github.com/mvysny/vaadin-on-kotlin")
                         }
                     }
-                    from(components.findByName("java")!!)
-                    artifact(sourceJar)
-                    artifact(javadocJar)
+                    from(components["java"])
                 }
             }
         }
 
-        bintray {
-            user = local.getProperty("bintray.user")
-            key = local.getProperty("bintray.key")
-            pkg(closureOf<BintrayExtension.PackageConfig> {
-                repo = "github"
-                name = "eu.vaadinonkotlin"
-                setLicenses("MIT")
-                vcsUrl = "https://github.com/mvysny/vaadin-on-kotlin"
-                publish = true
-                setPublications("mavenJava")
-                version(closureOf<BintrayExtension.VersionConfig> {
-                    this.name = project.version.toString()
-                    released = Date().toString()
-                })
-            })
+        signing {
+            sign(publishing.publications["mavenJava"])
         }
     }
 }
