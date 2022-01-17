@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.*
 
 plugins {
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.5.32"
     id("org.gretty") version "3.0.3"
     id("com.jfrog.bintray") version "1.8.3"
     `maven-publish`
@@ -17,7 +17,7 @@ defaultTasks("clean", "build")
 
 allprojects {
     group = "eu.vaadinonkotlin"
-    version = "0.9.1"
+    version = "0.9.2-SNAPSHOT"
 
     repositories {
         jcenter() // dokka is not in mavenCentral()
