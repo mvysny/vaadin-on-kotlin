@@ -12,7 +12,7 @@ Please see the official documentation at [www.vaadinonkotlin.eu](https://www.vaa
 Vaadin-on-Kotlin does not enforce you to use [Model-View-Controller (MVC)](https://en.wikipedia.org/wiki/Model-view-controller),
 Dependency Injection (DI) nor [Service-Oriented Architecture (SOA)](https://en.wikipedia.org/wiki/Service_(systems_architecture)).
 It by default does not use Spring nor JavaEE. Instead, Vaadin-on-Kotlin focuses on simplicity.
- 
+
 The View layer leverages component-oriented
 programming as offered by the [Vaadin](https://vaadin.com) framework. Vaadin offers powerful components which are built on AJAX;
 programming in Vaadin resembles programming in a traditional client-side framework such as JavaFX or Swing.
