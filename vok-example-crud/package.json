@@ -76,7 +76,7 @@
       "@vaadin/vaadin-confirm-dialog": "23.0.0-beta1",
       "@vaadin/vaadin-context-menu": "23.0.0-beta1",
       "@vaadin/vaadin-cookie-consent": "23.0.0-beta1",
-      "@vaadin/vaadin-core-shrinkwrap": "23.0.0-alpha4",
+      "@vaadin/vaadin-core-shrinkwrap": "23.0.0-beta1",
       "@vaadin/vaadin-crud": "23.0.0-beta1",
       "@vaadin/vaadin-custom-field": "23.0.0-beta1",
       "@vaadin/vaadin-date-picker": "23.0.0-beta1",
@@ -123,7 +123,7 @@
     "devDependencies": {
       "chokidar": "^3.5.0",
       "compression-webpack-plugin": "4.0.1",
-      "css-loader": "4.2.1",
+      "css-loader": "5.2.7",
       "esbuild-loader": "2.15.1",
       "extra-watch-webpack-plugin": "1.0.3",
       "extract-loader": "5.1.0",
@@ -142,7 +142,7 @@
       "workbox-precaching": "6.4.2",
       "workbox-webpack-plugin": "6.4.2"
     },
-    "hash": "c0805dcc4406b3e89a67a14eddca32a23c54e3ed9bd318fd1dfcb764cc50f694"
+    "hash": "d86b933cd48989d4d6d5519e17d1f0302ff7555fa3fec4d7824762135d300473"
   },
   "dependencies": {
     "@polymer/iron-a11y-announcer": "3.0.2",
@@ -219,7 +219,7 @@
     "@vaadin/vaadin-confirm-dialog": "23.0.0-beta1",
     "@vaadin/vaadin-context-menu": "23.0.0-beta1",
     "@vaadin/vaadin-cookie-consent": "23.0.0-beta1",
-    "@vaadin/vaadin-core-shrinkwrap": "23.0.0-alpha4",
+    "@vaadin/vaadin-core-shrinkwrap": "23.0.0-beta1",
     "@vaadin/vaadin-crud": "23.0.0-beta1",
     "@vaadin/vaadin-custom-field": "23.0.0-beta1",
     "@vaadin/vaadin-date-picker": "23.0.0-beta1",
@@ -270,7 +270,7 @@
     "@vaadin/theme-loader": "./build/plugins/theme-loader",
     "chokidar": "^3.5.0",
     "compression-webpack-plugin": "4.0.1",
-    "css-loader": "4.2.1",
+    "css-loader": "5.2.7",
     "esbuild-loader": "2.15.1",
     "extra-watch-webpack-plugin": "1.0.3",
     "extract-loader": "5.1.0",
