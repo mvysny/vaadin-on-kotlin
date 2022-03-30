@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     id("org.gretty") version "3.0.6"
     `maven-publish`
-    id("com.vaadin") version "23.0.2" apply(false)
+    id("com.vaadin") version "23.0.3" apply(false)
     signing
 }
 
