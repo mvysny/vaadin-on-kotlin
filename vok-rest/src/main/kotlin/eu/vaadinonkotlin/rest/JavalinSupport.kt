@@ -22,10 +22,18 @@ public fun Gson.configureToJavalin(javalin: Javalin) {
     javalin.gsonMapper(this)
 }
 
+/**
+ * Configures [gson] as Javalin's [JsonMapper].
+ * @param charset which encoding to use, defaults to UTF-8
+ */
 public fun Javalin.gsonMapper(gson: Gson, charset: Charset = Charsets.UTF_8) {
     attribute(JSON_MAPPER_KEY, GsonMapper(gson, charset))
 }
 
+/**
+ * Implements Javalin's [JsonMapper] on top of [Gson].
+ * @property charset which encoding to use, defaults to UTF-8
+ */
 public class GsonMapper(public val gson: Gson, public val charset: Charset = Charsets.UTF_8) : JsonMapper {
     override fun toJsonString(obj: Any): String {
         return when (obj) {
@@ -43,12 +51,12 @@ public class GsonMapper(public val gson: Gson, public val charset: Charset = Cha
         }
     }
 
-    override fun <T : Any?> fromJsonString(
+    override fun <T : Any> fromJsonString(
         json: String,
         targetClass: Class<T>
     ): T = gson.fromJson(json, targetClass)
 
-    override fun <T : Any?> fromJsonStream(
+    override fun <T : Any> fromJsonStream(
         json: InputStream,
         targetClass: Class<T>
     ): T = gson.fromJson(InputStreamReader(json, charset), targetClass)
