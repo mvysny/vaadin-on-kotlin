@@ -2,10 +2,10 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.6.21"
     id("org.gretty") version "3.0.6"
     `maven-publish`
-    id("com.vaadin") version "23.0.5" apply(false)
+    id("com.vaadin") version "23.0.7" apply(false)
     signing
 }
 
