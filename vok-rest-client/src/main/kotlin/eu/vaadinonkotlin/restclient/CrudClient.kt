@@ -83,6 +83,7 @@ public class CrudClient<T: Any>(
             CompareOperator.gt -> "gt"
             CompareOperator.le -> "lte"
             CompareOperator.lt -> "lt"
+            CompareOperator.ne -> "ne"
         }
 
         if (filter is BeanFilter) {

@@ -1,6 +1,7 @@
 package eu.vaadinonkotlin.security
 
 import com.github.mvysny.dynatest.DynaTest
+import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.Routes
 import com.github.mvysny.kaributesting.v10._expectInternalServerError
@@ -9,6 +10,7 @@ import com.github.mvysny.kaributesting.v10.mock.MockedUI
 import com.github.mvysny.kaributools.navigateTo
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.NotFoundException
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.router.RouterLayout
 import com.vaadin.flow.server.VaadinRequest
@@ -108,14 +110,18 @@ class VokViewAccessCheckerTest : DynaTest({
             navigateTo<AdminView>()
             expectView<AdminView>()
 
-            navigateTo<UserView>()
-            expectView<LoginView>()
+            // Vaadin 23.1.0 throws NotFoundException instead of redirecting to LoginView if user is logged in.
+            expectThrows<NotFoundException>("No route found for 'user': Access denied") {
+                navigateTo<UserView>()
+            }
 
-            navigateTo<SalesView>()
-            expectView<LoginView>()
+            expectThrows<NotFoundException>("No route found for 'sales/sale': Access denied") {
+                navigateTo<SalesView>()
+            }
 
-            navigateTo<RejectAllView>()
-            expectView<LoginView>()
+            expectThrows<NotFoundException>("No route found for 'rejectall': Access denied") {
+                navigateTo<RejectAllView>()
+            }
 
             // VokViewAccessChecker won't navigate away from LoginView - it's the app's
             // responsibility to navigate to some welcome view after successful login.
@@ -125,8 +131,10 @@ class VokViewAccessCheckerTest : DynaTest({
         test("user logged in") {
             DummyUserResolver.userWithRoles = setOf("user")
 
-            navigateTo<AdminView>()
-            expectView<LoginView>()
+            // Vaadin 23.1.0 throws NotFoundException instead of redirecting to LoginView if user is logged in.
+            expectThrows<NotFoundException>("No route found for 'admin': Access denied") {
+                navigateTo<AdminView>()
+            }
 
             navigateTo<UserView>()
             expectView<UserView>()
@@ -134,8 +142,10 @@ class VokViewAccessCheckerTest : DynaTest({
             navigateTo<SalesView>()
             expectView<SalesView>()
 
-            navigateTo<RejectAllView>()
-            expectView<LoginView>()
+            // Vaadin 23.1.0 throws NotFoundException instead of redirecting to LoginView if user is logged in.
+            expectThrows<NotFoundException>("No route found for 'rejectall': Access denied") {
+                navigateTo<RejectAllView>()
+            }
 
             // VokViewAccessChecker won't navigate away from LoginView - it's the app's
             // responsibility to navigate to some welcome view after successful login.
@@ -145,17 +155,21 @@ class VokViewAccessCheckerTest : DynaTest({
         test("sales logged in") {
             DummyUserResolver.userWithRoles = setOf("sales")
 
-            navigateTo<AdminView>()
-            expectView<LoginView>()
+            // Vaadin 23.1.0 throws NotFoundException instead of redirecting to LoginView if user is logged in.
+            expectThrows<NotFoundException>("No route found for 'admin': Access denied") {
+                navigateTo<AdminView>()
+            }
 
-            navigateTo<UserView>()
-            expectView<LoginView>()
+            expectThrows<NotFoundException>("No route found for 'user': Access denied") {
+                navigateTo<UserView>()
+            }
 
             navigateTo<SalesView>()
             expectView<SalesView>()
 
-            navigateTo<RejectAllView>()
-            expectView<LoginView>()
+            expectThrows<NotFoundException>("No route found for 'rejectall': Access denied") {
+                navigateTo<RejectAllView>()
+            }
 
             // VokViewAccessChecker won't navigate away from LoginView - it's the app's
             // responsibility to navigate to some welcome view after successful login.

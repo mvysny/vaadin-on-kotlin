@@ -116,6 +116,7 @@ public open class DataLoaderCrudHandler<T : Any>(
             value.startsWith("gte:") -> OpFilter(name, convertToDatabase(value.substring(4), prop.propertyType) as Comparable<Any>, CompareOperator.ge)
             value.startsWith("gt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.gt)
             value.startsWith("lt:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.lt)
+            value.startsWith("ne:") -> OpFilter(name, convertToDatabase(value.substring(3), prop.propertyType) as Comparable<Any>, CompareOperator.ne)
             value.startsWith("isnull:") -> IsNullFilter(name)
             value.startsWith("isnotnull:") -> IsNotNullFilter(name)
             value.startsWith("like:") -> StartsWithFilter(name, value.substring(5), false)

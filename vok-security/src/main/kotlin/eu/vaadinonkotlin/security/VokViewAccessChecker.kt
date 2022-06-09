@@ -1,8 +1,11 @@
 package eu.vaadinonkotlin.security
 
+import com.vaadin.flow.server.VaadinRequest
 import com.vaadin.flow.server.auth.AccessAnnotationChecker
 import com.vaadin.flow.server.auth.ViewAccessChecker
 import eu.vaadinonkotlin.VaadinOnKotlin
+import java.security.Principal
+import java.util.function.Function
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -35,5 +38,12 @@ public object VokAccessAnnotationChecker : AccessAnnotationChecker() {
 public class VokViewAccessChecker : ViewAccessChecker(VokAccessAnnotationChecker) {
     init {
         enable()
+    }
+
+    // Vaadin 23.0.x uses AccessAnnotationChecker to get principal.
+    // Vaadin 23.1.0 retrieves the principal this way.
+    override fun getPrincipal(request: VaadinRequest?): Principal? = VaadinOnKotlin.loggedInUserResolver.getCurrentUser()
+    override fun getRolesChecker(request: VaadinRequest?): Function<String, Boolean> = Function { role ->
+        VaadinOnKotlin.loggedInUserResolver.getCurrentUserRoles().contains(role)
     }
 }
