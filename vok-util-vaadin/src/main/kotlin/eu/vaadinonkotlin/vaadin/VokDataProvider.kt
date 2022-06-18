@@ -17,7 +17,7 @@ public interface VokDataProvider<T : Any> :
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ * filters items as the user types in search phrase. Emits [StartsWithFilter] to the receiver.
  */
 public fun <T : Any> DataLoader<T>.withStringFilterOn(
     property: KProperty1<T, String?>,
@@ -27,24 +27,34 @@ public fun <T : Any> DataLoader<T>.withStringFilterOn(
 
 /**
  * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [ILikeFilter] to the receiver.
+ * filters items as the user types in search phrase. Emits [StartsWithFilter] to the receiver.
  */
 public fun <T : Any> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName, idResolver: (T) -> Any): BackEndDataProvider<T, String?> {
     val dp: VokDataProvider<T> = asDataProvider(idResolver)
-    return object : BackEndDataProviderWrapper<T, String?, Filter<T>?>(dp) {
-        override fun getFilter(query: Query<T, String?>): Filter<T>? {
-            val filter: String? = query.filter.orElse(null)
-            return if (filter.isNullOrBlank()) null else StartsWithFilter(property, filter.trim())
-        }
-    }
+    return StringFilterOnDataProvider(dp, property)
 }
 
-internal abstract class BackEndDataProviderWrapper<T, F, M>(private val delegate: BackEndDataProvider<T, M>) :
-    DataProviderWrapper<T, F, M>(delegate), BackEndDataProvider<T, F> {
+/**
+ * Delegates calls to [delegate] but converts the filter from [F] to [Filter].
+ */
+internal abstract class FilterConvertingDataProvider<T: Any, F>(private val delegate: VokDataProvider<T>) :
+    DataProviderWrapper<T, F, Filter<T>?>(delegate), BackEndDataProvider<T, F> {
 
     override fun isInMemory(): Boolean = delegate.isInMemory
 
     override fun setSortOrders(sortOrders: MutableList<QuerySortOrder>) {
         delegate.setSortOrders(sortOrders)
     }
+}
+
+internal class StringFilterOnDataProvider<T: Any>(private val delegate: VokDataProvider<T>, val property: DataLoaderPropertyName) :
+    FilterConvertingDataProvider<T, String?>(delegate) {
+
+    override fun getFilter(query: Query<T, String?>): Filter<T>? {
+        val filter: String? = query.filter.orElse(null)
+        return if (filter.isNullOrBlank()) null else StartsWithFilter(property, filter.trim())
+    }
+
+    override fun toString(): String =
+        "StringFilterOnDataProvider('$property', delegate=$delegate)"
 }
