@@ -7,7 +7,7 @@ dependencies {
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
     testImplementation("com.h2database:h2:${properties["h2_version"]}")
     testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
+    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
 }
 
 kotlin {

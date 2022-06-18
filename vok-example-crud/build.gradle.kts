@@ -31,7 +31,7 @@ dependencies {
 
     // testing
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v10:${properties["kaributesting_version"]}")
+    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
     testImplementation(project(":vok-rest-client"))
     testImplementation("org.eclipse.jetty.websocket:websocket-server:${properties["jetty_version"]}")
 
