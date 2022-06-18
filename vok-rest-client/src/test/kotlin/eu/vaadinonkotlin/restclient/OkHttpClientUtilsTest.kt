@@ -18,7 +18,7 @@ class OkHttpClientUtilsTest : DynaTest({
     lateinit var request: Request
     beforeEach {
         OkHttpClientVokPlugin().init()
-        request = "http://localhost:54444/foo".get()
+        request = "http://localhost:9876/foo".get()
     }
     lateinit var content: String
     fun client(): OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
@@ -28,7 +28,7 @@ class OkHttpClientUtilsTest : DynaTest({
         javalin = Javalin.create { it.showJavalinBanner = false }
                 .get("foo") { ctx -> ctx.result(content) }
                 .get("fail") { throw RuntimeException() }
-                .start(54444)
+                .start(9876)
     }
     afterEach { javalin.stop() }
 
@@ -38,14 +38,14 @@ class OkHttpClientUtilsTest : DynaTest({
     }
 
     test("404") {
-        expectThrows(FileNotFoundException::class, "404: Not found (GET http://localhost:54444/bar)") {
-            client().exec("http://localhost:54444/bar".get()) {}
+        expectThrows(FileNotFoundException::class, "404: Not found (GET http://localhost:9876/bar)") {
+            client().exec("http://localhost:9876/bar".get()) {}
         }
     }
 
     test("500") {
         expectThrows(HttpResponseException::class, "500: Internal server error") {
-            client().exec("http://localhost:54444/fail".get()) {}
+            client().exec("http://localhost:9876/fail".get()) {}
         }
     }
 
