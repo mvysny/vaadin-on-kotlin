@@ -1,8 +1,6 @@
 dependencies {
     api(project(":vok-framework"))
-    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
-        exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
-    }
+    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
     api("javax.annotation:javax.annotation-api:1.3.2")
     api("javax.servlet:javax.servlet-api:3.1.0")
 

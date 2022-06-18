@@ -4,11 +4,8 @@ dependencies {
     api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
 
     // Vaadin
-    api("com.github.mvysny.karibudsl:karibu-dsl:${properties["karibudsl_version"]}")
-    api("com.github.mvysny.karibu-tools:karibu-tools:0.8")
-    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
-        exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
-    }
+    api("com.github.mvysny.karibudsl:karibu-dsl-v23:${properties["karibudsl_version"]}")
+    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
     api("javax.servlet:javax.servlet-api:4.0.1")
 
     // testing

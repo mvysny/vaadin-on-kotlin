@@ -13,9 +13,7 @@ val staging by configurations.creating
 
 dependencies {
     implementation(project(":vok-framework-vokdb"))
-    implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
-        exclude(module = "fusion-endpoint") // exclude fusion: it brings tons of dependencies (including swagger)
-    }
+    implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
     providedCompile("javax.servlet:javax.servlet-api:4.0.1")
 
     // logging
