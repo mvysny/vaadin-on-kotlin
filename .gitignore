@@ -8,7 +8,7 @@ local.properties
 
 # The following files are generated/updated by vaadin-gradle-plugin
 node_modules/
-webpack.generated.js
+vite.generated.ts
 target
 pnpmfile.js
 
