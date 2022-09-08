@@ -12,6 +12,7 @@ import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.HeaderRow
+import com.vaadin.flow.component.shared.HasClearButton
 import com.vaadin.flow.component.textfield.*
 import com.vaadin.flow.component.timepicker.TimePicker
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
@@ -402,23 +403,14 @@ public open class FilterBar<BEAN : Any, FILTER : Any>(
     /**
      * Configures every Vaadin UI [FILTER] [field]. By default:
      * * the width is set to 100%
-     * * the clear button is made visible for [TextField], [TextArea], [IntegerField],
+     * * the clear button is made visible for [HasClearButton], for example [TextField], [TextArea], [IntegerField],
      *   [BigDecimalField], [EmailField], [PasswordField], [ComboBox], [DatePicker], and [TimePicker].
      * * [HasValueChangeMode.setValueChangeMode] is set to [ValueChangeMode.LAZY]: not to bombard the database with [ValueChangeMode.EAGER], but
      *   also not to wait until the focus is lost from the [FILTER] - not a good UX since the user types in something and waits and waits and waits with nothing going on.
      */
     protected open fun configure(field: Component) {
         (field as? HasSize)?.setWidthFull()
-        // lots of repetition. https://github.com/vaadin/flow/issues/8443 filed
-        (field as? TextField)?.isClearButtonVisible = true
-        (field as? TextArea)?.isClearButtonVisible = true
-        (field as? IntegerField)?.isClearButtonVisible = true
-        (field as? BigDecimalField)?.isClearButtonVisible = true
-        (field as? EmailField)?.isClearButtonVisible = true
-        (field as? PasswordField)?.isClearButtonVisible = true // okay this case is not really that useful :-D
-        (field as? ComboBox<*>)?.isClearButtonVisible = true
-        (field as? DatePicker)?.isClearButtonVisible = true
-        (field as? TimePicker)?.isClearButtonVisible = true
+        (field as? HasClearButton)?.isClearButtonVisible = true
         (field as? HasValueChangeMode)?.valueChangeMode = ValueChangeMode.LAZY
     }
 
