@@ -1,17 +1,49 @@
 package eu.vaadinonkotlin.restclient
 
-import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectList
-import com.github.mvysny.dynatest.expectThrows
+import com.github.mvysny.dynatest.*
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.resource.EmptyResource
+import org.eclipse.jetty.webapp.WebAppContext
 import java.io.FileNotFoundException
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import kotlin.test.expect
 
 data class Person(var name: String? = null,
                   var surname: String? = null,
                   var age: Int? = null)
+
+class MyJavalinServlet : HttpServlet() {
+    private val javalin = Javalin.createStandalone()
+        .get("foo") { ctx -> ctx.result(content) }
+        .get("fail") { throw RuntimeException() }
+        .javalinServlet()
+
+    override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
+        javalin.service(req, resp)
+    }
+    companion object {
+        var content: String = ""
+    }
+}
+
+@DynaTestDsl
+fun DynaNodeGroup.usingJavalin() {
+    lateinit var server: Server
+    beforeGroup {
+        val ctx = WebAppContext()
+        ctx.baseResource = EmptyResource.INSTANCE
+        ctx.addServlet(MyJavalinServlet::class.java, "/*")
+        server = Server(9876)
+        server.handler = ctx
+        server.start()
+    }
+    afterGroup { server.stop() }
+}
 
 class OkHttpClientUtilsTest : DynaTest({
     fun String.get(): Request = Request.Builder().url(this).get().build()
@@ -20,20 +52,13 @@ class OkHttpClientUtilsTest : DynaTest({
         OkHttpClientVokPlugin().init()
         request = "http://localhost:9876/foo".get()
     }
-    lateinit var content: String
     fun client(): OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
     afterEach { OkHttpClientVokPlugin().destroy() }
-    lateinit var javalin: Javalin
-    beforeEach {
-        javalin = Javalin.create { it.showJavalinBanner = false }
-                .get("foo") { ctx -> ctx.result(content) }
-                .get("fail") { throw RuntimeException() }
-                .start(9876)
-    }
-    afterEach { javalin.stop() }
+
+    usingJavalin()
 
     test("json") {
-        content = """{"name":"John", "surname":"Doe"}"""
+        MyJavalinServlet.content = """{"name":"John", "surname":"Doe"}"""
         expect(Person("John", "Doe")) { client().exec(request) { it.json(Person::class.java) } }
     }
 
@@ -51,22 +76,22 @@ class OkHttpClientUtilsTest : DynaTest({
 
     group("jsonArray") {
         test("empty") {
-            content = """[]"""
+            MyJavalinServlet.content = """[]"""
             expectList() { client().exec(request) { it.jsonArray(Person::class.java) } }
         }
         test("simple") {
-            content = """[{"name":"John", "surname":"Doe"}]"""
+            MyJavalinServlet.content = """[{"name":"John", "surname":"Doe"}]"""
             expectList(Person("John", "Doe")) { client().exec(request) { it.jsonArray(Person::class.java) } }
         }
     }
 
     group("jsonMap") {
         test("empty") {
-            content = """{}"""
+            MyJavalinServlet.content = """{}"""
             expect(mapOf()) { client().exec(request) { it.jsonMap(Person::class.java) } }
         }
         test("simple") {
-            content = """{"director": {"name":"John", "surname":"Doe"}}"""
+            MyJavalinServlet.content = """{"director": {"name":"John", "surname":"Doe"}}"""
             expect(mapOf("director" to Person("John", "Doe"))) { client().exec(request) { it.jsonMap(Person::class.java) } }
         }
     }

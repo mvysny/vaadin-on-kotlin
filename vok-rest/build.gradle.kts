@@ -14,7 +14,8 @@ dependencies {
     // testing of the CRUD interface
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation(project(":vok-rest-client"))
-    testImplementation("org.eclipse.jetty.websocket:websocket-server:${properties["jetty_version"]}")
+    testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
+    testImplementation("org.eclipse.jetty.websocket:websocket-javax-server:${properties["jetty_version"]}")
     testImplementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")
     testImplementation("com.h2database:h2:${properties["h2_version"]}")
     testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")

@@ -12,6 +12,9 @@ import eu.vaadinonkotlin.restclient.jsonArray
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.resource.EmptyResource
+import org.eclipse.jetty.webapp.WebAppContext
 import java.time.LocalDate
 import kotlin.test.expect
 
@@ -36,12 +39,16 @@ class PersonRestClient(val baseUrl: String) {
 
 @DynaTestDsl
 private fun DynaNodeGroup.usingJavalin() {
-    lateinit var javalin: Javalin
+    lateinit var server: Server
     beforeGroup {
-        javalin = Javalin.create { it.showJavalinBanner = false }
-        javalin.configureRest().start(9876)
+        val ctx = WebAppContext()
+        ctx.baseResource = EmptyResource.INSTANCE
+        ctx.addServlet(JavalinRestServlet::class.java, "/rest/*")
+        server = Server(9876)
+        server.handler = ctx
+        server.start()
     }
-    afterGroup { javalin.stop() }
+    afterGroup { server.stop() }
 }
 
 class PersonRestTest : DynaTest({

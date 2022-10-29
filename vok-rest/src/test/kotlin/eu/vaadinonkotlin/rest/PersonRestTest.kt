@@ -11,17 +11,28 @@ import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.resource.EmptyResource
+import org.eclipse.jetty.webapp.WebAppContext
 import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoField
+import javax.servlet.http.HttpServlet
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import kotlin.test.expect
 
-private fun Javalin.configureRest(): Javalin {
-    gsonMapper(VokRest.gson)
-    get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-    crud2("/rest/person", Person.getCrudHandler(true))
-    return this
+class MyJavalinServlet : HttpServlet() {
+    private val javalin = Javalin.createStandalone().apply {
+        gsonMapper(VokRest.gson)
+        get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+        crud2("/rest/person", Person.getCrudHandler(true))
+    } .javalinServlet()
+
+    override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
+        javalin.service(req, resp)
+    }
 }
 
 // Demoes direct access via okhttp
@@ -45,12 +56,16 @@ fun DynaNodeGroup.usingRestClient() {
 
 @DynaTestDsl
 fun DynaNodeGroup.usingJavalin() {
-    lateinit var javalin: Javalin
+    lateinit var server: Server
     beforeGroup {
-        javalin = Javalin.create { it.showJavalinBanner = false }
-        javalin.configureRest().start(9876)
+        val ctx = WebAppContext()
+        ctx.baseResource = EmptyResource.INSTANCE
+        ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
+        server = Server(9876)
+        server.handler = ctx
+        server.start()
     }
-    afterGroup { javalin.stop() }
+    afterGroup { server.stop() }
 }
 
 class PersonRestTest : DynaTest({
