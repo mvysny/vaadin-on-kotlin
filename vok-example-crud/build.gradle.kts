@@ -4,13 +4,6 @@ plugins {
     id("com.vaadin")
 }
 
-gretty {
-    contextPath = "/"
-    servletContainer = "jetty9.4"
-}
-
-val staging by configurations.creating
-
 dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
@@ -35,25 +28,4 @@ dependencies {
     testImplementation(project(":vok-rest-client"))
     testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
     testImplementation("org.eclipse.jetty.websocket:websocket-javax-server:${properties["jetty_version"]}")
-
-    // heroku app runner
-    staging("com.heroku:webapp-runner-main:9.0.52.1")
-}
-
-vaadin {
-    if (gradle.startParameter.taskNames.contains("stage")) {
-        productionMode = true
-    }
-}
-
-// Heroku
-tasks {
-    val copyToLib by registering(Copy::class) {
-        into("$buildDir/server")
-        from(staging) {
-            include("webapp-runner*")
-        }
-    }
-
-    getByName("stage").dependsOn("build", copyToLib)
 }
