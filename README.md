@@ -56,16 +56,14 @@ A more polished example application which you can inspire from. Just type this i
 ```bash
 git clone https://github.com/mvysny/vaadin-on-kotlin
 cd vaadin-on-kotlin
-./gradlew vok-example-crud-vokdb:appRun
+./gradlew vok-example-crud:run
 ```
 
 The web app will be running at [http://localhost:8080](http://localhost:8080).
 
-You can find the [VoK-CRUD Live Demo](https://vok-crud.herokuapp.com/) running on Heroku.
+For more information check out the [vok-example-crud](vok-example-crud) module.
 
-For more information check out the [vok-example-crud-vokdb](vok-example-crud-vokdb) module.
-
-## Vaadin 14 Flow Example project
+## Vaadin Example project
 
 Head to [Beverage Buddy VoK](https://github.com/mvysny/beverage-buddy-vok) for the standalone example project.
 
