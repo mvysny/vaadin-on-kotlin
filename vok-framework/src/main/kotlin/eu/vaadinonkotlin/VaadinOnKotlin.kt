@@ -27,6 +27,7 @@ public object VaadinOnKotlin {
     public fun destroy() {
         if (isStarted) {
             isStarted = false
+            Services.singletons.destroy()
             pluginsLoader.forEach { it.destroy() }
             asyncExecutor.shutdown()
             asyncExecutor.awaitTermination(1, TimeUnit.DAYS)
