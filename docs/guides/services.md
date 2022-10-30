@@ -158,7 +158,9 @@ Services.booking.book()
 ...
 ```
 
-## The Stateful Service
+VoK provides the `Services` class for you automatically, so you don't have to create it yourself.
+
+## Stateful Services (session-bound)
 
 Sometimes services need to have a state. For example we could have a `LoginService` which would deal with user
 logins, logouts and would provide access to the currently logged-in user.
@@ -232,3 +234,24 @@ onLogin { username, password ->
 When we 'extend' the `Session` object with services, we are effectively building up a *repository* (a *directory*) of services.
 This directory can be iterated in development time, simply by using IDE's auto-completion features. In your IDE, you simply type in
 the "`Session.`" stanza, press the `Ctrl+Space` keys and your IDE will list all extension properties including the `loginService`.
+
+## JVM Singleton Services
+
+Sometimes there must be only and exactly one instance of your service, for the whole
+duration of your app runtime. That's exactly what the JVM services are for.
+You could use the built-in Kotlin singleton support by using `object` approach, but it's better to use VoK's built-in
+support for JVM singletons:
+
+```kotlin
+val Services.yourService: YourService get() = singletons.getOrCreate { YourService() }
+```
+
+The reason is that sometimes you need to provide a different (fake) implementation of your
+service for testing purposes; the `object` approach would not allow you to do that.
+With the abovementioned approach, your testing code can populate the service first,
+by calling
+
+```kotlin
+Services.singletons.set(YourService::class, YourFakeService())
+```
+before the `Bootstrap` initializes the services.
