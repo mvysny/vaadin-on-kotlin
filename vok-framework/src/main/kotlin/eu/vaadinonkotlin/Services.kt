@@ -23,13 +23,13 @@ public object Services {
      * Register your singleton services as `val Services.yourService: YourService get() = singletons.getOrCreate(YourService::class) { YourService() }`.
      * The service will be created lazily, and at most once.
      */
-    public val singletons: Singletons get() = Singletons
+    public val singletons: Singletons = Singletons()
 }
 
 /**
  * A registry of singleton services.
  */
-public object Singletons {
+public class Singletons {
     private val instances = ConcurrentHashMap<Class<*>, Any>()
 
     /**
