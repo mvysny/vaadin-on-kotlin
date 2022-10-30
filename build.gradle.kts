@@ -3,9 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.20"
-    id("org.gretty") version "3.0.6"
-    `maven-publish`
     id("com.vaadin") version "23.2.6" apply(false)
+    `maven-publish`
     signing
 }
 
@@ -17,13 +16,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-    }
-
-    tasks {
-        // Heroku
-        val stage by registering {
-            // see vok-example-crud/build.gradle.kts for proper config of the stage task
-        }
     }
 }
 
