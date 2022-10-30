@@ -9,14 +9,12 @@ package eu.vaadinonkotlin.security
  * the current user can access that particular document. This case can not be handled by the simple [AllowRoles] logic.
  *
  * You are responsible for catching of this exception in Vaadin's `HasErrorParameter`.
- * @property viewClass the view which was navigated to.
- * @property authFailedClass the class which caused the authorization to fail.
+ * @property viewClass the view which was navigated to. null if the exception was not thrown upon navigation but rather on e.g. button click
  * @property missingRoles which roles were missing. May be empty if the exception is thrown because the [AllowRoles] annotation is missing on the view, or there
  * is some other reason for which the set of missing roles can not be provided.
  */
 public open class AccessRejectedException(
     message: String,
-    public val viewClass: Class<*>,
-    public val authFailedClass: Class<*>,
+    public val viewClass: Class<*>?,
     public val missingRoles: Set<String>
 ) : Exception(message)
