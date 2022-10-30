@@ -278,8 +278,8 @@ class UserService : Serializable {
         // creates a new session after login, to prevent session fixation attack
         VaadinService.reinitializeSession(VaadinRequest.getCurrent())
         // reload the page. Since the user is now logged in, VokViewAccessChecker
-        // will automatically redirect to the main route ("").
-        UI.getCurrent().page.reload()
+        // will now let the navigation to MainView succeed.
+        navigateTo<MainView>()
     }
 
     val isLoggedIn: Boolean get() = loggedInUser != null
