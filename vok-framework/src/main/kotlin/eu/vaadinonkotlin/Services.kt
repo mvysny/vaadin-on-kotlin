@@ -33,9 +33,9 @@ public object Singletons {
     private val instances = ConcurrentHashMap<Class<*>, Any>()
 
     /**
-     * Registers the service instance, but only if it hasn't been registered yet.
+     * Registers the service instance, but only if it hasn't been registered yet. Fails if the service is already registered.
      *
-     * For testing purposes only, to allow registering of mock/fake services.
+     * Can be used for testing purposes, to allow registering of mock/fake services before the app's actual Bootstrap code is called.
      */
     public operator fun <T: Any> set(serviceClass: KClass<T>, instance: T) {
         check(instances.putIfAbsent(serviceClass.java, instance) == null) { "Service $serviceClass is already registered" }
