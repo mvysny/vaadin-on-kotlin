@@ -1,13 +1,12 @@
 plugins {
-    war
-    id("org.gretty")
+    id("application")
     id("com.vaadin")
 }
 
 dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
-    providedCompile("javax.servlet:javax.servlet-api:4.0.1")
+    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:10.1")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
@@ -26,6 +25,8 @@ dependencies {
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
     testImplementation(project(":vok-rest-client"))
-    testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
-    testImplementation("org.eclipse.jetty.websocket:websocket-javax-server:${properties["jetty_version"]}")
+}
+
+application {
+    mainClass.set("example.crudflow.MainKt")
 }
