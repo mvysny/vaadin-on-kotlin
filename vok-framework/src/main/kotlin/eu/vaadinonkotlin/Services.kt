@@ -35,6 +35,7 @@ public object Singletons {
         check(instances.putIfAbsent(serviceClass.java, instance) == null) { "Service $serviceClass is already registered" }
     }
 
+    @Suppress("UNCHECKED_CAST")
     public fun <T: Any> getOrCreate(serviceClass: KClass<T>, instanceInitializer: () -> T): T {
         check(VaadinOnKotlin.isStarted) { "VoK is not started" }
         return instances.computeIfAbsent(serviceClass.java) { instanceInitializer() } as T
