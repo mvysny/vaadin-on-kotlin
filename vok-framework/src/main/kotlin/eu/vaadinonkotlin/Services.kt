@@ -17,6 +17,12 @@ import kotlin.reflect.KClass
  * See [VoK: Services](https://www.vaadinonkotlin.eu/services/) documentation for more details.
  */
 public object Services {
+    /**
+     * Internal: Only serves for singleton service definition. Don't use to look up your application services.
+     *
+     * Register your singleton services as `val Services.yourService: YourService get() = singletons.getOrCreate(YourService::class) { YourService() }`.
+     * The service will be created lazily, and at most once.
+     */
     public val singletons: Singletons get() = Singletons
 }
 
