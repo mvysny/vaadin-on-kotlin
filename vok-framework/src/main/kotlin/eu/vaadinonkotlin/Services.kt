@@ -47,6 +47,9 @@ public class Singletons {
         return instances.computeIfAbsent(serviceClass.java) { instanceInitializer() } as T
     }
 
+    public inline fun <reified T: Any> getOrCreate(noinline instanceInitializer: () -> T): T =
+        getOrCreate(T::class, instanceInitializer)
+
     internal fun destroy() {
         instances.clear()
     }

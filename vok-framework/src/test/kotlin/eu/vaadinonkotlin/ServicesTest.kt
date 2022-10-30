@@ -30,4 +30,4 @@ class MySingletonService internal constructor() {
 }
 
 val Services.myStatelessService: MyStatelessService get() = MyStatelessService()
-val Services.mySingletonService: MySingletonService get() = singletons.getOrCreate(MySingletonService::class) { MySingletonService() }
+val Services.mySingletonService: MySingletonService get() = singletons.getOrCreate { MySingletonService() }
