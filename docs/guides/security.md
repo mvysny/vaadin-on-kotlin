@@ -90,7 +90,7 @@ class OrderView : VerticalLayout(), BeforeEnterObserver {
     val order: Order = Order.getById(event.parameterList[0].toLong())
     val authorized: Boolean = user.hasRole("sales") || order.userId == user.id
     if (!authorized) {
-      throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf())
+      throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf("sales"))
     }
     // .. rest of the code, init the view, show the details about the order
   }
@@ -107,10 +107,12 @@ to a function which we will setup next:
 
 ```kotlin
 VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
-    override fun getCurrentUser(): Principal? = Session.loginManager.currentUser
-    override fun getCurrentUserRoles(): Set<String> = Session.loginManager.getCurrentUserRoles()
+    override fun getCurrentUser(): Principal? = Session.userService.currentUserPrincipal
+    override fun getCurrentUserRoles(): Set<String> = Session.userService.currentUserRoles
 }
 ```
+
+(Note: We will create the `UserService` later on)
 
 Now, to the hook itself. The best way is to provide your own init listener, which will handle all
 layouts, even future ones that haven't been created yet:
@@ -137,6 +139,55 @@ The current user is obtained via `VaadinOnKotlin.loggedInUserResolver`.
 **Important:** `VokAccessAnnotationChecker` will not navigate away from the `LoginView`. It is
 the application's responsibility to navigate to appropriate welcome view after successful login,
 otherwise the user will be endlessly presented `LoginView`.
+
+### Login View
+
+An example of a very simple `LoginView`:
+
+```kotlin
+/**
+ * The login view which simply shows the login form full-screen. Allows the user to log in.
+ * After the user has been logged in,
+ * the page is refreshed which forces the MainLayout to reinitialize.
+ * However, now that the user is present in the session,
+ * the reroute to login view no longer happens and the MainLayout is displayed on screen properly.
+ */
+@Route("login")
+class LoginView : KComposite() {
+    private lateinit var loginForm: LoginForm
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = false; content { center() }
+
+            val loginI18n: LoginI18n = loginI18n {
+                header.title = "My App"
+            }
+            loginForm = loginForm(loginI18n)
+        }
+    }
+
+    init {
+        loginForm.addLoginListener { e ->
+            try {
+                Session.userService.login(e.username, e.password)
+            } catch (e: LoginException) {
+                log.warn("Login failed", e)
+                loginForm.setErrorMessage("Login failed", e.message)
+            } catch (e: Exception) {
+                log.error("Internal error", e)
+                loginForm.setErrorMessage("Internal error", e.message)
+            }
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        private val log = LoggerFactory.getLogger(LoginView::class.java)
+    }
+}
+```
+
+The `Session.userService` doesn't exist yet. We'll create it later on in this tutorial.
 
 ## VoK Authentication
 
@@ -165,6 +216,87 @@ with your app. There is also a set of example projects:
 
 * [Security Demo](https://github.com/mvysny/vok-security-demo)
 * [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
+
+### UserService example
+
+An example of a very simple user service which performs logins and logouts, and stores
+itself into the session. That way, the user itself is also stored in the session.
+
+```kotlin
+val Session.userService: UserService get() = getOrPut { UserService() }
+
+// guarded-by: Vaadin Session
+class UserService : Serializable {
+    var loggedInUser: String? = null
+    private set
+
+    val loggedInUserPrincipal: Principal?
+        get() = loggedInUser?.let { BasicUserPrincipal(it) }
+
+    var currentUserRoles: Set<String> = setOf()
+    private set
+
+    /**
+     * Logs out the user, clears the session and reloads the page.
+     */
+    fun logout() {
+        Session.current.close()
+        // The UI is recreated by the page reload, and since there is no user in the session (since it has been cleared),
+        // the UI will show the LoginView.
+        UI.getCurrent().page.reload()
+    }
+
+    /**
+     * Logs in user with given [username] and [password]. Fails with [javax.security.auth.login.LoginException]
+     * on failure.
+     */
+    fun login(username: String, password: String) {
+        // the users should come from the database; here we'll just fake some users
+        val knownUser = when(username) {
+            "user" -> password == "user"
+            "admin" -> password == "admin"
+            else -> false
+        }
+        if (!knownUser) {
+            throw FailedLoginException("Invalid username or password")
+        }
+        login(username)
+    }
+
+    /**
+     * Logs in given [user].
+     */
+    private fun login(user: String) {
+        this.loggedInUser = user
+        // the roles should come from the database; here we'll just fake the roles
+        currentUserRoles = when (user) {
+            "user" -> setOf("user")
+            "admin" -> setOf("user", "admin")
+            else -> setOf()
+        }
+
+        // creates a new session after login, to prevent session fixation attack
+        VaadinService.reinitializeSession(VaadinRequest.getCurrent())
+        // reload the page. Since the user is now logged in, VokViewAccessChecker
+        // will automatically redirect to the main route ("").
+        UI.getCurrent().page.reload()
+    }
+
+    val isLoggedIn: Boolean get() = loggedInUser != null
+  
+    fun ensureLoggedIn(): String = checkNotNull(loggedInUser) { "Not logged in" }
+
+    val isAdmin: Boolean get() = isLoggedIn && currentUserRoles.contains("admin")
+
+    fun checkAdmin() {
+        ensureLoggedIn()
+        if (!currentUserRoles.contains("admin")) {
+//            throw AccessRejectedException("Not admin", null, setOf("admin"))
+            throw IllegalStateException("Not admin")
+        }
+    }
+}
+```
 
 ## VoK Authorization
 
