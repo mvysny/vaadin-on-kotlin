@@ -1,6 +1,8 @@
 package eu.vaadinonkotlin
 
 import com.github.mvysny.dynatest.DynaTest
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.test.expect
@@ -27,6 +29,14 @@ class AsyncExecutorTest : DynaTest({
         test("schedule immediately") {
             val called = CountDownLatch(1)
             scheduleAtFixedRate(0.milliseconds, 1.seconds) { called.countDown() }
+            expect(true) { called.await(100, TimeUnit.MILLISECONDS) }
+        }
+    }
+
+    group("scheduleAtFixedTime") {
+        test("schedule immediately") {
+            val called = CountDownLatch(1)
+            scheduleAtFixedTime(LocalTime.now().plus(20L, ChronoUnit.MILLIS)) {called.countDown() }
             expect(true) { called.await(100, TimeUnit.MILLISECONDS) }
         }
     }

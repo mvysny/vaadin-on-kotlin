@@ -1,12 +1,17 @@
 package eu.vaadinonkotlin
 
 import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Submits a value-returning task for execution and returns a
@@ -54,6 +59,7 @@ public fun <R> async(logException: Boolean = true, block: () -> R): Future<R> = 
  *
  * @param command the task to execute
  * @param initialDelay the time to delay first execution, in millis. You can use expressions like `5.days + 2.seconds` to compute this value.
+ *                      If 0 or smaller, the task will be executed immediately.
  * @param period the period between successive executions, in millis.
  * @param logException if true (default) and the [command] throws an exception, the exception is logged via slf4j.
  * @return a ScheduledFuture representing pending completion of
@@ -76,3 +82,36 @@ public fun scheduleAtFixedRate(initialDelay: Duration, period: Duration, logExce
         throw t
     }
 }, initialDelay.inWholeMilliseconds, period.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+
+/**
+ * Executes [command] periodically at given [time].
+ *
+ * If any execution of the task
+ * encounters an exception, subsequent executions are suppressed.
+ * Otherwise, the task will only terminate via cancellation or
+ * termination of the executor.  If any execution of this task
+ * takes longer than its period, then subsequent executions
+ * may start late, but will not concurrently execute.
+ *
+ * @param command the task to execute
+ * @param logException if true (default) and the [command] throws an exception, the exception is logged via slf4j.
+ * @return a ScheduledFuture representing pending completion of
+ *         the task, and whose `get()` method will throw an
+ *         exception upon cancellation
+ * @throws RejectedExecutionException if the task cannot be
+ *         scheduled for execution
+ * @throws IllegalArgumentException if period less than or equal to zero
+ */
+public fun scheduleAtFixedTime(time: LocalTime, logException: Boolean = true, command: ()->Unit): ScheduledFuture<*> {
+    val now = LocalDateTime.now()
+    var nextExecution = LocalDateTime.of(now.toLocalDate(), time)
+    if (nextExecution < now) {
+        nextExecution = nextExecution.plusDays(1L)
+    }
+    val initialDelay = nextExecution - now
+    return scheduleAtFixedRate(initialDelay, 1.days, logException, command)
+}
+
+private operator fun LocalDateTime.minus(other: LocalDateTime): Duration =
+    (this.toInstant(ZoneOffset.UTC).toEpochMilli() -
+            other.toInstant(ZoneOffset.UTC).toEpochMilli()).milliseconds
