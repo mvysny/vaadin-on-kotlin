@@ -36,8 +36,14 @@ class AsyncExecutorTest : DynaTest({
     group("scheduleAtFixedTime") {
         test("schedule immediately") {
             val called = CountDownLatch(1)
-            scheduleAtFixedTime(LocalTime.now().plus(20L, ChronoUnit.MILLIS)) {called.countDown() }
+            scheduleAtFixedTime(LocalTime.now().plus(20L, ChronoUnit.MILLIS)) { called.countDown() }
             expect(true) { called.await(100, TimeUnit.MILLISECONDS) }
+        }
+        test("schedule next day") {
+            val called = CountDownLatch(1)
+            val future = scheduleAtFixedTime(LocalTime.now().minus(1L, ChronoUnit.MILLIS)) { called.countDown() }
+            expect(true, "" + future.getDelay(TimeUnit.MILLISECONDS)) { future.getDelay(TimeUnit.HOURS) >= 23 }
+            expect(false) { called.await(100, TimeUnit.MILLISECONDS) }
         }
     }
 })
