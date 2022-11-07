@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.20"
-    id("com.vaadin") version "23.2.6" apply(false)
+    id("com.vaadin") version "23.2.7" apply(false)
     `maven-publish`
     signing
 }
