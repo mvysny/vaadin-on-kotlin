@@ -61,17 +61,15 @@ public class Singletons {
     }
 
     /**
-     * Looks up a service by its class in the list of JVM singletons. If it's missing,
-     * the [instanceInitializer] will be called, to create the instance of the service.
-     *
-     * The [instanceInitializer] will be called at most once; while the initializer is running,
-     * any further lookups of the same service will block until the initializer is ready.
-     *
-     * Fails if [VaadinOnKotlin.isStarted] is false. That means that in your bootstrap, first
-     * call [VaadinOnKotlin.init], and only then start initializing your singleton services.
-     * During shutdown, first de-init all of your singleton services, and only then call
-     * [VaadinOnKotlin.destroy].
+     * There's an inherent problem with this function. Consider the following use-case:
+     * ```
+     * interface MyService {}
+     * class MyServiceImpl : MyService
+     * class MyServiceTestingFake : MyService
+     * val Services.getOrCreate { MyServiceImpl() } // will T be MyService or MyServiceImpl? Actually, the latter, which makes it impossible to fake the service.
+     * ```
      */
+    @Deprecated("The service is stored under the key T, however it's up to Kotlin to guess the value of T. Please use the other getOrCreate() function and specify T explicitly")
     public inline fun <reified T: Any> getOrCreate(noinline instanceInitializer: () -> T): T =
         getOrCreate(T::class, instanceInitializer)
 

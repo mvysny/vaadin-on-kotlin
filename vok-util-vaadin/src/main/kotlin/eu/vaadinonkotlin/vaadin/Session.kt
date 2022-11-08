@@ -52,15 +52,7 @@ public object Session {
         current.setAttribute(key.java, value)
     }
 
-    /**
-     * Retrieves the class stored under its class name from the session; if it's not yet there calls [defaultValue] block to create it.
-     *
-     * Use this function to create session-bound services such as:
-     * ```
-     * val Session.loggedInUser: LoggedInUser get() = getOrPut { LoggedInUser() }
-     * ```
-     * @return the session-bound instance
-     */
+    @Deprecated("It's not clear what T will be. Please use the other getOrPut() function and specify T explicitly")
     public inline fun <reified T: Serializable> getOrPut(noinline defaultValue: () -> T): T = getOrPut(T::class, defaultValue)
 
     /**
