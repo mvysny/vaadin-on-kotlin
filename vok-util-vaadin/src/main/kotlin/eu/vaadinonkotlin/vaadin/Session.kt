@@ -52,7 +52,7 @@ public object Session {
         current.setAttribute(key.java, value)
     }
 
-    @Deprecated("It's not clear what T will be. Please use the other getOrPut() function and specify T explicitly")
+    @Deprecated("The service is stored under the key T, however it's up to Kotlin to guess the value of T. Please use the other getOrPut() function and specify T explicitly")
     public inline fun <reified T: Serializable> getOrPut(noinline defaultValue: () -> T): T = getOrPut(T::class, defaultValue)
 
     /**
