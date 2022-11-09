@@ -160,24 +160,26 @@ $ cd vok-helloworld-app
 $ ./gradlew
 ```
 
-This will download everything necessary and will compile the example application's WAR file.
+This will download everything necessary and will compile the example application's zip file.
 
-> **Note:** WAR (Web ARchive) is Java standard for packaging web applications. WAR file is a zip file which
-> can be deployed to all Java Servlet Servers, including Tomcat, JBoss etc.
+> **Note:** WAR (Web ARchive) is Java standard for packaging web applications. However,
+> with the advent of Docker, we believe that the traditional way of deploying WAR into Java Servlet Servers (e.g. Tomcat or JBoss)
+> is now obsolete. It is far easier to run your app via the `main()` function.
+> Please visit [Vaadin Boot](https://github.com/mvysny/vaadin-boot) to learn more.
 
 The `vok-helloworld-app` directory has a number of files and folders that make up the
 structure of a VoK application. Most of the work in this tutorial will happen in the
 `src/main/kotlin` folder, but here's a basic rundown on the function of each of the files and
 folders:
 
-| File/Folder              | Purpose                                                                                                                                                                                                                                                   |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `web/src/main/kotlin`    | Contains the source files of all of your views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide.                                                                                   |
-| `web/src/main/webapp`    | Contains the 'Chuck Norris' image file                                                                                                                                                                                                                    |
-| `web/src/main/resources` | Contains the logger configuration file (`logback.xml`)                                                                                                                                                                                                    |
-| `build.gradle`           | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
-| `README.md`              | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on.                                                                                                |
-| .gitignore               | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files.                                                                       |
+| File/Folder                 | Purpose                                                                                                                                                                                                                                                   |
+|-----------------------------| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/main/kotlin`           | Contains the source files of all of your views, Servlets, REST endpoints, async jobs for your application. You'll focus on this folder for the remainder of this guide.                                                                                   |
+| `src/main/resources/webapp` | Contains the 'Chuck Norris' image file                                                                                                                                                                                                                    |
+| `src/main/resources`        | Contains the logger configuration file (`logback.xml`)                                                                                                                                                                                                    |
+| `build.gradle.kts`          | This file defines tasks that can be run from the command line. You should add your own tasks by adding code to this file. There is much you can do with Gradle - you can for example use the ssh plugin to deploy the WAR to your production environment. |
+| `README.md`                 | This is a brief instruction manual for your application. You should edit this file to tell others what your application does, how to set it up, and so on.                                                                                                |
+| .gitignore                  | This file tells git which files (or patterns) it should ignore. See [Github - Ignoring files](https://help.github.com/articles/ignoring-files/) for more info about ignoring files.                                                                       |
 
 ## Hello, Vaadin-on-Kotlin!
 
