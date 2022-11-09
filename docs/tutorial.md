@@ -138,10 +138,9 @@ since they work flawlessly on any OS and CPU which supports Java 11 - be it Wind
 The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
 is no need for you to set up any database.
 
-While it is possible to edit the project files using any text editor, we recommend to install Intellij IDEA which provides awesome
-Kotlin support including auto-completion. You can use IDEA Community edition, which is free and allows you to run
-gradle tasks to run the app, or you can purchase the Ultimate edition which also supports debugging/hot-redeployment of the web app on Tomcat and other
-servers, and also offers awesome database integration tools.
+While it is possible to edit the project files using any text editor, we recommend to install [Intellij IDEA](https://www.jetbrains.com/idea/download/) which provides awesome
+Kotlin support including auto-completion. Please use the free IDEA Community edition which allows you to run
+the app easily, or you can purchase the Ultimate edition which also offers awesome database integration tools.
 
 ### Creating the Blog Application
 
