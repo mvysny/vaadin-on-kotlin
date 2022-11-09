@@ -287,6 +287,8 @@ right-click the arrow and select "Debug 'Main'" from the menu. Your app is now r
 Running the app from Intellij in debug mode allows you to publish changes in your file directly to the running app easily.
 Simply edit the file, then press CTRL+F9 (or *Build / Build Project* from the menu) then reload the page in your browser.
 
+To stop or restart the app from Intellij, simply hit the red square *Stop* button in the upper-right part of the screen.
+
 ## Getting Up and Running
 
 Now that you've seen how to create a view, let's create something with a bit more substance.
@@ -297,7 +299,7 @@ read, update and destroy items for a resource and these operations are referred 
 CRUD operations.
 
 VoK provides a resources method which can be used to declare a standard REST resource. But first, let us define the article.
-Create the `web/src/main/kotlin/com/example/vok/Article.kt` file with the following contents:
+Create the `src/main/kotlin/com/example/vok/Article.kt` file with the following contents:
 
 ```kotlin
 package com.example.vok
@@ -347,8 +349,7 @@ In order to take these REST endpoints into use, in the `Bootstrap.kt`, edit the 
 
 ```kotlin
 fun Javalin.configureRest(): Javalin {
-    val gson = GsonBuilder().create()
-    gson.configureToJavalin()
+    gsonMapper(VokRest.gson)
     articleRest()
     return this
 }
@@ -382,7 +383,7 @@ In the next section, you will add the ability to create new articles in your app
 
 It will look a little basic for now, but that's ok. We'll look at improving the styling for it afterwards.
 
-Before going any further, please create a Kotlin file named `web/src/main/kotlin/com/example/vok/MainLayout.kt` with the following
+Before going any further, please create a Kotlin file named `src/main/kotlin/com/example/vok/MainLayout.kt` with the following
 contents:
 
 ```kotlin
@@ -393,11 +394,6 @@ import com.github.mvysny.karibudsl.v10.div
 import com.vaadin.flow.component.page.Viewport
 import com.vaadin.flow.router.RouterLayout
 
-/**
- * The main layout:
- * * provides application frame around all views
- * * handles redirect to the [LoginView] if no user is logged in.
- */
 @Viewport(Viewport.DEVICE_DIMENSIONS)
 class MainLayout : KComposite(), RouterLayout {
   private val root = ui {
@@ -502,14 +498,14 @@ created the database table for Article yet.
 
 Luckily, we have already created the model - it's the `Article` entity class.
 We will use [VoK-ORM](https://github.com/mvysny/vok-orm) which will map
-the Article object to a relational database. By default it will map to the "Article" table.
+the Article object to a relational (SQL) database. By default, it will map to the "Article" table.
 To create the table, we will have to create the migration.
 
 > **Note:** vok-orm is smart enough to automatically map column names to the Article class properties,
 > which means you don't have to provide the database name for every property
 > inside entities, as that will be done automatically by vok-orm.
 
-To create the migration, create a file named `V01__CreateArticle.sql` in the `web/src/main/resources/db/migration` directory, with the following contents:
+To create the migration, create a file named `V01__CreateArticle.sql` in the `src/main/resources/db/migration` directory, with the following contents:
 
 ```sql
 create table Article(
@@ -536,7 +532,7 @@ rules in the [Flyway Versioned Migrations Guide](https://flywaydb.org/documentat
 
 When Flyway runs this migration it will create an articles table with one string column and a text column.
 
-At this point, you can simply kill and restart the server, to automatically run all migrations.
+At this point, you can simply kill and restart the app, to automatically run all migrations.
 Since we are currently using an in-memory H2 database, its contents are gone when the server is killed,
 and since we are starting with a fresh database, all migrations will run. When we'll use a persistent database,
 Flyway will make sure that only a newly defined migrations are run.
@@ -550,7 +546,7 @@ we will redirect to an `ArticleView` which we'll define later.
 > **Note:** You might be wondering why the A in Article is capitalized
 > above, whereas most other references to articles in this guide have used lowercase.
 > In this context, we are referring to the class named Article that is defined in `web/src/main/kotlin/com/example/vok/Article.kt`.
-> Class names in Kotlin must begin with a capital letter.
+> It's a convention for class names in Kotlin to begin with a capital letter.
 
 > **Note:** As we'll see later, `binder.writeBeanIfValid()` returns a boolean indicating whether the article was saved or not.
 
@@ -637,7 +633,7 @@ With this change, you should finally be able to create new articles. Visit
 
 ### Listing All Articles
 
-We still need a way to list all our articles, so let's do that. We'll create the `web/src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
+We still need a way to list all our articles, so let's do that. We'll create the `src/main/kotlin/com/examples/vok/ArticlesView.kt` with the
 following contents:
 
 ```kotlin
@@ -680,7 +676,7 @@ including sorting and filtering.
 
 You can now create, show, and list articles. Now let's add some links to navigate through pages.
 
-Open `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its contents as follows:
+Open `src/main/kotlin/com/example/vok/MyWelcomeView.kt` and modify its contents as follows:
 
 ```kotlin
 package com.example.vok
@@ -789,7 +785,7 @@ the `article` entity, but only if everything is valid.
 
 We've covered the "CR" part of CRUD. Now let's focus on the "U" part, updating articles.
 
-The first step we'll take is adding the `web/src/main/kotlin/com/example/vok/EditArticleView.kt`:
+The first step we'll take is adding the `src/main/kotlin/com/example/vok/EditArticleView.kt`:
 
 ```kotlin
 package com.example.vok
@@ -918,7 +914,7 @@ Our `EditArticleView` view looks very similar to the `CreateArticleView` view; i
 they both share the same code for displaying the form.
 Let's remove this duplication by using a common component.
 
-Create a new file `web/src/main/kotlin/com/example/vok/ArticleEditor.kt` with the following content:
+Create a new file `src/main/kotlin/com/example/vok/ArticleEditor.kt` with the following content:
 
 ```kotlin
 package com.example.vok
@@ -1104,7 +1100,7 @@ It's time to add a second database table to the application. The second database
 
 ### Creating the 'Comments' Entity
 
-We'll create a `Comment` entity to hold comments for an article. Create the following file: `web/src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
+We'll create a `Comment` entity to hold comments for an article. Create the following file: `src/main/kotlin/com/example/vok/Comment.kt` with the following contents:
 
 ```kotlin
 package com.example.vok
@@ -1138,7 +1134,7 @@ which sets up an association. You'll learn a little about associations in the ne
 
 Note the `article_id` column - it tells which Article the comment belongs to.
 You can get a better understanding after analyzing the appropriate migration script. Just create
-`web/src/main/resources/db/migration/V02__CreateComment.sql` file with the following contents:
+`src/main/resources/db/migration/V02__CreateComment.sql` file with the following contents:
 
 ```sql
 create TABLE Comment(
@@ -1356,13 +1352,13 @@ Now you can add articles and comments to your blog and have them show up in the 
 
 ## Refactoring
 
-Now that we have articles and comments working, take a look at the `web/src/main/kotlin/com/example/vok/ArticleView.kt` view.
+Now that we have articles and comments working, take a look at the `src/main/kotlin/com/example/vok/ArticleView.kt` view.
 It is getting long and awkward. We can create reusable components to clean it up.
 
 ### The Comments Component
 
 First, we will extract a component which will show comments for given article. Since we will need to add a 'delete' link
-in the future, the `div` component will no longer suffice. Create the `web/src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
+in the future, the `div` component will no longer suffice. Create the `src/main/kotlin/com/example/vok/CommentsComponent.kt` file:
 
 ```kotlin
 package com.example.vok
@@ -1413,7 +1409,7 @@ You can learn more about how DSL works, from the [Writing Vaadin Apps In Kotlin 
 ### Converting the Comments Form to a component
 
 Let us also move that new comment section out to its own component. Create the file named
-`web/src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
+`src/main/kotlin/com/example/vok/NewCommentForm.kt` with the following contents:
 
 ```kotlin
 package com.example.vok
@@ -1580,7 +1576,7 @@ Adding security to Java WAR apps is usually done by letting the web server (e.g.
 and verification, while our web app provides the login dialog. To keep this guide web server agnostic,
 we'll do the verification ourselves.
 
-We will implement a login service and a login form. Just create the `web/src/main/kotlin/com/example/vok/LoginService.kt` file:
+We will implement a login service and a login form. Just create the `src/main/kotlin/com/example/vok/LoginService.kt` file:
 
 ```kotlin
 package com.example.vok
@@ -1611,12 +1607,12 @@ class LoginService : Serializable {
     val isLoggedIn get() = currentUser != null
 }
 
-val Session.loginService: LoginService get() = getOrPut { LoginService() }
+val Session.loginService: LoginService get() = getOrPut(LoginService::class) { LoginService() }
 ```
 
 This will handle user log in and will store current user along with the `LoginService` into the session.
 
-Next is the `LoginView`: just create the `web/src/main/kotlin/com/example/vok/LoginView.kt` file:
+Next is the `LoginView`: just create the `src/main/kotlin/com/example/vok/LoginView.kt` file:
 
 ```kotlin
 package com.example.vok
