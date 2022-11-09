@@ -236,7 +236,7 @@ Server-side `Grid` allows you to set the `DataProvider` which will actually fetc
 To create a new view, all that's needed is to create a Kotlin class which is annotated with the `@Route` annotation and extends
 some Vaadin Component.
 
-Create the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make sure it looks like follows:
+Create the `src/main/kotlin/com/example/vok/MyWelcomeView.kt` file and make sure it looks like follows:
 
 ```kotlin
 package com.example.vok
@@ -266,9 +266,26 @@ Open up the `WelcomeView.kt` file and change the `@Route("")` annotation to the 
 
 Having the `@Route("")` on `MyWelcomeView` will tell the Vaadin Route Registry to map requests to the root of the application to the `MyWelcomeView` view.
 
-Launch the web server again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
+Launch the app again and navigate to [http://localhost:8080](http://localhost:8080) in your browser. You'll see the "Hello, Vaadin-on-Kotlin!"
 message you put into the `web/src/main/kotlin/com/example/vok/MyWelcomeView.kt`, indicating
 that this new route is indeed going to `MyWelcomeView` and is rendering the view correctly.
+
+## Setting up Intellij Community
+
+To have a proper file editor, with auto-completion features and all, let's set up Intellij IDEA Community.
+Download and install [Intellij IDEA Community](https://www.jetbrains.com/idea/download/) if you haven't done that already.
+Then, select the "Open" button and open the `vok-helloworld-app` directory as a project. Please give
+Intellij a bit of time to open the project and download all files.
+
+In your Intellij, open the `src/main/kotlin/com/example/vok/Main.kt` file. It contains just one
+function called `main()` which runs the entire app. There's a little green arrow to the left of the function; simply
+right-click the arrow and select "Debug 'Main'" from the menu. Your app is now running from your Intellij!
+
+> The app may fail to start since it's already running from a command-line from previous experiments.
+> In such case, simply press CTRL+C in the terminal to kill the old app, then try to launch the app from Intellij again.
+
+Running the app from Intellij in debug mode allows you to publish changes in your file directly to the running app easily.
+Simply edit the file, then press CTRL+F9 (or *Build / Build Project* from the menu) then reload the page in your browser.
 
 ## Getting Up and Running
 
