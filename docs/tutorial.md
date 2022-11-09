@@ -101,12 +101,12 @@ While the Dependency Injection (DI) itself is not hard to understand, it comes w
   practice in larger project, it is overkill for simple projects. And you can have Services without DI.
 - The DI requires you to run on a DI container, such as a JavaEE server, or with tons of Spring libraries. While that's nothing
   new for a seasoned Java developer, this is overwhelming for a newbie which is just starting with the web app development.
-- DI doesn't scale: It quickly tends to get very complex as the DI configuration grows.
+  Also, with the advent of Docker, we believe the time of Java servers such as JavaEE and Spring is over.
+- DI doesn't scale: It quickly tends to get very complex as the DI configuration grows. DI is not something that
+  you'll need in the future anyway as your project grows: on the contrary, it adds additional layer of complexity.
 - DI doesn't work well with Vaadin: injecting services into Vaadin components forces you to turn Vaadin
   components themselves into beans, which is not compatible with the Vaadin framework. It's far
   better to create a repository of services (one class which gives access to all services).
-- DI is not something that you'll need in the future anyway as your project grows: on the contrary,
-  it adds additional layer of complexity.
 - We consider DI an anti-pattern. We replace it with Kotlin built-in language features.
 
 Therefore, VoK itself is not using DI; you can of course use Spring or JavaEE in your project alongside VoK if necessary.
@@ -183,18 +183,18 @@ folders:
 
 ## Hello, Vaadin-on-Kotlin!
 
-To begin with, let's get some text up on screen quickly. To do this, you need to get a web server running.
+To begin with, let's get some text up on screen quickly. To do this, let's get the app running.
 
 ### Starting up the Web Server
 
-You actually have a functional VoK application already. To see it, you need to start a web server on your development machine.
+You actually have a functional VoK application already. To see it, you need to start the app on your development machine.
 You can do this by running the following in the `vok-helloworld-app` directory:
 
 ```bash
-$ ./gradlew clean web:appRun
+$ ./gradlew clean run
 ```
 
-This will fire up Jetty, an embeddable Java web server. To see your application in action, open a browser window and navigate
+This will fire up Jetty, an embedded Java web server. To see your application in action, open a browser window and navigate
 to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-Kotlin default information page:
 
 <hr>
@@ -206,8 +206,8 @@ to [http://localhost:8080](http://localhost:8080). You should see the Vaadin-on-
 > **Note:** To stop the web server, hit Ctrl+C in the terminal window where it's running. To verify the server has stopped
 > you should see your command prompt cursor again. For most UNIX-like systems including macOS this will be a dollar sign $.
 
-> **Note:** Changes made in your Kotlin files will be propagated to the running server only after you compile them, by
-> running `./gradlew build`.
+> **Note:** Changes made to your Kotlin files will not be propagated to the running server in this mode. However,
+> we'll learn how to run the app from Intellij, for a proper full-blown developer environment.
 
 The "Welcome aboard" page is the smoke test for a new VoK application: it makes sure that you
 have your software configured correctly enough to serve a page.
@@ -216,7 +216,7 @@ have your software configured correctly enough to serve a page.
 
 To get VoK saying "Hello", you need to create a route.
 
-A route's purpose is to provide a Vaadin Component (usually a layout containing other components), which then interacts with the user.
+The purpose of a route is to provide a Vaadin Component (usually a layout containing other components), which then interacts with the user.
 The Route Registry decides which view receives which requests. Usually there is exactly one route to a view. You can collect the data
 to be displayed right in the view itself (for small applications), or you can define so-called Service layer
 (a group of regular Kotlin classes which define a clear API and are responsible for fetching of the data).
@@ -224,7 +224,7 @@ VoK however does not enforce this, and we will not use this pattern in the tutor
 
 All Vaadin Components have two parts:
 
-- Their JavaScript-based client side Web Component which you usually can not use directly;
+- Their JavaScript-based client side Web Component which you usually can not control directly from your program;
 - A server side class which you access from your code.
 
 For example, a Button Web Component ([`vaadin-button`](https://vaadin.com/components/vaadin-button)) contains the logic to send the notification about the mouse click
