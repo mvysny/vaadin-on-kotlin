@@ -274,7 +274,7 @@ that this new route is indeed going to `MyWelcomeView` and is rendering the view
 
 To have a proper file editor, with auto-completion features and all, let's set up Intellij IDEA Community.
 Download and install [Intellij IDEA Community](https://www.jetbrains.com/idea/download/) if you haven't done that already.
-Then, select the "Open" button and open the `vok-helloworld-app` directory as a project. Please give
+Then run Intellij. In the welcome screen, select the "Open" button and open the `vok-helloworld-app` directory as a project. Please give
 Intellij a bit of time to open the project and download all files.
 
 In your Intellij, open the `src/main/kotlin/com/example/vok/Main.kt` file. It contains just one
