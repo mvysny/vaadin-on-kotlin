@@ -18,11 +18,11 @@ nav_order: 2
 
 # Getting started with Vaadin-on-Kotlin
 
-VoK is an opinionated web application framework which uses Vaadin for its front-end
-and Kotlin for its back-end. While Vaadin lets you forget the web and program user interfaces
-and let's you program much like when creating a desktop application
-with conventional Java toolkits such as AWT, Swing, or SWT, Kotlin allows you to
-write clean understandable and save code.
+Vaadin-on-Kotlin, or VoK for short, is an opinionated web application framework which uses Vaadin for its front-end
+and Kotlin for its back-end. Vaadin lets you forget the web and program user interfaces
+and lets you program much like when creating a desktop application
+with conventional Java toolkits such as AWT, Swing, or SWT. Kotlin allows you to
+write clean, understandable and maintainable code.
 
 This guide teaches you how to get Vaadin On Kotlin (VoK) up and running. It introduces
 the basic concepts needed to create your own applications.
@@ -32,7 +32,7 @@ the basic concepts needed to create your own applications.
 
 After reading this guide, you will be able to:
 
-- Create a VoK application, and connect it to a database.
+- Create a VoK application, and connect it to a SQL database.
 - Understand the general layout of a VoK application.
 - Write the starting pieces of a VoK application.
 
@@ -97,11 +97,17 @@ the Kotlin programming language itself is all that's needed to glue stuff togeth
 
 While the Dependency Injection (DI) itself is not hard to understand, it comes with unfortunate consequences:
 
-- The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services may be a desirable
-  practice in larger project, it is overkill for simple projects.
-- The DI requires you to run on a DI container, such as a JavaEE server, or tons of Spring libraries. While that's nothing
+- The DI forces the programmer to create Services/DAOs even for tiny CRUD operations. While having Services is a desirable
+  practice in larger project, it is overkill for simple projects. And you can have Services without DI.
+- The DI requires you to run on a DI container, such as a JavaEE server, or with tons of Spring libraries. While that's nothing
   new for a seasoned Java developer, this is overwhelming for a newbie which is just starting with the web app development.
-- It quickly tends to get very complex as the DI configuration grows.
+- DI doesn't scale: It quickly tends to get very complex as the DI configuration grows.
+- DI doesn't work well with Vaadin: injecting services into Vaadin components forces you to turn Vaadin
+  components themselves into beans, which is not compatible with the Vaadin framework. It's far
+  better to create a repository of services (one class which gives access to all services).
+- DI is not something that you'll need in the future anyway as your project grows: on the contrary,
+  it adds additional layer of complexity.
+- We consider DI an anti-pattern. We replace it with Kotlin built-in language features.
 
 Therefore, VoK itself is not using DI; you can of course use Spring or JavaEE in your project alongside VoK if necessary.
 
@@ -116,7 +122,8 @@ Therefore, VoK itself is not using DI; you can of course use Spring or JavaEE in
 
 ## Creating a New VoK Project
 
-The best way to read this guide is to follow it step by step. All steps are essential to run this example application and no additional code or steps are needed.
+The best way to read this guide is to follow it step by step. All steps are essential
+to run this example application and no additional code or steps are needed.
 
 By following along with this guide, you'll create a VoK project called blog, a (very) simple weblog.
 Before you can start building the application, you need to make sure that you have Java 11 JDK or newer installed.
