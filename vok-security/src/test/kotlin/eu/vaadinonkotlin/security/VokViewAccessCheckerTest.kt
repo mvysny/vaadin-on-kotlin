@@ -17,6 +17,7 @@ import com.vaadin.flow.server.VaadinRequest
 import eu.vaadinonkotlin.VaadinOnKotlin
 import java.security.Principal
 import javax.annotation.security.PermitAll
+import javax.annotation.security.RolesAllowed
 
 private fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException("Not in UI thread, or UI.init() is currently ongoing")
 
@@ -35,7 +36,7 @@ object DummyUserResolver : LoggedInUserResolver {
 /**
  * A view with no parent layout.
  */
-@AllowRoles("admin")
+@RolesAllowed("admin")
 @Route("admin")
 class AdminView : VerticalLayout()
 
@@ -52,23 +53,23 @@ class WelcomeView : VerticalLayout()
  * A view with parent layout.
  */
 @Route("user", layout = MyLayout::class)
-@AllowRoles("user")
+@RolesAllowed("user")
 class UserView : VerticalLayout()
 
-@AllowRoles("sales")
+@RolesAllowed("sales")
 class SalesLayout : VerticalLayout(), RouterLayout
 
 /**
  * This view can not be effectively viewed with 'user' since its parent layout lacks the 'user' role.
  */
-@AllowRoles("sales", "user")
+@RolesAllowed("sales", "user")
 @Route("sales/sale", layout = SalesLayout::class)
 class SalesView : VerticalLayout()
 
 /**
  * This view can not be effectively viewed with anybody.
  */
-@AllowRoles()
+@RolesAllowed()
 @Route("rejectall")
 class RejectAllView : VerticalLayout()
 
