@@ -20,11 +20,7 @@ import javax.servlet.http.HttpServletRequest
  * See [vok-security README](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-security/README.md)
  * on how to use this class properly.
  */
-public class VokViewAccessChecker : ViewAccessChecker(AccessAnnotationChecker()) {
-    init {
-        enable()
-    }
-
+public class VokViewAccessChecker : ViewAccessChecker() {
     override fun getPrincipal(request: VaadinRequest?): Principal? = VaadinOnKotlin.loggedInUserResolver.getCurrentUser()
     override fun getRolesChecker(request: VaadinRequest?): Function<String, Boolean> = Function { role ->
         VaadinOnKotlin.loggedInUserResolver.getCurrentUserRoles().contains(role)
