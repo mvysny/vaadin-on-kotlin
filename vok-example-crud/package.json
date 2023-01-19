@@ -107,7 +107,7 @@
       "@vaadin/virtual-list": "23.3.4",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
-      "lit": "2.3.0"
+      "lit": "2.4.1"
     },
     "devDependencies": {
       "@rollup/plugin-replace": "3.1.0",
@@ -118,14 +118,14 @@
       "rollup-plugin-brotli": "3.1.0",
       "strip-css-comments": "5.0.0",
       "transform-ast": "2.4.4",
-      "typescript": "4.7.4",
-      "vite": "v3.1.0",
-      "vite-plugin-checker": "0.4.9",
+      "typescript": "4.9.3",
+      "vite": "v3.2.4",
+      "vite-plugin-checker": "0.5.1",
       "workbox-build": "6.5.0",
-      "workbox-core": "6.5.0",
-      "workbox-precaching": "6.5.0"
+      "workbox-core": "6.5.4",
+      "workbox-precaching": "6.5.4"
     },
-    "hash": "9e4038359c7f664ce0e0dbdf2ba4b30485d413ba9172b79113c66b5aefbe5ecf"
+    "hash": "c3ed2e06e8bb1bf6f242010b1e782bf03ca92b5f2ed10879f672220d5dd8d910"
   },
   "dependencies": {
     "@polymer/iron-icon": "3.0.1",
@@ -155,7 +155,6 @@
     "@vaadin/email-field": "23.3.4",
     "@vaadin/field-base": "23.3.4",
     "@vaadin/field-highlighter": "23.3.4",
-    "@vaadin/flow-frontend": "./build/flow-frontend",
     "@vaadin/form-layout": "23.3.4",
     "@vaadin/grid": "23.3.4",
     "@vaadin/horizontal-layout": "23.3.4",
@@ -233,7 +232,7 @@
     "@vaadin/virtual-list": "23.3.4",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
-    "lit": "2.3.0"
+    "lit": "2.4.1"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "3.1.0",
@@ -244,12 +243,12 @@
     "rollup-plugin-brotli": "3.1.0",
     "strip-css-comments": "5.0.0",
     "transform-ast": "2.4.4",
-    "typescript": "4.7.4",
-    "vite": "v3.1.0",
-    "vite-plugin-checker": "0.4.9",
+    "typescript": "4.9.3",
+    "vite": "v3.2.4",
+    "vite-plugin-checker": "0.5.1",
     "workbox-build": "6.5.0",
-    "workbox-core": "6.5.0",
-    "workbox-precaching": "6.5.0"
+    "workbox-core": "6.5.4",
+    "workbox-precaching": "6.5.4"
   },
   "overrides": {
     "@vaadin/accordion": "$@vaadin/accordion",
