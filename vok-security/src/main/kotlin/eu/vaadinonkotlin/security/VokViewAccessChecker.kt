@@ -25,8 +25,6 @@ public class VokViewAccessChecker : ViewAccessChecker(AccessAnnotationChecker())
         enable()
     }
 
-    // Vaadin 23.0.x uses AccessAnnotationChecker to get principal.
-    // Vaadin 23.1.0 retrieves the principal this way.
     override fun getPrincipal(request: VaadinRequest?): Principal? = VaadinOnKotlin.loggedInUserResolver.getCurrentUser()
     override fun getRolesChecker(request: VaadinRequest?): Function<String, Boolean> = Function { role ->
         VaadinOnKotlin.loggedInUserResolver.getCurrentUserRoles().contains(role)
