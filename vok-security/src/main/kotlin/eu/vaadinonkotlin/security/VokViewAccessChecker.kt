@@ -1,7 +1,6 @@
 package eu.vaadinonkotlin.security
 
 import com.vaadin.flow.server.VaadinRequest
-import com.vaadin.flow.server.auth.AccessAnnotationChecker
 import com.vaadin.flow.server.auth.ViewAccessChecker
 import eu.vaadinonkotlin.VaadinOnKotlin
 import java.security.Principal
