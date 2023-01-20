@@ -4,7 +4,8 @@
 # VoK-Security
 
 Please see the [VoK Security](https://www.vaadinonkotlin.eu//security/) tutorial for more information
-on how to implement authorization and authentication with vok.
+on how to implement authorization and authentication with vok. Also read
+[Vaadin Simple Security](https://github.com/mvysny/vaadin-simple-security) for more info on how this works.
 
 To use this module, simply add the following to your `build.gradle` file:
 
