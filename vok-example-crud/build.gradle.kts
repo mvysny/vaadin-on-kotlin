@@ -6,7 +6,7 @@ plugins {
 dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
-    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:10.1")
+    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:10.3")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
