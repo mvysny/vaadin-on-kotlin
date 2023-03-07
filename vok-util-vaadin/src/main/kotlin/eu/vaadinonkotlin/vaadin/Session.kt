@@ -5,7 +5,7 @@ import com.vaadin.flow.server.VaadinResponse
 import com.vaadin.flow.server.VaadinService
 import com.vaadin.flow.server.VaadinSession
 import java.io.Serializable
-import javax.servlet.http.Cookie
+import jakarta.servlet.http.Cookie
 import kotlin.reflect.KClass
 
 /**

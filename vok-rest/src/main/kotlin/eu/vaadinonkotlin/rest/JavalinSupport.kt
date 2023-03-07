@@ -6,11 +6,14 @@ import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.CrudHandler
-import io.javalin.core.security.RouteRole
-import io.javalin.plugin.json.*
+import io.javalin.json.JSON_MAPPER_KEY
+import io.javalin.json.JsonMapper
+import io.javalin.json.PipedStreamUtil
+import io.javalin.security.RouteRole
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
+import java.lang.reflect.Type
 import java.nio.charset.Charset
 
 /**
@@ -35,14 +38,14 @@ public fun Javalin.gsonMapper(gson: Gson, charset: Charset = Charsets.UTF_8) {
  * @property charset which encoding to use, defaults to UTF-8
  */
 public class GsonMapper(public val gson: Gson, public val charset: Charset = Charsets.UTF_8) : JsonMapper {
-    override fun toJsonString(obj: Any): String {
+    override fun toJsonString(obj: Any, type: Type): String {
         return when (obj) {
             is String -> obj // the default mapper treats strings as if they are already JSON
             else -> gson.toJson(obj) // convert object to JSON
         }
     }
 
-    override fun toJsonStream(obj: Any): InputStream {
+    override fun toJsonStream(obj: Any, type: Type): InputStream {
         return when (obj) {
             is String -> obj.byteInputStream() // the default mapper treats strings as if they are already JSON
             else -> PipedStreamUtil.getInputStream { pipedOutputStream ->
@@ -53,13 +56,13 @@ public class GsonMapper(public val gson: Gson, public val charset: Charset = Cha
 
     override fun <T : Any> fromJsonString(
         json: String,
-        targetClass: Class<T>
-    ): T = gson.fromJson(json, targetClass)
+        targetType: Type
+    ): T = gson.fromJson(json, targetType)
 
     override fun <T : Any> fromJsonStream(
         json: InputStream,
-        targetClass: Class<T>
-    ): T = gson.fromJson(InputStreamReader(json, charset), targetClass)
+        targetType: Type
+    ): T = gson.fromJson(InputStreamReader(json, charset), targetType)
 }
 
 /**

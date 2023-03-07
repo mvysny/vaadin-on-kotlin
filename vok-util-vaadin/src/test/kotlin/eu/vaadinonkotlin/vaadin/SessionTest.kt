@@ -4,7 +4,7 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.kaributesting.mockhttp.MockResponse
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.vaadin.flow.server.VaadinServletResponse
-import javax.servlet.http.Cookie
+import jakarta.servlet.http.Cookie
 import kotlin.test.expect
 
 class SessionTest : DynaTest({

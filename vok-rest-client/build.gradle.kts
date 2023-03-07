@@ -16,7 +16,7 @@ dependencies {
         exclude(group = "com.fasterxml.jackson.core")
     }
     testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
-    testImplementation("org.eclipse.jetty.websocket:websocket-javax-server:${properties["jetty_version"]}")
+    testImplementation("org.eclipse.jetty.websocket:websocket-jakarta-server:${properties["jetty_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 
     // temporary: add kotlin-reflect until https://github.com/mvysny/vaadin-on-kotlin/issues/60 is sorted out.

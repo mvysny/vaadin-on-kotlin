@@ -6,6 +6,7 @@ import io.javalin.apibuilder.CrudHandler
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import io.javalin.http.UnauthorizedResponse
+import io.javalin.http.queryParamAsClass
 import java.beans.Introspector
 import java.beans.PropertyDescriptor
 import java.math.BigDecimal

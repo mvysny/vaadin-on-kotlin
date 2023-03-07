@@ -6,7 +6,7 @@ dependencies {
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl-v23:${properties["karibudsl_version"]}")
     api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
-    api("javax.servlet:javax.servlet-api:4.0.1")
+    api("jakarta.servlet:jakarta.servlet-api:5.0.0")
 
     // testing
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")

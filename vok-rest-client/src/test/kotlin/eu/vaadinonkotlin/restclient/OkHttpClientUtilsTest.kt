@@ -8,9 +8,9 @@ import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.util.resource.EmptyResource
 import org.eclipse.jetty.webapp.WebAppContext
 import java.io.FileNotFoundException
-import javax.servlet.http.HttpServlet
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServlet
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import kotlin.test.expect
 
 data class Person(var name: String? = null,
