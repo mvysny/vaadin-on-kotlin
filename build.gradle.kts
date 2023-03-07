@@ -27,8 +27,8 @@ subprojects {
     }
 
     tasks.withType<KotlinCompile> {
-        // Vaadin 23 requires JDK 11+ anyway
-        kotlinOptions.jvmTarget = "11"
+        // Vaadin 24 requires JDK 17+ anyway
+        kotlinOptions.jvmTarget = "17"
     }
 
     tasks.withType<Test> {
@@ -41,8 +41,8 @@ subprojects {
 
     java {
         // Vaadin 23 requires JDK 11+
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     // creates a reusable function which configures proper deployment to Bintray

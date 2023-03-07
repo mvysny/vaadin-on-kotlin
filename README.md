@@ -30,7 +30,7 @@ For a Getting Started guide please see the official documentation at [www.vaadin
 
 ## Getting Started
 
-1. Please install Java 11 JDK and git client if you haven't yet.
+1. Please install Java 17 JDK and git client if you haven't yet.
 
 2. Then, at the command prompt, just type in:
 

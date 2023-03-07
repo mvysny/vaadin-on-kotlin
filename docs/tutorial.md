@@ -126,14 +126,14 @@ The best way to read this guide is to follow it step by step. All steps are esse
 to run this example application and no additional code or steps are needed.
 
 By following along with this guide, you'll create a VoK project called blog, a (very) simple weblog.
-Before you can start building the application, you need to make sure that you have Java 11 JDK or newer installed.
+Before you can start building the application, you need to make sure that you have Java 17 JDK or newer installed.
 
 ### Prerequisites
 
-Vaadin-on-Kotlin only requires Java 11 JDK to be installed. The example application has Gradle bundled in;
+Vaadin-on-Kotlin only requires Java 17 JDK to be installed. The example application has Gradle bundled in;
 Gradle will then download everything else (Vaadin, Kotlin, libraries, the Jetty server which is used to run the app from the command line).
 This makes VoK applications really portable
-since they work flawlessly on any OS and CPU which supports Java 11 - be it Windows, Linux or Mac, on x86, ARM or others.
+since they work flawlessly on any OS and CPU which supports Java 17 - be it Windows, Linux or Mac, on x86, ARM or others.
 
 The example application also uses an embedded Java database called [H2](http://www.h2database.com/html/main.html), so there
 is no need for you to set up any database.
