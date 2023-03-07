@@ -17,7 +17,7 @@ class PersonListViewTest : DynaTest({
     }
 
     test("grid is refreshed when data is generated") {
-        _get<Button> { caption = "Generate testing data (Alt+G)" } ._click()
+        _get<Button> { text = "Generate testing data (Alt+G)" } ._click()
 
         val grid = _get<Grid<*>>()
         grid.expectRows(86)
@@ -35,8 +35,8 @@ class PersonListViewTest : DynaTest({
         grid._clickRenderer(0, "edit")
 
         // the CreateEditPerson dialog should pop up
-        _get<TextField> { caption = "Name:" }.value = "Duke Leto Atreides"
-        _get<Button> { caption = "Save" }._click()
+        _get<TextField> { label = "Name:" }.value = "Duke Leto Atreides"
+        _get<Button> { text = "Save" }._click()
 
         // assert the updated person
         expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }
@@ -60,8 +60,8 @@ class PersonListViewTest : DynaTest({
             _get<PersonListView>().gridContextMenu._clickItemWithCaption("edit", grid._get(0))
 
             // the CreateEditPerson dialog should pop up
-            _get<TextField> { caption = "Name:" }.value = "Duke Leto Atreides"
-            _get<Button> { caption = "Save" }._click()
+            _get<TextField> { label = "Name:" }.value = "Duke Leto Atreides"
+            _get<Button> { text = "Save" }._click()
 
             // assert the updated person
             expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }

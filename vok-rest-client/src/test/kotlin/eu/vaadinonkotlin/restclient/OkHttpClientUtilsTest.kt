@@ -63,13 +63,13 @@ class OkHttpClientUtilsTest : DynaTest({
     }
 
     test("404") {
-        expectThrows(FileNotFoundException::class, "404: Not found (GET http://localhost:9876/bar)") {
+        expectThrows(FileNotFoundException::class, "404: Not Found (GET http://localhost:9876/bar)") {
             client().exec("http://localhost:9876/bar".get()) {}
         }
     }
 
     test("500") {
-        expectThrows(HttpResponseException::class, "500: Internal server error") {
+        expectThrows(HttpResponseException::class, "500: Server Error") {
             client().exec("http://localhost:9876/fail".get()) {}
         }
     }

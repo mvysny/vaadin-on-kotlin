@@ -4,12 +4,12 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTestDsl
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
-import com.gitlab.mvysny.jdbiorm.Ignore
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.gitlab.mvysny.jdbiorm.Table
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.h2.Driver
+import org.jdbi.v3.core.annotation.JdbiProperty
 import org.jdbi.v3.core.mapper.reflect.ColumnName
 import java.time.LocalDate
 import java.util.*
@@ -18,7 +18,7 @@ import java.util.*
 data class Person(override var id: Long? = null,
                   @field:ColumnName("name") var personName: String = "",
                   var age: Int = -1,
-                  @field:Ignore var ignored: String? = null,
+                  @field:JdbiProperty(map = false) var ignored: String? = null,
                   @Transient var ignored2: Any? = null,
                   var dateOfBirth: LocalDate? = null,
                   var created: Date? = null,
