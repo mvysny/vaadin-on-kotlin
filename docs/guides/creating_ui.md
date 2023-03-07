@@ -118,7 +118,7 @@ file, you'll notice that it extends from the `VerticalLayout`. By extending the 
 > Vaadin no longer introduces its own layout manager but uses
 the CSS Flex Layout extensively. Yet, we still provide `VerticalLayout` and `HorizontalLayout` as a wrappers over
 the Flex Layout, for those familiar with Vaadin 8's `VerticalLayout` and `HorizontalLayout` and unfamiliar with the Flex layout.
-However, the behavior of those two classes is a bit different with Vaadin 23 than it was in Vaadin 8, please
+However, the behavior of those two classes is a bit different with Vaadin 23+ than it was in Vaadin 8, please
 read [Vaadin server-side layouting for Vaadin 8 and Android developers](http://mavi.logdown.com/posts/6855605)
 for a full explanation.
 
@@ -204,7 +204,7 @@ at the [vaadin-form-layout](https://vaadin.com/components/vaadin-form-layout) do
 
 ## Layouts
 
-Vaadin 23 delegates all layout work to CSS. There are no JavaScript-based layouts like in Vaadin 8 - there is no need
+Vaadin delegates all layout work to CSS. There are no JavaScript-based layouts like in Vaadin 8 - there is no need
 for that since we have CSS flexbox and CSS grid positioning standards which are now powerful enough to
 cater for all layouting needs.
 

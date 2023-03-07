@@ -59,7 +59,7 @@ Thanks to this approach, VoK feels more like a desktop widget library (such as S
 
 # How to Start
 
-vok is based on Vaadin 23, the last LTS.
+vok is based on latest Vaadin.
 
 You can follow the [tutorial](/tutorial) or read the [guides](/guides).
 
