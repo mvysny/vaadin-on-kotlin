@@ -58,7 +58,7 @@ the admin user which will then create other users and assign the roles. We will 
 so that `OrdersView` can only be viewed by the `sales` users:
 
 ```kotlin
-import javax.annotation.security.RolesAllowed
+import jakarta.annotation.security.RolesAllowed
 
 @Route("orders", layout = MainLayout::class)
 @RolesAllowed("sales")
@@ -81,7 +81,7 @@ order in question belongs to the
 currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
 
 ```kotlin
-import javax.annotation.security.PermitAll
+import jakarta.annotation.security.PermitAll
 
 @PermitAll // since the currently logged-in user may not be from the "sales" group but may still see his order.
 class OrderView : VerticalLayout(), BeforeEnterObserver {
@@ -304,10 +304,10 @@ The VoK API authorization API uses role-based authorization on Vaadin views. The
 three annotations available,
 and your view must list at least one of them otherwise it will be inaccessible:
 
-* `javax.annotation.security.RolesAllowed` lists roles that are allowed to visit that view;
+* `jakarta.annotation.security.RolesAllowed` lists roles that are allowed to visit that view;
    the user must be logged in and must be assigned at least one of the roles listed in the annotation
 * `com.vaadin.flow.server.auth.AnonymousAllowed` allows anybody to see this view, even if there is no user logged in.
-* `javax.annotation.security.PermitAll` allows any logged-in user to see this view.
+* `jakarta.annotation.security.PermitAll` allows any logged-in user to see this view.
 
 These rules are quite simple and cover only the basic authorization needs. You can simply
 define more complex rules as a Kotlin code in the `BeforeEnterObserver.beforeEnter()` function

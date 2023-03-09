@@ -735,7 +735,7 @@ package com.example.vok
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class Article(
         override var id: Long? = null,
@@ -1108,7 +1108,7 @@ package com.example.vok
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.Length
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class Comment(
         override var id: Long? = null,
@@ -1190,7 +1190,7 @@ import eu.vaadinonkotlin.vaadin10.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import eu.vaadinonkotlin.vaadin10.vokdb.*
 import org.hibernate.validator.constraints.Length
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class Article(
         override var id: Long? = null,

@@ -309,7 +309,7 @@ import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import org.hibernate.validator.constraints.*
 import java.time.*
-import javax.validation.constraints.*
+import jakarta.validation.constraints.*
 
 enum class MaritalStatus { Single, Married, Divorced, Widowed }
 
