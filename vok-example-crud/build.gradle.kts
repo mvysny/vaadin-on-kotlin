@@ -8,7 +8,7 @@ dependencies {
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
         afterEvaluate {
             if (vaadin.productionMode) {
-                exclude(module = "vaadin-dev-server")
+                exclude(module = "vaadin-dev")
             }
         }
     }
