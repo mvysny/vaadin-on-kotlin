@@ -12,7 +12,7 @@ dependencies {
             }
         }
     }
-    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:11.1")
+    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:11.2")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
@@ -29,7 +29,7 @@ dependencies {
 
     // testing
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
+    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v24:${properties["kaributesting_version"]}")
     testImplementation(project(":vok-rest-client"))
 }
 
