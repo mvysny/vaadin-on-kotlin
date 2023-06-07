@@ -7,10 +7,7 @@ classes
 local.properties
 
 # The following files are generated/updated by vaadin-gradle-plugin
-node_modules/
-vite.generated.ts
 target
-pnpmfile.js
 
 .bundle/
 .jekyll-cache/
