@@ -2,7 +2,6 @@ dependencies {
     api(project(":vok-framework"))
 
     api("com.google.code.gson:gson:${properties["gson_version"]}")
-    api("com.squareup.moshi:moshi:1.13.0")
     api("com.squareup.okhttp3:okhttp:4.9.3")
     api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
     // workaround for https://github.com/google/gson/issues/1059
