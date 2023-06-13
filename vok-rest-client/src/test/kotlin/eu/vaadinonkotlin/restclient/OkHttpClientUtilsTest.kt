@@ -112,5 +112,10 @@ class OkHttpClientUtilsTest : DynaTest({
                 "hello.com".buildUrl {}
             }
         }
+        test("duplicite query parameters supported") {
+            expect("http://hello.com/?q=foo&q=bar") {
+                "http://hello.com/".buildUrl { addQueryParameter("q", "foo").addQueryParameter("q", "bar") }.toString()
+            }
+        }
     }
 })

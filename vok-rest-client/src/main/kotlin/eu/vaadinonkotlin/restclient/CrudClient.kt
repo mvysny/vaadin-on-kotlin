@@ -101,7 +101,7 @@ public class CrudClient<T: Any>(
                 is FullTextFilter -> "fulltext:$value"
                 else -> throw IllegalArgumentException("Unsupported filter $filter")
             }
-            addQueryParameter(propName, restValue)
+            addQueryParameter(propName, restValue ?: "null")
         } else {
             when (filter) {
                 is AndFilter -> filter.children.forEach { addFilterQueryParameters(it) }
