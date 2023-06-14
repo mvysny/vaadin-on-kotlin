@@ -1,10 +1,12 @@
 package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.vokdataloader.*
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
+import eu.vaadinonkotlin.MediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.hc.core5.net.URIBuilder
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
 
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [OkHttpClientVokPlugin.gson].
@@ -44,7 +46,7 @@ import org.apache.hc.core5.net.URIBuilder
 public class CrudClient<T: Any>(
         public val baseUrl: String,
         public val itemClass: Class<T>,
-        public val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!,
+        public val client: HttpClient = OkHttpClientVokPlugin.httpClient!!,
         public val converter: Converter<in Any, String> = QueryParameterConverter()) : DataLoader<T> {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
@@ -60,7 +62,7 @@ public class CrudClient<T: Any>(
      * @return a list of items matching the query, may be empty.
      */
     public fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
-        val url: HttpUrl = baseUrl.buildUrl {
+        val url: URI = baseUrl.buildUrl {
             if (range != 0..Long.MAX_VALUE) {
                 addParameter("offset", range.first.toString())
                 addParameter("limit", range.length.toString())
@@ -72,7 +74,7 @@ public class CrudClient<T: Any>(
                 addFilterQueryParameters(filter)
             }
         }
-        val request: Request = url.buildRequest()
+        val request: HttpRequest = url.buildRequest()
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
@@ -112,42 +114,36 @@ public class CrudClient<T: Any>(
     }
 
     public fun getOne(id: String): T {
-        val request: Request = "$baseUrl$id".buildUrl().buildRequest()
+        val request: HttpRequest = "$baseUrl$id".buildUrl().buildRequest()
         return client.exec(request) { response -> response.json(itemClass) }
     }
 
     public fun create(entity: T) {
         val json: String = OkHttpClientVokPlugin.gson.toJson(entity)
-        val body: RequestBody = json.toRequestBody(mediaTypeJson)
-        val request: Request = baseUrl.buildUrl().buildRequest { post(body) }
+        val request: HttpRequest = baseUrl.buildUrl().buildRequest { post(json, MediaType.jsonUtf8) }
         client.exec(request) {}
     }
 
     public fun update(id: String, entity: T) {
         val json: String = OkHttpClientVokPlugin.gson.toJson(entity)
-        val body: RequestBody = json.toRequestBody(mediaTypeJson)
-        val request: Request = "$baseUrl$id".buildUrl().buildRequest { patch(body) }
+        val request: HttpRequest = "$baseUrl$id".buildUrl().buildRequest { patch(json, MediaType.jsonUtf8) }
         client.exec(request) {}
     }
 
     public fun delete(id: String) {
-        val request: Request = "$baseUrl$id".buildUrl().buildRequest { delete() }
+        val request: HttpRequest = "$baseUrl$id".buildUrl().buildRequest { DELETE() }
         client.exec(request) {}
-    }
-
-    public companion object {
-        public val mediaTypeJson: MediaType = "application/json; charset=utf-8".toMediaType()
     }
 
     override fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T> =
             getAll(filter, sortBy, range)
 
     override fun getCount(filter: Filter<T>?): Long {
-        val request: Request = "$baseUrl?select=count".buildUrl {
+        val request: HttpRequest = "$baseUrl?select=count".buildUrl {
             if (filter != null) {
                 addFilterQueryParameters(filter)
             }
         }.buildRequest()
-        return client.exec(request) { response -> response.string().toLong() }
+        return client.exec(request) { response -> response.body().reader().readText().toLong() }
     }
 }

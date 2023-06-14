@@ -11,6 +11,9 @@ import java.io.FileNotFoundException
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
 import kotlin.test.expect
 
 data class Person(var name: String? = null,
@@ -46,13 +49,13 @@ fun DynaNodeGroup.usingJavalin() {
 }
 
 class OkHttpClientUtilsTest : DynaTest({
-    fun String.get(): Request = Request.Builder().url(this).get().build()
-    lateinit var request: Request
+    fun String.get(): HttpRequest = HttpRequest.newBuilder(URI.create(this)).GET().build()
+    lateinit var request: HttpRequest
     beforeEach {
         OkHttpClientVokPlugin().init()
         request = "http://localhost:9876/foo".get()
     }
-    fun client(): OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
+    fun client(): HttpClient = OkHttpClientVokPlugin.httpClient!!
     afterEach { OkHttpClientVokPlugin().destroy() }
 
     usingJavalin()
@@ -99,12 +102,15 @@ class OkHttpClientUtilsTest : DynaTest({
     group("buildUrl") {
         test("simple build") {
             expect("http://hello.com/") {
-                "http://hello.com".buildUrl {  } .toUrl().toString()
+                "http://hello.com/".buildUrl {  } .toString()
+            }
+            expect("http://hello.com") {
+                "http://hello.com".buildUrl {  } .toString()
             }
         }
         test("add query parameters") {
             expect("http://hello.com/?q=foo%20bar") {
-                "http://hello.com/".buildUrl { addParameter("q", "foo bar") }.toUrl().toString()
+                "http://hello.com/".buildUrl { addParameter("q", "foo bar") }.toString()
             }
         }
         test("fails with invalid URL") {

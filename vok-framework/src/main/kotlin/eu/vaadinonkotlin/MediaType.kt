@@ -33,6 +33,7 @@ public data class MediaType(
 
     public companion object {
         public val json: MediaType = MediaType("application", "json")
+        public val jsonUtf8: MediaType = json.charsetUtf8()
         public val xml: MediaType = MediaType("application", "xml")
         public val html: MediaType = MediaType("text", "html")
     }
