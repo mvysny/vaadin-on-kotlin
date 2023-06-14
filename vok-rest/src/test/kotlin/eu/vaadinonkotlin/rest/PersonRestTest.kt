@@ -6,11 +6,8 @@ import com.github.mvysny.vokdataloader.SortClause
 import com.github.mvysny.vokdataloader.asc
 import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
-import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.util.resource.EmptyResource
 import org.eclipse.jetty.webapp.WebAppContext
@@ -21,6 +18,7 @@ import java.time.temporal.ChronoField
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import java.net.http.HttpClient
 import kotlin.test.expect
 
 class MyJavalinServlet : HttpServlet() {
@@ -37,13 +35,13 @@ class MyJavalinServlet : HttpServlet() {
 
 // Demoes direct access via okhttp
 class PersonRestClient(val baseUrl: String) {
-    private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
+    private val client: HttpClient = OkHttpClientVokPlugin.httpClient!!
     fun helloWorld(): String {
-        val request = Request.Builder().url("${baseUrl}helloworld").build()
-        return client.exec(request) { response -> response.string() }
+        val request = "${baseUrl}helloworld".buildUrl().buildRequest()
+        return client.exec(request) { response -> response.bodyAsString() }
     }
     fun getAll(): List<Person> {
-        val request = Request.Builder().url(baseUrl).build()
+        val request = baseUrl.buildUrl().buildRequest()
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
 }

@@ -62,8 +62,8 @@ public fun HttpResponse<*>.bodyAsString(): String {
     return when (val body = body()) {
         is String -> body
         is ByteArray -> body.toString(Charsets.UTF_8)
-        is InputStream -> body.readAllBytes().toString(Charsets.UTF_8)
-        is Reader -> body.readText()
+        is InputStream -> body.buffered().reader().readText()
+        is Reader -> body.buffered().readText()
         is CharArray -> body.concatToString()
         else -> body.toString()
     }

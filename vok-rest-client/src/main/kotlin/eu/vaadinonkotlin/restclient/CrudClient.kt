@@ -2,7 +2,6 @@ package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.vokdataloader.*
 import eu.vaadinonkotlin.MediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.hc.core5.net.URIBuilder
 import java.net.URI
 import java.net.http.HttpClient
