@@ -2,8 +2,6 @@ package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.dynatest.*
 import io.javalin.Javalin
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.util.resource.EmptyResource
 import org.eclipse.jetty.webapp.WebAppContext
