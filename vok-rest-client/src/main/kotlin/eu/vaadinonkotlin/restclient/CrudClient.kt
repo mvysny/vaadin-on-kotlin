@@ -4,6 +4,7 @@ import com.github.mvysny.vokdataloader.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.apache.hc.core5.net.URIBuilder
 
 /**
  * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [OkHttpClientVokPlugin.gson].
@@ -61,11 +62,11 @@ public class CrudClient<T: Any>(
     public fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
         val url: HttpUrl = baseUrl.buildUrl {
             if (range != 0..Long.MAX_VALUE) {
-                addQueryParameter("offset", range.first.toString())
-                addQueryParameter("limit", range.length.toString())
+                addParameter("offset", range.first.toString())
+                addParameter("limit", range.length.toString())
             }
             if (sortBy.isNotEmpty()) {
-                addQueryParameter("sort_by", sortBy.joinToString(",") { "${if(it.asc)"+" else "-"}${it.propertyName}" })
+                addParameter("sort_by", sortBy.joinToString(",") { "${if(it.asc)"+" else "-"}${it.propertyName}" })
             }
             if (filter != null) {
                 addFilterQueryParameters(filter)
@@ -75,7 +76,7 @@ public class CrudClient<T: Any>(
         return client.exec(request) { response -> response.jsonArray(itemClass) }
     }
 
-    private fun HttpUrl.Builder.addFilterQueryParameters(filter: Filter<in T>) {
+    private fun URIBuilder.addFilterQueryParameters(filter: Filter<in T>) {
 
         fun opToRest(op: CompareOperator): String = when (op) {
             CompareOperator.eq -> "eq"
@@ -101,7 +102,7 @@ public class CrudClient<T: Any>(
                 is FullTextFilter -> "fulltext:$value"
                 else -> throw IllegalArgumentException("Unsupported filter $filter")
             }
-            addQueryParameter(propName, restValue ?: "null")
+            addParameter(propName, restValue ?: "null")
         } else {
             when (filter) {
                 is AndFilter -> filter.children.forEach { addFilterQueryParameters(it) }

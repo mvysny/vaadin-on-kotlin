@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.VOKPlugin
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.apache.hc.core5.net.URIBuilder
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -123,21 +124,21 @@ public fun <V> ResponseBody.jsonMap(valueClass: Class<V>): Map<String, V> = OkHt
  * ```
  * val url: HttpUrl = baseUrl.buildUrl {
  *   if (range != 0..Long.MAX_VALUE) {
- *     addQueryParameter("offset", range.first.toString())
- *     addQueryParameter("limit", range.length.toString())
+ *     addParameter("offset", range.first.toString())
+ *     addParameter("limit", range.length.toString())
  *   }
  * }
  * ```
  * @throws IllegalArgumentException if the URL is unparseable
  */
-public inline fun String.buildUrl(block: HttpUrl.Builder.()->Unit = {}): HttpUrl = toHttpUrl().newBuilder().apply {
-    block()
-}.build()
+public inline fun String.buildUrl(block: URIBuilder.()->Unit = {}): HttpUrl {
+    val uri = URIBuilder(this).apply(block).build()
+    // temporary, until we can get rid of OkHttp
+    return uri.toString().toHttpUrl()
+}
 
 /**
  * Builds a new OkHttp [Request] using given URL. You can optionally configure the request in [block]. Use [exec] to
- * execute the request with given OkHttp client and obtain a response. By default the `GET` request gets built.
+ * execute the request with given OkHttp client and obtain a response. By default, the `GET` request gets built.
  */
-public inline fun HttpUrl.buildRequest(block: Request.Builder.()->Unit = {}): Request = Request.Builder().url(this).apply {
-    block()
-}.build()
+public inline fun HttpUrl.buildRequest(block: Request.Builder.()->Unit = {}): Request = Request.Builder().url(this).apply(block).build()
