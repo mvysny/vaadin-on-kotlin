@@ -20,10 +20,6 @@ dependencies {
     testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
     testImplementation("org.eclipse.jetty.websocket:websocket-jakarta-server:${properties["jetty_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
-
-    // temporary: add kotlin-reflect until https://github.com/mvysny/vaadin-on-kotlin/issues/60 is sorted out.
-    testImplementation("com.squareup.moshi:moshi-kotlin:1.13.0")
-    testImplementation(kotlin("reflect")) // make sure to use the same kotlin-reflect version as the kotlin language itself.
 }
 
 kotlin {
