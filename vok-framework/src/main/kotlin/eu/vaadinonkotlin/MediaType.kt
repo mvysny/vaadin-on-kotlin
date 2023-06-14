@@ -26,7 +26,7 @@ public data class MediaType(
         append('/')
         append(subtype)
         if (parameterNamesAndValues.isNotEmpty()) {
-            append(" ;")
+            append("; ")
             parameterNamesAndValues.forEach { append(it.first).append('=').append(it.second) }
         }
     }
