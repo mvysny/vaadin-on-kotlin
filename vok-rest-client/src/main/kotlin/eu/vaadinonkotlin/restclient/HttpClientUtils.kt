@@ -1,11 +1,11 @@
 package eu.vaadinonkotlin.restclient
 
 import com.fatboyindustrial.gsonjavatime.Converters
+import com.gitlab.mvysny.uribuilder.net.URIBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.MediaType
 import eu.vaadinonkotlin.VOKPlugin
-import org.apache.hc.core5.net.URIBuilder
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream

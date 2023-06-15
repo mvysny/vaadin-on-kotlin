@@ -4,17 +4,13 @@ import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.DynaTestDsl
 import com.github.mvysny.dynatest.expectList
+import eu.vaadinonkotlin.restclient.*
 import example.crudflow.person.MaritalStatus
 import example.crudflow.person.Person
-import eu.vaadinonkotlin.restclient.OkHttpClientVokPlugin
-import eu.vaadinonkotlin.restclient.exec
-import eu.vaadinonkotlin.restclient.jsonArray
-import io.javalin.Javalin
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.util.resource.EmptyResource
 import org.eclipse.jetty.webapp.WebAppContext
+import java.net.http.HttpClient
 import java.time.LocalDate
 import kotlin.test.expect
 
@@ -22,18 +18,18 @@ class PersonRestClient(val baseUrl: String) {
     init {
         require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
     }
-    private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
+    private val client: HttpClient = OkHttpClientVokPlugin.httpClient!!
     fun helloWorld(): String {
-        val request = Request.Builder().url("${baseUrl}/person/helloworld").build()
-        return client.exec(request) { response -> response.string() }
+        val request = "${baseUrl}/person/helloworld".buildUrl().buildRequest()
+        return client.exec(request) { response -> response.bodyAsString() }
     }
     fun getAll(): List<Person> {
-        val request = Request.Builder().url("${baseUrl}/person").build()
+        val request = "${baseUrl}/person".buildUrl().buildRequest()
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
     fun getAllRaw(): String {
-        val request = Request.Builder().url("${baseUrl}/person").build()
-        return client.exec(request) { response -> response.string() }
+        val request = "${baseUrl}/person".buildUrl().buildRequest()
+        return client.exec(request) { response -> response.bodyAsString() }
     }
 }
 

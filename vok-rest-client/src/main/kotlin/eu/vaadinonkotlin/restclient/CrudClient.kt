@@ -1,8 +1,8 @@
 package eu.vaadinonkotlin.restclient
 
 import com.github.mvysny.vokdataloader.*
+import com.gitlab.mvysny.uribuilder.net.URIBuilder
 import eu.vaadinonkotlin.MediaType
-import org.apache.hc.core5.net.URIBuilder
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -62,7 +62,7 @@ public class CrudClient<T: Any>(
      */
     public fun getAll(filter: Filter<in T>? = null, sortBy: List<SortClause> = listOf(), range: LongRange = 0..Long.MAX_VALUE): List<T> {
         val url: URI = baseUrl.buildUrl {
-            if (range != 0..Long.MAX_VALUE) {
+            if (range != 0L..Long.MAX_VALUE) {
                 addParameter("offset", range.first.toString())
                 addParameter("limit", range.length.toString())
             }
