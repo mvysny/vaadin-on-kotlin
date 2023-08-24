@@ -102,8 +102,8 @@ You can easily start Javalin with Jetty which allows you to test your REST endpo
 
 ```gradle
 dependencies {
-    testCompile("com.github.vok:vok-rest-client:x.y.z")
-    testCompile("org.eclipse.jetty.websocket:websocket-server:9.4.44.v20210927")
+    testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.0.0")
+    testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:12.0.0")
 }
 ```
 
@@ -112,62 +112,61 @@ This will add Jetty for booting up a testing Javalin server; we're going to acce
 The testing file will look like this:
 
 ```kotlin
-// Demoes Retrofit + annotations client
-interface PersonRestClient {
-    @GET("helloworld")
-    @Throws(IOException::class)
-    fun helloWorld(): String
-
-    @GET(".")
-    @Throws(IOException::class)
-    fun getAll(): List<Person>
+// Demoes direct access via httpclient
+class PersonRestClient(val baseUrl: String) {
+  private val client: HttpClient = HttpClientVokPlugin.httpClient!!
+  fun helloWorld(): String {
+    val request = "${baseUrl}helloworld".buildUrl().buildRequest()
+    return client.exec(request) { response -> response.bodyAsString() }
+  }
+  fun getAll(): List<Person> {
+    val request = baseUrl.buildUrl().buildRequest()
+    return client.exec(request) { response -> response.jsonArray(Person::class.java) }
+  }
 }
 
-// Demoes direct access via okhttp
-class PersonRestClient2(val baseUrl: String) {
-    private val client: OkHttpClient = RetrofitClientVokPlugin.okHttpClient!!
-    fun helloWorld(): String {
-        val request = Request.Builder().url("${baseUrl}helloworld").build()
-        return client.exec(request) { response -> response.string() }
-    }
-    fun getAll(): List<Person> {
-        val request = Request.Builder().url(baseUrl).build()
-        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
-    }
-}
-
+@DynaTestDsl
 fun DynaNodeGroup.usingRestClient() {
-    beforeGroup { RetrofitClientVokPlugin().init() }
-    afterGroup { RetrofitClientVokPlugin().destroy() }
+  beforeGroup { HttpClientVokPlugin().init() }
+  afterGroup { HttpClientVokPlugin().destroy() }
+}
+
+@DynaTestDsl
+fun DynaNodeGroup.usingJavalin() {
+  lateinit var server: Server
+  beforeGroup {
+    val ctx = WebAppContext()
+    // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
+    ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+    ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
+    server = Server(9876)
+    server.handler = ctx
+    server.start()
+  }
+  afterGroup { server.stop() }
 }
 
 class PersonRestTest : DynaTest({
-    lateinit var javalin: Javalin
-    beforeGroup {
-        javalin = Javalin.create().disableStartupBanner()
-        javalin.configureRest().start(9876)
-    }
-    afterGroup { javalin.stop() }
 
+    usingJavalin()
     usingDb()  // to have access to the database.
     usingRestClient()
 
     test("hello world") {
-        val client = createRetrofit("http://localhost:9876/rest/person/").create(PersonRestClient::class.java)
+        val client = PersonRestClient("http://localhost:9876/rest/person/")
         expect("Hello World") { client.helloWorld() }
-        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
+        expectList() { client.getAll() }
+        val p = Person(
+            personName = "Duke Leto Atreides",
+            age = 45,
+            dateOfBirth = LocalDate.of(1980, 5, 1),
+            maritalStatus = MaritalStatus.Single,
+            alive = false
+        )
         p.save()
         expectList(p) { client.getAll() }
     }
-
-    test("hello world 2") {
-        val client = PersonRestClient2("http://localhost:9876/rest/person/")
-        expect("Hello World") { client.helloWorld() }
-        val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-        p.save()
-        expectList(p) { client.getAll() }
-    }
-}
+})
 ```
 
 Please consult the [vok-example-crud-vokdb](../vok-example-crud-vokdb) example project for more info.
