@@ -2,10 +2,8 @@ package eu.vaadinonkotlin.restclient
 
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.gitlab.mvysny.uribuilder.net.URIBuilder
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import eu.vaadinonkotlin.MediaType
-import eu.vaadinonkotlin.VOKPlugin
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -69,46 +67,19 @@ public fun HttpResponse<*>.bodyAsString(): String {
     }
 }
 
-/**
- * Makes sure that [okHttpClient] is properly destroyed.
- */
-public class OkHttpClientVokPlugin : VOKPlugin {
-    override fun init() {
-        if (httpClient == null) {
-            httpClient = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build()
-        }
-    }
-
-    override fun destroy() {
-        httpClient = null
-    }
-
-    public companion object {
-        /**
-         * All REST client calls will reuse this client.
-         */
-        public var httpClient: HttpClient? = null
-        /**
-         * The default [Gson] interface used by all serialization/deserialization methods. Simply reassign with another [Gson]
-         * instance to reconfigure. To be thread-safe, do the reassignment in your `ServletContextListener`.
-         */
-        public var gson: Gson = GsonBuilder().registerJavaTimeAdapters().create()
-    }
-}
-
-private fun GsonBuilder.registerJavaTimeAdapters(): GsonBuilder = apply {
+public fun GsonBuilder.registerJavaTimeAdapters(): GsonBuilder = apply {
     Converters.registerAll(this)
 }
 
 /**
  * Parses the response as a JSON and converts it to a Java object.
  */
-public fun <T> HttpResponse<InputStream>.json(clazz: Class<T>): T = OkHttpClientVokPlugin.gson.fromJson(body().buffered().reader(), clazz)
+public fun <T> HttpResponse<InputStream>.json(clazz: Class<T>): T = HttpClientVokPlugin.gson.fromJson(body().buffered().reader(), clazz)
 
 /**
- * Parses the response as a JSON array and converts it into a list of Java object with given [clazz] using [OkHttpClientVokPlugin.gson].
+ * Parses the response as a JSON array and converts it into a list of Java object with given [clazz] using [HttpClientVokPlugin.gson].
  */
-public fun <T> HttpResponse<InputStream>.jsonArray(clazz: Class<T>): List<T> = OkHttpClientVokPlugin.gson.fromJsonArray(body().buffered().reader(), clazz)
+public fun <T> HttpResponse<InputStream>.jsonArray(clazz: Class<T>): List<T> = HttpClientVokPlugin.gson.fromJsonArray(body().buffered().reader(), clazz)
 
 /**
  * Runs given [request] synchronously and then runs [responseBlock] with the response body.
@@ -116,7 +87,7 @@ public fun <T> HttpResponse<InputStream>.jsonArray(clazz: Class<T>): List<T> = O
  *
  * The [responseBlock] is only called on HTTP 200..299 SUCCESS. [checkOk] is used, to check for
  * possible failure reported as HTTP status code, prior calling the block.
- * @param responseBlock runs on success. Takes a [ResponseBody] and produces the object of type [T].
+ * @param responseBlock runs on success. Takes a [HttpResponse] and produces the object of type [T].
  * You can use [json], [jsonArray] or other utility methods to convert JSON to a Java object.
  * @return whatever has been returned by [responseBlock]
  */
@@ -129,9 +100,9 @@ public fun <T> HttpClient.exec(request: HttpRequest, responseBlock: (HttpRespons
 }
 
 /**
- * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [OkHttpClientVokPlugin.gson].
+ * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [HttpClientVokPlugin.gson].
  */
-public fun <V> HttpResponse<InputStream>.jsonMap(valueClass: Class<V>): Map<String, V> = OkHttpClientVokPlugin.gson.fromJsonMap(body().buffered().reader(), valueClass)
+public fun <V> HttpResponse<InputStream>.jsonMap(valueClass: Class<V>): Map<String, V> = HttpClientVokPlugin.gson.fromJsonMap(body().buffered().reader(), valueClass)
 
 /**
  * Parses this string as a `http://` or `https://` URL. You can configure the URL

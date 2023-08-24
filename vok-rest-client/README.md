@@ -8,12 +8,7 @@ This module serves two purposes:
 * It makes it easy to consume REST endpoints exported by another server and process/show them in your VoK server.
 * It makes it easy to test your VoK REST server endpoints.
 
-We're using the [okhttp](http://square.github.io/okhttp/)
-library.
-
-> Note: You can optionally use the [Retrofit](https://square.github.io/retrofit/)
-library though this is not recommended: it is based on annotation magic which tends
-to fail with mysterious ways. VoK provides no direct support for Retrofit.
+We're using the built-in [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html).
 
 > Note: If you wish to _expose_ your objects from your app, rather than _consume_ objects from some other service, please see the [vok-rest](../vok-rest) module.
 
@@ -29,11 +24,9 @@ dependencies {
 
 > Note: to obtain the newest version see above for the most recent tag
 
-Now you can write the REST client. The recommended method is to use `okhttp` directly.
-
 ### Using `okhttp`
 
-You simply use the `OkHttpClient` to make HTTP calls. See [OkHttp home page](http://square.github.io/okhttp/) for documentation on the API.
+You simply use the `HttpClient` to make HTTP calls. See [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html) for documentation on the API.
 VoK introduces the `exec` method which helps tremendously with synchronous calls. It fails automatically when the response is not in 200..299.
 
 See the example code for more details:
@@ -41,35 +34,37 @@ See the example code for more details:
 ```kotlin
 // Demoes direct access via okhttp
 class PersonRestClient(val baseUrl: String) {
-    init {
-        require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
-    }
-    private val client: OkHttpClient = OkHttpClientVokPlugin.okHttpClient!!
-    fun helloWorld(): String {
-        val request = "$baseUrl/helloworld".buildUrl().buildRequest()
-        return client.exec(request) { response -> response.string() }
-    }
-    fun getAll(): List<Person> {
-        val request = baseUrl.buildUrl().buildRequest()
-        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
-    }
+  init {
+    require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
+  }
+
+  private val client: HttpClient = HttpClientVokPlugin.httpClient!!
+  fun helloWorld(): String {
+    val request = "$baseUrl/helloworld".buildUrl().buildRequest()
+    return client.exec(request) { response -> response.bodyAsString() }
+  }
+  fun getAll(): List<Person> {
+    val request = baseUrl.buildUrl().buildRequest()
+    return client.exec(request) { response -> response.jsonArray(Person::class.java) }
+  }
 }
+
 val client = PersonRestClient("http://localhost:8080/rest/person")
 println(client.getAll())
 ```
 
-The `OkHttpClientVokPlugin.okHttpClient` is constructed automatically by the
-VOK module loading mechanism in `OkHttpClientVokPlugin.init()`. Alternatively, if you
-need to customize/configure the `OkHttpClient` instance, you can simply assign your
-own `OkHttpClient` instance to `OkHttpClientVokPlugin.okHttpClient` before
+The `HttpClientVokPlugin.httpClient` is constructed automatically by the
+VOK module loading mechanism in `HttpClientVokPlugin.init()`. Alternatively, if you
+need to customize/configure the `HttpClient` instance, you can simply assign your
+own `HttpClient` instance to `HttpClientVokPlugin.httpClient` before
 the VoK is initialized. Your instance will not be overwritten by `init()`.
 
 ### Adding Query Parameters
 
-Just use the `buildUrl` extension method which uses OkHttp's `HttpUrl` under the belt:
+Just use the `buildUrl` extension method which uses URIBuilder under the belt:
 ```
 val request = "http://localhost:8080/rest/person".buildUrl {
-    addQueryParameter("q", "foo bar")
+    addParameter("q", "foo bar")
 } .buildRequest()
 client.exec(request) { ... }
 ```
@@ -149,9 +144,9 @@ You need to do one of these:
   also properly initialize and destroy the `vok-rest-client` module. In the example below, this is
   done via the call to `usingApp()` function, which in turn calls `Bootstrap().contextInitialized(null)`
   and `Bootstrap().contextDestroyed(null)`.
-* Or you need to init the module manually: `OkHttpClientVokPlugin().init()` and `OkHttpClientVokPlugin().destroy()`
+* Or you need to init the module manually: `HttpClientVokPlugin().init()` and `HttpClientVokPlugin().destroy()`
 
-Otherwise the OkHttpClient won't get initialized and the test will fail with NPE.
+Otherwise the HttpClient won't get initialized and the test will fail with NPE.
 
 Example test:
 
@@ -196,7 +191,7 @@ dependencies {
 
 Gson by default only export non-transient fields. It only exports actual Java fields, or only Kotlin properties that are backed by actual fields;
 it ignores computed Kotlin properties such as `val reviews: List<Review> get() = Review.findAll()`.
-To reconfigure Gson, just set a new instance to `OkHttpClientVokPlugin.gson`. To reconfigure `OkHttpClient` just set `OkHttpClientVokPlugin.okHttpClient`
+To reconfigure Gson, just set a new instance to `HttpClientVokPlugin.gson`. To reconfigure `HttpClient` just set `HttpClientVokPlugin.httpClient`
 before calling `VaadinOnKotlin.init()`.
 
 Please see [Gson User Guide](https://github.com/google/gson/blob/master/UserGuide.md) for more details.

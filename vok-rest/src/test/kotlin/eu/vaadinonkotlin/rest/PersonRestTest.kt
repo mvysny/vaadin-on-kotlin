@@ -34,7 +34,7 @@ class MyJavalinServlet : HttpServlet() {
 
 // Demoes direct access via okhttp
 class PersonRestClient(val baseUrl: String) {
-    private val client: HttpClient = OkHttpClientVokPlugin.httpClient!!
+    private val client: HttpClient = HttpClientVokPlugin.httpClient!!
     fun helloWorld(): String {
         val request = "${baseUrl}helloworld".buildUrl().buildRequest()
         return client.exec(request) { response -> response.bodyAsString() }
@@ -47,8 +47,8 @@ class PersonRestClient(val baseUrl: String) {
 
 @DynaTestDsl
 fun DynaNodeGroup.usingRestClient() {
-    beforeGroup { OkHttpClientVokPlugin().init() }
-    afterGroup { OkHttpClientVokPlugin().destroy() }
+    beforeGroup { HttpClientVokPlugin().init() }
+    afterGroup { HttpClientVokPlugin().destroy() }
 }
 
 @DynaTestDsl

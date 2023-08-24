@@ -50,11 +50,11 @@ class OkHttpClientUtilsTest : DynaTest({
     fun String.get(): HttpRequest = HttpRequest.newBuilder(URI.create(this)).GET().build()
     lateinit var request: HttpRequest
     beforeEach {
-        OkHttpClientVokPlugin().init()
+        HttpClientVokPlugin().init()
         request = "http://localhost:9876/foo".get()
     }
-    fun client(): HttpClient = OkHttpClientVokPlugin.httpClient!!
-    afterEach { OkHttpClientVokPlugin().destroy() }
+    fun client(): HttpClient = HttpClientVokPlugin.httpClient!!
+    afterEach { HttpClientVokPlugin().destroy() }
 
     usingJavalin()
 
