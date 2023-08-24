@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.10"
     id("com.vaadin") apply(false)
     `maven-publish`
     signing
