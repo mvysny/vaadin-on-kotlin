@@ -24,15 +24,16 @@ dependencies {
 
 > Note: to obtain the newest version see above for the most recent tag
 
-### Using `okhttp`
+### Using httpclient
 
-You simply use the `HttpClient` to make HTTP calls. See [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html) for documentation on the API.
+You simply use the `HttpClient` to make HTTP calls. The client is built-in in Java 9 and higher.
+See [HttpClient](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html) for the documentation on the API.
 VoK introduces the `exec` method which helps tremendously with synchronous calls. It fails automatically when the response is not in 200..299.
 
 See the example code for more details:
 
 ```kotlin
-// Demoes direct access via okhttp
+// Demoes direct access via httpclient
 class PersonRestClient(val baseUrl: String) {
   init {
     require(!baseUrl.endsWith("/")) { "$baseUrl must not end with a slash" }
