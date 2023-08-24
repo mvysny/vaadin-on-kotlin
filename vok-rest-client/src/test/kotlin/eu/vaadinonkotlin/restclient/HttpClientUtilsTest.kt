@@ -3,12 +3,11 @@ package eu.vaadinonkotlin.restclient
 import com.github.mvysny.dynatest.*
 import io.javalin.Javalin
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.util.resource.EmptyResource
-import org.eclipse.jetty.webapp.WebAppContext
 import java.io.FileNotFoundException
 import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.eclipse.jetty.ee10.webapp.WebAppContext
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -37,7 +36,8 @@ fun DynaNodeGroup.usingJavalin() {
     lateinit var server: Server
     beforeGroup {
         val ctx = WebAppContext()
-        ctx.baseResource = EmptyResource.INSTANCE
+        // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
+        ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
         ctx.addServlet(MyJavalinServlet::class.java, "/*")
         server = Server(9876)
         server.handler = ctx

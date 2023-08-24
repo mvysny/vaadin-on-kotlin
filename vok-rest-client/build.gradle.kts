@@ -14,8 +14,8 @@ dependencies {
         exclude(group = "org.eclipse.jetty.websocket")
         exclude(group = "com.fasterxml.jackson.core")
     }
-    testImplementation("org.eclipse.jetty:jetty-webapp:${properties["jetty_version"]}")
-    testImplementation("org.eclipse.jetty.websocket:websocket-jakarta-server:${properties["jetty_version"]}")
+    testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp:${properties["jetty_version"]}")
+    testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:${properties["jetty_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
 }
 
