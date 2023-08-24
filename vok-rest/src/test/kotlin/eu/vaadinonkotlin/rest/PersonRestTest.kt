@@ -32,7 +32,7 @@ class MyJavalinServlet : HttpServlet() {
     }
 }
 
-// Demoes direct access via okhttp
+// Demoes direct access via httpclient
 class PersonRestClient(val baseUrl: String) {
     private val client: HttpClient = HttpClientVokPlugin.httpClient!!
     fun helloWorld(): String {

@@ -46,7 +46,7 @@ fun DynaNodeGroup.usingJavalin() {
     afterGroup { server.stop() }
 }
 
-class OkHttpClientUtilsTest : DynaTest({
+class HttpClientUtilsTest : DynaTest({
     fun String.get(): HttpRequest = HttpRequest.newBuilder(URI.create(this)).GET().build()
     lateinit var request: HttpRequest
     beforeEach {

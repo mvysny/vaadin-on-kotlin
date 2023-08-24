@@ -38,7 +38,7 @@ import java.net.http.HttpRequest
  * @property baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
  * @property converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
  * zone; it is pretty much recommended to set a specific time zone.
- * @property client which HTTP client to use, defaults to [HttpClientVokPlugin.okHttpClient].
+ * @property client which HTTP client to use, defaults to [HttpClientVokPlugin.httpClient].
  * @property converter converts filter values to strings when querying for data.
  * Defaults to [QueryParameterConverter].
  */

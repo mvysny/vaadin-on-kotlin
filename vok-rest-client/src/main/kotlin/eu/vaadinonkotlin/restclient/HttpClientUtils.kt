@@ -125,7 +125,7 @@ public inline fun String.buildUrl(block: URIBuilder.()->Unit = {}): URI {
 
 /**
  * Builds a new [HttpRequest] using given URL. You can optionally configure the request in [block]. Use [exec] to
- * execute the request with given OkHttp client and obtain a response. By default, the `GET` request gets built.
+ * execute the request and obtain a response. By default, the `GET` request gets built.
  */
 public inline fun URI.buildRequest(block: HttpRequest.Builder.()->Unit = {}): HttpRequest = HttpRequest.newBuilder(this).apply(block).build()
 
