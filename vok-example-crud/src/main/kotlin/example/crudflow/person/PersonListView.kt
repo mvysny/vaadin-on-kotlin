@@ -115,8 +115,11 @@ fun <T> Grid<T>.addButtonColumn(icon: IconFactory, key: String, clickListener: (
         button.addClickListener { clickListener(row) }
         button
     }
-    val column: Grid.Column<T> = addColumn(renderer).setKey(key).setWidth("50px")
-    column.isExpand = false
-    column.block()
+    val column: Grid.Column<T> = addColumn(renderer).apply {
+        setKey(key)
+        setWidth("50px")
+        isExpand = false
+        block()
+    }
     return column
 }
