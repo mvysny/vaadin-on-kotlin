@@ -24,6 +24,11 @@ allprojects {
     repositories {
         mavenCentral()
     }
+
+    tasks.withType<KotlinCompile> {
+        // Vaadin 24 requires JDK 17+ anyway
+        kotlinOptions.jvmTarget = "17"
+    }
 }
 
 subprojects {
@@ -31,11 +36,6 @@ subprojects {
         plugin("maven-publish")
         plugin("kotlin")
         plugin("org.gradle.signing")
-    }
-
-    tasks.withType<KotlinCompile> {
-        // Vaadin 24 requires JDK 17+ anyway
-        kotlinOptions.jvmTarget = "17"
     }
 
     tasks.withType<Test> {
