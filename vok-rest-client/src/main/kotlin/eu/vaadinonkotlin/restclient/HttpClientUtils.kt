@@ -117,7 +117,7 @@ public fun <V> HttpResponse<InputStream>.jsonMap(valueClass: Class<V>): Map<Stri
  * ```
  * @throws IllegalArgumentException if the URL is unparsable
  */
-public inline fun String.buildUrl(block: URIBuilder.()->Unit = {}): URI {
+public fun String.buildUrl(block: URIBuilder.()->Unit = {}): URI {
     val uri = URIBuilder(this).apply(block).build()
     require(uri.scheme == "http" || uri.scheme == "https") { "Expected URL scheme 'http' or 'https' but got ${uri.scheme}: $uri" }
     return uri
@@ -127,7 +127,7 @@ public inline fun String.buildUrl(block: URIBuilder.()->Unit = {}): URI {
  * Builds a new [HttpRequest] using given URL. You can optionally configure the request in [block]. Use [exec] to
  * execute the request and obtain a response. By default, the `GET` request gets built.
  */
-public inline fun URI.buildRequest(block: HttpRequest.Builder.()->Unit = {}): HttpRequest = HttpRequest.newBuilder(this).apply(block).build()
+public fun URI.buildRequest(block: HttpRequest.Builder.()->Unit = {}): HttpRequest = HttpRequest.newBuilder(this).apply(block).build()
 
 public fun HttpRequest.Builder.post(body: String, mediaType: MediaType) {
     POST(BodyPublishers.ofString(body))
