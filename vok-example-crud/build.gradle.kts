@@ -12,7 +12,7 @@ dependencies {
             }
         }
     }
-    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:12.0")
+    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:12.2")
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
