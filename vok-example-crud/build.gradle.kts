@@ -7,7 +7,7 @@ dependencies {
     implementation(project(":vok-framework-vokdb"))
     implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
         afterEvaluate {
-            if (vaadin.productionMode) {
+            if (vaadin.productionMode.get()) {
                 exclude(module = "vaadin-dev")
             }
         }
