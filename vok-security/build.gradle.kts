@@ -1,6 +1,6 @@
 dependencies {
     api(project(":vok-framework"))
-    api("com.github.mvysny.vaadin-simple-security:vaadin-simple-security:0.2")
+    api("com.github.mvysny.vaadin-simple-security:vaadin-simple-security:1.0")
 }
 
 kotlin {
