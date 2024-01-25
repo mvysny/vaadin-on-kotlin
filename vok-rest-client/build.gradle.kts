@@ -1,9 +1,10 @@
 dependencies {
     api(project(":vok-framework"))
+    api("com.vaadin:flow-data:${properties["vaadin_version"]}")
+    api("com.gitlab.mvysny.jdbiorm:jdbi-orm:2.6") // only used for the Condition API
 
     api("com.google.code.gson:gson:${properties["gson_version"]}")
     api("com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1")
-    api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
     // workaround for https://github.com/google/gson/issues/1059
     implementation("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1")
 

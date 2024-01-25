@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
+import com.gitlab.mvysny.jdbiorm.Property
 import com.google.gson.Gson
 import io.javalin.*
 import io.javalin.apibuilder.ApiBuilder
@@ -114,9 +115,10 @@ public fun Javalin.crud2(path: String, crudHandler: CrudHandler, permittedRoles:
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
 public inline fun <reified ID : Any, reified E : KEntity<ID>> Dao<E, ID>.getCrudHandler(allowModification: Boolean = false,
-                                                                                 maxLimit: Long = Long.MAX_VALUE,
-                                                                                 defaultLimit: Long = maxLimit,
-                                                                                 allowSortColumns: Set<String>? = null,
-                                                                                 allowFilterColumns: Set<String>? = null): CrudHandler {
-    return VokOrmCrudHandler(ID::class.java, this, allowModification, maxLimit, defaultLimit, allowSortColumns, allowFilterColumns)
+                                                                                        maxLimit: Long = Long.MAX_VALUE,
+                                                                                        defaultLimit: Long = maxLimit,
+                                                                                        additionalSortFilterProperties: List<Property<*>> = listOf(),
+                                                                                        allowSortColumns: Set<Property.Name>? = null,
+                                                                                        allowFilterColumns: Set<Property.Name>? = null): CrudHandler {
+    return VokOrmCrudHandler(ID::class.java, this, allowModification, maxLimit, defaultLimit, additionalSortFilterProperties, allowSortColumns, allowFilterColumns)
 }

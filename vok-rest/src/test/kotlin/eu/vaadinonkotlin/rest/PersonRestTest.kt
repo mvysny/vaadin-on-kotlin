@@ -1,7 +1,14 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.mvysny.dynatest.*
-import com.github.vokorm.db
+import com.github.vokorm.*
+import com.gitlab.mvysny.jdbiorm.OrderBy
+import com.gitlab.mvysny.jdbiorm.condition.Condition
+import com.gitlab.mvysny.jdbiorm.condition.FullTextCondition
+import com.vaadin.flow.data.provider.DataProvider
+import com.vaadin.flow.data.provider.Query
+import com.vaadin.flow.data.provider.QuerySortOrder
+import com.vaadin.flow.data.provider.SortDirection
 import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin
 import org.eclipse.jetty.server.Server
@@ -62,6 +69,12 @@ fun DynaNodeGroup.usingJavalin() {
     afterGroup { server.stop() }
 }
 
+
+private fun <T> DataProvider<T, Condition>.getAll(condition: Condition? = null, sortBy: List<OrderBy> = listOf(), range: IntRange = 0..10000) =
+    fetch(Query(range.start, range.length, sortBy.map { QuerySortOrder(it.property.name.name, if (it.order == OrderBy.Order.ASC) SortDirection.ASCENDING else SortDirection.DESCENDING) }, null, condition)).toList()
+private fun <T> DataProvider<T, Condition>.getCount(condition: Condition? = null): Int =
+    size(Query<T, Condition>(condition))
+
 class PersonRestTest : DynaTest({
 
     usingJavalin()
@@ -93,16 +106,16 @@ class PersonRestTest : DynaTest({
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
                 expect((0..80).toList()) { crud.getAll().map { it.age!! - 15 } }
-                expect((10..80).toList()) { crud.getAll(range = 10L..1000L).map { it.age!! - 15 } }
-                expect((10..20).toList()) { crud.getAll(range = 10L..20L).map { it.age!! - 15} }
+                expect((10..80).toList()) { crud.getAll(range = 10..1000).map { it.age!! - 15 } }
+                expect((10..20).toList()) { crud.getAll(range = 10..20).map { it.age!! - 15} }
             }
 
             test("sort") {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
-                expect((0..80).toList()) { crud.getAll(null, listOf(SortClause("age", true))).map { it.age!! - 15 } }
-                expect((0..80).toList().reversed()) { crud.getAll(null, listOf(SortClause("age", false))).map { it.age!! - 15 } }
+                expect((0..80).toList()) { crud.getAll(null, listOf(Person::age.asc)).map { it.age!! - 15 } }
+                expect((0..80).toList().reversed()) { crud.getAll(null, listOf(Person::age.desc)).map { it.age!! - 15 } }
                 expect((0..80).toSet()) { crud.getAll(null, listOf(Person::personName.asc)).map { it.age!! - 15 } .toSet() }
             }
 
@@ -118,22 +131,22 @@ class PersonRestTest : DynaTest({
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
-                expect(0) { crud.getCount(buildFilter { Person::age ge 130 })}
-                expect(5) { crud.getCount(buildFilter { Person::age lt 20 })}
-                expect(81) { crud.getCount(buildFilter { Person::personName eq "Duke Leto Atreides" })}
-                expect(0) { crud.getCount(buildFilter { Person::personName startsWith "duke " })}
-                expect(81) { crud.getCount(buildFilter { Person::personName istartsWith "duke " })}
-                expect((0..4).toList()) { crud.getAll(buildFilter { Person::age lt 20 }, listOf(SortClause("age", true))).map { it.age!! - 15 } }
-                expect(81) { crud.getCount(buildFilter { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
-                expect(0) { crud.getCount(FullTextFilter("personName", "duke")) }
+                expect(0) { crud.getCount(buildCondition { Person::age ge 130 })}
+                expect(5) { crud.getCount(buildCondition { Person::age lt 20 })}
+                expect(81) { crud.getCount(buildCondition { Person::personName eq "Duke Leto Atreides" })}
+                expect(0) { crud.getCount(buildCondition { Person::personName like "duke%" })}
+                expect(81) { crud.getCount(buildCondition { Person::personName likeIgnoreCase "duke%" })}
+                expect((0..4).toList()) { crud.getAll(buildCondition { Person::age lt 20 }, listOf(Person::age.asc)).map { it.age!! - 15 } }
+                expect(81) { crud.getCount(buildCondition { Person::dateOfBirth eq LocalDate.of(1980, 5, 1) })}
+                expect(0) { crud.getCount(FullTextCondition.of(Person::personName.exp, "duke")) }
             }
 
             test("filter on same fields") {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
-                expect(0) { crud.getCount(buildFilter { Person::age lt 20 and (Person::age gt 30) })}
-                expectList() { crud.getAll(buildFilter { Person::age lt 20 and (Person::age gt 30) })}
+                expect(0) { crud.getCount(buildCondition { Person::age lt 20 and (Person::age gt 30) })}
+                expectList() { crud.getAll(buildCondition { Person::age lt 20 and (Person::age gt 30) })}
             }
         }
 
@@ -214,8 +227,8 @@ class PersonRestTest : DynaTest({
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 val p2 = Person2(p.id, 45, "Duke Leto Atreides")
-                expectList() { client.getAll(filter = buildFilter { Person2::personName istartsWith "baron" }) }
-                expectList(p2) { client.getAll(filter = buildFilter { Person2::personName istartsWith "duke" }) }
+                expectList() { client.getAll(buildCondition { Person2::personName likeIgnoreCase "baron%" }) }
+                expectList(p2) { client.getAll(buildCondition { Person2::personName likeIgnoreCase "duke%" }) }
             }
 
             test("sorting") {
