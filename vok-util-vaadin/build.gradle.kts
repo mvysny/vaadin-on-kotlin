@@ -1,8 +1,6 @@
 dependencies {
     api(project(":vok-framework"))
 
-    api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
-
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl-v23:${properties["karibudsl_version"]}")
     api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")

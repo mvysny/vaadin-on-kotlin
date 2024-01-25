@@ -1,10 +1,6 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.mvysny.dynatest.*
-import com.github.mvysny.vokdataloader.FullTextFilter
-import com.github.mvysny.vokdataloader.SortClause
-import com.github.mvysny.vokdataloader.asc
-import com.github.mvysny.vokdataloader.buildFilter
 import com.github.vokorm.db
 import eu.vaadinonkotlin.restclient.*
 import io.javalin.Javalin

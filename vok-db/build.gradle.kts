@@ -1,7 +1,7 @@
 dependencies {
     api(project(":vok-framework"))
     api("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
-    api("com.github.mvysny.vokdataloader:vok-dataloader:${properties["vok_dataloader_version"]}")
+    api("com.gitlab.mvysny.jdbiorm:jdbi-orm:2.6")
     testImplementation("com.github.mvysny.dynatest:dynatest-engine:${properties["dynatest_version"]}")
 }
 

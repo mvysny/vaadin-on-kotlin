@@ -1,8 +1,8 @@
 package eu.vaadinonkotlin.rest
 
 import com.github.vokorm.*
-import com.github.vokorm.dataloader.EntityDataLoader
 import com.gitlab.mvysny.jdbiorm.Dao
+import com.gitlab.mvysny.jdbiorm.Property
 import io.javalin.apibuilder.CrudHandler
 import io.javalin.http.Context
 import io.javalin.http.NotFoundResponse
@@ -34,20 +34,21 @@ import io.javalin.http.UnauthorizedResponse
  * @param allowFilterColumns if not null, only these columns are allowed to be filtered upon. Defaults to null. References the [kotlin.reflect.KProperty1.name] of the entity.
  */
 public open class VokOrmCrudHandler<ID : Any, E : KEntity<ID>>(
-        idClass: Class<ID>,
-        private val dao: Dao<E, ID>,
-        public val allowsModification: Boolean,
-        maxLimit: Long = Long.MAX_VALUE,
-        defaultLimit: Long = maxLimit,
-        allowSortColumns: Set<String>? = null,
-        allowFilterColumns: Set<String>? = null
+    idClass: Class<ID>,
+    private val dao: Dao<E, ID>,
+    public val allowsModification: Boolean,
+    maxLimit: Long = Long.MAX_VALUE,
+    defaultLimit: Long = maxLimit,
+    additionalSortFilterProperties: List<Property<*>> = listOf(),
+    allowSortColumns: Set<Property.Name>? = null,
+    allowFilterColumns: Set<Property.Name>? = null
 ) : CrudHandler {
 
     /**
      * The [getAll] call delegates here.
      */
-    protected val getAllHandler: CrudHandler = DataLoaderCrudHandler(dao.entityClass,
-            EntityDataLoader(dao.entityClass), maxLimit, defaultLimit,
+    protected val getAllHandler: CrudHandler = DaoOfAnyCrudHandler(dao,
+            maxLimit, defaultLimit, additionalSortFilterProperties,
             allowSortColumns, allowFilterColumns)
 
     @Suppress("UNCHECKED_CAST")
