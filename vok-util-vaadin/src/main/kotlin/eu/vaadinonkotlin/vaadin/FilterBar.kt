@@ -4,6 +4,7 @@ import com.github.mvysny.kaributools.BrowserTimeZone
 import com.github.mvysny.kaributools.getColumnBy
 import com.gitlab.mvysny.jdbiorm.Property
 import com.gitlab.mvysny.jdbiorm.condition.Condition
+import com.gitlab.mvysny.jdbiorm.condition.Expression
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateInterval
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberInterval
 import com.vaadin.flow.component.Component
@@ -456,7 +457,7 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String>.istartsWith(): F
 @JvmName("numberIntervalInRange")
 public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>>.inRange(): FilterBar.Binding<BEAN> {
     // first we need to have a converter, converting the component's value to a range filter
-    val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { it.contains(property) }
+    val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { it.contains(property as Expression<Double>) }
     // now we can finalize the binding
     return builder.bind()
 }
@@ -467,7 +468,6 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>>.
  * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
  * It's important for your app to initialize [com.github.mvysny.kaributools.BrowserTimeZone] properly as described in the kdoc of that variable.
  */
-@JvmName("numberIntervalInRange")
 public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, LocalDate>.onDay(): FilterBar.Binding<BEAN> {
     // https://github.com/mvysny/vaadin-on-kotlin/issues/49
     // first convert the LocalDate value to a DateInterval which spans given day
@@ -484,7 +484,7 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, LocalDate>.onDay(): Filt
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
-@JvmName("dateIntervalInRange2")
+@JvmName("dateIntervalInRange")
 public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, DateInterval>.inRange(): FilterBar.Binding<BEAN> {
     // first we need to have a converter, converting the component's value to a range filter
     val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { it.contains(property, BrowserTimeZone.get) }

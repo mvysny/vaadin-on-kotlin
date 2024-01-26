@@ -12,6 +12,7 @@ dependencies {
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
+    testImplementation(project(":vok-db"))
 }
 
 kotlin {

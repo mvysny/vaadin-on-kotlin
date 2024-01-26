@@ -5,6 +5,7 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.getColumnBy
+import com.github.vokorm.buildCondition
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Component
@@ -66,7 +67,7 @@ class FilterBarTest : DynaTest({
         val grid = Grid<Person>(Person::class.java)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay()
-        grid.setDataLoaderItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
+        grid.setItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
         expect(1) { grid.dataProvider._size() }
 
         val dayFilter: DatePicker = filterBar.getFilterComponent(Person::dob) as DatePicker
@@ -81,7 +82,7 @@ class FilterBarTest : DynaTest({
         val grid = Grid<Person>(Person::class.java)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
-        grid.setDataLoaderItems(Person("foo"))
+        grid.setItems(Person("foo"))
         val nameFilter: TextField = filterBar.getFilterComponent(Person::name) as TextField
 
         expect(1) { grid.dataProvider._size() }
@@ -99,7 +100,7 @@ class FilterBarTest : DynaTest({
     test("filter components from cleared filter bar gone") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.removeAllBindings()
         expectList() { filterBar.getFilterComponents() }
@@ -115,11 +116,11 @@ class FilterBarTest : DynaTest({
         }
         expectList() { grid.dataProvider!!._findAll() }
 
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
 
         // now let's create and set another data provider. If the generateFilterComponents grabs the DP eagerly, it will ignore this second DP.
-        grid.setDataLoaderItems(Person("foobar"))
+        grid.setItems(Person("foobar"))
 
         // if the generateFilterComponents function reflects the DP change, it will overwrite the filter, making the DP match the person
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
@@ -130,11 +131,11 @@ class FilterBarTest : DynaTest({
     test("onFilterChanged invoked") {
         data class Person(var name: String)
         val grid = Grid(Person::class.java)
-        val filterBar: FilterBar<Person, Filter<Person>> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.onFilterChanged = { fail("should not be called") }
         val filterField = TextField()
         filterBar.forField(filterField, grid.getColumnBy(Person::name)).istartsWith()
-        grid.setDataLoaderItems(Person("foo"))
+        grid.setItems(Person("foo"))
 
         var called = false
         filterBar.onFilterChanged = { called = true }
@@ -142,12 +143,12 @@ class FilterBarTest : DynaTest({
         expect(true) { called }
 
         called = false
-        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        filterBar.setCustomFilter("global", buildCondition { Person::name eq "baz" })
         expect(true) { called }
 
         // setting the same filter again doesn't fire the listener
         called = false
-        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        filterBar.setCustomFilter("global", buildCondition { Person::name eq "baz" })
         expect(false) { called }
 
         called = false
@@ -158,17 +159,17 @@ class FilterBarTest : DynaTest({
     test("custom filters are applied") {
         data class Person(var name: String)
         val grid: Grid<Person> = Grid(Person::class.java)
-        val filterBar: FilterBar<Person, Filter<Person>> = grid.appendHeaderRow().asFilterBar(grid)
-        grid.setDataLoaderItems(Person("foo"))
+        val filterBar = grid.appendHeaderRow().asFilterBar(grid)
+        grid.setItems(Person("foo"))
         grid.expectRows(1)
 
-        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        filterBar.setCustomFilter("global", buildCondition { Person::name eq "baz" })
         grid.expectRows(0)
 
-        filterBar.setCustomFilter("global", buildFilter { Person::name eq "foo" })
+        filterBar.setCustomFilter("global", buildCondition { Person::name eq "foo" })
         grid.expectRows(1)
 
-        filterBar.setCustomFilter("global", buildFilter { Person::name eq "baz" })
+        filterBar.setCustomFilter("global", buildCondition { Person::name eq "baz" })
         grid.expectRows(0)
 
         filterBar.setCustomFilter("global", null)
