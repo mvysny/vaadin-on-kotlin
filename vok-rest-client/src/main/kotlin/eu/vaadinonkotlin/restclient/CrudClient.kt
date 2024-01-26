@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.restclient
 
 import com.gitlab.mvysny.jdbiorm.OrderBy
 import com.gitlab.mvysny.jdbiorm.Property
+import com.gitlab.mvysny.jdbiorm.condition.And
 import com.gitlab.mvysny.jdbiorm.condition.Condition
 import com.gitlab.mvysny.jdbiorm.condition.Eq
 import com.gitlab.mvysny.jdbiorm.condition.Expression
@@ -105,13 +106,6 @@ public open class CrudClient<T: Any>(
             val value = (this as Expression.Value<*>).value ?: return null
             return converter.convert(value)
         }
-        fun Condition.handleAnd() {
-            // @todo remove this crazy reflection once jdbi-orm 2.7 is released
-            val c1 = javaClass.getDeclaredMethod("getCondition1").apply { isAccessible = true } .invoke(this) as Condition
-            val c2 = javaClass.getDeclaredMethod("getCondition2").apply { isAccessible = true } .invoke(this) as Condition
-            addFilterQueryParameters(c1)
-            addFilterQueryParameters(c2)
-        }
 
         when {
             condition == Condition.NO_CONDITION -> return
@@ -122,7 +116,7 @@ public open class CrudClient<T: Any>(
             condition is LikeIgnoreCase -> addParameter(condition.arg1.getPropertyName(), "ilike:" + condition.arg2.getValue())
             condition is Op -> addParameter(condition.arg1.getPropertyName(), opToRest(condition.operator) + ":" + condition.arg2.getValue())
             condition is FullTextCondition -> addParameter(condition.arg.getPropertyName(), "fulltext:" + condition.query)
-            condition.javaClass.simpleName == "And" -> condition.handleAnd()
+            condition is And -> { addFilterQueryParameters(condition.condition1); addFilterQueryParameters(condition.condition2) }
             else -> throw IllegalArgumentException("Unsupported condition $condition")
         }
     }
