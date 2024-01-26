@@ -4,11 +4,7 @@ import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
-import com.github.mvysny.kaributools.component
-import com.github.mvysny.kaributools.fetchAll
 import com.github.mvysny.kaributools.getColumnBy
-import com.github.mvysny.vokdataloader.Filter
-import com.github.mvysny.vokdataloader.buildFilter
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.Grid
@@ -20,7 +16,7 @@ import java.util.*
 import kotlin.test.expect
 import kotlin.test.fail
 
-fun FilterBar<*, *>.getFilterComponents(): List<Component> = grid.columns.mapNotNull { headerRow.getCell(it).component }
+fun FilterBar<*>.getFilterComponents(): List<Component> = grid.columns.mapNotNull { headerRow.getCell(it).component }
 
 class FilterBarTest : DynaTest({
     beforeEach { MockVaadin.setup() }
@@ -29,11 +25,11 @@ class FilterBarTest : DynaTest({
     test("Test simple auto-generated filters") {
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
         val grid: Grid<Person> = Grid(Person::class.java)
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.forField(NumberRangePopup(), grid.getColumnBy(Person::age)).inRange()
-        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange(Person::dob)
-        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dateOfMarriage)).inRange(Person::dateOfMarriage)
+        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange2(Person::dob)
+        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dateOfMarriage)).inRange2(Person::dateOfMarriage)
         expect<Class<*>>(TextField::class.java) { filterBar.getFilterComponent(Person::name).javaClass }
         expect<Class<*>>(NumberRangePopup::class.java) { filterBar.getFilterComponent(Person::age).javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { filterBar.getFilterComponent(Person::dob).javaClass }
@@ -48,9 +44,9 @@ class FilterBarTest : DynaTest({
     test("string filter") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
-        grid.setDataLoaderItems(Person("foo"))
+        grid.setItems(Person("foo"))
         expect(1) { grid.dataProvider._size() }
 
         val nameFilter = filterBar.getFilterComponent(Person::name) as TextField
@@ -66,7 +62,7 @@ class FilterBarTest : DynaTest({
     test("day filter") {
         data class Person(var dob: LocalDateTime)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay(LocalDateTime::class)
         grid.setDataLoaderItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
         expect(1) { grid.dataProvider._size() }
@@ -81,7 +77,7 @@ class FilterBarTest : DynaTest({
     test("filter components from cleared filter bar won't affect the grid anymore") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
-        val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
+        val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         grid.setDataLoaderItems(Person("foo"))
         val nameFilter: TextField = filterBar.getFilterComponent(Person::name) as TextField

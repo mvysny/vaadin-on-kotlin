@@ -1,5 +1,7 @@
 dependencies {
     api(project(":vok-framework"))
+    api("com.gitlab.mvysny.jdbiorm:jdbi-orm:${properties["jdbi_orm_version"]}")
+    api("com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:${properties["jdbi_orm_vaadin_version"]}")
 
     // Vaadin
     api("com.github.mvysny.karibudsl:karibu-dsl-v23:${properties["karibudsl_version"]}")

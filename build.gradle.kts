@@ -1,13 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    // fix for https://github.com/mvysny/vaadin-boot-example-gradle/issues/3
-    dependencies {
-        classpath("com.vaadin:vaadin-prod-bundle:${project.properties["vaadin_version"]}")
-    }
-}
-
 plugins {
     kotlin("jvm") version "1.9.22"
     id("com.vaadin") apply(false)

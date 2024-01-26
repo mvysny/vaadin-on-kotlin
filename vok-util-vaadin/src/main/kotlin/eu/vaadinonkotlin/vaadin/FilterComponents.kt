@@ -1,19 +1,19 @@
 package eu.vaadinonkotlin.vaadin
 
-import com.github.mvysny.karibudsl.v10.DateInterval
-import com.github.mvysny.karibudsl.v10.NumberInterval
 import com.github.mvysny.kaributools.BrowserTimeZone
-import com.github.mvysny.vokdataloader.Filter
-import com.vaadin.flow.component.combobox.ComboBox
-import eu.vaadinonkotlin.FilterFactory
+import com.gitlab.mvysny.jdbiorm.Property
+import com.gitlab.mvysny.jdbiorm.condition.Condition
+import com.gitlab.mvysny.jdbiorm.condition.Expression
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateInterval
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberInterval
 import eu.vaadinonkotlin.toDate
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
-private fun <T : Comparable<T>, F> T.legeFilter(propertyName: String, filterFactory: FilterFactory<F>, isLe: Boolean): F =
-        if (isLe) filterFactory.le(propertyName, this) else filterFactory.ge(propertyName, this)
+private fun Property<Any>.legeFilter(value: Any, isLe: Boolean): Condition =
+        if (isLe) le(value) else ge(value)
 
 /**
  * Creates a filter which matches all datetimes within given day.
@@ -32,30 +32,27 @@ public fun <T: Any> LocalDate.toFilter(propertyName: String,
  * @param fieldType converts `this` value to a value compatible with this type. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
-private fun <F> LocalDate.toFilter(
-        propertyName: String,
-        filterFactory: FilterFactory<F>,
-        fieldType: Class<*>,
-        isLe: Boolean
-): F {
+private fun Property<Any>.lege(isLe: Boolean, date: LocalDate?): Condition {
+    if (date == null) return Condition.NO_CONDITION
+    val fieldType = this.valueType
     if (fieldType == LocalDate::class.java) {
-        return legeFilter(propertyName, filterFactory, isLe)
+        return legeFilter(date, isLe)
     }
-    val dateTime: LocalDateTime = if (isLe) plusDays(1).atStartOfDay().minusSeconds(1) else atStartOfDay()
+    val dateTime: LocalDateTime = if (isLe) date.plusDays(1).atStartOfDay().minusSeconds(1) else date.atStartOfDay()
     if (fieldType == LocalDateTime::class.java) {
-        return dateTime.legeFilter(propertyName, filterFactory, isLe)
+        return legeFilter(dateTime, isLe)
     }
     val instant: Instant = dateTime.atZone(BrowserTimeZone.get).toInstant()
     if (fieldType == Instant::class.java) {
-        return instant.legeFilter(propertyName, filterFactory, isLe)
+        return legeFilter(instant, isLe)
     }
     if (Date::class.java.isAssignableFrom(fieldType)) {
-        return instant.toDate.legeFilter(propertyName, filterFactory, isLe)
+        return legeFilter(instant.toDate, isLe)
     }
     if (Calendar::class.java.isAssignableFrom(fieldType)) {
         val cal: Calendar = Calendar.getInstance()
         cal.time = instant.toDate
-        return cal.legeFilter(propertyName, filterFactory, isLe)
+        return legeFilter(cal, isLe)
     }
     throw IllegalArgumentException("Parameter fieldType: invalid value ${fieldType}: unsupported date type, can not compare")
 }
@@ -64,56 +61,20 @@ private fun <F> LocalDate.toFilter(
  * Creates a filter which accepts datetime-like values. Takes this and converts it into a filter `propertyName in this`.
  *
  * Note: [BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * @param fieldType used to convert [LocalDate] `from`/`to` values of this range to a value
- * comparable with values coming from [propertyName]. Supports [LocalDate],
+ *
+ * [Property.getValueType] is used to convert [LocalDate] `from`/`to` values of this range to a value
+ * comparable with values coming from this property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
- * @throws IllegalArgumentException if [fieldType] is of unsupported type.
+ * @throws IllegalArgumentException if [Property.getValueType] is of unsupported type.
  */
-public fun <F : Any> DateInterval.toFilter(
-        propertyName: String,
-        filterFactory: FilterFactory<F>,
-        fieldType: Class<*>
-): F? {
-    val filters: List<F> = listOfNotNull(
-            start?.toFilter(propertyName, filterFactory, fieldType, false),
-            endInclusive?.toFilter(propertyName, filterFactory, fieldType, true)
-    )
-    return filterFactory.and(filters.toSet())
+public fun Property<*>.between(dateInterval: DateInterval): Condition {
+    val f1 = (this as Property<Any>).lege(false, dateInterval.start)
+    val f2 = this.lege(true, dateInterval.endInclusive)
+    return f1.and(f2)
 }
 
-/**
- * Creates a filter out of this interval, using given [filterFactory].
- * @return a filter which matches the same set of numbers as this interval. Returns `null` for universal set interval.
- */
-public fun <N, F> NumberInterval<N>.toFilter(propertyName: String, filterFactory: FilterFactory<F>): F? where N: Number, N: Comparable<N> = when {
-    isSingleItem -> filterFactory.eq(propertyName, endInclusive!!)
-    isBound -> filterFactory.between(propertyName, start!!, endInclusive!!)
-    endInclusive != null -> filterFactory.le(propertyName, endInclusive!!)
-    start != null -> filterFactory.ge(propertyName, start!!)
-    else -> null
-}
-
-/**
- * A very simple [ComboBox] with two pre-filled values: `true` and `false`. Perfect
- * for filters for boolean-based Grid columns since it's 3-state:
- * * `null` (no filter)
- * * `true` (passes only `true` values)
- * * `false` (passes only `false` values)
- */
-public open class BooleanComboBox : ComboBox<Boolean>(null, true, false)
-
-/**
- * Creates a very simple [ComboBox] with all enum constants as items. Perfect for
- * filters for enum-based Grid columns.
- * @param E the enum type
- * @param items options in the combo box, defaults to all constants of [E].
- */
-public inline fun <reified E: Enum<E>> enumComboBox(
-        items: List<E> = E::class.java.enumConstants.toList()
-): ComboBox<E?> = ComboBox<E?>().apply {
-    // no need to explicitly add the `null` item here since the ComboBox is clearable:
-    // the user can click the "X" button to set the combo box value to null.
-    setItems(items)
-    isClearButtonVisible = true
-    setItemLabelGenerator { item: E? -> item?.name ?: "" }
+public fun <N> Expression<N>.between(numberInterval: NumberInterval<N>): Condition where N: Number, N: Comparable<N> = when {
+    numberInterval.isSingleItem -> eq(numberInterval.endInclusive!!)
+    numberInterval.endInclusive != null || numberInterval.start != null -> between(numberInterval.start, numberInterval.endInclusive)
+    else -> Condition.NO_CONDITION
 }
