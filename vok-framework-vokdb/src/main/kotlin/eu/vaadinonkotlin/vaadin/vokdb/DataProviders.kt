@@ -1,52 +1,29 @@
 package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.kaributools.sort
-import com.github.mvysny.vokdataloader.DataLoader
-import com.github.mvysny.vokdataloader.DataLoaderPropertyName
-import com.github.mvysny.vokdataloader.SortClause
 import com.github.vokorm.KEntity
-import com.vaadin.flow.component.combobox.ComboBox
+import com.github.vokorm.exp
+import com.gitlab.mvysny.jdbiorm.Dao
+import com.gitlab.mvysny.jdbiorm.OrderBy
+import com.gitlab.mvysny.jdbiorm.Property
+import com.gitlab.mvysny.jdbiorm.vaadin.EntityDataProvider
 import com.vaadin.flow.component.grid.Grid
-import com.vaadin.flow.data.binder.HasDataProvider
-import com.vaadin.flow.data.provider.BackEndDataProvider
+import com.vaadin.flow.data.provider.DataProvider
 import com.vaadin.flow.data.provider.QuerySortOrder
 import com.vaadin.flow.data.provider.SortDirection
-import eu.vaadinonkotlin.vaadin.DataLoaderAdapter
-import eu.vaadinonkotlin.vaadin.VokDataProvider
 import kotlin.reflect.KProperty1
-import eu.vaadinonkotlin.vaadin.withStringFilterOn as withStringFilterOn1
 
-/**
- * Sets given data loader to this Grid, by the means of wrapping the data loader via [DataLoaderAdapter] and setting it
- * as a (configurable) [Grid.getDataProvider].
- */
-public fun <T: KEntity<*>> HasDataProvider<T>.setDataLoader(dataLoader: DataLoader<T>) {
-    setDataProvider(dataLoader.asDataProvider())
-}
+public val <E: KEntity<*>> Dao<E, *>.dataProvider: EntityDataProvider<E> get() = EntityDataProvider(this)
 
-/**
- * Returns a [VokDataProvider] which loads data from this [DataLoader].
- */
-public fun <T: KEntity<*>> DataLoader<T>.asDataProvider(): VokDataProvider<T> = DataLoaderAdapter(this) { it.id!! }
+public inline fun <reified T> EntityDataProvider<T>.withStringFilterOn(prop: KProperty1<T, String>): DataProvider<T, String> =
+    withStringFilterOn(prop.exp)
+public fun <T> EntityDataProvider<T>.withStringFilterOn(prop: Property<*>): DataProvider<T, String> =
+    withStringFilter { prop.likeIgnoreCase("$it%") }
 
-/**
- * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
- */
-public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: KProperty1<T, String?>): BackEndDataProvider<T, String?> =
-        withStringFilterOn(property.name)
+private fun OrderBy.toQuerySortOrder() =
+    QuerySortOrder(property.toExternalString(), if (order == OrderBy.Order.ASC) SortDirection.ASCENDING else SortDirection.DESCENDING)
 
-/**
- * Creates a data provider which performs string filtering on given [property]. Ideal for [ComboBox] which lazily
- * filters items as the user types in search phrase. Emits [com.github.mvysny.vokdataloader.StartsWithFilter] to the receiver.
- */
-public fun <T : KEntity<*>> DataLoader<T>.withStringFilterOn(property: DataLoaderPropertyName): BackEndDataProvider<T, String?> =
-        withStringFilterOn1(property) { it.id!! }
-
-private fun SortClause.toQuerySortOrder() =
-    QuerySortOrder(propertyName, if (asc) SortDirection.ASCENDING else SortDirection.DESCENDING)
-
-public fun <T> Grid<T>.sort(criteria: List<SortClause>) {
+public fun <T> Grid<T>.sort(criteria: List<OrderBy>) {
     sort(*criteria.toTypedArray())
 }
 
@@ -67,6 +44,6 @@ public fun <T> Grid<T>.sort(criteria: List<SortClause>) {
  * }
  * ```
  */
-public fun <T> Grid<T>.sort(vararg criteria: SortClause) {
+public fun <T> Grid<T>.sort(vararg criteria: OrderBy) {
     sort(*criteria.map { it.toQuerySortOrder() } .toTypedArray())
 }

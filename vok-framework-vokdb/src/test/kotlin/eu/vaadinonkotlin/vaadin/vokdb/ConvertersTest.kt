@@ -4,10 +4,8 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.karibudsl.v10.bind
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.vokorm.KEntity
-import com.github.vokorm.dataloader.dataLoader
 import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.data.binder.BeanValidationBinder
-import eu.vaadinonkotlin.vaadin.vokdb.withStringFilterOn
 import kotlin.test.expect
 
 class ConvertersTest : DynaTest({
@@ -25,7 +23,7 @@ class ConvertersTest : DynaTest({
         val categoryBox = ComboBox<Person>("Choose a category").apply {
             setItemLabelGenerator { it.personName }
             isAllowCustomValue = false
-            setItems(Person.dataLoader.withStringFilterOn(Person::personName))
+            setItems(Person.dataProvider.withStringFilterOn(Person::personName))
             bind(binder).toId().bind(Review::person)
         }
 
