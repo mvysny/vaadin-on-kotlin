@@ -1,7 +1,5 @@
 package eu.vaadinonkotlin.vaadin
 
-import com.github.mvysny.karibudsl.v10.DateInterval
-import com.github.mvysny.karibudsl.v10.NumberInterval
 import com.github.mvysny.kaributools.getColumnBy
 import com.gitlab.mvysny.jdbiorm.Property
 import com.gitlab.mvysny.jdbiorm.condition.Condition
@@ -16,8 +14,10 @@ import com.vaadin.flow.component.shared.HasClearButton
 import com.vaadin.flow.component.textfield.*
 import com.vaadin.flow.component.timepicker.TimePicker
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
+import com.vaadin.flow.data.provider.InMemoryDataProvider
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.function.SerializablePredicate
 import com.vaadin.flow.shared.Registration
 import eu.vaadinonkotlin.FilterFactory
 import java.io.Serializable
@@ -100,9 +100,15 @@ public open class FilterBar<BEAN : Any>(
      */
     private val customFilters: MutableMap<String, Condition> = mutableMapOf()
 
-    private fun applyFilterToGrid(filter: Condition?) {
-        @Suppress("UNCHECKED_CAST")
-        (grid.dataProvider as ConfigurableFilterDataProvider<BEAN, Condition, Condition>).setFilter(filter)
+    private fun applyFilterToGrid(filter: Condition) {
+        if (grid.dataProvider.isInMemory) {
+            // need to wrap Condition in SerializablePredicate
+            val c = SerializablePredicate<BEAN> { filter.test(it) }
+            (grid.dataProvider as InMemoryDataProvider<BEAN>).setFilter(c)
+        } else {
+            @Suppress("UNCHECKED_CAST")
+            (grid.dataProvider as ConfigurableFilterDataProvider<BEAN, Any, Any>).setFilter(filter)
+        }
     }
 
     /**

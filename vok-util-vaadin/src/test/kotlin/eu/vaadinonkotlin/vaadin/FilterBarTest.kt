@@ -5,6 +5,8 @@ import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.getColumnBy
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.Grid
