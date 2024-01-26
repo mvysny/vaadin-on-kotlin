@@ -1,8 +1,11 @@
 package eu.vaadinonkotlin.vaadin
 
+import com.github.mvysny.kaributools.BrowserTimeZone
 import com.github.mvysny.kaributools.getColumnBy
 import com.gitlab.mvysny.jdbiorm.Property
 import com.gitlab.mvysny.jdbiorm.condition.Condition
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateInterval
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberInterval
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasSize
 import com.vaadin.flow.component.HasValue
@@ -451,35 +454,12 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String>.istartsWith(): F
  * Terminal operation which matches [Number]s in given range.
  */
 @JvmName("numberIntervalInRange")
-public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>>.inRange(): FilterBar.Binding<BEAN> {
+public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, NumberInterval<Double>>.inRange(): FilterBar.Binding<BEAN> {
     // first we need to have a converter, converting the component's value to a range filter
-    val builder: FilterBar.Binding.Builder<BEAN, FILTER> = withConverter { it.toFilter(propertyName, filterFactory) }
+    val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { it.contains(property) }
     // now we can finalize the binding
     return builder.bind()
 }
-
-/**
- * Terminal operation which matches dates in given range.
- *
- * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
- * comparable with values coming from the underlying property. Supports [LocalDate],
- * [LocalDateTime], [Instant], [Date] and [Calendar].
- */
-@JvmName("dateIntervalInRange")
-public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
-        inRange(fieldType.java)
-
-/**
- * Terminal operation which matches dates in given day.
- *
- * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
- * comparable with values coming from the underlying property. Supports [LocalDate],
- * [LocalDateTime], [Instant], [Date] and [Calendar].
- */
-public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: KClass<*>): FilterBar.Binding<BEAN, FILTER> =
-        onDay(fieldType.java)
 
 /**
  * Terminal operation which matches dates and datetimes in given day.
@@ -488,12 +468,12 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, 
  * It's important for your app to initialize [com.github.mvysny.kaributools.BrowserTimeZone] properly as described in the kdoc of that variable.
  */
 @JvmName("numberIntervalInRange")
-public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, FILTER>.onDay(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, LocalDate>.onDay(): FilterBar.Binding<BEAN> {
     // https://github.com/mvysny/vaadin-on-kotlin/issues/49
     // first convert the LocalDate value to a DateInterval which spans given day
-    val builder: FilterBar.Binding.Builder<BEAN, DateInterval, FILTER> = withConverter { DateInterval.of(it) }
+    val builder: FilterBar.Binding.Builder<BEAN, DateInterval> = withConverter { DateInterval.of(it) }
     // now simply use inRange() to return a filter accepting instants in given day.
-    return builder.inRange(fieldType)
+    return builder.inRange()
 }
 
 /**
@@ -505,24 +485,12 @@ public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, LocalDate, 
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
 @JvmName("dateIntervalInRange2")
-public fun <BEAN : Any, FILTER: Any> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(fieldType: Class<*>): FilterBar.Binding<BEAN, FILTER> {
+public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, DateInterval>.inRange(): FilterBar.Binding<BEAN> {
     // first we need to have a converter, converting the component's value to a range filter
-    val builder: FilterBar.Binding.Builder<BEAN, FILTER, FILTER> = withConverter { it.toFilter(propertyName, filterFactory, fieldType) }
+    val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { it.contains(property, BrowserTimeZone.get) }
     // now we can finalize the binding
     return builder.bind()
 }
-
-/**
- * Terminal operation which matches dates in given range.
- *
- * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * @param property the type of the property is used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
- * comparable with values coming from the underlying property. Supports [LocalDate],
- * [LocalDateTime], [Instant], [Date] and [Calendar].
- */
-@Suppress("UNUSED_PARAMETER")
-public inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder<BEAN, DateInterval, FILTER>.inRange(property: KProperty1<BEAN, V>): FilterBar.Binding<BEAN, FILTER> =
-        inRange(V::class)
 
 /**
  * Terminal operation which performs full-text search.
@@ -530,9 +498,9 @@ public inline fun <BEAN : Any, FILTER: Any, reified V> FilterBar.Binding.Builder
  * Please read the [FullTextFilter] documentation on how to properly prepare your database
  * for full-text search.
  */
-public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String, Filter<BEAN>>.fullText(): FilterBar.Binding<BEAN, Filter<BEAN>> {
+public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String>.fullText(): FilterBar.Binding<BEAN> {
     // first we need to have a converter, converting the component's value to a range filter
-    val builder: FilterBar.Binding.Builder<BEAN, Filter<BEAN>, Filter<BEAN>> = withConverter<Filter<BEAN>> { if (it.isBlank()) null else FullTextFilter<BEAN>(propertyName, it) }
+    val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { property.fullTextMatches(it) }
     // now we can finalize the binding
     return builder.bind()
 }

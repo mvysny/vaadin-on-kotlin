@@ -30,8 +30,8 @@ class FilterBarTest : DynaTest({
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.forField(NumberRangePopup(), grid.getColumnBy(Person::age)).inRange()
-        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange2(Person::dob)
-        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dateOfMarriage)).inRange2(Person::dateOfMarriage)
+        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dob)).inRange()
+        filterBar.forField(DateRangePopup(), grid.getColumnBy(Person::dateOfMarriage)).inRange()
         expect<Class<*>>(TextField::class.java) { filterBar.getFilterComponent(Person::name).javaClass }
         expect<Class<*>>(NumberRangePopup::class.java) { filterBar.getFilterComponent(Person::age).javaClass }
         expect<Class<*>>(DateRangePopup::class.java) { filterBar.getFilterComponent(Person::dob).javaClass }
@@ -65,7 +65,7 @@ class FilterBarTest : DynaTest({
         data class Person(var dob: LocalDateTime)
         val grid = Grid<Person>(Person::class.java)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
-        filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay(LocalDateTime::class)
+        filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay()
         grid.setDataLoaderItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
         expect(1) { grid.dataProvider._size() }
 
