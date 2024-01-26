@@ -2,7 +2,9 @@ package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.kaributools.BrowserTimeZone
 import com.github.mvysny.kaributools.getColumnBy
+import com.gitlab.mvysny.jdbiorm.EntityMeta
 import com.gitlab.mvysny.jdbiorm.Property
+import com.gitlab.mvysny.jdbiorm.TableProperty
 import com.gitlab.mvysny.jdbiorm.condition.Condition
 import com.gitlab.mvysny.jdbiorm.condition.Expression
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateInterval
@@ -41,8 +43,8 @@ import kotlin.reflect.KProperty1
  * @param T the bean type present in the [grid]
  * @param grid the owner grid
  */
-public fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): FilterBar<T> =
-        FilterBar(this, grid)
+public inline fun <reified T : Any> HeaderRow.asFilterBar(grid: Grid<T>): FilterBar<T> =
+        FilterBar(this, grid, T::class.java)
 
 /**
  * Wraps [HeaderRow] and helps you build filter components. Call [forField] to
@@ -83,8 +85,9 @@ public fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): FilterBar<T> =
  */
 @Deprecated("too complex and still only supports basic use-case of putting filter components into a filter bar. Projects will most probably create their own rich-looking filter bars and will ignore this one. I'm keeping this around for example projects")
 public open class FilterBar<BEAN : Any>(
-        public val headerRow: HeaderRow,
-        public val grid: Grid<BEAN>
+    public val headerRow: HeaderRow,
+    public val grid: Grid<BEAN>,
+    public val itemClass: Class<BEAN>
 ) : Serializable {
 
     /**
@@ -152,7 +155,11 @@ public open class FilterBar<BEAN : Any>(
     private fun computeFilter(): Condition {
         val filters: List<Condition> = bindings.keys.map { it.getFilter() }
         val customFilters: Collection<Condition> = customFilters.values
-        return (filters + customFilters).toSet().reduce { acc, condition -> acc.and(condition) }
+        val allFilters = (filters + customFilters).toSet()
+        if (allFilters.isEmpty()) {
+            return Condition.NO_CONDITION
+        }
+        return allFilters.reduce { acc, condition -> acc.and(condition) }
     }
 
     /**
@@ -250,7 +257,15 @@ public open class FilterBar<BEAN : Any>(
                 public val column: Grid.Column<BEAN>,
                 internal val filterComponent: Component,
                 internal val valueGetter: () -> VALUE?) : Serializable {
-            public val property: Property<Any> = Property.fromExternalString(column.key) as Property<Any>
+            public val property: Property<Any>
+            init {
+                val p = EntityMeta.of(filterBar.itemClass).findProperty(column.key)
+                property = if (p != null) {
+                    TableProperty.of<BEAN, VALUE>(filterBar.itemClass, column.key) as Property<Any>
+                } else {
+                    Property.fromExternalString(column.key) as Property<Any>
+                }
+            }
 
             /**
              * Adds a converter to the chain which converts the value from [filterComponent]

@@ -3,6 +3,7 @@ package example.crudflow.person
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.*
 import com.github.vokorm.db
+import com.github.vokorm.exp
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.BooleanFilterField
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
@@ -54,7 +55,7 @@ class PersonListView : KComposite() {
                 columnFor(Person::id, sortable = false) {
                     width = "90px"; isExpand = false
                 }
-                columnFor(Person::name) {
+                val nameColumn = columnFor(Person::name) {
                     filterBar.forField(TextField(), this).istartsWith()
                 }
                 columnFor(Person::age) {
@@ -82,7 +83,7 @@ class PersonListView : KComposite() {
                     item("delete", { person: Person? -> if (person != null) { person.delete(); refresh() } })
                 }
 
-                sort(Person::name.asc)
+                sort(nameColumn.asc)
             }
         }
     }
