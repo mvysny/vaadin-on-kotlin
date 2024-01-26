@@ -44,7 +44,7 @@ public fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): FilterBar<T> =
         FilterBar(this, grid)
 
 /**
- * Wraps [HeaderRow] and helps you build [Filter] components. Call [forField] to
+ * Wraps [HeaderRow] and helps you build filter components. Call [forField] to
  * configure filter for particular [Grid.Column], for example:
  * ```kotlin
  * personGrid = grid(dataProvider = Person.dataProvider) {
@@ -67,17 +67,17 @@ public fun <T : Any> HeaderRow.asFilterBar(grid: Grid<T>): FilterBar<T> =
  *
  * You can also call [setCustomFilter] to set or remove completely custom conditions which will
  * be ANDed with component-bound filters. You can use this functionality to e.g.
- * implement a global search bar, or to create an unremovable [FILTER] (e.g. filter rows
+ * implement a global search bar, or to create an unremovable filter (e.g. filter rows
  * for the current user only).
  *
  * WARNING: WORK IN PROGRESS, THE API MAY CHANGE AT ANY TIME.
  * @param BEAN the type of items in the [grid].
  * @param FILTER the type of the filters accepted by [grid]'s [ConfigurableFilterDataProvider]. For VoK
- * it's usually [Filter].
+ * it's usually filter.
  * @param grid the owner grid. It is expected that [Grid.getDataProvider] is of type [VokDataProvider]<BEAN>
  * (or [ConfigurableFilterDataProvider]<BEAN, FILTER, FILTER>).
  * @property headerRow the wrapped [HeaderRow]
- * @param filterFactory used to combine [FILTER] values when multiple [FILTER]s are applied
+ * @param filterFactory used to combine filter values when multiple filters are applied
  * (using the [FilterFactory.and] function).
  */
 @Deprecated("too complex and still only supports basic use-case of putting filter components into a filter bar. Projects will most probably create their own rich-looking filter bars and will ignore this one. I'm keeping this around for example projects")
@@ -99,7 +99,7 @@ public open class FilterBar<BEAN : Any>(
     private val bindings: MutableMap<Binding<BEAN>, Registration> = mutableMapOf()
 
     /**
-     * Contains a set of custom [FILTER]s. See [setCustomFilter] for more details.
+     * Contains a set of custom filters. See [setCustomFilter] for more details.
      */
     private val customFilters: MutableMap<String, Condition> = mutableMapOf()
 
@@ -115,25 +115,25 @@ public open class FilterBar<BEAN : Any>(
     }
 
     /**
-     * Invoked when a [FILTER] changes. By default does nothing. Read [currentFilter]
-     * to obtain the current [FILTER].
+     * Invoked when a filter changes. By default does nothing. Read [currentFilter]
+     * to obtain the current filter.
      *
-     * Invoked after the [FILTER] has already been set to [Grid]'s [com.vaadin.flow.data.provider.DataProvider].
+     * Invoked after the filter has already been set to [Grid]'s [com.vaadin.flow.data.provider.DataProvider].
      */
     public var onFilterChanged: () -> Unit = {}
 
     /**
-     * Along with component/column-scoped [FILTER]s, you can add a completely custom [FILTER]s
+     * Along with component/column-scoped filters, you can add a completely custom filters
      * using this method. Two use-cases:
      * 1. call `setCustomFilter("unremovable-filter-by-user", buildFilter { Record::userId eq Session.currentUserId })`
-     * to create an unremovable [FILTER] which only passes records intended for the current user.
+     * to create an unremovable filter which only passes records intended for the current user.
      * 2. create a global search [TextField] above the [Grid], then call
-     * `setCustomFilter("global", ...)` to set the new global [FILTER].
+     * `setCustomFilter("global", ...)` to set the new global filter.
      *
-     * All [FILTER]s - both custom and column-scoped - are ANDed together.
-     * @param key an arbitrary key to set the filter under. Setting a new [FILTER] with
-     * an existing key overwrites the old [FILTER] stored under that key.
-     * @param filter the new [FILTER] to set. Pass `null` to remove the [FILTER].
+     * All filters - both custom and column-scoped - are ANDed together.
+     * @param key an arbitrary key to set the filter under. Setting a new filter with
+     * an existing key overwrites the old filter stored under that key.
+     * @param filter the new filter to set. Pass `null` to remove the filter.
      */
     public fun setCustomFilter(key: String, filter: Condition?) {
         if (filter == null) {
@@ -145,7 +145,7 @@ public open class FilterBar<BEAN : Any>(
     }
 
     /**
-     * Computes a [FILTER] from all currently registered [FILTER] components, but doesn't
+     * Computes a filter from all currently registered filter components, but doesn't
      * set it into [currentFilter].
      */
     private fun computeFilter(): Condition {
@@ -168,7 +168,7 @@ public open class FilterBar<BEAN : Any>(
     }
 
     /**
-     * Starts configuring [component] to act as a [FILTER] component for given [column]:
+     * Starts configuring [component] to act as a filter component for given [column]:
      * ```kotlin
      * personGrid = grid(dataProvider = Person.dataProvider) {
      *   flexGrow = 1.0
@@ -203,7 +203,7 @@ public open class FilterBar<BEAN : Any>(
      * Call [forField] to start building a filter component for a grid column.
      * @param BEAN the bean type as provided by the [com.vaadin.flow.data.provider.DataProvider].
      * @param F the filter type which the [com.vaadin.flow.data.provider.DataProvider] uses.
-     * For VoK it's usually [Filter].
+     * For VoK it's usually filter.
      */
     public class Binding<BEAN : Any>(internal val builder: Builder<BEAN, Condition>) : Serializable {
         /**
@@ -359,7 +359,7 @@ public open class FilterBar<BEAN : Any>(
     }
 
     /**
-     * Clears all [FILTER] components, which effectively removes any [FILTER]s.
+     * Clears all filter components, which effectively removes any filters.
      */
     public fun clear() {
         bindings.keys.forEach { it.clearFilter() }
@@ -371,14 +371,14 @@ public open class FilterBar<BEAN : Any>(
     public fun getBindings(): List<Binding<BEAN>> = bindings.keys.toList()
 
     /**
-     * Removes all [FILTER] components from this [FilterBar] and stops listening for value changes.
+     * Removes all filter components from this [FilterBar] and stops listening for value changes.
      */
     public fun removeAllBindings() {
         bindings.keys.toList().forEach { it.unbind() }
     }
 
     /**
-     * Return the [FILTER] [Binding] for given [Grid] [column]. Fails if no [FILTER]
+     * Return the filter [Binding] for given [Grid] [column]. Fails if no filter
      * [Binding] has been configured for given [column].
      */
     public fun getBindingFor(column: Grid.Column<BEAN>): Binding<BEAN> {
@@ -391,12 +391,12 @@ public open class FilterBar<BEAN : Any>(
             getBindingFor(grid.getColumnBy(property))
 
     /**
-     * Configures every Vaadin UI [FILTER] [field]. By default:
+     * Configures every Vaadin UI filter [field]. By default:
      * * the width is set to 100%
      * * the clear button is made visible for [HasClearButton], for example [TextField], [TextArea], [IntegerField],
      *   [BigDecimalField], [EmailField], [PasswordField], [ComboBox], [DatePicker], and [TimePicker].
      * * [HasValueChangeMode.setValueChangeMode] is set to [ValueChangeMode.LAZY]: not to bombard the database with [ValueChangeMode.EAGER], but
-     *   also not to wait until the focus is lost from the [FILTER] - not a good UX since the user types in something and waits and waits and waits with nothing going on.
+     *   also not to wait until the focus is lost from the filter - not a good UX since the user types in something and waits and waits and waits with nothing going on.
      */
     protected open fun configure(field: Component) {
         (field as? HasSize)?.setWidthFull()
@@ -405,13 +405,13 @@ public open class FilterBar<BEAN : Any>(
     }
 
     /**
-     * Return the filtering component for given [column]. Fails if no [FILTER]
+     * Return the filtering component for given [column]. Fails if no filter
      * [Binding] has been configured for given [column].
      */
     public fun getFilterComponent(column: Grid.Column<BEAN>): Component = getBindingFor(column).filterComponent
 
     /**
-     * Return the filtering component for given [property]. Fails if no [FILTER]
+     * Return the filtering component for given [property]. Fails if no filter
      * [Binding] has been configured for given [property].
      */
     public fun getFilterComponent(property: KProperty1<BEAN, *>): Component = getFilterComponent(grid.getColumnBy(property))
@@ -427,7 +427,7 @@ public open class FilterBar<BEAN : Any>(
  * [FilterBar.Binding.Builder.eq], [onDay], [inRange], [fullText].
  *
  * You are only able to finalize the [FilterBar.Binding] after you manage to configure [FilterBar.Binding.Builder]
- * to convert the filter component value to [FILTER].
+ * to convert the filter component value to filter.
  * @param BEAN the type of beans displayed in the [Grid]
  * @param FILTER the type of the filtering value accepted by the [com.vaadin.flow.data.provider.DataProvider].
  * @return the finalized [FilterBar.Binding], with component properly configured and placed into
@@ -480,7 +480,7 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, LocalDate>.onDay(): Filt
  * Terminal operation which matches dates in given range.
  *
  * Note: [com.github.mvysny.kaributools.BrowserTimeZone] is used when comparing [LocalDate] with [Instant], [Date] and [Calendar] instances.
- * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the [FILTER] component to a value
+ * @param fieldType used to convert [LocalDate] `from`/`to` values of the [DateInterval] coming from the filter component to a value
  * comparable with values coming from the underlying property. Supports [LocalDate],
  * [LocalDateTime], [Instant], [Date] and [Calendar].
  */
