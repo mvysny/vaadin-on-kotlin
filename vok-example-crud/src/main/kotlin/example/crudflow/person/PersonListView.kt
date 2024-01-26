@@ -71,7 +71,7 @@ class PersonListView : KComposite() {
                 }
                 columnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
-                    filterBar.forField(enumFilterField<MaritalStatus>(), this).eq()
+                    filterBar.forField(enumFilterField<MaritalStatus>(), this).`in`(true)
                 }
                 columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     filterBar.forField(DateRangePopup(), this).inRange()

@@ -270,7 +270,7 @@ public open class FilterBar<BEAN : Any>(
             /**
              * Adds a converter to the chain which converts the value from [filterComponent]
              * (or rather from the previous [valueGetter]) to some kind of [NEWVALUE]. The converter
-             * usually directly produces [TARGETFILTER] out of the current [VALUE], but in some cases
+             * usually directly produces Condition out of the current [VALUE], but in some cases
              * it's handy to have multiple intermediate converters.
              *
              * @param closure converts [VALUE] currently produced by [filterComponent] into
@@ -290,8 +290,8 @@ public open class FilterBar<BEAN : Any>(
             }
 
             /**
-             * Finalizes the [Binding]. Creates a [TARGETFILTER] which passes rows with value
-             * equal to the value selected in the [TARGETFILTER] component.
+             * Finalizes the [Binding]. Creates a Condition which passes rows with value
+             * equal to the value selected in the Condition component.
              * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
@@ -300,7 +300,26 @@ public open class FilterBar<BEAN : Any>(
                 // first we need to have a converter, converting the component's value to a filter
                 val builder: Builder<BEAN, Condition> = self
                         .withConverter { property.eq(it) }
-                // now we can finalize the [Binding]
+                // now we can finalize the Binding
+                return builder.bind()
+            }
+
+            /**
+             * Finalizes the [Binding]. Creates a Condition which passes rows with value
+             * present amongset the values selected in the Condition component.
+             * @return the finalized [Binding].
+             */
+            public fun `in`(ignoreIfEmptyCollection: Boolean): Binding<BEAN> {
+                // first we need to have a converter, converting the component's value to a filter
+                val builder: Builder<BEAN, Condition> = withConverter {
+                    val allowedValues = it as Collection<*>
+                    if (ignoreIfEmptyCollection && allowedValues.isEmpty()) {
+                        Condition.NO_CONDITION
+                    } else {
+                        property.`in`(allowedValues)
+                    }
+                }
+                // now we can finalize the Binding
                 return builder.bind()
             }
 
@@ -320,8 +339,8 @@ public open class FilterBar<BEAN : Any>(
             }
 
             /**
-             * Finalizes the [Binding]. Creates a [TARGETFILTER] which passes rows with value
-             * greater-than or equal to the value selected in the [TARGETFILTER] component.
+             * Finalizes the [Binding]. Creates a Condition which passes rows with value
+             * greater-than or equal to the value selected in the Condition component.
              * @param trim if true (default) then strings are automatically trimmed.
              * @return the finalized [Binding].
              */
