@@ -6,6 +6,7 @@ import com.github.mvysny.dynatest.expectList
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.getColumnBy
 import com.github.vokorm.buildCondition
+import com.github.vokorm.exp
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Component
@@ -28,6 +29,11 @@ class FilterBarTest : DynaTest({
     test("Test simple auto-generated filters") {
         data class Person(var name: String, var age: Int, val dob: Date, val dateOfMarriage: LocalDate)
         val grid: Grid<Person> = Grid(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
+        grid.getColumnBy(Person::age).setSortProperty(Person::age.exp)
+        grid.getColumnBy(Person::dob).setSortProperty(Person::dob.exp)
+        grid.getColumnBy(Person::dateOfMarriage).setSortProperty(Person::dateOfMarriage.exp)
+
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.forField(NumberRangePopup(), grid.getColumnBy(Person::age)).inRange()
@@ -47,6 +53,7 @@ class FilterBarTest : DynaTest({
     test("string filter") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         grid.setItems(Person("foo"))
@@ -65,6 +72,7 @@ class FilterBarTest : DynaTest({
     test("day filter") {
         data class Person(var dob: LocalDateTime)
         val grid = Grid<Person>(Person::class.java)
+        grid.getColumnBy(Person::dob).setSortProperty(Person::dob.exp)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(DatePicker(), grid.getColumnBy(Person::dob)).onDay()
         grid.setItems(Person(LocalDateTime.of(2020, 3, 20, 1, 0)))
@@ -80,6 +88,7 @@ class FilterBarTest : DynaTest({
     test("filter components from cleared filter bar won't affect the grid anymore") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         val filterBar: FilterBar<Person> = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         grid.setItems(Person("foo"))
@@ -100,6 +109,7 @@ class FilterBarTest : DynaTest({
     test("filter components from cleared filter bar gone") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.forField(TextField(), grid.getColumnBy(Person::name)).istartsWith()
         filterBar.removeAllBindings()
@@ -110,6 +120,7 @@ class FilterBarTest : DynaTest({
     test("grid's data provider is polled lazily on filter change") {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         grid.appendHeaderRow()
         grid.dataProvider = ListDataProvider<Person>(listOf(Person("foobar"))).apply {
             setFilter { false }
@@ -131,6 +142,7 @@ class FilterBarTest : DynaTest({
     test("onFilterChanged invoked") {
         data class Person(var name: String)
         val grid = Grid(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         filterBar.onFilterChanged = { fail("should not be called") }
         val filterField = TextField()
@@ -159,6 +171,7 @@ class FilterBarTest : DynaTest({
     test("custom filters are applied") {
         data class Person(var name: String)
         val grid: Grid<Person> = Grid(Person::class.java)
+        grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
         val filterBar = grid.appendHeaderRow().asFilterBar(grid)
         grid.setItems(Person("foo"))
         grid.expectRows(1)

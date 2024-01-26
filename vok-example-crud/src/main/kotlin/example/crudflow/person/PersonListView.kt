@@ -6,6 +6,7 @@ import com.github.vokorm.db
 import com.github.vokorm.exp
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.BooleanFilterField
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.FilterTextField
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.button.Button
@@ -56,24 +57,30 @@ class PersonListView : KComposite() {
                     width = "90px"; isExpand = false
                 }
                 val nameColumn = columnFor(Person::name) {
-                    filterBar.forField(TextField(), this).istartsWith()
+                    setSortProperty(Person::name.exp)
+                    filterBar.forField(FilterTextField(), this).istartsWith()
                 }
                 columnFor(Person::age) {
                     width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER
+                    setSortProperty(Person::age.exp)
                     filterBar.forField(NumberRangePopup(), this).inRange()
                 }
                 columnFor(Person::alive) {
                     width = "130px"; isExpand = false
+                    setSortProperty(Person::alive.exp)
                     filterBar.forField(BooleanFilterField(), this).eq()
                 }
-                columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+                columnFor(Person::dateOfBirth, key = Person::dateOfBirth.exp.toExternalString(), converter = { it?.toString() }) {
+                    setSortProperty(Person::dateOfBirth.exp)
                     filterBar.forField(DateRangePopup(), this).inRange()
                 }
-                columnFor(Person::maritalStatus) {
+                columnFor(Person::maritalStatus, key = Person::maritalStatus.exp.toExternalString()) {
                     width = "160px"; isExpand = false
+                    setSortProperty(Person::maritalStatus.exp)
                     filterBar.forField(enumFilterField<MaritalStatus>(), this).`in`(true)
                 }
-                columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
+                columnFor(Person::created, key = Person::created.exp.toExternalString(), converter = { it!!.toInstant().toString() }) {
+                    setSortProperty(Person::created.exp)
                     filterBar.forField(DateRangePopup(), this).inRange()
                 }
 

@@ -2,6 +2,7 @@ package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.kaributools.BrowserTimeZone
 import com.github.mvysny.kaributools.getColumnBy
+import com.github.mvysny.kaributools.sortProperty
 import com.gitlab.mvysny.jdbiorm.EntityMeta
 import com.gitlab.mvysny.jdbiorm.Property
 import com.gitlab.mvysny.jdbiorm.TableProperty
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.textfield.*
 import com.vaadin.flow.component.timepicker.TimePicker
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider
 import com.vaadin.flow.data.provider.InMemoryDataProvider
+import com.vaadin.flow.data.provider.SortDirection
 import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.function.SerializablePredicate
@@ -257,12 +259,12 @@ public open class FilterBar<BEAN : Any>(
                 public val column: Grid.Column<BEAN>,
                 internal val filterComponent: Component,
                 internal val valueGetter: () -> VALUE?) : Serializable {
-            public val property: Property<Any>
-            init {
-                val p = EntityMeta.of(filterBar.itemClass).findProperty(column.key)
-                property = if (p != null) {
-                    TableProperty.of<BEAN, VALUE>(filterBar.itemClass, column.key) as Property<Any>
+            public val property: Property<Any> = run {
+                val sortOrders = column.getSortOrder(SortDirection.ASCENDING).toList()
+                if (sortOrders.isNotEmpty()) {
+                    Property.fromExternalString(sortOrders[0].sorted) as Property<Any>
                 } else {
+                    // column is not sortable, fall back to column.key
                     Property.fromExternalString(column.key) as Property<Any>
                 }
             }
@@ -537,4 +539,8 @@ public fun <BEAN : Any> FilterBar.Binding.Builder<BEAN, String>.fullText(): Filt
     val builder: FilterBar.Binding.Builder<BEAN, Condition> = withConverter { property.fullTextMatches(it) }
     // now we can finalize the binding
     return builder.bind()
+}
+
+public fun Grid.Column<*>.setSortProperty(property: Property<*>) {
+    setSortProperty(property.toExternalString())
 }
