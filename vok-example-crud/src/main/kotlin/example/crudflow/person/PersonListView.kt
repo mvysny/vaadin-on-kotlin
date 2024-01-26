@@ -2,9 +2,10 @@ package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.*
-import com.github.mvysny.vokdataloader.asc
-import com.github.vokorm.dataloader.dataLoader
 import com.github.vokorm.db
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.BooleanFilterField
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
+import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -18,8 +19,8 @@ import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
 import eu.vaadinonkotlin.vaadin.*
-import eu.vaadinonkotlin.vaadin.vokdb.setDataLoader
-import eu.vaadinonkotlin.vaadin.vokdb.sort
+import eu.vaadinonkotlin.vaadin.vokdb.dataProvider
+import eu.vaadinonkotlin.vaadin.vokdb.enumFilterField
 import example.crudflow.MainLayout
 import java.time.LocalDate
 
@@ -41,11 +42,10 @@ class PersonListView : KComposite() {
                 }
                 addClickShortcut(Alt + KEY_G)
             }
-            personGrid = grid<Person> {
+            personGrid = grid<Person>(Person.dataProvider) {
                 flexGrow = 1.0
                 appendHeaderRow() // because of https://github.com/vaadin/vaadin-grid/issues/1870
-                setDataLoader(Person.dataLoader)
-                val filterBar: VokFilterBar<Person> = appendHeaderRow().asFilterBar(this)
+                val filterBar = appendHeaderRow().asFilterBar(this)
 
                 addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateTo(PersonView::class, person.id!!) }) {}
                 addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
@@ -63,17 +63,17 @@ class PersonListView : KComposite() {
                 }
                 columnFor(Person::alive) {
                     width = "130px"; isExpand = false
-                    filterBar.forField(BooleanComboBox(), this).eq()
+                    filterBar.forField(BooleanFilterField(), this).eq()
                 }
                 columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
-                    filterBar.forField(DateRangePopup(), this).inRange(Person::dateOfBirth)
+                    filterBar.forField(DateRangePopup(), this).inRange()
                 }
                 columnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
-                    filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
+                    filterBar.forField(enumFilterField<MaritalStatus>(), this).eq()
                 }
                 columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
-                    filterBar.forField(DateRangePopup(), this).inRange(Person::created)
+                    filterBar.forField(DateRangePopup(), this).inRange()
                 }
 
                 gridContextMenu = gridContextMenu {
