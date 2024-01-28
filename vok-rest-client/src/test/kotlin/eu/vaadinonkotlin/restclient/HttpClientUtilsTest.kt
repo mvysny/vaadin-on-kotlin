@@ -49,12 +49,8 @@ fun DynaNodeGroup.usingJavalin() {
 class HttpClientUtilsTest : DynaTest({
     fun String.get(): HttpRequest = HttpRequest.newBuilder(URI.create(this)).GET().build()
     lateinit var request: HttpRequest
-    beforeEach {
-        HttpClientVokPlugin().init()
-        request = "http://localhost:9876/foo".get()
-    }
-    fun client(): HttpClient = HttpClientVokPlugin.httpClient!!
-    afterEach { HttpClientVokPlugin().destroy() }
+    beforeEach { request = "http://localhost:9876/foo".get() }
+    fun client(): HttpClient = VokRestClient.httpClient
 
     usingJavalin()
 

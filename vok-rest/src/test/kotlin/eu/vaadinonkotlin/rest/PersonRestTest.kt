@@ -37,7 +37,7 @@ class MyJavalinServlet : HttpServlet() {
 
 // Demoes direct access via httpclient
 class PersonRestClient(val baseUrl: String) {
-    private val client: HttpClient = HttpClientVokPlugin.httpClient!!
+    private val client: HttpClient = VokRestClient.httpClient
     fun helloWorld(): String {
         val request = "${baseUrl}helloworld".buildUrl().buildRequest()
         return client.exec(request) { response -> response.bodyAsString() }
@@ -46,12 +46,6 @@ class PersonRestClient(val baseUrl: String) {
         val request = baseUrl.buildUrl().buildRequest()
         return client.exec(request) { response -> response.jsonArray(Person::class.java) }
     }
-}
-
-@DynaTestDsl
-fun DynaNodeGroup.usingRestClient() {
-    beforeGroup { HttpClientVokPlugin().init() }
-    afterGroup { HttpClientVokPlugin().destroy() }
 }
 
 @DynaTestDsl
@@ -79,7 +73,6 @@ class PersonRestTest : DynaTest({
 
     usingJavalin()
     usingDb()  // to have access to the database.
-    usingRestClient()
 
     test("hello world") {
         val client = PersonRestClient("http://localhost:9876/rest/person/")

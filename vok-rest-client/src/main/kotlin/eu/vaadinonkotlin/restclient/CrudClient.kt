@@ -24,7 +24,7 @@ import java.net.http.HttpRequest
 import java.util.stream.Stream
 
 /**
- * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [HttpClientVokPlugin.gson].
+ * Uses the CRUD endpoint and serves instances of given item of type [itemClass] over given [client] using [VokRestClient.gson].
  * Expect the CRUD endpoint to be exposed in the following manner:
  * * `GET /rest/users` returns all users
  * * `GET /rest/users?select=count` returns a single number - the count of all users. This is only necessary for [getCount]
@@ -50,14 +50,14 @@ import java.util.stream.Stream
  * @property baseUrl the base URL, such as `http://localhost:8080/rest/users/`, must end with a slash.
  * @property converter used to convert filter values to strings passable as query parameters. Defaults to [QueryParameterConverter] with system-default
  * zone; it is pretty much recommended to set a specific time zone.
- * @property client which HTTP client to use, defaults to [HttpClientVokPlugin.httpClient].
+ * @property client which HTTP client to use, defaults to [VokRestClient.httpClient].
  * @property converter converts filter values to strings when querying for data.
  * Defaults to [QueryParameterConverter].
  */
 public open class CrudClient<T: Any>(
     public val baseUrl: String,
     public val itemClass: Class<T>,
-    public val client: HttpClient = HttpClientVokPlugin.httpClient!!,
+    public val client: HttpClient = VokRestClient.httpClient!!,
     public val converter: Converter<in Any, String> = QueryParameterConverter()) : AbstractBackEndDataProvider<T, Condition>() {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
@@ -127,13 +127,13 @@ public open class CrudClient<T: Any>(
     }
 
     public fun create(entity: T) {
-        val json: String = HttpClientVokPlugin.gson.toJson(entity)
+        val json: String = VokRestClient.gson.toJson(entity)
         val request: HttpRequest = baseUrl.buildUrl().buildRequest { post(json, MediaType.jsonUtf8) }
         client.exec(request) {}
     }
 
     public fun update(id: String, entity: T) {
-        val json: String = HttpClientVokPlugin.gson.toJson(entity)
+        val json: String = VokRestClient.gson.toJson(entity)
         val request: HttpRequest = "$baseUrl$id".buildUrl().buildRequest { patch(json, MediaType.jsonUtf8) }
         client.exec(request) {}
     }

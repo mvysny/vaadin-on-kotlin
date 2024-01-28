@@ -74,12 +74,12 @@ public fun GsonBuilder.registerJavaTimeAdapters(): GsonBuilder = apply {
 /**
  * Parses the response as a JSON and converts it to a Java object.
  */
-public fun <T> HttpResponse<InputStream>.json(clazz: Class<T>): T = HttpClientVokPlugin.gson.fromJson(body().buffered().reader(), clazz)
+public fun <T> HttpResponse<InputStream>.json(clazz: Class<T>): T = VokRestClient.gson.fromJson(body().buffered().reader(), clazz)
 
 /**
- * Parses the response as a JSON array and converts it into a list of Java object with given [clazz] using [HttpClientVokPlugin.gson].
+ * Parses the response as a JSON array and converts it into a list of Java object with given [clazz] using [VokRestClient.gson].
  */
-public fun <T> HttpResponse<InputStream>.jsonArray(clazz: Class<T>): List<T> = HttpClientVokPlugin.gson.fromJsonArray(body().buffered().reader(), clazz)
+public fun <T> HttpResponse<InputStream>.jsonArray(clazz: Class<T>): List<T> = VokRestClient.gson.fromJsonArray(body().buffered().reader(), clazz)
 
 /**
  * Runs given [request] synchronously and then runs [responseBlock] with the response body.
@@ -100,9 +100,9 @@ public fun <T> HttpClient.exec(request: HttpRequest, responseBlock: (HttpRespons
 }
 
 /**
- * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [HttpClientVokPlugin.gson].
+ * Parses the response as a JSON map and converts it into a map of objects with given [valueClass] using [VokRestClient.gson].
  */
-public fun <V> HttpResponse<InputStream>.jsonMap(valueClass: Class<V>): Map<String, V> = HttpClientVokPlugin.gson.fromJsonMap(body().buffered().reader(), valueClass)
+public fun <V> HttpResponse<InputStream>.jsonMap(valueClass: Class<V>): Map<String, V> = VokRestClient.gson.fromJsonMap(body().buffered().reader(), valueClass)
 
 /**
  * Parses this string as a `http://` or `https://` URL. You can configure the URL
