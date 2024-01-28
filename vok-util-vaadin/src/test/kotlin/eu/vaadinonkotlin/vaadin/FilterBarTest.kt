@@ -3,7 +3,6 @@ package eu.vaadinonkotlin.vaadin
 import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectList
-import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.getColumnBy
 import com.github.vokorm.buildCondition
 import com.github.vokorm.exp
