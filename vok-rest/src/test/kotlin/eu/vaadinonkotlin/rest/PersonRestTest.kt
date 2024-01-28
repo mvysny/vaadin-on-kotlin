@@ -24,8 +24,7 @@ import java.net.http.HttpClient
 import kotlin.test.expect
 
 class MyJavalinServlet : HttpServlet() {
-    private val javalin = Javalin.createStandalone().apply {
-        gsonMapper(VokRest.gson)
+    private val javalin = Javalin.createStandalone { it.gsonMapper(VokRest.gson) } .apply {
         get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
         crud2("/rest/person", Person.getCrudHandler(true))
     } .javalinServlet()

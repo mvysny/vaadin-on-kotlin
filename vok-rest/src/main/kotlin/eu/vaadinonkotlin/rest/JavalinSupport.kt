@@ -1,69 +1,22 @@
 package eu.vaadinonkotlin.rest
 
-import com.github.vokorm.*
+import com.github.vokorm.KEntity
 import com.gitlab.mvysny.jdbiorm.Dao
 import com.gitlab.mvysny.jdbiorm.Property
 import com.google.gson.Gson
-import io.javalin.*
+import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.apibuilder.CrudHandler
-import io.javalin.json.JSON_MAPPER_KEY
+import io.javalin.config.JavalinConfig
+import io.javalin.json.JavalinGson
 import io.javalin.json.JsonMapper
-import io.javalin.json.PipedStreamUtil
 import io.javalin.security.RouteRole
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
-import java.lang.reflect.Type
-import java.nio.charset.Charset
-
-/**
- * Configures Gson to Javalin. You need to call this if you wish to produce JSON
- * via Javalin's [io.javalin.http.Context.json], or parse incoming JSON via [io.javalin.http.Context.bodyAsClass].
- */
-@Deprecated("Use javalin.gsonMapper()")
-public fun Gson.configureToJavalin(javalin: Javalin) {
-    javalin.gsonMapper(this)
-}
 
 /**
  * Configures [gson] as Javalin's [JsonMapper].
- * @param charset which encoding to use, defaults to UTF-8
  */
-public fun Javalin.gsonMapper(gson: Gson, charset: Charset = Charsets.UTF_8) {
-    attribute(JSON_MAPPER_KEY, GsonMapper(gson, charset))
-}
-
-/**
- * Implements Javalin's [JsonMapper] on top of [Gson].
- * @property charset which encoding to use, defaults to UTF-8
- */
-public class GsonMapper(public val gson: Gson, public val charset: Charset = Charsets.UTF_8) : JsonMapper {
-    override fun toJsonString(obj: Any, type: Type): String {
-        return when (obj) {
-            is String -> obj // the default mapper treats strings as if they are already JSON
-            else -> gson.toJson(obj) // convert object to JSON
-        }
-    }
-
-    override fun toJsonStream(obj: Any, type: Type): InputStream {
-        return when (obj) {
-            is String -> obj.byteInputStream() // the default mapper treats strings as if they are already JSON
-            else -> PipedStreamUtil.getInputStream { pipedOutputStream ->
-                gson.toJson(obj, OutputStreamWriter(pipedOutputStream, charset))
-            }
-        }
-    }
-
-    override fun <T : Any> fromJsonString(
-        json: String,
-        targetType: Type
-    ): T = gson.fromJson(json, targetType)
-
-    override fun <T : Any> fromJsonStream(
-        json: InputStream,
-        targetType: Type
-    ): T = gson.fromJson(InputStreamReader(json, charset), targetType)
+public fun JavalinConfig.gsonMapper(gson: Gson) {
+    jsonMapper(JavalinGson(gson))
 }
 
 /**
