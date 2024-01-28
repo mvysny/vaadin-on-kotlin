@@ -1,11 +1,12 @@
 package example.crudflow
 
+import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.vaadin.flow.component.page.AppShellConfigurator
 import com.vaadin.flow.server.PWA
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.vokdb.dataSource
+import eu.vaadinonkotlin.vaadin.vokdb.dataSource
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.slf4j.LoggerFactory
@@ -47,6 +48,8 @@ class Bootstrap: ServletContextListener {
         log.info("Shutting down");
         log.info("Destroying VaadinOnKotlin")
         VaadinOnKotlin.destroy()
+        log.info("Shutting down database access")
+        JdbiOrm.destroy()
         log.info("Shutdown complete")
     }
 

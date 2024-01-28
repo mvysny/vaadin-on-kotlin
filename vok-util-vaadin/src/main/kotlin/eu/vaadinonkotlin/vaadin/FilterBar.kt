@@ -27,13 +27,11 @@ import com.vaadin.flow.data.value.HasValueChangeMode
 import com.vaadin.flow.data.value.ValueChangeMode
 import com.vaadin.flow.function.SerializablePredicate
 import com.vaadin.flow.shared.Registration
-import eu.vaadinonkotlin.FilterFactory
 import java.io.Serializable
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 
 /**

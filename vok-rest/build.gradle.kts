@@ -1,5 +1,5 @@
 dependencies {
-    api(project(":vok-framework"))
+    api(project(":vok-framework-vokdb"))
 
     api("io.javalin:javalin:${properties["javalin_version"]}") {
         exclude(group = "org.eclipse.jetty")
@@ -9,7 +9,6 @@ dependencies {
     api("com.google.code.gson:gson:${properties["gson_version"]}")
     // workaround for https://github.com/google/gson/issues/1059
     implementation("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1")
-    api(project(":vok-db"))
 
     // testing of the CRUD interface
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")

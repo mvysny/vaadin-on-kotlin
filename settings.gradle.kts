@@ -8,7 +8,6 @@ pluginManagement {
 
 include("vok-framework",
         "vok-framework-vokdb",
-        "vok-db",
         "vok-util-vaadin",
         "vok-framework-vokdb",
         "vok-rest",

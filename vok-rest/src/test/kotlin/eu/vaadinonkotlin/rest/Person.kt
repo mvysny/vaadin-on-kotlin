@@ -3,12 +3,12 @@ package eu.vaadinonkotlin.rest
 import com.github.mvysny.dynatest.DynaNodeGroup
 import com.github.mvysny.dynatest.DynaTestDsl
 import eu.vaadinonkotlin.VaadinOnKotlin
-import eu.vaadinonkotlin.vokdb.dataSource
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import eu.vaadinonkotlin.vaadin.vokdb.dataSource
 import org.flywaydb.core.Flyway
 import org.h2.Driver
 import org.jdbi.v3.core.mapper.reflect.ColumnName

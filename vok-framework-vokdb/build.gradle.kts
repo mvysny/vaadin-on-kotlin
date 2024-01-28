@@ -1,7 +1,7 @@
 dependencies {
     api(project(":vok-framework"))
-    api(project(":vok-db"))
     api(project(":vok-util-vaadin"))
+    api("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
 
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
     testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
