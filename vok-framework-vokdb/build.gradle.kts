@@ -1,6 +1,5 @@
 dependencies {
     api(project(":vok-framework"))
-    api(project(":vok-util-vaadin"))
     api("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
 
     testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")

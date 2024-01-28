@@ -1,5 +1,7 @@
 package eu.vaadinonkotlin
 
+import com.github.mvysny.karibudsl.v10.karibuDslI18n
+import eu.vaadinonkotlin.vaadin.vt
 import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.concurrent.*
@@ -14,6 +16,7 @@ public object VaadinOnKotlin {
             // TomEE also has by default 5 threads, so I guess this is okay :-D
             asyncExecutor = Executors.newScheduledThreadPool(5, threadFactory)
         }
+        karibuDslI18n = { key -> vt["dsl.$key"] }
         val plugins: List<VOKPlugin> = pluginsLoader.toList()
         plugins.forEach { it.init() }
         isStarted = true
