@@ -57,7 +57,7 @@ import java.util.stream.Stream
 public open class CrudClient<T: Any>(
     public val baseUrl: String,
     public val itemClass: Class<T>,
-    public val client: HttpClient = VokRestClient.httpClient!!,
+    public val client: HttpClient = VokRestClient.httpClient,
     public val converter: Converter<in Any, String> = QueryParameterConverter()) : AbstractBackEndDataProvider<T, Condition>() {
     init {
         require(baseUrl.endsWith("/")) { "$baseUrl must end with /" }
