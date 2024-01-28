@@ -6,6 +6,9 @@
 
 # Welcome to Vaadin-On-Kotlin
 
+> Warning: VoK 0.17 is a complete overhaul and the documentation is out-of-date.
+> While the documentation is updated, please consult example apps for more details.
+
 Vaadin-on-Kotlin is a web-application framework that includes everything needed to create database-backed web applications.
 Please see the official documentation at [www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu).
 
