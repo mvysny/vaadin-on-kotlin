@@ -1,6 +1,5 @@
 dependencies {
     api(project(":vok-framework"))
-    api("com.vaadin:flow-data:${properties["vaadin_version"]}")
     api("com.gitlab.mvysny.jdbiorm:jdbi-orm:${properties["jdbi_orm_version"]}") // only used for the Condition API
 
     api("com.google.code.gson:gson:${properties["gson_version"]}")
