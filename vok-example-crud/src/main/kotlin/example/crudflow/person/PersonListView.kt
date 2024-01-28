@@ -70,16 +70,16 @@ class PersonListView : KComposite() {
                     setSortProperty(Person::alive.exp)
                     filterBar.forField(BooleanFilterField(), this).eq()
                 }
-                columnFor(Person::dateOfBirth, key = Person::dateOfBirth.exp.toExternalString(), converter = { it?.toString() }) {
+                columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
                     setSortProperty(Person::dateOfBirth.exp)
                     filterBar.forField(DateRangePopup(), this).inRange()
                 }
-                columnFor(Person::maritalStatus, key = Person::maritalStatus.exp.toExternalString()) {
+                columnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
                     setSortProperty(Person::maritalStatus.exp)
                     filterBar.forField(enumFilterField<MaritalStatus>(), this).`in`(true)
                 }
-                columnFor(Person::created, key = Person::created.exp.toExternalString(), converter = { it!!.toInstant().toString() }) {
+                columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     setSortProperty(Person::created.exp)
                     filterBar.forField(DateRangePopup(), this).inRange()
                 }
