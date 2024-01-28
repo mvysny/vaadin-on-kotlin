@@ -3,7 +3,6 @@ package eu.vaadinonkotlin
 import com.github.mvysny.karibudsl.v10.karibuDslI18n
 import eu.vaadinonkotlin.vaadin.vt
 import org.slf4j.LoggerFactory
-import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -17,10 +16,8 @@ public object VaadinOnKotlin {
             asyncExecutor = Executors.newScheduledThreadPool(5, threadFactory)
         }
         karibuDslI18n = { key -> vt["dsl.$key"] }
-        val plugins: List<VOKPlugin> = pluginsLoader.toList()
-        plugins.forEach { it.init() }
         isStarted = true
-        log.info("Vaadin On Kotlin initialized with plugins ${plugins.map { it.javaClass.simpleName }}")
+        log.info("Vaadin On Kotlin initialized")
     }
 
     /**
@@ -30,7 +27,6 @@ public object VaadinOnKotlin {
         if (isStarted) {
             isStarted = false
             Services.singletons.destroy()
-            pluginsLoader.forEach { it.destroy() }
             asyncExecutor.shutdown()
             asyncExecutor.awaitTermination(10, TimeUnit.SECONDS)
         }
@@ -72,10 +68,4 @@ public object VaadinOnKotlin {
     }
 
     private val log = LoggerFactory.getLogger(javaClass)
-
-    /**
-     * Discovers VOK plugins, so that they can be inited in [init] and closed on [destroy]. Uses a standard [ServiceLoader]
-     * machinery for discovery.
-     */
-    private val pluginsLoader: ServiceLoader<VOKPlugin> = ServiceLoader.load(VOKPlugin::class.java)
 }
