@@ -95,10 +95,7 @@ Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a
 
 # Further Links
 
-- Visit [Vaadin Forums](https://vaadin.com/forum/category/203413/07-add-ons) to discuss any issues
-  or questions regarding Vaadin-on-Kotlin
 - Please file bug reports at the [VoK Bug Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues)
-- For troubleshooting, please check the [Vaadin Troubleshooting](https://mvysny.github.io/Vaadin-troubleshooting/) article.
 
 <style>
 .box {
