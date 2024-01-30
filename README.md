@@ -231,10 +231,7 @@ if (button.w.isFillParent) { ... }
 
 # Further Links
 
-* Visit [Vaadin Forums](https://vaadin.com/forum/category/203413/07-add-ons) to discuss any issues
-  or questions regarding Vaadin-on-Kotlin
 * Please file bug reports at the [VoK Bug Tracker](https://github.com/mvysny/vaadin-on-kotlin/issues)
-* Chat freely at [VoK Gitter](https://gitter.im/vaadin/vaadin-on-kotlin)
 * For troubleshooting, please check the [Vaadin Troubleshooting](https://mvysny.github.io/Vaadin-troubleshooting/) article.
 
 # License
