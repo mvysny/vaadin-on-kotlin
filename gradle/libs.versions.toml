@@ -1,0 +1,19 @@
+[versions]
+# https://github.com/vaadin/platform/tags
+vaadin = "24.3.3"
+# https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
+slf4j = "2.0.9"
+
+[libraries]
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+jetbrains-annotations = "org.jetbrains:annotations:24.0.1"
+vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
+karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.1.2"
+dynatest = "com.github.mvysny.dynatest:dynatest:0.24"
+vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:12.2"
+hibernate-validator = "org.hibernate.validator:hibernate-validator:8.0.1.Final"  # https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/
+jakarta-el = "org.glassfish:jakarta.el:4.0.2"
+h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
+[plugins]
+vaadin = { id = "com.vaadin", version.ref = "vaadin" }

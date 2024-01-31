@@ -1,6 +1,6 @@
 plugins {
     id("application")
-    id("com.vaadin")
+    alias(libs.plugins.vaadin)
 }
 
 dependencies {
@@ -12,24 +12,23 @@ dependencies {
             }
         }
     }
-    implementation("com.github.mvysny.vaadin-boot:vaadin-boot:12.2")
+    implementation(libs.vaadinboot)
 
     // logging
     // currently we are logging through the SLF4J API to slf4j-simple. See simplelogger.properties file for the logger configuration
-    implementation("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
-    implementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
+    implementation(libs.slf4j.simple)
 
     // db
     implementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")
-    implementation("com.h2database:h2:${properties["h2_version"]}")
+    implementation(libs.h2)
     implementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
 
     // REST
     implementation(project(":vok-rest"))
 
     // testing
-    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v24:${properties["kaributesting_version"]}")
+    testImplementation(libs.dynatest)
+    testImplementation(libs.karibu.testing)
     testImplementation(project(":vok-rest-client"))
 }
 
