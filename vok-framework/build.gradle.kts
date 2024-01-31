@@ -1,18 +1,18 @@
 dependencies {
-    implementation("org.slf4j:slf4j-api:${properties["slf4j_version"]}")
-    api("com.gitlab.mvysny.jdbiorm:jdbi-orm:${properties["jdbi_orm_version"]}")
-    api("com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:${properties["jdbi_orm_vaadin_version"]}")
+    implementation(libs.slf4j.api)
+    api(libs.jdbiorm)
+    api(libs.jdbiormvaadin)
 
     // Vaadin
-    api("com.github.mvysny.karibudsl:karibu-dsl-v23:${properties["karibudsl_version"]}")
-    api("com.vaadin:vaadin-core:${properties["vaadin_version"]}")
-    api("jakarta.servlet:jakarta.servlet-api:5.0.0")
+    api(libs.karibu.dsl)
+    api(libs.vaadin.core)
+    api(libs.jakarta.servlet)
 
     // testing
-    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
-    testImplementation("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
+    testImplementation(libs.dynatest)
+    testImplementation(libs.slf4j.simple)
+    testImplementation(libs.karibu.testing)
+    testImplementation(libs.vokorm)
 }
 
 kotlin {
