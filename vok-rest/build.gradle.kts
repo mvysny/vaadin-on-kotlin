@@ -1,26 +1,25 @@
 dependencies {
     api(project(":vok-framework-vokdb"))
 
-    api("io.javalin:javalin:${properties["javalin_version"]}") {
+    api(libs.javalin) {
         exclude(group = "org.eclipse.jetty")
         exclude(group = "org.eclipse.jetty.websocket")
         exclude(group = "com.fasterxml.jackson.core")
     }
-    api("com.google.code.gson:gson:${properties["gson_version"]}")
+    api(libs.gson.gson)
     // workaround for https://github.com/google/gson/issues/1059
-    implementation("com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1")
+    implementation(libs.gson.javatime)
 
     // testing of the CRUD interface
-    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
+    testImplementation(libs.dynatest)
     testImplementation(project(":vok-rest-client"))
-    testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp:${properties["jetty_version"]}")
-    testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:${properties["jetty_version"]}")
-    testImplementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")
-    testImplementation("com.h2database:h2:${properties["h2_version"]}")
-    testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
-    testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
+    testImplementation(libs.bundles.jetty)
+    testImplementation(libs.flyway)
+    testImplementation(libs.h2)
+    testImplementation(libs.hikaricp)
+    testImplementation(libs.slf4j.simple)
     // for testing fulltext search
-    testImplementation("org.apache.lucene:lucene-queryparser:8.11.1")
+    testImplementation(libs.lucene.queryparser)
 }
 
 kotlin {

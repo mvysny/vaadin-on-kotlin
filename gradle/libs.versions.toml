@@ -14,8 +14,6 @@ vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
 karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.1.2"
 dynatest = "com.github.mvysny.dynatest:dynatest:0.24"
 vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:12.2"
-hibernate-validator = "org.hibernate.validator:hibernate-validator:8.0.1.Final"  # https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/
-jakarta-el = "org.glassfish:jakarta.el:4.0.2"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
 jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.7"
 apache-uribuilder = "com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1"
@@ -23,6 +21,10 @@ gson-gson = "com.google.code.gson:gson:2.10.1"   # com.google.code.gson:gson; ht
 gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1"
 jetty-webapp = { module ="org.eclipse.jetty.ee10:jetty-ee10-webapp", version.ref = "jetty" }
 jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server", version.ref = "jetty" }
+javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
+lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
+hikaricp = "com.zaxxer:HikariCP:5.0.1"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
+flyway = "org.flywaydb:flyway-core:9.22.3" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
 
 [plugins]
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }

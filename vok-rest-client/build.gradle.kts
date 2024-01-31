@@ -7,7 +7,7 @@ dependencies {
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
     testImplementation(libs.dynatest)
-    testImplementation("io.javalin:javalin:${properties["javalin_version"]}") {
+    testImplementation(libs.javalin) {
         exclude(group = "org.eclipse.jetty")
         exclude(group = "org.eclipse.jetty.websocket")
         exclude(group = "com.fasterxml.jackson.core")
