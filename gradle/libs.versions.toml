@@ -3,6 +3,8 @@
 vaadin = "24.3.3"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.9"
+# https://eclipse.dev/jetty/download.php
+jetty = "12.0.5"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
@@ -15,5 +17,16 @@ vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:12.2"
 hibernate-validator = "org.hibernate.validator:hibernate-validator:8.0.1.Final"  # https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/
 jakarta-el = "org.glassfish:jakarta.el:4.0.2"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
+jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.7"
+apache-uribuilder = "com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1"
+gson-gson = "com.google.code.gson:gson:2.10.1"   # com.google.code.gson:gson; https://repo1.maven.org/maven2/com/google/code/gson/gson/
+gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.1"
+jetty-webapp = { module ="org.eclipse.jetty.ee10:jetty-ee10-webapp", version.ref = "jetty" }
+jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server", version.ref = "jetty" }
+
 [plugins]
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }
+
+[bundles]
+gson = ["gson-gson", "gson-javatime"]   # workaround for https://github.com/google/gson/issues/1059
+jetty = ["jetty-webapp", "jetty-websocket"]
