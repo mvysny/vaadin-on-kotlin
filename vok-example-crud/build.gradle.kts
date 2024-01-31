@@ -1,3 +1,5 @@
+import com.vaadin.gradle.getBooleanProperty
+
 plugins {
     id("application")
     alias(libs.plugins.vaadin)
@@ -5,11 +7,10 @@ plugins {
 
 dependencies {
     implementation(project(":vok-framework-vokdb"))
-    implementation("com.vaadin:vaadin-core:${properties["vaadin_version"]}") {
-        afterEvaluate {
-            if (vaadin.productionMode.get()) {
-                exclude(module = "vaadin-dev")
-            }
+    implementation(libs.vaadin.core) {
+        // https://github.com/vaadin/flow/issues/18572
+        if (vaadin.productionMode.map { v -> getBooleanProperty("vaadin.productionMode") ?: v }.get()) {
+            exclude(module = "vaadin-dev")
         }
     }
     implementation(libs.vaadinboot)
@@ -19,9 +20,9 @@ dependencies {
     implementation(libs.slf4j.simple)
 
     // db
-    implementation("org.flywaydb:flyway-core:${properties["flyway_version"]}")
+    implementation(libs.flyway)
     implementation(libs.h2)
-    implementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
+    implementation(libs.hikaricp)
 
     // REST
     implementation(project(":vok-rest"))
