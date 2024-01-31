@@ -1,12 +1,12 @@
 dependencies {
     api(project(":vok-framework"))
-    api("com.github.mvysny.vokorm:vok-orm:${properties["vok_orm_version"]}")
+    api(libs.vokorm)
 
-    testImplementation("com.github.mvysny.dynatest:dynatest:${properties["dynatest_version"]}")
-    testImplementation("org.slf4j:slf4j-simple:${properties["slf4j_version"]}")
-    testImplementation("com.h2database:h2:${properties["h2_version"]}")
-    testImplementation("com.zaxxer:HikariCP:${properties["hikaricp_version"]}")
-    testImplementation("com.github.mvysny.kaributesting:karibu-testing-v23:${properties["kaributesting_version"]}")
+    testImplementation(libs.dynatest)
+    testImplementation(libs.slf4j.simple)
+    testImplementation(libs.h2)
+    testImplementation(libs.hikaricp)
+    testImplementation(libs.karibu.testing)
 }
 
 kotlin {
