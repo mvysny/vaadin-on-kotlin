@@ -160,7 +160,7 @@ verticalLayout {
     w = 100.perc
     isSpacing = true
     button("Save") {
-      onLeftClick { okPressed() }
+      onClick { okPressed() }
       setPrimary()
     }
   }
@@ -213,7 +213,7 @@ import com.github.mvysny.karibudsl.v8.ModifierKey.Ctrl
 import com.vaadin.event.ShortcutAction.KeyCode.C
 
 button("Create New Person (Ctrl+Alt+C)") {
-  onLeftClick { ... }
+  onClick { ... }
   clickShortcut = Ctrl + Alt + C
 }
 ```

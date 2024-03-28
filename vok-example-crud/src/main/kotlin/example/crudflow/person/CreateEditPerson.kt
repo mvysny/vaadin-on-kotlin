@@ -33,11 +33,11 @@ class CreateEditPerson(val person: Person) : Dialog() {
             horizontalLayout {
                 isSpacing = true; alignSelf = FlexComponent.Alignment.CENTER
                 persistButton = button(if (creating) "Create" else "Save") {
-                    onLeftClick { okPressed() }
+                    onClick { okPressed() }
                     setPrimary()
                 }
                 button("Cancel") {
-                    onLeftClick { close() }
+                    onClick { close() }
                 }
             }
         }

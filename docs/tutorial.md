@@ -479,7 +479,7 @@ class CreateArticleView: KComposite() {
                 bind(binder).bind(Article::text)
             }
             button("Save Article") {
-                onLeftClick {
+                onClick {
                     val article = Article()
                     if (binder.writeBeanIfValid(article)) {
                         article.save()
@@ -611,7 +611,7 @@ right below the `article.save()` call as follows:
 ```kotlin
 ...
         button("Save Article") {
-            onLeftClick {
+            onClick {
                 val article = Article()
                 if (binder.writeBeanIfValid(article)) {
                     article.save()
@@ -766,7 +766,7 @@ and mark all invalid fields. To do this, change the button definition as follows
 
 ```kotlin
         button("Save Article") {
-            onLeftClick {
+            onClick {
                 val article = Article()
                 if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
                     article.save()
@@ -808,7 +808,7 @@ class EditArticleView: KComposite(), HasUrlParameter<Long> {
                 bind(binder).bind(Article::text)
             }
             button("Save Article") {
-                onLeftClick { event ->
+                onClick { event ->
                     val article = article!!
                     if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
                         article.save()
@@ -940,7 +940,7 @@ class ArticleEditor : KComposite() {
                 bind(binder).bind(Article::text)
             }
             button("Save Article") {
-                onLeftClick { event ->
+                onClick { event ->
                     val article = article!!
                     if (binder.validate().isOk && binder.writeBeanIfValid(article)) {
                         article.save()
@@ -1295,7 +1295,7 @@ class ArticleView: KComposite(), HasUrlParameter<Long> {
                 bind(commentBinder).bind(Comment::body)
             }
             createComment = button("Create") {
-                onLeftClick { createComment() }
+                onClick { createComment() }
             }
             editLink = routerLink(null, "Edit")
             routerLink(text = "Back", viewType = ArticlesView::class)
@@ -1433,7 +1433,7 @@ class NewCommentForm : KComposite() {
                 bind(commentBinder).bind(Comment::body)
             }
             createComment = button("Create") {
-                onLeftClick { createComment() }
+                onClick { createComment() }
             }
         }
     }
@@ -1540,7 +1540,7 @@ class CommentsComponent : KComposite() {
                 }
                 button("Delete comment") {
                     addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL)
-                    onLeftClick { comment.delete(); refresh() }
+                    onClick { comment.delete(); refresh() }
                 }
             }
         }

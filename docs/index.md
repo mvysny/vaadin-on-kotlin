@@ -16,7 +16,7 @@ creates new row in your SQL database:
 
 ```kotlin
 button("Create") {
-  onLeftClick { Person(name = "Albert Einstein").save() }
+  onClick { Person(name = "Albert Einstein").save() }
 }
 ```
 

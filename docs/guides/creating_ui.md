@@ -136,7 +136,7 @@ import com.vaadin.flow.router.Route
 class WelcomeView: VerticalLayout() {
     init {
         button("Click me") {
-            onLeftClick {
+            onClick {
                 Notification.show("Clicked")
             }
         }
@@ -181,7 +181,7 @@ class WelcomeView: VerticalLayout() {
             textField("Age:")
         }
         button("Click me") {
-            onLeftClick {
+            onClick {
                 Notification.show("Clicked")
             }
         }
@@ -407,7 +407,7 @@ class WelcomeView: VerticalLayout() {
             ageField = textField("Age:")
         }
         button("Click me") {
-            onLeftClick {
+            onClick {
                 Notification.show("Hello, ${nameField.value} of age ${ageField.value}")
             }
         }
@@ -453,7 +453,7 @@ class WelcomeView: VerticalLayout() {
     init {
         val form = nameAgeForm()
         button("Click me") {
-            onLeftClick {
+            onClick {
                 Notification.show(form.greeting)
             }
         }

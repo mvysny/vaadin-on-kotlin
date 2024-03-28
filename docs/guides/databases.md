@@ -190,7 +190,7 @@ import com.vaadin.flow.router.Route
 class WelcomeView: VerticalLayout() {
     init {
         button("Demo") {
-            onLeftClick {
+            onClick {
                 val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
                 person.save()  // since ID is null, this will create the person and populate the ID
                 println(Person.findAll())  // will print [Person(id=1, name=John Doe, age=42 etc)]
@@ -264,7 +264,7 @@ class PersonEditor : VerticalLayout() {
             bind(binder).bind(Person::maritalStatus)
         }
         button("Save Person") {
-            onLeftClick {
+            onClick {
                 val person = person!!
                 if (binder.validate().isOk && binder.writeBeanIfValid(person)) {
                     person.save()

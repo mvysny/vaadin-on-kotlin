@@ -39,7 +39,7 @@ class PersonListView : KComposite() {
             setSizeFull()
             h4("Person list")
             button("Generate testing data (Alt+G)") {
-                onLeftClick {
+                onClick {
                     generateTestingData()
                 }
                 addClickShortcut(Alt + KEY_G)
