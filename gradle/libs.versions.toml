@@ -27,7 +27,7 @@ jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websock
 javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
 lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
 hikaricp = "com.zaxxer:HikariCP:5.1.0"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
-flyway = "org.flywaydb:flyway-core:10.8.1" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
+flyway = "org.flywaydb:flyway-core:10.11.0" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
 vokorm = "com.github.mvysny.vokorm:vok-orm:3.1"  # https://github.com/mvysny/vok-orm/tags
 
 [plugins]
