@@ -4,7 +4,7 @@ vaadin = "24.3.8"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.12"
 # https://eclipse.dev/jetty/download.php
-jetty = "12.0.7"
+jetty = "12.0.8"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
