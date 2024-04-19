@@ -349,7 +349,6 @@ In order to take these REST endpoints into use, in the `Bootstrap.kt`, edit the 
 
 ```kotlin
 fun Javalin.configureRest(): Javalin {
-    gsonMapper(VokRest.gson)
     articleRest()
     return this
 }
@@ -651,9 +650,8 @@ class ArticlesView: KComposite(), AfterNavigationObserver {
         verticalLayout {
             setSizeFull()
             h1("Listing Articles")
-            grid = grid {
+            grid = grid(Article.dataProvider) {
                 isExpand = true; setSizeFull()
-                setDataLoader(Article.dataLoader)
 
                 columnFor(Article::id)
                 columnFor(Article::title)
@@ -844,9 +842,8 @@ that now to `ArticlesView.kt` to make it appear next to the "Show" link.
 Just change the `grid {}` block as follows:
 
 ```kotlin
-        grid = grid {
+        grid = grid(Article.dataProvider) {
             isExpand = true; setSizeFull()
-            setDataLoader(Article.dataLoader)
 
             columnFor(Article::title)
             columnFor(Article::text)
@@ -1047,9 +1044,8 @@ class ArticlesView: KComposite(), AfterNavigationObserver {
             setSizeFull()
             h1("Listing Articles")
             routerLink(text = "New Article", viewType = CreateArticleView::class)
-            grid = grid {
+            grid = grid(Article.dataProvider) {
                 isExpand = true; setSizeFull()
-                setDataLoader(Article.dataLoader)
 
                 columnFor(Article::id)
                 columnFor(Article::title)
