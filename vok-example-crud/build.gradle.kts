@@ -1,5 +1,3 @@
-import com.vaadin.gradle.getBooleanProperty
-
 plugins {
     id("application")
     alias(libs.plugins.vaadin)
