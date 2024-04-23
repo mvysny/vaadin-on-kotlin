@@ -53,7 +53,7 @@ Vaadin to pass the data properly from server-side Grid
 part to the client-side Grid front. To you as programmer, this process is completely transparent:
 you develop your webapp using the server-side component API only, in pure server-side Kotlin code; the components then handle
 client-server communication
-(see [example demo](https://vok-crud.herokuapp.com/crud); just press the "Generate test data" button at the top to get some data).
+(see [example demo](https://v-herd.eu/vok-example-crud/); just press the "Generate test data" button at the top to get some data).
 
 Thanks to this approach, VoK feels more like a desktop widget library (such as Swing or JavaFX) than a web page-based framework.
 
