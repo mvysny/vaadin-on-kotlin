@@ -4,6 +4,7 @@ import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.dynatest.expectThrows
 import com.github.mvysny.kaributools.caption
+import com.github.mvysny.kaributools.label
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest
 import java.lang.IllegalStateException
@@ -22,11 +23,11 @@ class VaadinUtilsTest : DynaTest({
             class MyUI : UI() {
                 override fun init(request: VaadinRequest) {
                     locale = Locale.ENGLISH
-                    caption = vt["filter.all"]
+                    label = vt["filter.all"]
                 }
             }
             MockVaadin.setup(uiFactory = { MyUI() })
-            expect("All") { UI.getCurrent().caption }
+            expect("All") { UI.getCurrent().label }
         }
     }
 
