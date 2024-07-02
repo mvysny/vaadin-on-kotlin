@@ -10,6 +10,7 @@ dependencies {
 
     // testing
     testImplementation(libs.dynatest)
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.karibu.testing)
     testImplementation(libs.vokorm)
