@@ -12,6 +12,6 @@ target
 .bundle/
 .jekyll-cache/
 
-vok-example-crud/frontend/generated
+vok-example-crud/src/main/frontend/generated
 
 !**/src/main/dev-bundle/webapp/VAADIN/build
