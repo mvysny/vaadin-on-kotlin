@@ -3,7 +3,7 @@ dependencies {
     api(libs.vokorm)
 
     testImplementation(libs.dynatest)
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.h2)
     testImplementation(libs.hikaricp)

@@ -7,7 +7,7 @@ dependencies {
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
     testImplementation(libs.dynatest)
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.javalin) {
         exclude(group = "org.eclipse.jetty")
         exclude(group = "org.eclipse.jetty.websocket")

@@ -12,7 +12,7 @@ dependencies {
 
     // testing of the CRUD interface
     testImplementation(libs.dynatest)
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(project(":vok-rest-client"))
     testImplementation(libs.bundles.jetty)
     testImplementation(libs.flyway)

@@ -1,6 +1,6 @@
 [versions]
 # https://github.com/vaadin/platform/tags
-vaadin = "24.4.8"
+vaadin = "24.4.11"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.13"
 # https://eclipse.dev/jetty/download.php
@@ -12,10 +12,9 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 jetbrains-annotations = "org.jetbrains:annotations:24.1.0"
 vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
 karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.1.8"
-karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.1.3"
+karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.1.4"
 dynatest = "com.github.mvysny.dynatest:dynatest:0.25"
-junit-platform-launcher = "org.junit.platform:junit-platform-launcher:1.10.2"
-vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:12.3"
+vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.1"
 jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:5.0.0"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
 jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.8"
@@ -28,7 +27,7 @@ jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websock
 javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
 lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
 hikaricp = "com.zaxxer:HikariCP:5.1.0"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
-flyway = "org.flywaydb:flyway-core:10.11.0" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
+flyway = "org.flywaydb:flyway-core:10.15.2" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
 vokorm = "com.github.mvysny.vokorm:vok-orm:3.1"  # https://github.com/mvysny/vok-orm/tags
 
 [plugins]
