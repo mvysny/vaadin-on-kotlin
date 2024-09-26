@@ -6,7 +6,8 @@ dependencies {
     api(libs.apache.uribuilder)
 
     // this project is actually tested in the vok-rest project, where it is used as a test dependency. For tests please see vok-rest
-    testImplementation(libs.dynatest)
+    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.javalin) {
         exclude(group = "org.eclipse.jetty")

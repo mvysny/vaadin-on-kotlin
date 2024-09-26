@@ -1,50 +1,49 @@
 package eu.vaadinonkotlin.restclient
 
-import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectList
 import com.google.gson.Gson
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.test.expect
 
 /**
  * @author Martin Vysny <mavi@vaadin.com>
  */
-class GsonUtilsTest : DynaTest({
-    lateinit var gson: Gson
-    beforeEach { gson = Gson() }
+class GsonUtilsTest {
+    private val gson = Gson()
 
-    group("pojo") {
-        test("empty") {
+    @Nested inner class pojo() {
+        @Test fun empty() {
             expect(Person()) {
                 gson.fromJson("{}", Person::class.java)
             }
         }
-        test("simple") {
+        @Test fun simple() {
             expect(Person("Foo", "Bar", 25)) {
                 gson.fromJson("""{"name":"Foo", "surname":"Bar", "age": 25}""", Person::class.java)
             }
         }
     }
 
-    group("jsonArray") {
-        test("empty") {
-            expectList() { gson.fromJsonArray("""[]""", Person::class.java) }
+    @Nested inner class jsonArray() {
+        @Test fun empty() {
+            expect(listOf()) { gson.fromJsonArray("""[]""", Person::class.java) }
         }
-        test("simple") {
+        @Test fun simple() {
             val json = """[{"name":"John", "surname":"Doe"}]"""
-            expectList(Person("John", "Doe")) { gson.fromJsonArray(json, Person::class.java) }
+            expect(listOf(Person("John", "Doe"))) { gson.fromJsonArray(json, Person::class.java) }
         }
     }
 
-    group("jsonMap") {
-        test("empty") {
+    @Nested inner class jsonMap() {
+        @Test fun empty() {
             val json = """{}"""
             expect(mapOf()) { gson.fromJsonMap(json, Person::class.java) }
         }
-        test("simple") {
+        @Test fun simple() {
             val json = """{"director": {"name":"John", "surname":"Doe"}}"""
             expect(mapOf("director" to Person("John", "Doe"))) {
                 gson.fromJsonMap(json, Person::class.java)
             }
         }
     }
-})
+}
