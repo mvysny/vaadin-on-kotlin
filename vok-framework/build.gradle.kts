@@ -9,7 +9,7 @@ dependencies {
     api(libs.jakarta.servlet)
 
     // testing
-    testImplementation(libs.dynatest)
+    testImplementation(libs.junit)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.karibu.testing)

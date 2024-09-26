@@ -1,24 +1,26 @@
 package eu.vaadinonkotlin
 
-import com.github.mvysny.dynatest.DynaTest
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.expect
 
-class ServicesTest : DynaTest({
-    beforeEach { VaadinOnKotlin.init() }
-    afterEach { VaadinOnKotlin.destroy() }
+class ServicesTest {
+    @BeforeEach fun setupVok() { VaadinOnKotlin.init() }
+    @AfterEach fun tearDownVok() { VaadinOnKotlin.destroy() }
 
-    test("api") {
+    @Test fun api() {
         expect("Foo!") { Services.myStatelessService.foo() }
         expect(1) { Services.mySingletonService.getNewId() }
     }
 
-    test("singleton") {
+    @Test fun singleton() {
         expect(1) { Services.mySingletonService.getNewId() }
         expect(2) { Services.mySingletonService.getNewId() }
         expect(3) { Services.mySingletonService.getNewId() }
     }
-})
+}
 
 class MyStatelessService internal constructor() {
     fun foo() = "Foo!"

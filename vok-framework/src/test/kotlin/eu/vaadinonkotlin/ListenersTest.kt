@@ -1,7 +1,6 @@
 package eu.vaadinonkotlin
 
-import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.cloneBySerialization
+import org.junit.jupiter.api.Test
 import java.io.Serializable
 import kotlin.test.expect
 import kotlin.test.fail
@@ -11,14 +10,14 @@ interface MyListener : Serializable {
     fun onBar(param2: Int)
 }
 
-class ListenersTest : DynaTest({
-    test("empty listeners do nothing") {
+class ListenersTest {
+    @Test fun `empty listeners do nothing`() {
         val listeners = listeners<MyListener>()
         listeners.fire.onFoo("foo")
         listeners.fire.onBar(25)
     }
 
-    test("listeners get invoked") {
+    @Test fun `listeners get invoked`() {
         val listeners = listeners<MyListener>()
         var called = 0
         listeners.add(object: MyListener {
@@ -37,7 +36,7 @@ class ListenersTest : DynaTest({
         expect(2) { called }
     }
 
-    test("unregistered listeners are not invoked") {
+    @Test fun `unregistered listeners are not invoked`() {
         val listeners = listeners<MyListener>()
         val listener = object : MyListener {
             override fun onFoo(param1: String) = fail("shouldn't be called")
@@ -49,7 +48,7 @@ class ListenersTest : DynaTest({
         listeners.fire.onBar(1)
     }
 
-    test("toString") {
+    @Test fun toStringTests() {
         val listeners = listeners<MyListener>()
         val listener = object : MyListener {
             override fun onFoo(param1: String) = fail("shouldn't be called")
@@ -60,7 +59,7 @@ class ListenersTest : DynaTest({
         expect("Listeners(interface eu.vaadinonkotlin.MyListener, listeners=[MyListener])") { listeners.toString() }
     }
 
-    test("serializable") {
+    @Test fun serializable() {
         val listeners = listeners<MyListener>()
         val listener = object : MyListener {
             override fun onFoo(param1: String) = fail("shouldn't be called")
@@ -69,4 +68,4 @@ class ListenersTest : DynaTest({
         listeners.add(listener)
         listeners.cloneBySerialization()
     }
-})
+}
