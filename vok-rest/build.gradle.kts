@@ -11,7 +11,8 @@ dependencies {
     implementation(libs.gson.javatime)
 
     // testing of the CRUD interface
-    testImplementation(libs.dynatest)
+    testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(project(":vok-rest-client"))
     testImplementation(libs.bundles.jetty)

@@ -1,6 +1,5 @@
 package eu.vaadinonkotlin.rest
 
-import com.github.mvysny.dynatest.*
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.OrderBy
 import com.gitlab.mvysny.jdbiorm.condition.Condition
@@ -20,7 +19,14 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.eclipse.jetty.ee10.webapp.WebAppContext
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.net.http.HttpClient
+import kotlin.math.exp
 import kotlin.test.expect
 
 class MyJavalinServlet : HttpServlet() {
@@ -47,19 +53,20 @@ class PersonRestClient(val baseUrl: String) {
     }
 }
 
-@DynaTestDsl
-fun DynaNodeGroup.usingJavalin() {
-    lateinit var server: Server
-    beforeGroup {
-        val ctx = WebAppContext()
-        // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-        ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
-        ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
-        server = Server(9876)
-        server.handler = ctx
-        server.start()
+abstract class AbstractJavalinTest : AbstractDbTest() {
+    companion object {
+        lateinit var server: Server
+        @BeforeAll @JvmStatic fun startJavalin() {
+            val ctx = WebAppContext()
+            // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
+            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+            ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
+            server = Server(9876)
+            server.handler = ctx
+            server.start()
+        }
+        @AfterAll @JvmStatic fun stopJavalin() { server.stop() }
     }
-    afterGroup { server.stop() }
 }
 
 
@@ -68,32 +75,27 @@ private fun <T> DataProvider<T, Condition>.getAll(condition: Condition? = null, 
 private fun <T> DataProvider<T, Condition>.getCount(condition: Condition? = null): Int =
     size(Query<T, Condition>(condition))
 
-class PersonRestTest : DynaTest({
-
-    usingJavalin()
-    usingDb()  // to have access to the database.
-
-    test("hello world") {
+class PersonRestTest : AbstractJavalinTest() {
+    @Test fun helloWorld() {
         val client = PersonRestClient("http://localhost:9876/rest/person/")
         expect("Hello World") { client.helloWorld() }
-        expectList() { client.getAll() }
+        expect(listOf()) { client.getAll() }
         val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
-        expectList(p) { client.getAll() }
+        expect(listOf(p)) { client.getAll() }
     }
 
-    group("crud") {
-        lateinit var crud: CrudClient<Person>
-        beforeEach { crud = CrudClient("http://localhost:9876/rest/person/", Person::class.java) }
-        group("getAll()") {
-            test("simple") {
-                expectList() { crud.getAll() }
+    @Nested inner class crud {
+        private val crud = CrudClient("http://localhost:9876/rest/person/", Person::class.java)
+        @Nested inner class getAll() {
+            @Test fun simple() {
+                expect(listOf()) { crud.getAll() }
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
-                expectList(p) { crud.getAll() }
+                expect(listOf(p)) { crud.getAll() }
             }
 
-            test("range") {
+            @Test fun range() {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
@@ -102,7 +104,7 @@ class PersonRestTest : DynaTest({
                 expect((10..20).toList()) { crud.getAll(range = 10..20).map { it.age!! - 15} }
             }
 
-            test("sort") {
+            @Test fun sort() {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
@@ -111,7 +113,7 @@ class PersonRestTest : DynaTest({
                 expect((0..80).toSet()) { crud.getAll(null, listOf(Person::personName.asc)).map { it.age!! - 15 } .toSet() }
             }
 
-            test("count") {
+            @Test fun count() {
                 expect(0) { crud.getCount() }
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
@@ -119,7 +121,7 @@ class PersonRestTest : DynaTest({
                 expect(81) { crud.getCount() }
             }
 
-            test("filter") {
+            @Test fun filter() {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
@@ -133,102 +135,105 @@ class PersonRestTest : DynaTest({
                 expect(0) { crud.getCount(FullTextCondition.of(Person::personName.exp, "duke")) }
             }
 
-            test("filter on same fields") {
+            @Test fun `filter on same fields`() {
                 (0..80).forEach {
                     Person(personName = "Duke Leto Atreides", age = it + 15, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
                 }
                 expect(0) { crud.getCount(buildCondition { Person::age lt 20 and (Person::age gt 30) })}
-                expectList() { crud.getAll(buildCondition { Person::age lt 20 and (Person::age gt 30) })}
+                expect(listOf()) { crud.getAll(buildCondition { Person::age lt 20 and (Person::age gt 30) })}
             }
         }
 
-        group("getOne") {
-            test("simple") {
+        @Nested inner class getOne {
+            @Test fun simple() {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 expect(p) { crud.getOne(p.id!!.toString()) }
             }
-            test("non-existing") {
-                expectThrows(IOException::class, "404: No such entity with ID 555") {
+            @Test fun `non-existing`() {
+                val ex = assertThrows<IOException> {
                     crud.getOne("555")
                 }
+                expect("404: No such entity with ID 555 (GET http://localhost:9876/rest/person/555)") { ex.message }
             }
-            test("malformed id") {
-                expectThrows(IOException::class, "Malformed ID: foobar") {
+            @Test fun malformedid() {
+                val ex = assertThrows<IOException> {
                     crud.getOne("foobar")
                 }
+                expect("404: Malformed ID: foobar (GET http://localhost:9876/rest/person/foobar)") { ex.message }
             }
         }
 
-        test("create") {
+        @Test fun create() {
             val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now().withZeroNanos)
             crud.create(p)
             val actual = db { Person.findAll() }
             p.id = actual[0].id!!
-            expectList(p) { actual }
+            expect(listOf(p)) { actual }
         }
 
-        group("delete") {
-            test("simple") {
+        @Nested inner class delete {
+            @Test fun simple() {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 crud.delete(p.id!!.toString())
-                expectList() { Person.findAll() }
+                expect(listOf()) { Person.findAll() }
             }
-            test("non-existing") {
+            @Test fun nonExisting() {
                 // never fail with 404: http://www.tugberkugurlu.com/archive/http-delete-http-200-202-or-204-all-the-time
                 crud.delete("555")
             }
-            test("invalid id") {
-                expectThrows(IOException::class, "404: Malformed ID") {
+            @Test fun invalidId() {
+                val ex = assertThrows<IOException> {
                     crud.delete("invalid_id")
                 }
+                expect("404: Malformed ID: invalid_id (DELETE http://localhost:9876/rest/person/invalid_id)") { ex.message }
             }
         }
 
-        group("update") {
-            test("simple") {
+        @Nested inner class update {
+            @Test fun simple() {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 p.personName = "Leto Atreides"
                 crud.update(p.id!!.toString(), p)
-                expectList(p) { Person.findAll() }
+                expect(listOf(p)) { Person.findAll() }
             }
-            test("non-existing") {
+            @Test fun nonExisting() {
                 val p = Person(id = 45, personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false, created = Instant.now())
-                expectThrows(IOException::class, "404: No such entity with ID 45") {
+                val ex = assertThrows<IOException> {
                     crud.update(p.id!!.toString(), p)
                 }
+                expect("404: No such entity with ID 45 (PATCH http://localhost:9876/rest/person/45)") { ex.message }
             }
         }
     }
-    group("bind client to non-Entity class") {
-        group("get all") {
-            lateinit var client: CrudClient<Person2>
-            beforeEach { client = CrudClient("http://localhost:9876/rest/person/", Person2::class.java) }
+    @Nested inner class `bind client to non-Entity class` {
+        @Nested inner class `get all` {
+            private val client: CrudClient<Person2> = CrudClient("http://localhost:9876/rest/person/", Person2::class.java)
 
-            test("simple smoke test") {
+            @Test fun `simple smoke test`() {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 val p2 = Person2(p.id, 45, "Duke Leto Atreides")
                 val all = client.getAll()
-                expectList(p2) { all }
+                expect(listOf(p2)) { all }
             }
 
-            test("filters") {
+            @Test fun filters() {
                 val p = Person(personName = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
                 p.save()
                 val p2 = Person2(p.id, 45, "Duke Leto Atreides")
-                expectList() { client.getAll(buildCondition { Person2::personName likeIgnoreCase "baron%" }) }
-                expectList(p2) { client.getAll(buildCondition { Person2::personName likeIgnoreCase "duke%" }) }
+                expect(listOf()) { client.getAll(buildCondition { Person2::personName likeIgnoreCase "baron%" }) }
+                expect(listOf(p2)) { client.getAll(buildCondition { Person2::personName likeIgnoreCase "duke%" }) }
             }
 
-            test("sorting") {
-                expectList() { client.getAll(sortBy = listOf(Person2::personName.asc)) }
+            @Test fun sorting() {
+                expect(listOf()) { client.getAll(sortBy = listOf(Person2::personName.asc)) }
             }
         }
     }
-})
+}
 
 data class Person2(var id: Long? = null, var age: Int? = null, var personName: String? = null)
 

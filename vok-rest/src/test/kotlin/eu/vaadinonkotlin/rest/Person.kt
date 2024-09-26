@@ -1,7 +1,5 @@
 package eu.vaadinonkotlin.rest
 
-import com.github.mvysny.dynatest.DynaNodeGroup
-import com.github.mvysny.dynatest.DynaTestDsl
 import eu.vaadinonkotlin.VaadinOnKotlin
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
@@ -18,6 +16,10 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 
 /**
  * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by vok-orm.
@@ -75,23 +77,24 @@ enum class MaritalStatus {
     Widowed
 }
 
-@DynaTestDsl
-fun DynaNodeGroup.usingDb() {
-    beforeGroup {
-        val config = HikariConfig().apply {
-            driverClassName = Driver::class.java.name  // the org.h2.Driver class
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-            username = "sa"
-            password = ""
-        }
-        JdbiOrm.setDataSource(HikariDataSource(config))
-        val flyway: Flyway = Flyway.configure()
+abstract class AbstractDbTest {
+    companion object {
+        @BeforeAll @JvmStatic fun startH2() {
+            val config = HikariConfig().apply {
+                driverClassName =
+                    Driver::class.java.name  // the org.h2.Driver class
+                jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+                username = "sa"
+                password = ""
+            }
+            JdbiOrm.setDataSource(HikariDataSource(config))
+            val flyway: Flyway = Flyway.configure()
                 .dataSource(VaadinOnKotlin.dataSource)
                 .load()
-        flyway.migrate()
+            flyway.migrate()
+        }
+        @AfterAll @JvmStatic fun stopH2() { JdbiOrm.destroy() }
     }
-    afterGroup { JdbiOrm.destroy() }
 
-    beforeEach { Person.deleteAll() }
-    afterEach { Person.deleteAll() }
+    @BeforeEach @AfterEach fun clearDb() { Person.deleteAll() }
 }
