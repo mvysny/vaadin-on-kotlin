@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":vok-rest"))
 
     // testing
-    testImplementation(libs.dynatest)
+    testImplementation(libs.junit)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.karibu.testing)
     testImplementation(project(":vok-rest-client"))

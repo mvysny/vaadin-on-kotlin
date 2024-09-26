@@ -1,22 +1,20 @@
 package example.crudflow.person
 
-import com.github.mvysny.dynatest.DynaTest
 import com.github.mvysny.kaributesting.v10.*
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.textfield.TextField
-import example.crudflow.usingApp
+import example.crudflow.AbstractAppTest
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 
-class PersonListViewTest : DynaTest({
-
-    usingApp()
-
-    test("Smoke test") {
+class PersonListViewTest : AbstractAppTest() {
+    @Test fun smokeTest() {
         _get<PersonListView>()
     }
 
-    test("grid is refreshed when data is generated") {
+    @Test fun `grid is refreshed when data is generated`() {
         _get<Button> { text = "Generate testing data (Alt+G)" } ._click()
 
         val grid = _get<Grid<*>>()
@@ -27,7 +25,7 @@ class PersonListViewTest : DynaTest({
         grid.expectRow(0, "Button[icon='vaadin:eye', @theme='small icon tertiary']", "Button[icon='vaadin:edit', @theme='small icon tertiary']", "Button[icon='vaadin:trash', @theme='small icon tertiary']", first.id!!.toString(), "generated0", "15", "true", "1990-01-01", "Single", "2011-01-01T00:00:00Z")
     }
 
-    test("edit one person") {
+    @Test fun `edit one person`() {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
 
         val grid = _get<Grid<Person>>()
@@ -42,7 +40,7 @@ class PersonListViewTest : DynaTest({
         expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }
     }
 
-    test("delete one person") {
+    @Test fun `delete one person`() {
         Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
         val grid = _get<Grid<Person>>()
         grid.expectRows(1)
@@ -51,8 +49,8 @@ class PersonListViewTest : DynaTest({
         grid.expectRows(0)
     }
 
-    group("context menu") {
-        test("edit one person") {
+    @Nested inner class ContextMenuTests {
+        @Test fun `edit one person`() {
             Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
 
             val grid = _get<Grid<Person>>()
@@ -67,7 +65,7 @@ class PersonListViewTest : DynaTest({
             expectList("Duke Leto Atreides") { Person.findAll().map { it.name } }
         }
 
-        test("delete one person") {
+        @Test fun `delete one person`() {
             Person(name = "Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false).save()
             val grid = _get<Grid<Person>>()
             grid.expectRows(1)
@@ -76,4 +74,4 @@ class PersonListViewTest : DynaTest({
             grid.expectRows(0)
         }
     }
-})
+}
