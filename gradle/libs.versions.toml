@@ -1,10 +1,10 @@
 [versions]
 # https://github.com/vaadin/platform/tags
-vaadin = "24.4.11"
+vaadin = "24.4.12"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.13"
 # https://eclipse.dev/jetty/download.php
-jetty = "12.0.10"
+jetty = "12.0.13"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
