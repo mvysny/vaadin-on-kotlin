@@ -4,7 +4,6 @@ import com.github.mvysny.kaributesting.v10.*
 import com.github.mvysny.kaributools.getColumnBy
 import com.github.vokorm.buildCondition
 import com.github.vokorm.exp
-import com.gitlab.mvysny.jdbiorm.Property
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Component
@@ -70,7 +69,7 @@ class FilterBarTest {
     /**
      * https://github.com/mvysny/vaadin-on-kotlin/issues/49
      */
-    @Test fun `day filter`() {
+    @Test fun dayFilter() {
         data class Person(var dob: LocalDateTime)
         val grid = Grid<Person>(Person::class.java)
         grid.getColumnBy(Person::dob).setSortProperty(Person::dob.exp)
@@ -86,7 +85,7 @@ class FilterBarTest {
         expect(1) { grid.dataProvider._size() }
     }
 
-    @Test fun `filter components from cleared filter bar won't affect the grid anymore`() {
+    @Test fun filterComponentsFromClearedFilterBarWontAffectTheGridAnymore() {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
@@ -107,7 +106,7 @@ class FilterBarTest {
         expect(1) { grid.dataProvider._size() }
     }
 
-    @Test fun `filter components from cleared filter bar gone`() {
+    @Test fun filterComponentsFromClearedFilterBarGone() {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
@@ -118,7 +117,7 @@ class FilterBarTest {
     }
 
     // test for https://www.github.com/mvysny/vaadin-on-kotlin/issues/17
-    @Test fun `grid's data provider is polled lazily on filter change`() {
+    @Test fun gridDataProviderIsPolledLazilyOnFilterChange() {
         data class Person(var name: String)
         val grid = Grid<Person>(Person::class.java)
         grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
@@ -140,7 +139,7 @@ class FilterBarTest {
         expectList(Person("foobar")) { grid.dataProvider!!._findAll() }
     }
 
-    @Test fun `onFilterChanged invoked`() {
+    @Test fun onFilterChangedInvoked() {
         data class Person(var name: String)
         val grid = Grid(Person::class.java)
         grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
@@ -169,7 +168,7 @@ class FilterBarTest {
         expect(true) { called }
     }
 
-    @Test fun `custom filters are applied`() {
+    @Test fun customFiltersAreApplied() {
         data class Person(var name: String)
         val grid: Grid<Person> = Grid(Person::class.java)
         grid.getColumnBy(Person::name).setSortProperty(Person::name.exp)
