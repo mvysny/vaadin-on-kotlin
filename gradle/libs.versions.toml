@@ -14,6 +14,7 @@ vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
 karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.1.8"
 karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.1.4"
 dynatest = "com.github.mvysny.dynatest:dynatest:0.25"
+junit = "org.junit.jupiter:junit-jupiter-engine:5.11.0"
 vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.1"
 jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:5.0.0"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/

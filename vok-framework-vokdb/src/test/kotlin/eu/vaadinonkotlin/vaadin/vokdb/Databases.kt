@@ -1,7 +1,6 @@
 package eu.vaadinonkotlin.vaadin.vokdb
 
-import com.github.mvysny.dynatest.DynaNodeGroup
-import com.github.mvysny.dynatest.DynaTestDsl
+import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.vokorm.*
 import com.gitlab.mvysny.jdbiorm.Dao
 import com.gitlab.mvysny.jdbiorm.JdbiOrm
@@ -11,6 +10,10 @@ import com.zaxxer.hikari.HikariDataSource
 import org.h2.Driver
 import org.jdbi.v3.core.annotation.JdbiProperty
 import org.jdbi.v3.core.mapper.reflect.ColumnName
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDate
 import java.util.*
 
@@ -42,19 +45,21 @@ enum class MaritalStatus {
     Widowed
 }
 
-@DynaTestDsl
-fun DynaNodeGroup.usingH2Database() {
-    beforeGroup {
-        val config = HikariConfig().apply {
-            driverClassName = Driver::class.java.name  // the org.h2.Driver class
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-            username = "sa"
-            password = ""
-        }
-        JdbiOrm.setDataSource(HikariDataSource(config))
-        db {
-            handle.createUpdate(
-                """create table if not exists Test (
+abstract class AbstractDbTest {
+    companion object {
+        @BeforeAll
+        @JvmStatic
+        fun setupDb() {
+            val config = HikariConfig().apply {
+                driverClassName = Driver::class.java.name  // the org.h2.Driver class
+                jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+                username = "sa"
+                password = ""
+            }
+            JdbiOrm.setDataSource(HikariDataSource(config))
+            db {
+                handle.createUpdate(
+                    """create table if not exists Test (
                 id bigint primary key auto_increment,
                 name varchar not null,
                 age integer not null,
@@ -63,13 +68,21 @@ fun DynaNodeGroup.usingH2Database() {
                 alive boolean,
                 maritalStatus varchar
                  )"""
-            ).execute()
+                ).execute()
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun tearDownDb() {
+            JdbiOrm.destroy()
         }
     }
-
-    afterGroup { JdbiOrm.destroy() }
-
+    @BeforeEach @AfterEach
     fun clearDb() = Person.deleteAll()
-    beforeEach { clearDb() }
-    afterEach { clearDb() }
+}
+
+abstract class AbstractVaadinDbTest : AbstractDbTest() {
+    @BeforeEach fun fakeVaadin() { MockVaadin.setup() }
+    @AfterEach fun tearDownVaadin() { MockVaadin.tearDown() }
 }
