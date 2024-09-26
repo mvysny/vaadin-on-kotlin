@@ -19,8 +19,6 @@ nav_order: 9
 
 # VoK-Security Module
 
-Repository: [vok-security](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-security)
-
 When securing your apps, you generally need to perform two duties:
 
 * Only allow known users to access the app: *authentication*
@@ -32,15 +30,16 @@ a set of roles - a set of duties it is expected to perform in the app. Every Vaa
 then declares roles allowed to see that particular view; only users which are assigned at least one
 of the roles declared on the view are then allowed to visit that view.
 
-To use this module, simply add the following to your `build.gradle` file:
+vok apps use the [Vaadin Simple Security](https://github.com/mvysny/vaadin-simple-security)
+library. To use the library, simply add the following to your `build.gradle` file:
 
 ```groovy
 dependencies {
-    compile("eu.vaadinonkotlin:vok-security:x.y.z")
+  implementation("com.github.mvysny.vaadin-simple-security:vaadin-simple-security:1.0")
 }
 ```
 
-Note that you don't have to use the built-in authorization at all if it doesn't suit your need -
+> Note: you don't have to use the Vaadin Simple Security library at all if it doesn't suit your need -
 you are free to use your favourite framework or implement your own authorization from scratch.
 
 ## The 'Fictional Book Shop' Example
@@ -300,7 +299,7 @@ class UserService : Serializable {
 
 ## VoK Authorization
 
-The VoK API authorization API uses role-based authorization on Vaadin views. There are
+The Vaadin Simple Security library enforces role-based authorization on Vaadin views. There are
 three annotations available,
 and your view must list at least one of them otherwise it will be inaccessible:
 
@@ -314,7 +313,7 @@ define more complex rules as a Kotlin code in the `BeforeEnterObserver.beforeEnt
 of a particular route.
 
 For example, the View may check e.g. whether given user has the right
-to see particular record or a document. If not, [AccessRejectedException](src/main/kotlin/eu/vaadinonkotlin/security/AccessRejectedException.kt) must be simply thrown.
+to see particular record or a document. If not, the `AccessRejectedException` must be simply thrown.
 The exception is then caught by the Vaadin exception handler and
 the user will be presented by the "access rejected" page with HTTP 403.
 
@@ -338,16 +337,9 @@ To convert your app to this new security paradigm:
 2. Instead of assigning users roles, you assign them permissions.
 3. A view listing users will then be annotated with `@RolesAllowed("can-view-users")`
 
-### The vok-security module
+## Vaadin Simple Security
 
-This module only provides basic API classes which lays out the foundation of the
-security mechanism. The actual integration code is located in the [vok-util](/utilities) module:
-
-* [VokViewAccessChecker](../vok-util-vaadin/src/main/kotlin/eu/vaadinonkotlin/vaadin/VokViewAccessChecker.kt) class
-
-## VoK-Security Simple
-
-VoK-Security provides a simple password-based auth with all of the best practices:
+Vaadin Simple Security provides a simple password-based auth with all of the best practices:
 
 * A login dialog is provided, to ask the user for the user name/password
 * The username/password is checked against a SQL database. The passwords are stored
