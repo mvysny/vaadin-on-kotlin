@@ -1,25 +1,27 @@
 package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.kaributesting.v10.*
-import com.github.mvysny.dynatest.DynaTest
-import com.github.mvysny.dynatest.expectThrows
-import com.github.mvysny.kaributools.caption
 import com.github.mvysny.kaributools.label
 import com.vaadin.flow.component.UI
 import com.vaadin.flow.server.VaadinRequest
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.lang.IllegalStateException
 import java.util.*
 import kotlin.test.expect
 
-class VaadinUtilsTest : DynaTest({
-    beforeEach { MockVaadin.setup() }
-    afterEach { MockVaadin.tearDown() }
+class VaadinUtilsTest {
+    @BeforeEach fun fakeVaadin() { MockVaadin.setup() }
+    @AfterEach fun tearDownVaadin() { MockVaadin.tearDown() }
 
-    group("vt") {
-        test("smoke test") {
+    @Nested inner class vttests {
+        @Test fun `smoke test`() {
             expect("!{my_sample_property}!") { vt["my_sample_property"] }
         }
-        test("vt works in UI.init()") {
+        @Test fun `vt works in UI-init()`() {
             class MyUI : UI() {
                 override fun init(request: VaadinRequest) {
                     locale = Locale.ENGLISH
@@ -31,15 +33,14 @@ class VaadinUtilsTest : DynaTest({
         }
     }
 
-    group("checkUIThread") {
-        afterEach { MockVaadin.tearDown() }
-        test("Fails if there is no UI") {
+    @Nested inner class CheckUIThread {
+        @Test fun `Fails if there is no UI`() {
             MockVaadin.tearDown()
-            expectThrows(IllegalStateException::class) {
+            assertThrows<IllegalStateException> {
                 checkUIThread()
             }
         }
-        test("Succeeds when called from the UI.init") {
+        @Test fun `Succeeds when called from the UI-init`() {
             var initCalled = false
             class MyUI : UI() {
                 override fun init(request: VaadinRequest?) {
@@ -50,10 +51,10 @@ class VaadinUtilsTest : DynaTest({
             MockVaadin.setup(uiFactory = { MyUI() })
             expect(true) { initCalled }
         }
-        test("Succeeds after UI is initialized") {
+        @Test fun `Succeeds after UI is initialized`() {
             UI.setCurrent(null)
             MockVaadin.setup()
             checkUIThread()
         }
     }
-})
+}
