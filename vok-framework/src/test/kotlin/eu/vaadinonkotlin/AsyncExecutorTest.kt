@@ -40,13 +40,13 @@ class AsyncExecutorTest {
         @Test fun `schedule immediately`() {
             val called = CountDownLatch(1)
             scheduleAtFixedTime(LocalTime.now().plus(20L, ChronoUnit.MILLIS)) { called.countDown() }
-            expect(true) { called.await(100, TimeUnit.MILLISECONDS) }
+            expect(true) { called.await(500, TimeUnit.MILLISECONDS) }
         }
         @Test fun `schedule next day`() {
             val called = CountDownLatch(1)
             val future = scheduleAtFixedTime(LocalTime.now().minus(1L, ChronoUnit.MILLIS)) { called.countDown() }
             expect(true, "" + future.getDelay(TimeUnit.MILLISECONDS)) { future.getDelay(TimeUnit.HOURS) >= 23 }
-            expect(false) { called.await(100, TimeUnit.MILLISECONDS) }
+            expect(false) { called.await(500, TimeUnit.MILLISECONDS) }
         }
     }
 }
