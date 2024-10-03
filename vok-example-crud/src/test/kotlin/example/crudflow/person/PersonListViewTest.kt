@@ -8,7 +8,6 @@ import example.crudflow.AbstractAppTest
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class PersonListViewTest : AbstractAppTest() {
     @Test fun smokeTest() {
