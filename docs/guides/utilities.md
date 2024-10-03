@@ -64,10 +64,10 @@ When you want to use the NoSQL database:
 
 ## Support for Grid Filter Bar
 
-Hooking a Grid to a data loader is easy:
+Hooking a Grid to a data provider is easy:
 
 ```kotlin
-grid.setDataLoader(Person.dataLoader)  // uses vok-orm's DataLoader
+grid.setDataProvider(Person.dataProvider)  // uses vok-orm to load data from the database
 ```
 
 To create a filtering field, monitor its value and update the DataLoader filter accordingly,
