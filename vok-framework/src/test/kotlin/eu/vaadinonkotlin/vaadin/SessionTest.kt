@@ -2,7 +2,6 @@ package eu.vaadinonkotlin.vaadin
 
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.fake
-import com.github.mvysny.kaributesting.v10.mock
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
