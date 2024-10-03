@@ -399,33 +399,60 @@ This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sor
 
 Adding the possibility
 for the user to filter on the contents of the Grid is really easy.
-You need to add the filter bar to the Grid; then just create filter components
-and register them to the filter bar. The filter bar will make sure to listen
-for changes in these components, then it will construct the final filter
+You need to add a Grid header, dedicated for the filter components; then just create filter components
+and register them to the filter header bar. The filter components will listen
+for changes, then they will construct the final filter
 which will then be passed to the `DataProvider`:
 
 ```kotlin
-grid(dataProvider = Person.dataProvider) {
+val nameFilter = FilterTextField()
+val ageFilter = NumberRangePopup()
+val aliveFilter = BooleanFilterField()
+val dateOfBirthFilter = DateRangePopup()
+val maritalStatusFilter = enumFilterField<MaritalStatus>()
+val dataProvider = Person.dataProvider
+val createdFilter = DateRangePopup()
+
+grid(dataProvider = dataProvider) {
   setSizeFull()
-  val filterBar = appendHeaderRow().asFilterBar()
-  columnFor(Person::id) {
-    filterBar.forField(NumberRangePopup(), this).inRange()
-  }
+  val filterBar = appendHeaderRow()
   columnFor(Person::name) {
-    filterBar.forField(TextField(), this).ilike()
+    nameFilter.addValueChangeListener { updateFilter() }
+    filterBar.getCell(this).component = nameFilter
   }
   columnFor(Person::age) {
-    filterBar.forField(NumberRangePopup(), this).inRange()
+    ageFilter.addValueChangeListener { updateFilter() }
+    filterBar.getCell(this).component = ageFilter
   }
   columnFor(Person::dateOfBirth) {
-    filterBar.forField(DateRangePopup(), this).inRange(LocalDate::class)
+    dateOfBirthFilter.addValueChangeListener { updateFilter() }
+    filterBar.getCell(this).component = dateOfBirthFilter
   }
   columnFor(Person::maritalStatus) {
-    filterBar.forField(enumComboBox<MaritalStatus>(), this).eq()
+    maritalStatusFilter.addValueChangeListener { updateFilter() }
+    filterBar.getCell(this).component = maritalStatusFilter
   }
   columnFor(Person::alive) {
-    filterBar.forField(BooleanComboBox(), this).eq()
+    aliveFilter.addValueChangeListener { updateFilter() }
+    filterBar.getCell(this).component = aliveFilter
   }
+}
+
+fun updateFilter() {
+  var c: Condition = Condition.NO_CONDITION
+  if (!nameFilter.isEmpty) {
+    c = c.and(Person::name.exp.likeIgnoreCase(nameFilter.value.trim() + "%"))
+  }
+  c = c.and(ageFilter.value.asIntegerInterval().contains(Person::age.exp))
+  if (!aliveFilter.isEmpty) {
+    c = c.and(Person::alive.exp.`is`(aliveFilter.value))
+  }
+  c = c.and(dateOfBirthFilter.value.contains(Person::dateOfBirth.exp, BrowserTimeZone.get))
+  if (!maritalStatusFilter.isAllOrNothingSelected) {
+    c = c.and(Person::maritalStatus.exp.`in`(maritalStatusFilter.value))
+  }
+  c = c.and(createdFilter.value.contains(Person::created.exp, BrowserTimeZone.get))
+  dataProvider.filter = c
 }
 ```
 
