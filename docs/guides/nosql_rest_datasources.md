@@ -50,9 +50,9 @@ then self-consumes them via REST client connected to localhost:8080 and exposes
 them in a Grid: [vaadin8-restdataprovider-example](https://github.com/mvysny/vaadin8-restdataprovider-example)
 and [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restdataprovider-example).
 
-## Data Loaders
+## Data Providers
 
-VoK data fetching revolves around a thing called a _Data Loader_. The data loader is responsible for loading
+VoK data fetching revolves around a thing called a _Data Provider_. The data provider is responsible for loading
 pages of data from arbitrary data source, sorting and filtering it as necessary,
 converting rows into Java Beans. The data loader then can be plugged into Vaadin Grid,
 in order to show the data.
@@ -218,3 +218,18 @@ module for more information on generating filters.
 
 Please find all technical details on how to implement the data loader in the
 [vok-dataloader](https://github.com/mvysny/vok-dataloader) page.
+
+### REST DataProviders
+
+VoK adds support for exposing data loading over a REST endpoint:
+
+```kotlin
+val crudHandler: CrudHandler<Person> = Person.getCrudHandler() // to load stuff from a SQL database via vok-orm
+val restClient: VokDataProvider<Person> = CrudClient("http://localhost:8080/rest/person/", Person::class.java) // to load stuff from a REST endpoint via vok-rest-client
+    // or you can implement your own DataProvider
+    
+grid.dataProvider = restClient
+// @todo filter bar
+```
+
+See the [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) for how to use the REST client DataLoader.
