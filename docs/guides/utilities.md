@@ -43,7 +43,7 @@ Since VoK includes built-in support for SQL databases you may also want to
 include additional modules - read below.
 
 When you want to also use the SQL database with the
-recommended approach ([vok-db](../vok-db)):
+recommended approach ([vok-db](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework-vokdb)):
 
 * Depend on the [vok-framework-v10-vokdb](../vok-framework-v10-vokdb) module
 instead - it will include this module, the [vok-db](../vok-db) module which
@@ -257,41 +257,22 @@ of `Filter`.
 For more details please see the [FilterBar.kt](src/main/kotlin/eu/vaadinonkotlin/vaadin10/FilterBar.kt) file.
 
 For more information about using filters with `DataProviders` please see
-the [Databases Guide](http://www.vaadinonkotlin.eu/databases-v10.html).
+the [Databases Guide](https://www.vaadinonkotlin.eu/databases).
 
-### DataLoaders
+### REST DataProviders
 
-Even easier way is to use [vok-dataloader](https://gitlab.com/mvysny/vok-dataloader)
-which provides a rich hierarchy of filters out-of-the-box, and the `DataLoader`
-interface is way simpler to implement than `DataProvider`. The `FilterBar`
-class already reuses `vok-dataloader` filter hierarchy, so all we need is to
-convert a data loader to a data provider. Luckily, that's very easy:
+VoK adds support for exposing data loading over a REST endpoint:
 
 ```kotlin
-val dataLoader: DataLoader<Person> = Person.dataLoader // to load stuff from a SQL database via vok-orm
-val dataLoader: DataLoader<Person> = CrudClient("http://localhost:8080/rest/person/", Person::class.java) // to load stuff from a REST endpoint via vok-rest-client
-    // or you can implement your own DataLoader
+val crudHandler: CrudHandler<Person> = Person.getCrudHandler() // to load stuff from a SQL database via vok-orm
+val restClient: VokDataProvider<Person> = CrudClient("http://localhost:8080/rest/person/", Person::class.java) // to load stuff from a REST endpoint via vok-rest-client
+    // or you can implement your own DataProvider
     
-val dataProvider: VokDataProvider<Person> = dataLoader.asDataProvider {it.id!!}
-grid.dataProvider = dataProvider
-val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(this)
-grid.columnFor(Person::name) {
-  filterBar.forField(TextField(), this).ilike()
-}
+grid.dataProvider = restClient
+// @todo filter bar
 ```
 
-Or even shorter, by using VoK-provided extension methods to set the data loader
-to a Grid directly:
-```kotlin
-val dataLoader = // as above
-grid.setDataLoader(dataLoader) { it.id!! }
-val filterBar: VokFilterBar<Person> = grid.appendHeaderRow().asFilterBar(this)
-grid.columnFor(Person::name) {
-  filterBar.forField(TextField(), this).ilike()
-}
-```
-
-See [vok-rest-client](../vok-rest-client) for how to use the REST client DataLoader.
+See the [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) for how to use the REST client DataLoader.
 
 ## Support for Session
 

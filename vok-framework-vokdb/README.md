@@ -5,8 +5,6 @@
 
 This module includes:
  
-* The [vok-util-vaadin](../vok-util-vaadin) module which includes Vaadin-related
-  utilities for pleasant Kotlin development of Vaadin-based app,
 * The [vok-orm](https://github.com/mvysny/vok-orm) project which includes SQL database support,
 * The [jdbi-orm-vaadin](https://gitlab.com/mvysny/jdbi-orm-vaadin) project which provides several
   utility methods to provide nice integration of Vaadin with the SQL database, namely the
