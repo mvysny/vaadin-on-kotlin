@@ -12,7 +12,7 @@ defaultTasks("clean", "build")
 
 allprojects {
     group = "eu.vaadinonkotlin"
-    version = "0.17.2-SNAPSHOT"
+    version = "0.18-SNAPSHOT"
 
     repositories {
         mavenCentral()
