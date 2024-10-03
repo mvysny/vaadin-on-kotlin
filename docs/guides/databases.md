@@ -610,33 +610,46 @@ import com.vaadin.flow.router.Route
 
 @Route("")
 class WelcomeView: VerticalLayout() {
-    init {
-        setSizeFull(); content { align(center, middle) }; isMargin = false; isSpacing = true
+  private val personDeptNameFilter: TextField
+  private val personNameFilter = FilterTextField()
+  private val deptNameFilter = FilterTextField()
+  private val dataProvider = PersonDept.dataProvider
+  init {
+    setSizeFull(); content { align(center, middle) }; isMargin = false; isSpacing = true
 
-        val dp = PersonDept.dataProvider
-        textField {
-            addValueChangeListener {
-                val normalizedFilter = value.trim().toLowerCase() + "%"
-                if (value.isNotBlank()) {
-                    dp.setFilter { "personName ILIKE :filter or deptName ILIKE :filter"("filter" to normalizedFilter) }
-                } else {
-                    dp.setFilter(null)
-                }
-            }
-        }
-        // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
-        // components would not overwrite filter set by the custom text field filter above.
-        grid(dataProvider = dp.withConfigurableFilter2()) {
-            setSizeFull()
-            val filterBar = appendHeaderRow().asFilterBar()
-            columnFor(PersonDept::personName) {
-                filterBar.forField(TextField(), this).ilike()
-            }
-            columnFor(PersonDept::deptName) {
-                filterBar.forField(TextField(), this).ilike()
-            }
-        }
+    personDeptNameFilter = textField {
+      addValueChangeListener { updateFilter() }
     }
+    // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
+    // components would not overwrite filter set by the custom text field filter above.
+    grid(dataProvider = dataProvider) {
+      setSizeFull()
+      val filterBar = appendHeaderRow().asFilterBar()
+      columnFor(PersonDept::personName) {
+        personNameFilter.addValueChangeListener { updateFilter() }
+        filterBar.getCell(this).component = personNameFilter
+      }
+      columnFor(PersonDept::deptName) {
+        deptNameFilter.addValueChangeListener { updateFilter() }
+        filterBar.getCell(this).component = deptNameFilter
+      }
+    }
+  }
+
+  private fun updateFilter() {
+    var c: Condition = Condition.NO_CONDITION
+    val normalizedFilter = personDeptNameFilter.trim().toLowerCase()
+    if (value.isNotBlank()) {
+        c = c.and(PersonDept::personName.exp.startsWithIgnoreCase(normalizedFilter).or(PersonDept::deptName.exp.startsWithIgnoreCase(normalizedFilter)))
+    }
+    if (personNameFilter.value.isNotBlank()) {
+      c = c.and(PersonDept::personName.exp.startsWithIgnoreCase(personNameFilter.value))
+    }
+    if (deptNameFilter.value.isNotBlank()) {
+      c = c.and(PersonDept::deptName.exp.startsWithIgnoreCase(deptNameFilter.value))
+    }
+    dataProvider.filter = c
+  }
 }
 ```
 
