@@ -110,8 +110,8 @@ class PersonListView : KComposite() {
 
     private fun updateFilter() {
         var c: Condition = Condition.NO_CONDITION
-        if (!nameFilter.isEmpty) {
-            c = c.and(Person::name.exp.likeIgnoreCase(nameFilter.value.trim() + "%"))
+        if (!nameFilter.value.isBlank()) {
+            c = c.and(Person::name.exp.startsWithIgnoreCase(nameFilter.value))
         }
         c = c.and(ageFilter.value.asIntegerInterval().contains(Person::age.exp))
         if (!aliveFilter.isEmpty) {
