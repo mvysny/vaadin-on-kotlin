@@ -1,5 +1,6 @@
 package example.crudflow
 
+import com.github.mvysny.kaributools.BrowserTimeZone
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.RouterLayout
 import eu.vaadinonkotlin.vaadin.Session
@@ -12,5 +13,6 @@ class MainLayout : VerticalLayout(), RouterLayout {
     init {
         setSizeFull()
         Session.current.locale = Session.current.browser.locale ?: Locale.getDefault()
+        BrowserTimeZone.fetch()
     }
 }

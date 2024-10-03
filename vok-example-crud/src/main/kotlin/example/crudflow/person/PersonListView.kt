@@ -4,6 +4,7 @@ import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.*
 import com.github.vokorm.db
 import com.github.vokorm.exp
+import com.gitlab.mvysny.jdbiorm.condition.Condition
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.BooleanFilterField
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
 import com.gitlab.mvysny.jdbiorm.vaadin.filter.FilterTextField
@@ -16,7 +17,6 @@ import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
 import com.vaadin.flow.component.icon.IconFactory
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.toDate
@@ -33,6 +33,13 @@ import java.time.LocalDate
 class PersonListView : KComposite() {
     private lateinit var personGrid: Grid<Person>
     lateinit var gridContextMenu: GridContextMenu<Person>
+    private val nameFilter = FilterTextField()
+    private val ageFilter = NumberRangePopup()
+    private val aliveFilter = BooleanFilterField()
+    private val dateOfBirthFilter = DateRangePopup()
+    private val maritalStatusFilter = enumFilterField<MaritalStatus>()
+    private val dataProvider = Person.dataProvider
+    private val createdFilter = DateRangePopup()
 
     private val root = ui {
         verticalLayout {
@@ -44,10 +51,10 @@ class PersonListView : KComposite() {
                 }
                 addClickShortcut(Alt + KEY_G)
             }
-            personGrid = grid<Person>(Person.dataProvider) {
+            personGrid = grid<Person>(dataProvider) {
                 flexGrow = 1.0
                 appendHeaderRow() // because of https://github.com/vaadin/vaadin-grid/issues/1870
-                val filterBar = appendHeaderRow().asFilterBar(this)
+                val filterBar = appendHeaderRow()
 
                 addButtonColumn(VaadinIcon.EYE, "view", { person: Person -> navigateTo(PersonView::class, person.id!!) }) {}
                 addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
@@ -58,30 +65,36 @@ class PersonListView : KComposite() {
                 }
                 val nameColumn = columnFor(Person::name) {
                     setSortProperty(Person::name.exp)
-                    filterBar.forField(FilterTextField(), this).istartsWith()
+                    nameFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = nameFilter
                 }
                 columnFor(Person::age) {
                     width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER
                     setSortProperty(Person::age.exp)
-                    filterBar.forField(NumberRangePopup(), this).inRange()
+                    ageFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = ageFilter
                 }
                 columnFor(Person::alive) {
                     width = "130px"; isExpand = false
                     setSortProperty(Person::alive.exp)
-                    filterBar.forField(BooleanFilterField(), this).eq()
+                    aliveFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = aliveFilter
                 }
                 columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
                     setSortProperty(Person::dateOfBirth.exp)
-                    filterBar.forField(DateRangePopup(), this).inRange()
+                    dateOfBirthFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = dateOfBirthFilter
                 }
                 columnFor(Person::maritalStatus) {
                     width = "160px"; isExpand = false
                     setSortProperty(Person::maritalStatus.exp)
-                    filterBar.forField(enumFilterField<MaritalStatus>(), this).`in`(true)
+                    maritalStatusFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = maritalStatusFilter
                 }
                 columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
                     setSortProperty(Person::created.exp)
-                    filterBar.forField(DateRangePopup(), this).inRange()
+                    createdFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = createdFilter
                 }
 
                 gridContextMenu = gridContextMenu {
@@ -93,6 +106,23 @@ class PersonListView : KComposite() {
                 sort(nameColumn.asc)
             }
         }
+    }
+
+    private fun updateFilter() {
+        var c: Condition = Condition.NO_CONDITION
+        if (!nameFilter.isEmpty) {
+            c = c.and(Person::name.exp.likeIgnoreCase(nameFilter.value.trim() + "%"))
+        }
+        c = c.and(ageFilter.value.asIntegerInterval().contains(Person::age.exp))
+        if (!aliveFilter.isEmpty) {
+            c = c.and(Person::alive.exp.`is`(aliveFilter.value))
+        }
+        c = c.and(dateOfBirthFilter.value.contains(Person::dateOfBirth.exp, BrowserTimeZone.get))
+        if (!maritalStatusFilter.isAllOrNothingSelected) {
+            c = c.and(Person::maritalStatus.exp.`in`(maritalStatusFilter.value))
+        }
+        c = c.and(createdFilter.value.contains(Person::created.exp, BrowserTimeZone.get))
+        dataProvider.filter = c
     }
 
     private fun createOrEditPerson(person: Person) {
