@@ -22,5 +22,5 @@ kotlin {
     explicitApi()
 }
 
-val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
+val configureBintray = ext["configureMavenCentral"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-rest-client", "VoK: The Client REST support")

@@ -14,5 +14,5 @@ kotlin {
     explicitApi()
 }
 
-val configureBintray = ext["configureBintray"] as (artifactId: String, description: String) -> Unit
+val configureBintray = ext["configureMavenCentral"] as (artifactId: String, description: String) -> Unit
 configureBintray("vok-framework-vokdb", "VOK: Vaadin 10 Flow with VOK-DB persistence")
