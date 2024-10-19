@@ -23,5 +23,5 @@ import java.util.*
  */
 public fun Property<*>.between(dateInterval: DateInterval): Condition = dateInterval.contains(this, BrowserTimeZone.get)
 
-public fun <N> Expression<N>.between(numberInterval: NumberInterval<N>): Condition where N: Number, N: Comparable<N> =
+public fun <N> Expression<N?>.between(numberInterval: NumberInterval<N>): Condition where N: Number, N: Comparable<N> =
     numberInterval.contains(this)
