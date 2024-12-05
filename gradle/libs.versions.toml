@@ -1,6 +1,6 @@
 [versions]
 # https://github.com/vaadin/platform/tags
-vaadin = "24.5.0"
+vaadin = "24.5.7"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.13"
 # https://eclipse.dev/jetty/download.php
@@ -12,9 +12,9 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 jetbrains-annotations = "org.jetbrains:annotations:24.1.0"
 vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
 karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.1.8"
-karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.1.4"
+karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.2.0"
 junit = "org.junit.jupiter:junit-jupiter-engine:5.11.0"
-vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.1"
+vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.2"
 jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:5.0.0"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
 jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.9"
