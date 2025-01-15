@@ -10,7 +10,7 @@
 FROM eclipse-temurin:17 AS BUILD
 COPY . /app/
 WORKDIR /app/
-RUN --mount=type=cache,target=/root/.gradle --mount=type=cache,target=/root/.vaadin ./gradlew clean build -Pvaadin.productionMode --no-daemon --info --stacktrace
+RUN --mount=type=cache,target=/root/.gradle --mount=type=cache,target=/root/.vaadin rm -rf .gradle/caches/modules-2/modules-2.lock .gradle/caches/*/plugin-resolution .gradle/caches/journal-1 && .gradle/ ./gradlew clean build -Pvaadin.productionMode --no-daemon --info --stacktrace
 WORKDIR /app/vok-example-crud/build/distributions/
 RUN ls -la
 RUN tar xvf vok-example-crud-*.tar && rm vok-example-crud-*.tar && rm vok-example-crud-*.zip
