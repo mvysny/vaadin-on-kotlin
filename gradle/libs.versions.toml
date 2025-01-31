@@ -28,7 +28,7 @@ javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven
 lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
 hikaricp = "com.zaxxer:HikariCP:5.1.0"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
 flyway = "org.flywaydb:flyway-core:10.15.2" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
-vokorm = "com.github.mvysny.vokorm:vok-orm:3.1"  # https://github.com/mvysny/vok-orm/tags
+vokorm = "com.github.mvysny.vokorm:vok-orm:3.2"  # https://github.com/mvysny/vok-orm/tags
 
 [plugins]
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }
