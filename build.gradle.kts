@@ -72,25 +72,25 @@ subprojects {
                     this.artifactId = artifactId
                     version = project.version.toString()
                     pom {
-                        this.description.set(description)
-                        name.set(artifactId)
-                        url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                        this.description = description
+                        name = artifactId
+                        url = "https://github.com/mvysny/vaadin-on-kotlin"
                         licenses {
                             license {
-                                name.set("The MIT License")
-                                url.set("https://opensource.org/licenses/MIT")
-                                distribution.set("repo")
+                                name = "The MIT License"
+                                url = "https://opensource.org/licenses/MIT"
+                                distribution = "repo"
                             }
                         }
                         developers {
                             developer {
-                                id.set("mavi")
-                                name.set("Martin Vysny")
-                                email.set("martin@vysny.me")
+                                id = "mavi"
+                                name = "Martin Vysny"
+                                email = "martin@vysny.me"
                             }
                         }
                         scm {
-                            url.set("https://github.com/mvysny/vaadin-on-kotlin")
+                            url = "https://github.com/mvysny/vaadin-on-kotlin"
                         }
                     }
                     from(components.findByName("java")!!)
