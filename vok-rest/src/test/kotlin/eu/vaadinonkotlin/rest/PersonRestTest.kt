@@ -19,12 +19,15 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.eclipse.jetty.ee10.webapp.WebAppContext
+import org.eclipse.jetty.util.resource.Resource
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.net.URI
 import java.net.http.HttpClient
+import java.nio.file.Path
 import kotlin.test.expect
 
 class MyJavalinServlet : HttpServlet() {
@@ -57,7 +60,7 @@ abstract class AbstractJavalinTest : AbstractDbTest() {
         @BeforeAll @JvmStatic fun startJavalin() {
             val ctx = WebAppContext()
             // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+            ctx.baseResource = EmptyResource()
             ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
             server = Server(9876)
             server.handler = ctx
@@ -67,6 +70,15 @@ abstract class AbstractJavalinTest : AbstractDbTest() {
     }
 }
 
+class EmptyResource : Resource() {
+    override fun getPath(): Path? = null
+    override fun isDirectory(): Boolean = true
+    override fun isReadable(): Boolean = true
+    override fun getURI(): URI? = null
+    override fun getName(): String = "EmptyResource"
+    override fun getFileName(): String? = null
+    override fun resolve(subUriPath: String?): Resource? = null
+}
 
 private fun <T> DataProvider<T, Condition>.getAll(condition: Condition? = null, sortBy: List<OrderBy> = listOf(), range: IntRange = 0..10000) =
     fetch(Query(range.start, range.length, sortBy.map { QuerySortOrder(it.property.name.name, if (it.order == OrderBy.Order.ASC) SortDirection.ASCENDING else SortDirection.DESCENDING) }, null, condition)).toList()

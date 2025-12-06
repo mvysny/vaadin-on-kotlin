@@ -4,7 +4,7 @@ vaadin = "24.9.5"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.17"
 # https://eclipse.dev/jetty/download.php
-jetty = "12.0.16"
+jetty = "12.0.31"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
@@ -24,6 +24,7 @@ gson-gson = "com.google.code.gson:gson:2.13.2"   # com.google.code.gson:gson; ht
 gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.2"
 jetty-webapp = { module ="org.eclipse.jetty.ee10:jetty-ee10-webapp", version.ref = "jetty" }
 jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server", version.ref = "jetty" }
+# Javalin 6 doesn't support Jetty 12; upgrade only after Javalin 7 is released.
 javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
 lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
 hikaricp = "com.zaxxer:HikariCP:5.1.0"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/

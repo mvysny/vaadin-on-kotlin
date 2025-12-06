@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.eclipse.jetty.ee10.webapp.WebAppContext
+import org.eclipse.jetty.util.resource.Resource
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Nested
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.assertThrows
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
+import java.nio.file.Path
 import kotlin.test.expect
 
 data class Person(var name: String? = null,
@@ -41,7 +43,7 @@ abstract class AbstractJavalinTest {
         @BeforeAll @JvmStatic fun startJavalin() {
             val ctx = WebAppContext()
             // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+            ctx.baseResource = EmptyResource()
             ctx.addServlet(MyJavalinServlet::class.java, "/*")
             server = Server(9876)
             server.handler = ctx
@@ -49,6 +51,16 @@ abstract class AbstractJavalinTest {
         }
         @AfterAll @JvmStatic fun stopJavalin() { server.stop() }
     }
+}
+
+class EmptyResource : Resource() {
+    override fun getPath(): Path? = null
+    override fun isDirectory(): Boolean = true
+    override fun isReadable(): Boolean = true
+    override fun getURI(): URI? = null
+    override fun getName(): String = "EmptyResource"
+    override fun getFileName(): String? = null
+    override fun resolve(subUriPath: String?): Resource? = null
 }
 
 class HttpClientUtilsTest : AbstractJavalinTest() {
