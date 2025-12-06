@@ -20,7 +20,7 @@ h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/m
 jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.9"
 jdbiormvaadin = "com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:1.4"
 apache-uribuilder = "com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1"
-gson-gson = "com.google.code.gson:gson:2.10.1"   # com.google.code.gson:gson; https://repo1.maven.org/maven2/com/google/code/gson/gson/
+gson-gson = "com.google.code.gson:gson:2.13.2"   # com.google.code.gson:gson; https://repo1.maven.org/maven2/com/google/code/gson/gson/
 gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.2"
 jetty-webapp = { module ="org.eclipse.jetty.ee10:jetty-ee10-webapp", version.ref = "jetty" }
 jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server", version.ref = "jetty" }
