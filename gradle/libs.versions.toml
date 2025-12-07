@@ -1,6 +1,6 @@
 [versions]
 # https://github.com/vaadin/platform/tags
-vaadin = "24.9.5"
+vaadin = "24.9.6"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.17"
 # https://eclipse.dev/jetty/download.php
@@ -10,7 +10,7 @@ jetty = "12.1.5"
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
-karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.4.2"
+karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.4.3"
 karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.4.0"
 junit = "org.junit.jupiter:junit-jupiter-engine:5.11.0"
 vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.3"
@@ -26,8 +26,8 @@ jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websock
 # Javalin 6 doesn't support Jetty 12; upgrade only after Javalin 7 is released.
 javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
 lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
-hikaricp = "com.zaxxer:HikariCP:5.1.0"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
-flyway = "org.flywaydb:flyway-core:10.15.2" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
+hikaricp = "com.zaxxer:HikariCP:7.0.2"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
+flyway = "org.flywaydb:flyway-core:11.18.0" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
 vokorm = "com.github.mvysny.vokorm:vok-orm:3.2"  # https://github.com/mvysny/vok-orm/tags
 
 [plugins]
