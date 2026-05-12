@@ -1,116 +1,102 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-v10-vokdb)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-vokdb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-vokdb)
 
 # VoK Vaadin and SQL database support
 
-This module includes:
- 
-* The [vok-orm](https://github.com/mvysny/vok-orm) project which includes SQL database support,
-* The [jdbi-orm-vaadin](https://gitlab.com/mvysny/jdbi-orm-vaadin) project which provides several
-  utility methods to provide nice integration of Vaadin with the SQL database, namely the
-  Grid filters and Grid DataProvider.
+This module brings in:
 
-To use this module in your app just add the following dependency into your `build.gradle` file:
+* [ktorm](https://www.ktorm.org/) for SQL access — typed-SQL DSL, entity sequences, JDBC pooling friendly.
+* [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) for the Vaadin integration — `Table<E>.dataProvider`,
+  `EntityDataProvider` / `QueryDataProvider` backed by ktorm, filter components (`FilterTextField`,
+  `DateRangePopup`, `NumberRangePopup`, `BooleanFilterField`, `EnumFilterField`), Binder helpers, and the
+  `ActiveEntity` / `db { … }` runtime.
 
-```groovy
+To use this module in your app:
+
+```kotlin
 dependencies {
-    compile("eu.vaadinonkotlin:vok-framework-vokdb:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-framework-vokdb:x.y.z")
 }
 ```
 
-> Note: to obtain the newest version see above for the most recent tag
+> Note: see the [latest release tag](https://github.com/mvysny/vaadin-on-kotlin/tags) for `x.y.z`.
 
-This module provides:
+On top of ktorm-vaadin, this module adds:
 
-* `Dao.dataProvider` which returns `EntityDataProvider` for an entity. You usually
-   make KEntity's companion object extend the Dao; if you do, this extension property will
-   allow you to obtain the `DataProvider` for an KEntity simply by calling `Person.dataProvider`.
-* `EntityToIdConverter` which is useful when binding a `ComboBox<Person>` to a `Long` field which only contains the person ID.
+* `VaadinOnKotlin.dataSource` extension — assign your `HikariDataSource` here and ktorm's global `ActiveKtorm.database`
+  is wired automatically. This is the canonical way to bootstrap the persistence layer in a VoK app.
+* `Binder.BindingBuilder.toId(idColumn)` — Vaadin Binder helper for editing a ComboBox of entities while the bound
+  model field stores the foreign-key id.
+* `enumFilterField<E>()` — small reified-generic factory for ktorm-vaadin's `EnumFilterField`.
 
 ## When to use this module
 
-Use this module if you intend to build a Vaadin-based app which accesses your SQL database.
-
-> Note: There is no support for Vaadin + JPA in VoK.
-
-If you plan to use NoSQL database or some other form of data fetching, then only use the
-[vok-util-vaadin](../vok-util-vaadin) module. You will then have to write your own data fetching
-layer; however you may find inspiration on how to do so, by checking the sources of this module.
+Use this module if you intend to build a Vaadin-based app that talks to an SQL database. There is no support for
+Vaadin + JPA in VoK; if you need a NoSQL backend or some other data layer, depend only on `vok-framework` and write
+your own.
 
 ## Connecting to the SQL database
 
-First you will need to add the JDBC driver for your database as a dependency to your `build.gradle.kts` file.
-Then, you'll need to add Hikari-CP as a dependency (unless you're running on Spring/JavaEE):
+Add the JDBC driver for your database and Hikari-CP to your `build.gradle.kts`:
 
-```groovy
-implementation("com.zaxxer:HikariCP:5.0.1")
+```kotlin
+implementation("com.zaxxer:HikariCP:7.0.2")
+runtimeOnly("com.h2database:h2:2.2.224")
 ```
 
-After that's done, you need to configure the `vok-db` database JDBC provider.
-The following example configures an in-memory H2 database:
+Then in your `ServletContextListener` (or equivalent boot hook):
 
 ```kotlin
 val config = HikariConfig().apply {
-    driverClassName = Driver::class.java.name  // the org.h2.Driver class
+    driverClassName = Driver::class.java.name  // org.h2.Driver
     jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
     username = "sa"
     password = ""
 }
-VaadinOnKotlin.dataSource = HikariDataSource(config)
+VaadinOnKotlin.dataSource = HikariDataSource(config)  // also sets ActiveKtorm.database
 ```
 
-It is a good practice to run the configuration from your `ServletContextListener`. You can find a proper
-example in the Beverage Buddy's [Bootstrap](https://github.com/mvysny/beverage-buddy-vok/blob/master/src/main/kotlin/com/vaadin/starter/beveragebuddy/Bootstrap.kt) class.
+There is no separate ktorm-destroy step on shutdown — closing the HikariDataSource (or letting the JVM exit) is
+sufficient.
 
-Don't forget to close the data source and clean up resources properly, in your `ServletContextListener.contextDestroyed()` function:
+See [Bootstrap.kt](../vok-example-crud/src/main/kotlin/example/crudflow/Bootstrap.kt) in the demo for the full
+pattern (plus Flyway migrations).
+
+## Defining entities and tables
+
+Define each entity as an `Entity<E>` interface (with `ActiveEntity<E>` if you want instance-level `save()` /
+`create()` / `delete()`), and a `Table<E>` object alongside it:
 
 ```kotlin
-JdbiOrm.destroy()
-```
+interface Person : ActiveEntity<Person> {
+    var id: Long?
+    var name: String?
+    var age: Int?
+    override val table: Table<Person> get() = Persons
+    companion object : Entity.Factory<Person>()
+}
 
-## Database Migrations
-
-It is recommended to run database migrations from your `ServletContextListener` as well, to make sure that
-the database structure is up-to-date.
-
-This module does not provide any support for migrations directly, however adding the support for migrations
-to your app is extremely easy.
-
-The easiest way is to use [Flyway](https://flywaydb.org/). Just add the following to your `build.gradle` file:
-
-```groovy
-dependencies {
-    implementation("org.flywaydb:flyway-core:9.22.3")
+object Persons : Table<Person>("Person") {
+    val id = long("id").primaryKey().bindTo { it.id }
+    val name = varchar("name").bindTo { it.name }
+    val age = int("age").bindTo { it.age }
 }
 ```
 
-Now we can add SQL scripts to your `src/main/resources/db/migration` folder; simply create a file named
-`V01__CreateCategory.sql` in there, with the following contents:
+Then `Persons.dataProvider` is a `EntityDataProvider<Person>` you can hand to a Vaadin Grid, `Person { name = "Foo"
+}.create()` inserts a row, `db { database.sequenceOf(Persons).find { it.id eq 1L } }` reads, etc.
 
-```sql92
-create TABLE CATEGORY (
-  id bigint auto_increment PRIMARY KEY,
-  name varchar(200) NOT NULL,
-);
-create UNIQUE INDEX idx_category_name ON CATEGORY(name);
-```
+## Database migrations
 
-Please find more documentation in the [Flyway Migration Guide](https://flywaydb.org/documentation/migrations#naming).
-
-To actually run the migration, you will need to call the `Flyway` class, ideally from your `ServletContextListener`
-after VoK is initialized:
+Use [Flyway](https://flywaydb.org/). Add the dependency, drop `.sql` migrations into
+`src/main/resources/db/migration`, then run after wiring `VaadinOnKotlin.dataSource`:
 
 ```kotlin
-val flyway = Flyway.configure()
-    .dataSource(VaadinOnKotlin.dataSource)
-    .load()
-flyway.migrate()
+Flyway.configure().dataSource(VaadinOnKotlin.dataSource).load().migrate()
 ```
 
-Please see the Beverage Buddy's [Bootstrap](https://github.com/mvysny/beverage-buddy-vok/blob/master/src/main/kotlin/com/vaadin/starter/beveragebuddy/Bootstrap.kt)
-for more details.
+## More information
 
-## More Information
-
-* The [Accessing Database Guide](https://www.vaadinonkotlin.eu/databases.html)
-* The [Using Grids Guide](https://www.vaadinonkotlin.eu/grids.html)
+* [ktorm docs](https://www.ktorm.org/) — schema, queries, entity sequences.
+* [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) — filter components, DataProviders, Binder helpers.
+* [beverage-buddy-ktorm](https://github.com/mvysny/beverage-buddy-ktorm) — canonical end-to-end example.
