@@ -28,7 +28,9 @@ class Bootstrap: ServletContextListener {
         log.info("Starting up")
         val config = HikariConfig().apply {
             driverClassName = Driver::class.java.name  // the org.h2.Driver class
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+            // DATABASE_TO_UPPER=FALSE keeps identifier case so ktorm's quoted "Person", "name", etc.
+            // match the Flyway DDL exactly (H2 otherwise folds unquoted names to upper case).
+            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
             username = "sa"
             password = ""
         }

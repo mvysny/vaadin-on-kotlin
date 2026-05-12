@@ -15,9 +15,10 @@ import org.ktorm.dsl.limit
 import org.ktorm.dsl.map
 import org.ktorm.dsl.orderBy
 import org.ktorm.dsl.select
-import org.ktorm.dsl.totalRecords
 import org.ktorm.dsl.where
 import org.ktorm.entity.Entity
+import org.ktorm.entity.count
+import org.ktorm.entity.filter
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
 import org.ktorm.expression.OrderByExpression
@@ -29,9 +30,11 @@ import org.ktorm.schema.InstantSqlType
 import org.ktorm.schema.IntSqlType
 import org.ktorm.schema.LocalDateSqlType
 import org.ktorm.schema.LongSqlType
+import org.ktorm.schema.NestedBinding
 import org.ktorm.schema.Table
 import java.time.Instant
 import java.time.LocalDate
+import kotlin.reflect.KProperty1
 
 /**
  * A Javalin [CrudHandler] backed by a ktorm [Table]. Implements only the read endpoints — POST/PATCH/DELETE return
@@ -88,9 +91,9 @@ public open class KtormCrudHandler<E : Entity<E>>(
 
         if (countOnly) {
             val count = db {
-                val base = database.from(table).select(idColumn)
-                val filtered = if (filters.isNotEmpty()) base.where(filters.reduce(ColumnDeclaring<Boolean>::and)) else base
-                filtered.totalRecords
+                val combined = if (filters.isNotEmpty()) filters.reduce(ColumnDeclaring<Boolean>::and) else null
+                val seq = database.sequenceOf(table)
+                if (combined != null) seq.filter { combined }.count() else seq.count()
             }
             ctx.result(count.toString())
             return
@@ -102,7 +105,7 @@ public open class KtormCrudHandler<E : Entity<E>>(
             val q3 = if (sortClauses.isNotEmpty()) q2.orderBy(*sortClauses.toTypedArray()) else q2
             q3.limit(offset.toInt(), limit.toInt()).map { table.createEntity(it) }
         }
-        ctx.json(rows)
+        ctx.json(rows.map { it.toMap() })
     }
 
     private fun parseFilters(params: Map<String, List<String>>): List<ColumnDeclaring<Boolean>> =
@@ -162,7 +165,23 @@ public open class KtormCrudHandler<E : Entity<E>>(
             @Suppress("UNCHECKED_CAST")
             database.sequenceOf(table).find { (idColumn as Column<Any>) eq id }
         } ?: throw NotFoundResponse("No such entity with id $resourceId")
-        ctx.json(entity)
+        ctx.json(entity.toMap())
+    }
+
+    /**
+     * Snapshots a ktorm [Entity] into a plain [LinkedHashMap] keyed by the bound entity property names so Gson can
+     * serialize it. ktorm's [Entity] is a JDK [java.lang.reflect.Proxy] which Gson can't reflect into, so we read
+     * each property explicitly via the column's [NestedBinding].
+     */
+    @Suppress("UNCHECKED_CAST")
+    private fun E.toMap(): Map<String, Any?> {
+        val result = LinkedHashMap<String, Any?>()
+        for (col in table.columns) {
+            val binding = col.binding as? NestedBinding ?: continue
+            val prop = binding.properties.firstOrNull() as? KProperty1<E, Any?> ?: continue
+            result[prop.name] = prop.get(this)
+        }
+        return result
     }
 
     override fun create(ctx: Context) {

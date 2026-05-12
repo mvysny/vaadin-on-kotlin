@@ -59,7 +59,7 @@ abstract class AbstractDbTest {
         fun setupDb() {
             val config = HikariConfig().apply {
                 driverClassName = Driver::class.java.name
-                jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+                jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
                 username = "sa"
                 password = ""
             }
