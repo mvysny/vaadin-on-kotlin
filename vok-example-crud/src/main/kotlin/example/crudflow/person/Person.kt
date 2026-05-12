@@ -1,65 +1,59 @@
 package example.crudflow.person
 
-import com.github.vokorm.KEntity
-import com.gitlab.mvysny.jdbiorm.Dao
-import org.jdbi.v3.core.mapper.reflect.ColumnName
-import java.time.LocalDate
-import java.util.*
+import com.github.mvysny.ktormvaadin.ActiveEntity
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Column
+import org.ktorm.schema.Table
+import org.ktorm.schema.boolean
+import org.ktorm.schema.date
+import org.ktorm.schema.enum
+import org.ktorm.schema.int
+import org.ktorm.schema.long
+import org.ktorm.schema.timestamp
+import org.ktorm.schema.varchar
+import java.time.Instant
+import java.time.LocalDate
 
-/**
- * A very simple bean representing a database table. The SELECT column -> bean property mapping is done by vok-orm.
- * Notice how Kotlin generates toString, equals, hashcode and all getters/setters automatically (for data classes).
- *
- * See [vok-orm](https://github.com/mvysny/vok-orm) for more details.
- * @property id person ID
- * @property name person name
- * @property age the person age, 15..100
- * @property dateOfBirth date of birth, optional.
- * @property created when the record was created
- * @property maritalStatus the marital status
- * @property alive whether the person is alive (true) or deceased (false).
- */
-data class Person(
-        override var id: Long? = null,
+interface Person : ActiveEntity<Person> {
+    var id: Long?
 
-        @field:NotNull
-        @field:Size(min = 1, max = 200)
-        @field:ColumnName("PERSON_NAME")
-        var name: String? = null,
+    @get:NotNull
+    @get:Size(min = 1, max = 200)
+    var name: String?
 
-        @field:NotNull
-        @field:Min(15)
-        @field:Max(100)
-        var age: Int? = null,
+    @get:NotNull
+    @get:Min(15)
+    @get:Max(100)
+    var age: Int?
 
-        var dateOfBirth: LocalDate? = null,
+    var dateOfBirth: LocalDate?
 
-        @field:NotNull
-        var created: Date? = null,
+    @get:NotNull
+    var created: Instant?
 
-        @field:NotNull
-        var maritalStatus: MaritalStatus? = null,
+    @get:NotNull
+    var maritalStatus: MaritalStatus?
 
-        @field:NotNull
-        var alive: Boolean? = null
+    @get:NotNull
+    var alive: Boolean?
 
-) : KEntity<Long> {
-    // this brings in tons of useful static methods such as findAll(), findById() etc.
-    companion object : Dao<Person, Long>(Person::class.java)
+    override val table: Table<Person> get() = Persons
 
-    override fun save(validate: Boolean) {
-        if (created == null) created = Date()
-        super.save(validate)
-    }
+    companion object : Entity.Factory<Person>()
 }
 
-enum class MaritalStatus {
-    Single,
-    Married,
-    Divorced,
-    Widowed
+enum class MaritalStatus { Single, Married, Divorced, Widowed }
+
+object Persons : Table<Person>("Person") {
+    val id: Column<Long> = long("id").primaryKey().bindTo { it.id }
+    val name: Column<String> = varchar("PERSON_NAME").bindTo { it.name }
+    val age: Column<Int> = int("age").bindTo { it.age }
+    val dateOfBirth: Column<LocalDate> = date("dateOfBirth").bindTo { it.dateOfBirth }
+    val created: Column<Instant> = timestamp("created").bindTo { it.created }
+    val maritalStatus: Column<MaritalStatus> = enum<MaritalStatus>("maritalStatus").bindTo { it.maritalStatus }
+    val alive: Column<Boolean> = boolean("alive").bindTo { it.alive }
 }

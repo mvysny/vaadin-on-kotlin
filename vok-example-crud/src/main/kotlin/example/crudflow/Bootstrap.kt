@@ -1,7 +1,5 @@
 package example.crudflow
 
-import com.gitlab.mvysny.jdbiorm.JdbiOrm
-import com.github.mvysny.ktormvaadin.ActiveKtorm
 import com.vaadin.flow.component.page.AppShellConfigurator
 import com.vaadin.flow.server.PWA
 import com.zaxxer.hikari.HikariConfig
@@ -10,7 +8,6 @@ import eu.vaadinonkotlin.VaadinOnKotlin
 import eu.vaadinonkotlin.vaadin.vokdb.dataSource
 import org.flywaydb.core.Flyway
 import org.h2.Driver
-import org.ktorm.database.Database
 import org.slf4j.LoggerFactory
 import jakarta.servlet.ServletContextEvent
 import jakarta.servlet.ServletContextListener
@@ -35,9 +32,7 @@ class Bootstrap: ServletContextListener {
             username = "sa"
             password = ""
         }
-        val ds = HikariDataSource(config)
-        VaadinOnKotlin.dataSource = ds
-        ActiveKtorm.database = Database.connect(ds)
+        VaadinOnKotlin.dataSource = HikariDataSource(config)
         log.info("Initializing VaadinOnKotlin")
         VaadinOnKotlin.init()
         log.info("Running DB migrations")
@@ -52,8 +47,6 @@ class Bootstrap: ServletContextListener {
         log.info("Shutting down");
         log.info("Destroying VaadinOnKotlin")
         VaadinOnKotlin.destroy()
-        log.info("Shutting down database access")
-        JdbiOrm.destroy()
         log.info("Shutdown complete")
     }
 
