@@ -19,88 +19,128 @@ nav_order: 3
 
 # Creating Forms
 
-When creating UI for forms, we typically solve two separate tasks:
+A form does two jobs:
 
-* We position the form components on the screen and we try to make the form pleasant for the eye and easy to use
-* We populate the components with data, visualise the values, validate the values and then gather the values into a
-  single bean when the user presses the "Save" button.
+* it **lays out** input components — `TextField`, `DatePicker`, `ComboBox`, etc. — so the
+  result is pleasant to look at and easy to fill in;
+* it **moves data** between those components and a backing entity: read values out, validate
+  what the user typed, write values back, save.
 
-## Positioning Form Components
+Vaadin's [`Binder`](https://vaadin.com/docs/latest/flow/binding-data/components-binder) handles
+the second half. The first half is plain Vaadin layouts plus the karibu-dsl builders covered in
+[Creating UIs](creating_ui.md). The rest of this guide stitches the two together.
 
-We typically use `FormLayout` to position fields such as `TextField` in a form. Please see below on
-the example of a very simple form:
+> For a complete worked example, read **Chapter 6 — Editing the selected product** of the
+> [Tutorial](/tutorial). This guide is the reference; the tutorial is the walkthrough.
+
+## Positioning form components
+
+`FormLayout` is the default container for forms. It arranges fields in a CSS-grid-like flow
+and reduces columns automatically as the viewport narrows. Drop your fields inside the
+`formLayout { ... }` builder:
 
 ```kotlin
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.formlayout.FormLayout
+
 class PersonForm : FormLayout() {
     init {
-        w = wrapContent
-        textField("Name:") {
-            focus()
-        }
-        textField("Age:")
-        dateField("Date of birth:")
-        comboBox<MaritalStatus>("Marital status:") {
-            setItems(*MaritalStatus.values())
+        textField("Name") { focus() }
+        textField("Age")
+        datePicker("Date of birth")
+        comboBox<MaritalStatus>("Marital status") {
+            setItems(MaritalStatus.entries)
         }
         checkBox("Alive")
     }
 }
 ```
 
-The form simply uses basic `FormLayout` to position the components. You can of course use any layout you wish,
-and you can even nest multiple levels of layouts, in order for your form to provide a good UX to the user.
+A few notes on the field names karibu-dsl exposes:
 
-The `FormLayout` supports responsive layout. Such a layout lays out fields in a grid fashion, yet it is able to reduce
-columns when the screen space is narrow. Please read more on this feature at the [Form Layout Documentation](https://vaadin.com/components/vaadin-form-layout).
+- **`datePicker`**, not `dateField` — the Vaadin component is `DatePicker`.
+- **`checkBox`** (camelCase) — the Vaadin component is `Checkbox`.
+- **`comboBox<T>`** carries the item type as a reified generic; you still call
+  `setItems(...)` to fill it. Use `Enum.entries` (Kotlin 1.9+) instead of `values()`.
 
-There is a Kotlin syntax to specify the responsive steps in a much more condensed form:
+If you want responsive breakpoints (e.g. one column on mobile, two when there's room),
+karibu-dsl gives you a condensed DSL for [`FormLayout.ResponsiveStep`](https://vaadin.com/docs/latest/components/form-layout):
 
 ```kotlin
-class PersonForm : FormLayout() {
-    init {
-        w = wrapContent
-        responsiveSteps { "0px"(1, top); "30em"(2, aside) }
+formLayout {
+    responsiveSteps { "0px"(1, top); "30em"(2, aside) }
 
-        textField("Name:") { focus() }
-        textField("Age:")
-        ...
+    textField("Name")
+    textField("Age")
+}
 ```
 
-## Binding Values
+`"0px"(1, top)` reads as *"from 0px upward, use 1 column with labels on top"*; the second
+step kicks in at 30em (≈480px) and switches to 2 columns with labels beside their fields.
 
-Vaadin uses the `Binder` class to bind bean properties into particular UI fields such as `TextField` or `CheckBox`.
-Say that we have the following bean `Person`:
+For more elaborate forms, nest layouts freely — `FormLayout` for the field grid,
+`horizontalLayout` for the button bar, `verticalLayout` to stack sections. There is no
+penalty for nesting; the resulting DOM is plain flexbox / grid.
+
+## Binding values
+
+`Binder<E>` is the bridge between the form's fields and a backing entity. Three responsibilities
+sit on it:
+
+1. **Read** values out of an entity into the form fields.
+2. **Validate** input on its way back.
+3. **Write** the result into the entity.
+
+We're going to use this `Person` entity throughout — a ktorm `Entity<E>` interface, mirroring
+the one in `vok-example-crud`:
+
 ```kotlin
-data class Person(
-        var id: Long? = null,
-        var personName: String? = null,
-        var age: Int? = null,
-        var dateOfBirth: LocalDate? = null,
-        var maritalStatus: MaritalStatus? = null,
-        var alive: Boolean? = null
-)
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Table
+import java.time.LocalDate
+
+interface Person : ActiveEntity<Person> {
+    var id: Long?
+    var name: String?
+    var age: Int?
+    var dateOfBirth: LocalDate?
+    var maritalStatus: MaritalStatus?
+    var alive: Boolean?
+
+    override val table: Table<Person> get() = Persons
+    companion object : Entity.Factory<Person>()
+}
+
+enum class MaritalStatus { Single, Married, Divorced, Widowed }
 ```
 
-We will bind individual properties of the `Person` bean to the UI fields using the `Binder`. The modified form
-follows:
+For why entities are interfaces, and why every property is nullable, see the
+[Databases guide](databases.md). The short answer: ktorm builds the implementation at
+runtime, and a half-filled `Entity.create<Person>()` has to be representable in the type system.
+
+Create a `Binder<Person>` as a field of the form and bind each input to a property of `Person`:
 
 ```kotlin
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.formlayout.FormLayout
+import com.vaadin.flow.data.binder.Binder
+
 class PersonForm : FormLayout() {
     val binder = Binder<Person>(Person::class.java)
     init {
-        w = wrapContent
-        textField("Name:") {
+        textField("Name") {
             focus()
-            bind(binder).trimmingConverter().bind(Person::personName)
+            bind(binder).trimmingConverter().bind(Person::name)
         }
-        textField("Age:") {
+        textField("Age") {
             bind(binder).toInt().bind(Person::age)
         }
-        dateField("Date of birth:") {
+        datePicker("Date of birth") {
             bind(binder).bind(Person::dateOfBirth)
         }
-        comboBox<MaritalStatus>("Marital status:") {
-            setItems(*MaritalStatus.values())
+        comboBox<MaritalStatus>("Marital status") {
+            setItems(MaritalStatus.entries)
             bind(binder).bind(Person::maritalStatus)
         }
         checkBox("Alive") {
@@ -110,111 +150,258 @@ class PersonForm : FormLayout() {
 }
 ```
 
-In order to populate the UI fields with data from an existing person, we simply run
+The interesting line is `bind(binder).bind(Person::name)`. Reading right-to-left:
+
+* `bind(binder)` (a karibu-dsl extension on any `HasValue` field) starts a fluent
+  binding builder bound to `binder`.
+* `.bind(Person::name)` finalises the binding by naming the target property. The
+  `KMutableProperty1` reference is type-checked at compile time — if you rename `name`
+  on the entity, the binding stops compiling.
+
+Two helpers from karibu-dsl's `BinderUtils` smooth common conversions:
+
+* `.trimmingConverter()` — strips whitespace around the field value before storing it.
+* `.toInt()` / `.toLong()` / `.toBigDecimal()` / `.toDouble()` — adapt a `TextField`'s
+  `String?` value to a numeric property. For numeric forms, prefer Vaadin's typed inputs
+  (`integerField`, `bigDecimalField`, `numberField`) which expose the right type natively
+  and need no converter.
+
+> **Warning.** Bean-validation annotations (next section) are picked up *only* when the
+> binding names a property — i.e. you used `.bind(KProperty)` or `.bind("propertyName")`.
+> The lambda overload `.bind(getter, setter)` is invisible to the validator scanner;
+> annotations on the underlying property are silently ignored.
+
+### Populating the form
+
+Two modes, pick one:
+
+**`readBean(person)` + `writeBeanIfValid(person)`** (recommended for explicit-save forms).
+Read copies values into the fields; edits stay in the fields and are only pushed back when
+you call `writeBeanIfValid`. Switching to a different bean is safe — pending edits are
+discarded.
 
 ```kotlin
-val form = PersonForm()
-form.binder.readBean(person)
-```
-
-## Validating Input
-
-We have two options on how to validate the input:
-
-* We either add validators directly to the binder, when creating a binding. However, this type of
-  validations can not be run outside of Vaadin UI (e.g. they can not be run by the database storage layer,
-  to validate objects). Therefore, it's usually better to use Java Validator API
-* The Java Validator API (or JSR-303). We add validation annotations to the individual fields of the bean,
-  then we run validator to pick up the annotations and run validations on the bean, failing if the values
-  do not comply.
-
-For example, adding annotations to the `Person` class would make it look like this:
-
-```kotlin
-data class Person(
-        var id: Long? = null,
-
-        @field:NotNull
-        @field:Size(min = 1, max = 200)
-        var personName: String? = null,
-
-        @field:NotNull
-        @field:Min(15)
-        @field:Max(100)
-        var age: Int? = null,
-
-        var dateOfBirth: LocalDate? = null,
-
-        @field:NotNull
-        var created: Instant? = null,
-
-        @field:NotNull
-        var maritalStatus: MaritalStatus? = null,
-
-        @field:NotNull
-        var alive: Boolean? = null
-)
-```
-
-Now you can simply validate the bean outside of Vaadin UI, simply by using the following code:
-
-```kotlin
-val violations: Set<ConstraintViolation<Person>> = Validation.buildDefaultValidatorFactory().validator.validate(person)
-if (!violations.isEmpty()) {
-    throw ConstraintViolationException(violations)
-}
-```
-
-> **Note**: If you're using VoK entities, just call `person.validate()`. More on that in the database guide.
-
-In order to properly validate the bean in the Vaadin UI, you must use a special binder: the `BeanValidationBinder`:
-
-```kotlin
-class PersonForm : FormLayout() {
-    val binder = beanValidationBinder<Person>()
-    ...
-```
-
-In order to save the bean, we can simply run the following code in a "Save" button onclick listener:
-
-```kotlin
-if (!form.binder.validate().isOk || !form.binder.writeBeanIfValid(person)) {
-    saveButton.componentError = UserError("Please fix the errors on the form")
-} else {
+form.binder.readBean(person)        // populate fields
+// user edits the form…
+if (form.binder.writeBeanIfValid(person)) {
     person.save()
 }
 ```
 
-The `binder.validate()` will mark invalid components visually with a red border and will add the error message
-as a tooltip. The `binder.writeBeanIfValid(person)` will write the data from the UI components into the `person`
-instance, but only if all the data passes the validator.
+**`setBean(person)`** wires the form bidirectionally — every keystroke flows straight back
+into the bean. Useful when there is no Save button (auto-save) or you want live previews;
+risky when the user might cancel.
 
-## Inserting Your Form Into The UI
+`writeBeanIfValid` returns `false` if any binding fails validation, leaves the bean
+untouched, and asks Vaadin to render per-field errors (red border + helper text). You
+don't need to set any "component error" property yourself — that pattern (`UserError`,
+`Component.componentError`) was a Vaadin 8 API and is gone from Flow.
 
-The simplest way on how to insert your form into the UI is to write the DSL function for it:
+## Validating input
+
+Two kinds of validation, used together:
+
+* **Bean Validation** (Jakarta Bean Validation, formerly JSR-303) — annotations on the
+  entity. The same checks run wherever the bean is, including the database layer.
+* **Binder validators** — added in the field-builder. Run inside Vaadin only, useful
+  for UI-only constraints like "must match the password field above".
+
+### Bean Validation on the entity
+
+Annotate the **getters** of your ktorm entity. The `@get:` site target is essential —
+ktorm entities are interfaces, so `@field:` has no field to land on:
 
 ```kotlin
-@VaadinDsl
-fun (@VaadinDsl HasComponents).personForm(block: (@VaadinDsl PersonForm).()->Unit = {}): PersonForm = init(PersonForm(), block)
-```
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Table
 
-Then you can embed it into your view:
+interface Person : ActiveEntity<Person> {
+    var id: Long?
 
-```kotlin
-class MyView : VerticalLayout() {
-  private lateinit var form: PersonForm
-  init {
-    form = personForm()
-  }
+    @get:NotNull
+    @get:Size(min = 1, max = 200)
+    var name: String?
+
+    @get:NotNull
+    @get:Min(15)
+    @get:Max(100)
+    var age: Int?
+
+    // ...
+
+    override val table: Table<Person> get() = Persons
+    companion object : Entity.Factory<Person>()
 }
 ```
 
-## More Information
+`ActiveEntity` exposes `validate()` to run the annotations from anywhere:
 
-You can read more information on the binder itself in the [Binding Data to Forms](https://vaadin.com/docs/v14/flow/binding-data/tutorial-flow-components-binder.html)
-Vaadin documentation.
+```kotlin
+person.validate()    // throws ConstraintViolationException on the first violation
+```
 
-> **Warning:** If you intend to use the Java validation annotations, you must not use the `.bind(callback, callback)` binding
-functions since they have no way of knowing which field the binding is bound to, and therefore can't discover the annotations
-from that bind. You **must** use `.bind(String)` or `.bind(KProperty)` otherwise your validations annotations will be silently
-ignored by the binder.
+If you prefer the raw Jakarta API:
+
+```kotlin
+import jakarta.validation.ConstraintViolation
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.Validation
+
+val violations: Set<ConstraintViolation<Person>> =
+    Validation.buildDefaultValidatorFactory().validator.validate(person)
+if (violations.isNotEmpty()) throw ConstraintViolationException(violations)
+```
+
+To make the binder run these annotations, swap `Binder<Person>(...)` for karibu-dsl's
+`beanValidationBinder<Person>()`:
+
+```kotlin
+class PersonForm : FormLayout() {
+    val binder = beanValidationBinder<Person>()
+    // bindings as before
+}
+```
+
+That's a `BeanValidationBinder<Person>` under the hood. With it, `binder.validate()` and
+`writeBeanIfValid` consult the annotations alongside any explicit per-field validators.
+
+### Binder validators (UI-only)
+
+For checks that don't belong on the entity, attach them to the binding. karibu-dsl ships
+a handful of common ones in `BinderUtils`:
+
+```kotlin
+textField("Email") {
+    bind(binder).validEmail().bind(Person::email)
+}
+textField("Display name") {
+    bind(binder).validateNotBlank().bind(Person::displayName)
+}
+integerField("Age") {
+    bind(binder).validateInRange(15..100).bind(Person::age)
+}
+emailField("Email") {
+    bind(binder).asRequiredNotNull("Email is required").bind(Person::email)
+}
+```
+
+For anything custom, drop down to Vaadin's `withValidator { value, _ -> ... }`. See the
+[Binder docs](https://vaadin.com/docs/latest/flow/binding-data/components-binder-validation)
+for the full API.
+
+## Saving the bean
+
+The canonical Save handler from `vok-example-crud`:
+
+```kotlin
+import com.vaadin.flow.component.notification.Notification
+
+private fun onSave() {
+    if (!form.binder.validate().isOk || !form.binder.writeBeanIfValid(person)) {
+        // Binder has already rendered field-level errors; nothing else to do.
+        return
+    }
+    person.save()
+    Notification.show("Saved ${person.name}")
+}
+```
+
+`binder.validate()` marks every invalid field with a red border and a helper-text error
+message, then returns a `BinderValidationStatus` whose `isOk` flag tells you whether to
+proceed. `writeBeanIfValid` re-runs the validation and writes only on success — calling
+both is belt-and-braces, but it's clear about intent and costs nothing.
+
+`person.save()` is `ActiveEntity`'s wrapper around ktorm's `flushChanges()` / insert; it
+picks the right SQL based on whether `id` is set. See the [Databases guide](databases.md)
+for the persistence side.
+
+## Reusing the form
+
+A form usually wants to be embedded in more than one place — a side panel for editing, a
+`Dialog` for adding new rows. Extract it as a class with a DSL builder:
+
+```kotlin
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.component.formlayout.FormLayout
+
+class PersonForm : FormLayout() {
+    val binder = beanValidationBinder<Person>()
+    init {
+        textField("Name") { bind(binder).trimmingConverter().bind(Person::name) }
+        integerField("Age") { bind(binder).bind(Person::age) }
+        datePicker("Date of birth") { bind(binder).bind(Person::dateOfBirth) }
+        comboBox<MaritalStatus>("Marital status") {
+            setItems(MaritalStatus.entries)
+            bind(binder).bind(Person::maritalStatus)
+        }
+        checkBox("Alive") { bind(binder).bind(Person::alive) }
+    }
+}
+
+@VaadinDsl
+fun (@VaadinDsl HasComponents).personForm(
+    block: (@VaadinDsl PersonForm).() -> Unit = {},
+): PersonForm = init(PersonForm(), block)
+```
+
+Now the form drops into any view as a single line:
+
+```kotlin
+class EditPersonView : KComposite() {
+    private lateinit var form: PersonForm
+    private val root = ui {
+        verticalLayout {
+            form = personForm()
+            button("Save") {
+                setPrimary()
+                onClick {
+                    if (form.binder.writeBeanIfValid(person)) person.save()
+                }
+            }
+        }
+    }
+}
+```
+
+For a fuller worked example — including a `Dialog`-based add flow that reuses the same
+`PersonForm` — see `vok-example-crud/.../CreateEditPerson.kt`.
+
+### `KComposite` vs extending `FormLayout`
+
+Extending `FormLayout` directly (as above) exposes its full API on every `PersonForm`
+instance — callers can call `add(...)`, `setResponsiveSteps(...)`, and so on. That's fine
+for small internal forms but leaks implementation. For widely-reused forms, extend
+`KComposite` instead:
+
+```kotlin
+import com.github.mvysny.karibudsl.v10.KComposite
+
+class PersonForm : KComposite() {
+    val binder = beanValidationBinder<Person>()
+    private val root = ui {
+        formLayout {
+            textField("Name") { bind(binder).trimmingConverter().bind(Person::name) }
+            // ...
+        }
+    }
+}
+```
+
+The public API shrinks to whatever you choose to expose (here, `binder`). You can change
+the root layout later — `verticalLayout` instead of `formLayout`, say — without breaking
+callers. See [Creating UIs — The `KComposite` pattern](creating_ui.md#the-kcomposite-pattern)
+for the trade-offs.
+
+## More resources
+
+- [Binding data to forms](https://vaadin.com/docs/latest/flow/binding-data/components-binder) —
+  the canonical Vaadin reference for `Binder`.
+- [Tutorial — Chapter 6](/tutorial) — builds a master-detail editor end to end.
+- [Creating UIs](creating_ui.md) — the component and layout basics this guide builds on.
+- [Databases guide](databases.md) — entity definitions, `ActiveEntity`, persistence.
