@@ -27,7 +27,7 @@ javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven
 hikaricp = "com.zaxxer:HikariCP:7.0.2"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
 flyway = "org.flywaydb:flyway-core:11.18.0" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
 # Brings ktorm-core, ktorm-support-postgresql, and hibernate-validator transitively. https://github.com/mvysny/ktorm-vaadin/tags
-ktormvaadin = "com.github.mvysny.ktorm-vaadin:ktorm-vaadin:0.1"
+ktormvaadin = "com.github.mvysny.ktorm-vaadin:ktorm-vaadin:0.2"
 
 [plugins]
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }

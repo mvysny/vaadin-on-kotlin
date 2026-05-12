@@ -7,45 +7,50 @@ import com.github.mvysny.ktormvaadin.dataProvider
 import com.github.mvysny.ktormvaadin.db
 import com.github.mvysny.ktormvaadin.e
 import com.github.mvysny.ktormvaadin.filter.BooleanFilterField
+import com.github.mvysny.ktormvaadin.filter.DateInterval
+import com.github.mvysny.ktormvaadin.filter.DateRangePopup
 import com.github.mvysny.ktormvaadin.filter.FilterTextField
+import com.github.mvysny.ktormvaadin.filter.NumberRangePopup
+import com.github.mvysny.ktormvaadin.filter.between
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
-import com.vaadin.flow.component.datepicker.DatePicker
 import com.vaadin.flow.component.grid.ColumnTextAlign
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu
 import com.vaadin.flow.component.icon.IconFactory
 import com.vaadin.flow.component.icon.VaadinIcon
-import com.vaadin.flow.component.textfield.IntegerField
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
 import eu.vaadinonkotlin.vaadin.vokdb.enumFilterField
 import example.crudflow.MainLayout
+import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
+import org.ktorm.dsl.greaterEq
 import org.ktorm.dsl.inList
+import org.ktorm.dsl.less
+import org.ktorm.schema.Column
 import org.ktorm.schema.ColumnDeclaring
 import org.ktorm.support.postgresql.ilike
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
- * The main view. Uses ktorm-vaadin's [EntityDataProvider] backed by [Persons]; filter components are simple Vaadin
- * fields wired into the grid header row, with their values combined into a ktorm [ColumnDeclaring] in [updateFilter].
- *
- * Note: ktorm-vaadin 0.1's `NumberRangePopup` and `DateRangePopup` are incompatible with Vaadin 25 (they call a
- * `SubMenu.add(Component[])` API that was removed). Once a fixed ktorm-vaadin is published, the age and date filters
- * can be upgraded to range popups; for now they're plain Vaadin fields doing equality matches.
+ * The main view. Uses ktorm-vaadin's [EntityDataProvider] backed by [Persons]; filter components are wired into
+ * the grid header row, with their values combined into a ktorm [ColumnDeclaring] in [updateFilter].
  */
 @Route("", layout = MainLayout::class)
 class PersonListView : KComposite() {
     private lateinit var personGrid: Grid<Person>
     lateinit var gridContextMenu: GridContextMenu<Person>
-    private val nameFilter = FilterTextField("")
-    private val ageFilter = IntegerField()
+    private val nameFilter = FilterTextField()
+    private val ageFilter = NumberRangePopup()
     private val aliveFilter = BooleanFilterField()
-    private val dateOfBirthFilter = DatePicker()
+    private val dateOfBirthFilter = DateRangePopup()
     private val maritalStatusFilter = enumFilterField<MaritalStatus>()
     private val dataProvider = Persons.dataProvider
+    private val createdFilter = DateRangePopup()
 
     private val root = ui {
         verticalLayout {
@@ -92,7 +97,10 @@ class PersonListView : KComposite() {
                     maritalStatusFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = maritalStatusFilter
                 }
-                columnFor(Person::created, converter = { it?.toString() }, key = Persons.created.e.key)
+                columnFor(Person::created, converter = { it?.toString() }, key = Persons.created.e.key) {
+                    createdFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = createdFilter
+                }
 
                 gridContextMenu = gridContextMenu {
                     item("view", { person: Person? -> if (person != null) navigateTo(PersonView::class, person.id!!) })
@@ -110,14 +118,28 @@ class PersonListView : KComposite() {
         if (nameFilter.value.isNotBlank()) {
             conditions += Persons.name.ilike("${nameFilter.value.trim()}%")
         }
-        ageFilter.value?.let { conditions += Persons.age eq it }
+        conditions += Persons.age.between(ageFilter.value.asIntegerInterval())
         aliveFilter.value?.let { conditions += Persons.alive eq it }
-        dateOfBirthFilter.value?.let { conditions += Persons.dateOfBirth eq it }
+        conditions += Persons.dateOfBirth.between(dateOfBirthFilter.value)
         val selectedStatuses = maritalStatusFilter.value
         if (selectedStatuses.isNotEmpty() && selectedStatuses.size < MaritalStatus.entries.size) {
             conditions += Persons.maritalStatus.inList(selectedStatuses.toList())
         }
+        conditions += createdFilter.value.containsInstant(Persons.created)
         dataProvider.setFilter(conditions.and())
+    }
+
+    /** ktorm-vaadin's DateInterval works on [LocalDate]; the [Persons.created] column is [Instant], so widen the
+     * day range to an Instant range in the browser's timezone. */
+    private fun DateInterval.containsInstant(col: Column<Instant>, zone: ZoneId = BrowserTimeZone.get): ColumnDeclaring<Boolean>? {
+        val startInstant: Instant? = start?.atStartOfDay(zone)?.toInstant()
+        val endExclusive: Instant? = endInclusive?.plusDays(1)?.atStartOfDay(zone)?.toInstant()
+        return when {
+            startInstant != null && endExclusive != null -> (col greaterEq startInstant) and (col less endExclusive)
+            startInstant != null -> col greaterEq startInstant
+            endExclusive != null -> col less endExclusive
+            else -> null
+        }
     }
 
     private fun createOrEditPerson(person: Person) {
