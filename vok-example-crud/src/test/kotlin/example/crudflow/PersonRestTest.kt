@@ -12,8 +12,23 @@ import org.junit.jupiter.api.Test
 import java.net.URI
 import java.net.http.HttpClient
 import java.nio.file.Path
+import java.time.Instant
 import java.time.LocalDate
 import kotlin.test.expect
+
+/**
+ * Plain data class mirroring the JSON shape produced by serializing a ktorm [Person] entity. Used by [PersonRestTest]
+ * for client-side deserialization, since Gson can't construct an interface-typed entity directly.
+ */
+data class PersonDto(
+    var id: Long? = null,
+    var name: String? = null,
+    var age: Int? = null,
+    var dateOfBirth: LocalDate? = null,
+    var created: Instant? = null,
+    var maritalStatus: MaritalStatus? = null,
+    var alive: Boolean? = null,
+)
 
 class PersonRestClient(val baseUrl: String) {
     init {
@@ -24,9 +39,9 @@ class PersonRestClient(val baseUrl: String) {
         val request = "${baseUrl}/person/helloworld".buildUrl().buildRequest()
         return client.exec(request) { response -> response.bodyAsString() }
     }
-    fun getAll(): List<Person> {
+    fun getAll(): List<PersonDto> {
         val request = "${baseUrl}/person".buildUrl().buildRequest()
-        return client.exec(request) { response -> response.jsonArray(Person::class.java) }
+        return client.exec(request) { response -> response.jsonArray(PersonDto::class.java) }
     }
     fun getAllRaw(): String {
         val request = "${baseUrl}/person".buildUrl().buildRequest()
@@ -69,18 +84,31 @@ class PersonRestTest : AbstractJavalinTest() {
     }
 
     @Test fun `LocalDate serialization`() {
-        val p = Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-        p.save()
+        Person {
+            name = "Duke Leto Atreides"; age = 45
+            dateOfBirth = LocalDate.of(1980, 5, 1)
+            maritalStatus = MaritalStatus.Single; alive = false
+            created = Instant.now()
+        }.create()
         val all = client.getAllRaw()
         expect(true, all) { all.contains(""""dateOfBirth":"1980-05-01"""") }
     }
 
     @Test fun `get all users`() {
         expect(listOf()) { client.getAll() }
-        val p = Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
-        p.save()
+        val p = Person {
+            name = "Duke Leto Atreides"; age = 45
+            dateOfBirth = LocalDate.of(1980, 5, 1)
+            maritalStatus = MaritalStatus.Single; alive = false
+            created = Instant.now()
+        }.create()
         val all = client.getAll()
-        p.created = all[0].created
-        expect(listOf(p)) { all }
+        expect(1) { all.size }
+        expect(p.name) { all[0].name }
+        expect(p.age) { all[0].age }
+        expect(p.dateOfBirth) { all[0].dateOfBirth }
+        expect(p.maritalStatus) { all[0].maritalStatus }
+        expect(p.alive) { all[0].alive }
+        expect(p.id) { all[0].id }
     }
 }

@@ -1,6 +1,6 @@
 create TABLE Person(
   id bigint auto_increment PRIMARY KEY,
-  PERSON_NAME varchar(200) NOT NULL,
+  name varchar(200) NOT NULL,
   age INTEGER not NULL,
   dateOfBirth DATE,
   created TIMESTAMP,

@@ -50,7 +50,7 @@ enum class MaritalStatus { Single, Married, Divorced, Widowed }
 
 object Persons : Table<Person>("Person") {
     val id: Column<Long> = long("id").primaryKey().bindTo { it.id }
-    val name: Column<String> = varchar("PERSON_NAME").bindTo { it.name }
+    val name: Column<String> = varchar("name").bindTo { it.name }
     val age: Column<Int> = int("age").bindTo { it.age }
     val dateOfBirth: Column<LocalDate> = date("dateOfBirth").bindTo { it.dateOfBirth }
     val created: Column<Instant> = timestamp("created").bindTo { it.created }
