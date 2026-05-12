@@ -3,173 +3,111 @@
 
 # VoK REST Server Support
 
-This module makes it easy to export your objects via REST. The aim here is to use as lightweight libraries as possible,
-that's why we're using [Javalin](https://javalin.io/) for REST endpoint definition, and [Gson](https://github.com/google/gson) for object-to-JSON mapping instead of
-Jackson.
+This module exposes ktorm `Table<E>` objects as a REST CRUD endpoint. It is intentionally lightweight: [Javalin](https://javalin.io/)
+for routing, [Gson](https://github.com/google/gson) for JSON.
 
-> Note: this module does not have any support for your app to *consume* and *display* data from an external REST services.
-Please follow the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources.html) guide for more information.
-Also visit [vok-rest-client](../vok-rest-client) for consuming REST services easily with VOK apps.
+> Note: this module does not consume external REST services. For that, see [vok-rest-client](../vok-rest-client).
 
-## Adding REST Server To Your App
+## Adding the REST server to your app
 
-Include dependency on this module to your app; just add the following Gradle dependency to your `build.gradle`:
-
-```groovy
+```kotlin
 dependencies {
-    compile("eu.vaadinonkotlin:vok-rest:x.y.z")
+    implementation("eu.vaadinonkotlin:vok-rest:x.y.z")
 }
 ```
 
-> Note: to obtain the newest version see above for the most recent tag
-
-Now you can write the REST endpoint interface. We are going to introduce a new servlet that will handle all REST-related calls;
-we're going to reroute all calls to Javalin which will then parse REST requests; we're then going to configure Javalin with our REST
-endpoints:
+Define a servlet that delegates everything under `/rest/*` to Javalin, and register a CRUD handler for each ktorm
+`Table` you want to expose:
 
 ```kotlin
-/**
- * Provides access to person list. To test, just run `curl http://localhost:8080/rest/person`
- */
 @WebServlet(urlPatterns = ["/rest/*"], name = "JavalinRestServlet", asyncSupported = false)
 class JavalinRestServlet : HttpServlet() {
-    val javalin = EmbeddedJavalin()
-            .configureRest()
-            .createServlet()
+    private val javalin = Javalin.createStandalone { it.gsonMapper(VokRest.gson) } .apply {
+        get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+        crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
+    }.javalinServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
         javalin.service(req, resp)
     }
 }
-
-fun Javalin.configureRest(): Javalin {
-    val gson = GsonBuilder().create()
-    gson.configureToJavalin()
-    get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-    get("/rest/person/helloworld2") { ctx -> ctx.json(Person.findAll()) }  // uses Gson
-    crud2("/rest/person", Person.getCrudHandler(true))  // a full-blown CRUD Handler
-    return this
-}
 ```
 
-> *Example:* You can find the `JavalinRestServlet` class in action in the [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restdataprovider-example)
-example application. It's located in the `Bootstrap.kt` file.
-
-To test it out, just run the following in your command line:
+Quick check from the command line:
 
 ```bash
 curl http://localhost:8080/rest/person
 ```
 
-This should hit the route defined via the `crud2("/rest/person")` and should print all personnel in your database.
+Consult the [Javalin docs](https://javalin.io/documentation) for general route definitions.
 
-Please consult [Javalin Documentation](https://javalin.io/documentation) for more details on how to configure REST endpoints.
+## CRUD handler
 
-### CRUD Handler
+`Persons.getCrudHandler()` returns a [KtormCrudHandler](src/main/kotlin/eu/vaadinonkotlin/rest/KtormCrudHandler.kt)
+backed by your ktorm `Table`. Mounted at `/rest/users` it exposes:
 
-VoK provides two REST CRUD handlers by default:
+* `GET /rest/users` — list (with query parameters below)
+* `GET /rest/users/22` — single by id
+* `POST /rest/users` / `PATCH /rest/users/22` / `DELETE /rest/users/22` — create / update / delete
+  (gated by `allowModification`; the body-deserialization path currently returns 501, pending a Gson↔ktorm Entity
+  adapter)
 
-* The `DataLoaderCrudHandler` which exposes contents of any [DataLoader](https://gitlab.com/mvysny/vok-dataloader)
-  over REST (the `crud2()` function as seen above), including paging, filtering and sorting, but it provides no support for POST/PATCH/DELETE;
-* The `VokOrmCrudHandler` which provides the same as the `DataLoaderCrudHandler` but it includes support for POST/PATCH/DELETE.
-  This Handler will automatically use vok-orm's `EntityDataProvider` to fetch instances of the entity.
+### Query parameters on `GET /list`
 
-Attaching the CRUD handler to, say, `/rest/users` will export the following endpoints:
+* `?col=value` — eq filter on a column. Column names are the **SQL** column names (same keys ktorm-vaadin's
+  EntityDataProvider uses for grid sorting). Pass each column at most once.
+* `?offset=N&limit=M` — paging; both must be 0 or greater; `limit` is capped by the handler's `maxLimit`.
+* `?sort=col1:asc,col2:desc` — multi-column sort; direction defaults to `asc` if `:asc`/`:desc` is omitted.
+* `?count=true` — return only the matching row count as a plain-text integer.
 
-* `GET /rest/users` returns all users
-* `GET /rest/users/22` returns one user
-* `POST /rest/users` will create an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
-* `PATCH /rest/users/22` will update an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
-* `DELETE /rest/users/22` will delete an user (only for `VokOrmCrudHandler`; `DataLoaderCrudHandler` will simply fail with 401 UNAUTHORIZED)
+Value coercion follows the column's ktorm `SqlType`: `Int`, `Long`, `Boolean`, `LocalDate`, `Instant`, and
+`enum<>()` columns are recognized; everything else passes through as a String. Unknown columns, bad coercions, and
+bad sort directions return **HTTP 400** with a plain-text reason.
 
-The `get all` endpoint supports the following query parameters:
+This wire format is intentionally simpler than the previous `like:` / `ilike:` / `lt:` / `gt:` algebra — eq-only on
+the wire, with anything richer expressed server-side in your own routes.
 
-* `limit` and `offset` for result paging. Both must be 0 or greater; `limit` must be less than `maxLimit`
-* `sort_by=-lastModified,+email,firstName` - a list of sorting clauses.
-Only those which appear in `allowSortColumns` are allowed. Prepending a column name with
-`-` will sort DESC. Prepending the column name with `+` is optional and can be omitted.
-* To define filters, simply pass in column names with the values, for example `age=81`. You can also specify operators: one of
-`eq:`, `lt:`, `lte:`, `gt:`, `gte:`, `ilike:`, `like:`, `isnull:`, `isnotnull:`, for example `age=lt:25`. You can pass single column name
-multiple times to AND additional clauses, for example `name=ilike:martin&age=lte:70&age=gte:20&birthdate=isnull:&grade=5`. OR filters are not supported.
-* `select=count` - if this is passed in, then instead of a list of matching objects a single number will be returned: the number of
-records matching given filters.
+## Testing REST endpoints
 
-All column names are expected to be Kotlin property names of the entity in question.
-
-### Testing your REST endpoints
-
-You can easily start Javalin with Jetty which allows you to test your REST endpoints on an actual http server. You need to add the following dependencies:
-
-```gradle
-dependencies {
-    testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.0.0")
-    testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:12.0.0")
-}
-```
-
-This will add Jetty for booting up a testing Javalin server; we're going to access the REST endpoints via the [vok-rest-client](../vok-rest-client) VOK module.
-
-The testing file will look like this:
+Spin up Jetty in your test setup and use [vok-rest-client](../vok-rest-client) as the HTTP layer. Add the test
+dependencies:
 
 ```kotlin
-// Demoes direct access via httpclient
+testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp:12.x.x")
+testImplementation("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server:12.x.x")
+testImplementation(project(":vok-rest-client"))
+```
+
+Then:
+
+```kotlin
 class PersonRestClient(val baseUrl: String) {
-  private val client: HttpClient = HttpClientVokPlugin.httpClient!!
-  fun helloWorld(): String {
-    val request = "${baseUrl}helloworld".buildUrl().buildRequest()
-    return client.exec(request) { response -> response.bodyAsString() }
-  }
-  fun getAll(): List<Person> {
-    val request = baseUrl.buildUrl().buildRequest()
-    return client.exec(request) { response -> response.jsonArray(Person::class.java) }
-  }
+    private val client: HttpClient = VokRestClient.httpClient
+    fun helloWorld(): String =
+        client.exec("${baseUrl}helloworld".buildUrl().buildRequest()) { it.bodyAsString() }
+    fun getAll(): List<PersonDto> =
+        client.exec(baseUrl.buildUrl().buildRequest()) { it.jsonArray(PersonDto::class.java) }
 }
 
-class PersonRestTest {
-    companion object {
-        private lateinit var server: Server
-
-        @BeforeAll @JvmStatic fun startJavalin() {
-            val ctx = WebAppContext()
-            // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
-            ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
-            server = Server(9876)
-            server.handler = ctx
-            server.start()
-            HttpClientVokPlugin().init()
-            Bootstrap().contextInitialized(null)  // to have access to the database
-        }
-
-        @AfterAll @JvmStatic fun stopJavalin() {
-            Bootstrap().contextDestroyed(null)
-            HttpClientVokPlugin().destroy()
-            server.stop()
-        }
-    }
-
+class PersonRestTest : AbstractJavalinTest() {
     @Test fun helloWorld() {
         val client = PersonRestClient("http://localhost:9876/rest/person/")
         expect("Hello World") { client.helloWorld() }
-        expectList() { client.getAll() }
-        val p = Person(
-            personName = "Duke Leto Atreides",
-            age = 45,
-            dateOfBirth = LocalDate.of(1980, 5, 1),
-            maritalStatus = MaritalStatus.Single,
-            alive = false
-        )
-        p.save()
-        expectList(p) { client.getAll() }
     }
 }
 ```
 
-Please consult the [vok-example-crud-vokdb](../vok-example-crud-vokdb) example project for more info.
+`PersonDto` is a plain Kotlin data class mirroring the JSON shape — Gson cannot deserialize the ktorm `Entity<E>`
+interface directly, so the client side uses a DTO with `var` properties matching the entity's property names.
+
+For a fully wired example, see [PersonRestTest](src/test/kotlin/eu/vaadinonkotlin/rest/PersonRestTest.kt) in this
+module and [PersonRestTest](../vok-example-crud/src/test/kotlin/example/crudflow/PersonRestTest.kt) in the demo.
 
 ## Customizing JSON mapping
 
-Gson by default only export non-transient fields. It only exports actual Java fields, or only Kotlin properties that are backed by actual fields;
-it ignores computed Kotlin properties such as `val reviews: List<Review> get() = Review.findAll()`.
+A ktorm `Entity<E>` is a `Map<String, Any?>`. Gson's default Map serialization picks up registered `TypeAdapter`s
+for value types (so `LocalDate`, `Instant`, etc. format correctly thanks to `gson-javatime-serialisers`, which
+`VokRest.gson` already registers).
 
-Please see [Gson User Guide](https://github.com/google/gson/blob/master/UserGuide.md) for more details.
+If you need to customize the output, override `VokRest.gson` early in your boot sequence. See the
+[Gson User Guide](https://github.com/google/gson/blob/master/UserGuide.md).
