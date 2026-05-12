@@ -2906,8 +2906,8 @@ showing the words *"Welcome to BoltShop"* you've built:
 - and a small REST API that any HTTP client can talk to.
 
 All on Vaadin Boot — no Spring, no app server, just a `main()` and a
-Hikari pool. Less than 200 lines of Kotlin in `src/main/`. That's
-the BoltShop tutorial.
+Hikari pool. Around 460 lines of Kotlin under `src/main/` across
+seven small files. That's the BoltShop tutorial.
 
 The `complete` branch of
 [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app/tree/complete)
