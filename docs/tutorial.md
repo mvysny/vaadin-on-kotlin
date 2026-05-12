@@ -2577,3 +2577,342 @@ shopkeeper's manual testing can vouch for.
 One short chapter left: **Chapter 11** stands up a REST endpoint at
 `/api/products` so a barcode scanner — or any other HTTP client —
 can read and update the catalog over the wire.
+
+# Chapter 11 — A REST API for the catalog
+
+The catalog is a SPA today. That's right for the shopkeeper, but a
+barcode scanner at the counter — or a future mobile app, or anything
+that isn't a browser — wants to read and write products over plain
+HTTP. In this chapter we'll add three endpoints under `/api/`:
+
+| Verb | Path                       | Purpose |
+|------|----------------------------|---------|
+| GET  | `/api/products`            | List every product as JSON |
+| GET  | `/api/products/{sku}`      | One product by its natural key |
+| POST | `/api/products`            | Create a new product |
+
+The REST stack — `vok-rest` (Javalin under the hood) — has been on
+the classpath since Chapter 0, with a scaffold servlet wired into
+`Bootstrap.kt` but no routes registered. We're filling that in.
+
+## Step 1 — a DTO for the wire shape
+
+ktorm entities are interfaces, not classes, so Gson can't directly
+deserialize a JSON body into a `Product` — it has no way to
+instantiate one. We translate at the boundary with a plain data
+class:
+
+Create `src/main/kotlin/com/example/vok/ProductDto.kt`:
+
+```kotlin
+package com.example.vok
+
+import java.math.BigDecimal
+
+data class ProductDto(
+    val id: Long? = null,
+    val sku: String? = null,
+    val name: String? = null,
+    val category: Category? = null,
+    val price: BigDecimal? = null,
+    val stock: Int? = null,
+    val unit: UnitOfMeasure? = null,
+)
+
+fun Product.toDto(): ProductDto = ProductDto(id, sku, name, category, price, stock, unit)
+
+fun ProductDto.toEntity(): Product = Product {
+    sku = this@toEntity.sku
+    name = this@toEntity.name
+    category = this@toEntity.category
+    price = this@toEntity.price
+    stock = this@toEntity.stock
+    unit = this@toEntity.unit
+}
+```
+
+`ProductDto` is the *wire format*. `Product.toDto()` projects an
+entity into one for serialization. `ProductDto.toEntity()` flips the
+direction for incoming POST bodies — note the `Product { ... }` ktorm
+`Entity.Factory` invocation we first saw in Chapter 7.
+
+In a real app you'd often want the wire shape and the entity to
+diverge — exclude `id` from POST bodies, expose computed fields, etc.
+For BoltShop we keep the two in lockstep, but the conversion
+functions are the seam where you'd add that asymmetry.
+
+## Step 2 — implement the endpoints
+
+Open `Bootstrap.kt`. The bottom half has a placeholder Javalin
+servlet already mapped at `/rest/*` from Chapter 0:
+
+```kotlin
+@WebServlet(urlPatterns = ["/rest/*"], name = "JavalinRestServlet", ...)
+class JavalinRestServlet : HttpServlet() { ... }
+
+fun Javalin.configureRest(): Javalin {
+    return this
+}
+```
+
+Change the URL pattern to `/api/*` and fill in the route registration:
+
+```kotlin
+@WebServlet(urlPatterns = ["/api/*"], name = "JavalinRestServlet", asyncSupported = false)
+class JavalinRestServlet : HttpServlet() {
+    val javalin: JavalinServlet = Javalin.createStandalone { it.gsonMapper(VokRest.gson) } .configureRest().javalinServlet()
+
+    override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
+        javalin.service(req, resp)
+    }
+}
+
+fun Javalin.configureRest(): Javalin {
+    get("/api/products") { ctx ->
+        ctx.json(Products.findAll().map { it.toDto() })
+    }
+    get("/api/products/{sku}") { ctx ->
+        val sku = ctx.pathParam("sku")
+        val product = db { database.sequenceOf(Products).find { it.sku eq sku } }
+            ?: throw NotFoundResponse("No product with SKU '$sku'")
+        ctx.json(product.toDto())
+    }
+    post("/api/products") { ctx ->
+        val dto = ctx.bodyAsClass(ProductDto::class.java)
+        val product = dto.toEntity()
+        product.save()
+        ctx.status(201).json(product.toDto())
+    }
+    exception(ConstraintViolationException::class.java) { e, ctx ->
+        ctx.status(400).json(mapOf("errors" to e.constraintViolations.map { it.message }))
+    }
+    return this
+}
+```
+
+You'll also need these imports at the top of `Bootstrap.kt`:
+
+```kotlin
+import com.github.mvysny.ktormvaadin.db
+import com.github.mvysny.ktormvaadin.findAll
+import io.javalin.http.NotFoundResponse
+import jakarta.validation.ConstraintViolationException
+import org.ktorm.dsl.eq
+import org.ktorm.entity.find
+import org.ktorm.entity.sequenceOf
+```
+
+Three handlers and one exception mapper. Let's unpack the pieces.
+
+### `GET /api/products`
+
+```kotlin
+get("/api/products") { ctx ->
+    ctx.json(Products.findAll().map { it.toDto() })
+}
+```
+
+`Products.findAll()` is the same ktorm-vaadin extension we used
+through Chapters 3-9. It runs `SELECT * FROM Product`, returns a
+`List<Product>`. We project each entity into a `ProductDto` and let
+Javalin's Gson mapper turn the result into a JSON array.
+
+### `GET /api/products/{sku}`
+
+```kotlin
+get("/api/products/{sku}") { ctx ->
+    val sku = ctx.pathParam("sku")
+    val product = db { database.sequenceOf(Products).find { it.sku eq sku } }
+        ?: throw NotFoundResponse("No product with SKU '$sku'")
+    ctx.json(product.toDto())
+}
+```
+
+The path template `{sku}` matches a single segment and exposes it as
+a `pathParam`. We use ktorm's `sequenceOf(Products).find { ... }` to
+query for the row — this is the right SQL for "fetch one by natural
+key", producing `SELECT * FROM Product WHERE sku = ? LIMIT 1`. The
+explicit `db { ... }` block opens the ktorm session because
+`sequenceOf` requires one (unlike `findAll`, which wraps `db { }`
+internally).
+
+If no row matches, we throw `NotFoundResponse` — Javalin's stock
+exception type that maps to HTTP 404 with the supplied message.
+
+### `POST /api/products`
+
+```kotlin
+post("/api/products") { ctx ->
+    val dto = ctx.bodyAsClass(ProductDto::class.java)
+    val product = dto.toEntity()
+    product.save()
+    ctx.status(201).json(product.toDto())
+}
+```
+
+`ctx.bodyAsClass(ProductDto::class.java)` deserializes the JSON
+request body via Gson. The fresh `Product` entity gets its values
+from the DTO, then `save()` — the `ActiveEntity` method from
+Chapter 3 — runs the **JSR-303 validations from Chapter 8** before
+issuing the `INSERT`. On success we respond with `201 Created` and
+the created entity (including its newly assigned `id` from
+`AUTO_INCREMENT`).
+
+### The validation-to-400 bridge
+
+```kotlin
+exception(ConstraintViolationException::class.java) { e, ctx ->
+    ctx.status(400).json(mapOf("errors" to e.constraintViolations.map { it.message }))
+}
+```
+
+This is the small but real payoff of having JSR-303 wired across the
+whole app. When the POST handler's `product.save()` throws
+`ConstraintViolationException` (e.g. an empty `name` or a `price` of
+zero), this handler catches it and returns HTTP 400 with the
+specific constraint messages. **The same `@get:Positive` /
+`@get:Pattern` messages that show inline under the form fields in
+the SPA show up in the JSON error response.** No duplicate
+validation rules between web UI and REST.
+
+## Step 3 — try it
+
+Restart the app (`./gradlew run`), then in another terminal:
+
+### List every product
+
+```bash
+$ curl -s http://localhost:8080/api/products | python3 -m json.tool
+[
+    {
+        "id": 1,
+        "sku": "HX-M6-40",
+        "name": "Hex bolt M6×40mm, zinc-plated",
+        "category": "Fasteners",
+        "price": 0.35,
+        "stock": 120,
+        "unit": "Each"
+    },
+    {
+        "id": 2,
+        "sku": "HX-M8-50",
+        ...
+    },
+    ...
+]
+```
+
+Ten objects, in seed-data order. `python3 -m json.tool` is just for
+pretty-printing — `curl` alone returns the same JSON on one line.
+
+### Look one up by SKU
+
+```bash
+$ curl -s http://localhost:8080/api/products/HX-M6-40
+{"id":1,"sku":"HX-M6-40","name":"Hex bolt M6×40mm, zinc-plated","category":"Fasteners","price":0.35,"stock":120,"unit":"Each"}
+
+$ curl -i http://localhost:8080/api/products/NOPE
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+...
+
+No product with SKU 'NOPE'
+```
+
+### Create a new product
+
+```bash
+$ curl -i -X POST http://localhost:8080/api/products \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "sku": "HX-M10-60",
+      "name": "Hex bolt M10x60mm",
+      "category": "Fasteners",
+      "price": 1.20,
+      "stock": 50,
+      "unit": "Each"
+    }'
+HTTP/1.1 201 Created
+Content-Type: application/json
+...
+
+{"id":11,"sku":"HX-M10-60","name":"Hex bolt M10x60mm","category":"Fasteners","price":1.20,"stock":50,"unit":"Each"}
+```
+
+Reload the SPA at <http://localhost:8080> — the new bolt appears in
+the Grid. The same database backs both.
+
+### Try to break it
+
+```bash
+$ curl -i -X POST http://localhost:8080/api/products \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "sku": "bad-sku",
+      "name": "",
+      "category": "Tools",
+      "price": 0,
+      "stock": -5,
+      "unit": "Each"
+    }'
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+...
+
+{"errors":["Price must be greater than zero","must not be empty","Stock cannot be negative","SKU may only contain uppercase letters, digits and hyphens"]}
+```
+
+Every constraint message is the exact text from a `@get:Pattern`,
+`@get:Positive`, `@get:PositiveOrZero`, or `@get:Size` annotation on
+the `Product` interface back in Chapter 8. One validation source of
+truth, three surfaces using it (Binder side panel, Binder dialog,
+REST endpoint).
+
+## Where to take this next
+
+The skeleton above is deliberately minimal — three endpoints, one
+DTO, one exception bridge. A few directions to explore from here:
+
+- **`PUT /api/products/{sku}`** for updates. The shape is `POST`
+  plus a `db { database.sequenceOf(Products).find { it.sku eq sku } }`
+  lookup, then copying the DTO fields onto the loaded entity and
+  calling `save()`.
+- **`DELETE /api/products/{sku}`** — load the entity, call
+  `entity.delete()` (the same `delete()` we wired into the SPA's
+  side-panel button), respond `204 No Content`.
+- **Pagination on `GET /api/products`** — read `offset` / `limit`
+  query params and use `database.sequenceOf(Products).drop(offset).take(limit)`.
+  vok-rest's `KtormCrudHandler` does this generically — drop into
+  that helper if you want a full CRUD surface without hand-writing
+  each route.
+- **Authentication** — `vok-security-demo` in the
+  [vaadin-on-kotlin repo](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-security-demo)
+  has the pattern for protecting both Vaadin views and REST
+  endpoints with the same credentials store. Worth a read once you
+  outgrow "the LAN is the auth boundary".
+
+## Where we landed
+
+The BoltShop catalog is done. From a single `@Route("")` view
+showing the words *"Welcome to BoltShop"* you've built:
+
+- a single-page master-detail screen with live search, category
+  filter, and a low-stock toggle;
+- a `Binder`-backed side-panel editor with JSR-303 validation;
+- a `Dialog`-based add flow reusing the same form;
+- a `ComponentRenderer` for inline visual cues;
+- a Karibu-Testing suite that runs the whole UI in 3 seconds with
+  no browser;
+- and a small REST API that any HTTP client can talk to.
+
+All on Vaadin Boot — no Spring, no app server, just a `main()` and a
+Hikari pool. Less than 200 lines of Kotlin in `src/main/`. That's
+the BoltShop tutorial.
+
+The `complete` branch of
+[vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app/tree/complete)
+holds the finished code, one chapter per commit. If anything in this
+tutorial doesn't reproduce, check the matching commit on `complete`
+and compare. And if you spot something out of date — or if there's a
+follow-up chapter you'd like to see (multi-entity? routing?
+`UI.access`?) — open an issue.
