@@ -2186,3 +2186,394 @@ covering the filters, the edit flow, the add flow, and the
 validation. **Chapter 11** exposes the catalog as a small REST API
 that lives next to the SPA — so a barcode scanner or any other
 client can read and write products over HTTP.
+
+# Chapter 10 — Browserless tests with Karibu-Testing
+
+Until now every check has been "click around in a browser and squint
+at the screen". This chapter replaces that with a proper test suite.
+You'll be able to run `./gradlew test` and know in three seconds
+whether the catalog still works.
+
+The tool is **Karibu-Testing**: an in-process test harness for Vaadin
+Flow. It mocks `UI`, `VaadinSession`, `VaadinRequest`, and the
+servlet container, scans your classpath for `@Route` views, and
+gives you a small DSL for locating components, setting values,
+clicking buttons, and asserting Grid contents. No Jetty, no browser,
+no Selenium — the entire test runs server-side in the same JVM.
+
+## Step 0 — one latent bug to fix first
+
+Before any test passes, there's a configuration line in
+`Bootstrap.kt` that we've been getting away with through nine
+chapters. Open it and change the jdbc URL:
+
+```kotlin
+jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
+```
+
+The new bit is `;DATABASE_TO_UPPER=FALSE`. Without it, H2 silently
+uppercases every unquoted identifier when it parses
+`CREATE TABLE Product`, so the actual table in the database is named
+`PRODUCT`. ktorm-vaadin meanwhile is configured with the PostgreSQL
+dialect, which quotes identifiers in every query — `SELECT … FROM
+"Product"` — and PostgreSQL-style quoting is case-sensitive. The
+mismatch raises `Table "Product" not found (candidates are:
+"PRODUCT")` at the first real query.
+
+**Why has it worked so far?** It hasn't, fully. The smoke tests
+we've been running (`curl http://localhost:8080/`) only fetch the
+Vaadin bootstrap HTML; the DataProvider's `sizeInBackEnd` /
+`fetchFromBackEnd` only run during a real UIDL roundtrip — a
+browser, or, starting now, Karibu-Testing's `_get<Grid<Product>>()`.
+This is exactly the kind of bug a test suite catches and a manual
+smoke session misses.
+
+## Step 1 — dependencies
+
+Wire JUnit Jupiter and Karibu-Testing into `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // ... existing implementation deps unchanged ...
+
+    // tests
+    testImplementation(libs.junit)
+    testImplementation(libs.kaributesting)
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+```
+
+`libs.junit` resolves to `org.junit.jupiter:junit-jupiter:6.0.3`,
+JUnit's latest stable line. `libs.kaributesting` resolves to
+`com.github.mvysny.kaributesting:karibu-testing-v24:2.7.0` — and
+yes, that's the right artifact for Vaadin 25 too. There is no
+`karibu-testing-v25` variant; the `-v24` artifact targets both
+Vaadin 24 and 25. The `-launcher` runtime dependency is what Gradle
+9 needs to discover JUnit Platform; without it the test executor
+fails before running any test.
+
+## Step 2 — the test base
+
+Create `src/test/kotlin/com/example/vok/AbstractAppTest.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.kaributesting.v10.MockVaadin
+import com.github.mvysny.kaributesting.v10.Routes
+import eu.vaadinonkotlin.VaadinOnKotlin
+import eu.vaadinonkotlin.vaadin.vokdb.dataSource
+import org.flywaydb.core.Flyway
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+
+private object AppBootstrap {
+    init {
+        Bootstrap().contextInitialized(null)
+    }
+}
+
+abstract class AbstractAppTest {
+
+    companion object {
+        private lateinit var routes: Routes
+
+        @BeforeAll
+        @JvmStatic
+        fun initSuite() {
+            AppBootstrap
+            routes = Routes().autoDiscoverViews("com.example.vok")
+        }
+    }
+
+    @BeforeEach
+    fun resetDbAndMockVaadin() {
+        Flyway.configure()
+            .dataSource(VaadinOnKotlin.dataSource)
+            .cleanDisabled(false)
+            .load()
+            .apply { clean(); migrate() }
+        MockVaadin.setup(routes)
+    }
+
+    @AfterEach
+    fun teardownMockVaadin() {
+        MockVaadin.tearDown()
+    }
+}
+```
+
+Three pieces worth pointing at:
+
+- **`AppBootstrap` is a Kotlin `object`.** Its `init` block runs
+  exactly once per JVM — the moment any line of code first references
+  the object, the Kotlin runtime initialises it. We bootstrap the
+  app by calling our existing `Bootstrap().contextInitialized(null)`
+  — the production servlet listener tolerates a null event because
+  it never reads it. We deliberately do **not** refactor
+  `Bootstrap.kt` to expose a separate test-only init function; the
+  servlet listener *is* the test entry point.
+- **`Routes().autoDiscoverViews("com.example.vok")`** scans the
+  classpath for `@Route`-annotated classes. It's expensive (≈ 1 sec
+  cold). The skill guide for Karibu-Testing flags this as the
+  single biggest perf trap: cache it in a `@BeforeAll` so it runs
+  once per test class, not per test.
+- **`@BeforeEach` wipes the DB and re-runs Flyway.** Each test sees
+  exactly the seed data from `V1__create_product.sql` — no leakage
+  from a previous mutation. The `cleanDisabled(false)` opt-in is
+  scoped to this Flyway instance only; the production `Bootstrap`
+  Flyway keeps the safe default.
+
+## Step 3 — the tests
+
+Create `src/test/kotlin/com/example/vok/CatalogViewTest.kt`. The
+file is long enough that I'll show a few representative tests, then
+list the rest.
+
+### Read-only tests
+
+```kotlin
+@Test
+fun `view shows seed products`() {
+    _get<Grid<Product>>().expectRows(10)
+}
+
+@Test
+fun `search by SKU filters Grid`() {
+    _get<TextField> { placeholder = "Search by name or SKU" }._value = "PAINT"
+    _get<Grid<Product>>().expectRows(2)
+}
+
+@Test
+fun `category filter narrows results`() {
+    _get<ComboBox<Category>> { placeholder = "Category" }._value = Category.Fasteners
+    _get<Grid<Product>>().expectRows(3)
+}
+
+@Test
+fun `low stock checkbox narrows results`() {
+    _get<Checkbox> { label = "Low stock only" }._value = true
+    _get<Grid<Product>>().expectRows(3)
+}
+```
+
+The shape is consistent: locate a field by its label or placeholder,
+set its value, then check the Grid's row count. `_get<T> { ... }` is
+the Karibu locator — it walks the visible component tree, applies
+the search criteria, and returns exactly one match or fails the test
+with a tree dump. `_value =` simulates a user typing into the field,
+which fires the same `ValueChangeEvent` the production listeners
+react to.
+
+### A mutating test
+
+```kotlin
+@Test
+fun `save persists changes`() {
+    val grid = _get<Grid<Product>>()
+    grid._selectRow(0)
+    val original = grid._get(0)
+
+    _get<BigDecimalField> { label = "Price" }._value = "99.99".toBigDecimal()
+    _get<Button> { text = "Save" }._click()
+
+    expectNotifications("Saved ${original.name}")
+    val updated = Products.findAll().first { it.sku == original.sku }
+    assertEquals("99.99".toBigDecimal(), updated.price)
+}
+```
+
+`grid._selectRow(0)` fires the same selection event the side-panel
+form listens to — it populates with row 0's values. We change the
+price, click **Save**, and check two things: the notification fired
+("Saved …"), and the row in the database actually has the new
+price. The DB round-trip via `Products.findAll()` is the proof that
+the form is wired through `Binder.writeBeanIfValid` to
+`product.save()` correctly.
+
+### The validation test
+
+```kotlin
+@Test
+fun `empty add dialog is rejected by validation`() {
+    _get<Button> { text = "+ Add product" }._click()
+    val dialog = _get<Dialog>()
+    dialog._get<Button> { text = "Create" }._click()
+
+    _expectOne<Dialog>()
+    _get<Grid<Product>>().expectRows(10)
+}
+```
+
+Click **+ Add product** → dialog opens. Click **Create** without
+filling anything in. The dialog should still be there
+(`_expectOne<Dialog>()` — exactly one match), and the Grid should
+still have ten rows. If the `@get:NotNull` annotations from Chapter
+8 stopped working, this test would catch it — the empty form would
+fail at the database NOT NULL constraints instead, the dialog would
+close on the exception, and `_expectOne<Dialog>()` would fail.
+
+### The full file
+
+Ten tests cover every chapter so far:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.kaributesting.v10.*
+import com.github.mvysny.ktormvaadin.findAll
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.checkbox.Checkbox
+import com.vaadin.flow.component.combobox.ComboBox
+import com.vaadin.flow.component.dialog.Dialog
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.textfield.BigDecimalField
+import com.vaadin.flow.component.textfield.IntegerField
+import com.vaadin.flow.component.textfield.TextField
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+
+class CatalogViewTest : AbstractAppTest() {
+
+    @Test
+    fun `view shows seed products`() {
+        _get<Grid<Product>>().expectRows(10)
+    }
+
+    @Test
+    fun `search by SKU filters Grid`() {
+        _get<TextField> { placeholder = "Search by name or SKU" }._value = "PAINT"
+        _get<Grid<Product>>().expectRows(2)
+    }
+
+    @Test
+    fun `search by name filters Grid`() {
+        _get<TextField> { placeholder = "Search by name or SKU" }._value = "bolt"
+        _get<Grid<Product>>().expectRows(2)
+    }
+
+    @Test
+    fun `category filter narrows results`() {
+        _get<ComboBox<Category>> { placeholder = "Category" }._value = Category.Fasteners
+        _get<Grid<Product>>().expectRows(3)
+    }
+
+    @Test
+    fun `low stock checkbox narrows results`() {
+        _get<Checkbox> { label = "Low stock only" }._value = true
+        _get<Grid<Product>>().expectRows(3)
+    }
+
+    @Test
+    fun `selecting a row populates the side panel form`() {
+        val grid = _get<Grid<Product>>()
+        val product = grid._get(0)
+        grid._selectRow(0)
+        assertEquals(product.sku, _get<TextField> { label = "SKU" }._value)
+        assertEquals(product.name, _get<TextField> { label = "Name" }._value)
+    }
+
+    @Test
+    fun `save persists changes`() {
+        val grid = _get<Grid<Product>>()
+        grid._selectRow(0)
+        val original = grid._get(0)
+
+        _get<BigDecimalField> { label = "Price" }._value = "99.99".toBigDecimal()
+        _get<Button> { text = "Save" }._click()
+
+        expectNotifications("Saved ${original.name}")
+        val updated = Products.findAll().first { it.sku == original.sku }
+        assertEquals("99.99".toBigDecimal(), updated.price)
+    }
+
+    @Test
+    fun `delete removes the row`() {
+        val grid = _get<Grid<Product>>()
+        grid._selectRow(0)
+        val original = grid._get(0)
+
+        _get<Button> { text = "Delete" }._click()
+
+        expectNotifications("Deleted ${original.name}")
+        grid.expectRows(9)
+    }
+
+    @Test
+    fun `add dialog creates a new product`() {
+        _get<Button> { text = "+ Add product" }._click()
+        val dialog = _get<Dialog>()
+
+        dialog._get<TextField> { label = "SKU" }._value = "NEW-PRODUCT-1"
+        dialog._get<TextField> { label = "Name" }._value = "New product"
+        dialog._get<ComboBox<Category>> { label = "Category" }._value = Category.Tools
+        dialog._get<BigDecimalField> { label = "Price" }._value = "5.50".toBigDecimal()
+        dialog._get<IntegerField> { label = "Stock" }._value = 100
+        dialog._get<ComboBox<UnitOfMeasure>> { label = "Unit" }._value = UnitOfMeasure.Each
+        dialog._get<Button> { text = "Create" }._click()
+
+        expectNotifications("Created New product")
+        _get<Grid<Product>>().expectRows(11)
+    }
+
+    @Test
+    fun `empty add dialog is rejected by validation`() {
+        _get<Button> { text = "+ Add product" }._click()
+        val dialog = _get<Dialog>()
+        dialog._get<Button> { text = "Create" }._click()
+
+        _expectOne<Dialog>()
+        _get<Grid<Product>>().expectRows(10)
+    }
+}
+```
+
+Two patterns to call out:
+
+- **Scoped lookups.** When the **+ Add product** dialog is open
+  there are two `TextField`s with label `"SKU"` — one in the side
+  panel, one in the dialog. `_get<TextField> { label = "SKU" }`
+  would find both and fail. `dialog._get<TextField> { label = "SKU" }`
+  scopes the search to descendants of the dialog only. Use it
+  whenever the same field appears in multiple places.
+- **DB assertions go through ktorm directly.** The `save persists
+  changes` test reads the modified row back via `Products.findAll()`,
+  not through the Grid. This is on purpose — the Grid going stale
+  after a save would only fail the test for a UI reason; reading
+  the database proves the *persistence* worked too.
+
+## Run it
+
+```bash
+$ ./gradlew test
+```
+
+The first run downloads classpath-scanner artifacts and the JUnit
+platform launcher; subsequent runs are fast. On a development laptop
+the whole suite finishes in three seconds. The HTML report appears at
+`build/reports/tests/test/index.html`.
+
+## What's gained
+
+Every chapter from 1 to 9 now has at least one test covering it:
+
+- Chapter 2 → "view shows seed products" (Grid renders)
+- Chapter 3 → all read tests (Flyway + ktorm round-trip)
+- Chapter 4 → "search by SKU / by name filters Grid"
+- Chapter 5 → "category filter narrows results"
+- Chapter 6 → "selecting a row populates the side panel", "save
+  persists changes", "delete removes the row"
+- Chapter 7 → "add dialog creates a new product"
+- Chapter 8 → "empty add dialog is rejected by validation"
+- Chapter 9 → "low stock checkbox narrows results"
+
+When you change something — say, rename `Product::name` to
+`Product::displayName` — the compiler catches the field rename in
+the binding, *and* the test for "search by name" catches the
+behavioural regression. The catalog stops being something only the
+shopkeeper's manual testing can vouch for.
+
+One short chapter left: **Chapter 11** stands up a REST endpoint at
+`/api/products` so a barcode scanner — or any other HTTP client —
+can read and update the catalog over the wire.
