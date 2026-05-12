@@ -6,6 +6,14 @@ parent: Guides
 nav_order: 6
 ---
 
+> **Pre-0.19 content.** This page describes the vok-orm / jdbi-orm era. As of 0.19 the persistence layer moved
+> to [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin):
+> entities are `Entity<E>` interfaces (proxied), each with a `Table<E>` companion; query inside `db { … }` blocks
+> against `database.sequenceOf(...)`; grids use `Table.dataProvider` and ktorm-vaadin's filter components. The
+> FilterBar DSL described below no longer ships with VoK. See the
+> [vok-example-crud `PersonListView`](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud/src/main/kotlin/example/crudflow/person/PersonListView.kt)
+> for the new filter pattern. This guide will be rewritten in a follow-up.
+
 <br/>
 <details close markdown="block">
   <summary>

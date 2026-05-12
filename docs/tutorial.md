@@ -5,6 +5,12 @@ permalink: /tutorial/
 nav_order: 2
 ---
 
+> **Pre-0.19 content.** This tutorial predates the 0.19 release, in which the persistence layer moved from
+> `vok-orm` (jdbi-orm) to [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin),
+> and the REST wire format simplified to eq-only filters. For current idioms see the
+> [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) demo and the
+> per-module READMEs. This tutorial will be rewritten in a follow-up.
+
 <br/>
 <details close markdown="block">
   <summary>

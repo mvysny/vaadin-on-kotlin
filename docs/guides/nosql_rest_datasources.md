@@ -6,6 +6,12 @@ parent: Guides
 nav_order: 7
 ---
 
+> **Pre-0.19 content.** As of 0.19 the REST wire format simplified to eq-only filters with `?offset` / `?limit` /
+> `?sort=col:asc,col2:desc`, and the `vok-rest-client` `CrudClient` filter type changed from a jdbi-orm `Condition`
+> tree to `Map<String, String>`. See [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) and
+> [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) READMEs for the current
+> shape. This guide will be rewritten in a follow-up.
+
 <br/>
 <details close markdown="block">
   <summary>
