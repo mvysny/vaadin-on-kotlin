@@ -1798,3 +1798,213 @@ Next up: validation. We're going to add `@NotNull`, `@Size`, `@Min`, and
 a regex check for SKU directly on the `Product` interface — and the side
 panel and dialog will both pick them up for free, because both share the
 same `ProductForm`.
+
+# Chapter 8 — Validation
+
+Right now the form accepts whatever the user types. Blank name? Sure. Price
+of zero? Fine. SKU with a space in it? No problem until the database
+complains. We'll fix all of that with two small changes:
+
+1. Add **JSR-303 constraint annotations** directly to the `Product`
+   interface — declarations like `@get:NotNull`, `@get:Size`,
+   `@get:Positive`, `@get:Pattern`.
+2. Swap the `Binder<Product>` in `ProductForm` for
+   `beanValidationBinder<Product>()`. That subclass reads the annotations
+   off the bean type and refuses to write invalid values back.
+
+Two lines change in `ProductForm.kt`. The rest is annotations on the
+entity. Both the side panel and the Add dialog pick up the rules for free.
+
+## Step 1 — annotate `Product`
+
+Update `Product.kt` so it imports the validation constraints and tags each
+property:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Positive
+import jakarta.validation.constraints.PositiveOrZero
+import jakarta.validation.constraints.Size
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Column
+import org.ktorm.schema.Table
+import org.ktorm.schema.decimal
+import org.ktorm.schema.enum
+import org.ktorm.schema.int
+import org.ktorm.schema.long
+import org.ktorm.schema.varchar
+import java.math.BigDecimal
+
+enum class Category { Tools, Fasteners, Plumbing, Electrical, Paint, Garden }
+
+enum class UnitOfMeasure { Each, Box, Meter, Kilogram }
+
+interface Product : ActiveEntity<Product> {
+    var id: Long?
+
+    @get:NotNull
+    @get:Size(min = 1, max = 40)
+    @get:Pattern(
+        regexp = "[A-Z0-9-]+",
+        message = "SKU may only contain uppercase letters, digits and hyphens"
+    )
+    var sku: String?
+
+    @get:NotNull
+    @get:Size(min = 1, max = 200)
+    var name: String?
+
+    @get:NotNull
+    var category: Category?
+
+    @get:NotNull
+    @get:Positive(message = "Price must be greater than zero")
+    var price: BigDecimal?
+
+    @get:NotNull
+    @get:PositiveOrZero(message = "Stock cannot be negative")
+    var stock: Int?
+
+    @get:NotNull
+    var unit: UnitOfMeasure?
+
+    override val table: Table<Product> get() = Products
+
+    companion object : Entity.Factory<Product>()
+}
+
+// Products table object unchanged from Chapter 3
+```
+
+Five different constraints earn their keep here:
+
+- **`@NotNull`** — every property must be non-null. The Kotlin type is
+  `Type?` (because ktorm needs that for partial entities, Chapter 3), so
+  this is doing real work: it rules out `name = null`, `price = null`,
+  etc. at validation time.
+- **`@Size(min = 1, max = 40)`** on `sku` — at least one character, at
+  most 40. The upper bound matches the SQL column length.
+- **`@Pattern(regexp = "[A-Z0-9-]+", message = ...)`** — `sku` must
+  match the regex. JSR-303's `@Pattern` anchors the whole string by
+  default, so this rejects `m6-bolt` (lowercase), `M6 BOLT` (space) and
+  `M6_BOLT` (underscore) but accepts `HX-M6-40`.
+- **`@Positive`** on `price` — must be > 0. `@PositiveOrZero` would
+  allow zero; we don't sell anything for free.
+- **`@PositiveOrZero`** on `stock` — must be ≥ 0. We do sell things
+  whose stock has dropped to zero, so this is the right choice (and
+  `HX-M8-50` in the seed data has `stock = 0`).
+
+### Why `@get:NotNull` and not just `@NotNull`?
+
+In Kotlin, you can attach an annotation to several different parts of a
+property declaration — the field, the constructor parameter, the
+getter, the setter. By default, a "plain" `@NotNull var foo: ...` on a
+Kotlin interface property doesn't land where Hibernate Validator looks
+(which is the JavaBean getter). The `@get:` site target makes it
+explicit: this annotation goes on the generated getter method, where
+JSR-303 reflection will pick it up.
+
+If you forget the `@get:` prefix, the annotations compile fine and the
+app runs, but validation silently does nothing — there's no error, just
+no enforcement. It's the kind of bug that takes a frustrating afternoon
+to find. Always use the site target for entity validation annotations.
+
+## Step 2 — swap the binder
+
+Open `ProductForm.kt`. Change the binder line from:
+
+```kotlin
+val binder: Binder<Product> = Binder(Product::class.java)
+```
+
+to:
+
+```kotlin
+val binder: Binder<Product> = beanValidationBinder()
+```
+
+That's it. `beanValidationBinder<Product>()` is a Karibu-DSL helper that
+returns a `BeanValidationBinder<Product>` — a subclass of `Binder<Product>`
+that auto-wires JSR-303 constraint checks on every binding it creates.
+Because we kept the property type as `Binder<Product>`, every existing
+call site (`readBean`, `writeBeanIfValid`) keeps working unchanged.
+
+The Kotlin inline `reified` magic on the helper means we don't have to
+pass `Product::class.java` — the type parameter on the call site
+(`beanValidationBinder<Product>()`) is enough. Here we don't even need
+the type parameter because Kotlin infers it from the return type
+annotation `Binder<Product>`. Hence the very short final form.
+
+## Try it
+
+Restart the app. Open the **+ Add product** dialog and click **Create**
+without filling anything in. The dialog stays open and each required
+field grows a red error message beneath it:
+
+- *SKU* — "must not be null"
+- *Name* — "must not be null"
+- *Category* — "must not be null"
+- *Price* — "must not be null"
+- *Stock* — "must not be null"
+- *Unit* — "must not be null"
+
+Now type `m6-bolt` (lowercase) in **SKU**. The red message changes to
+*"SKU may only contain uppercase letters, digits and hyphens"* — our
+`@Pattern` `message=` is what shows. Type `HX-M6-99` instead, fill the
+rest of the form sensibly, and **Create** succeeds.
+
+In the side panel, pick an existing product. Clear the **Name** field.
+The error appears immediately — `BeanValidationBinder` validates fields
+on every change, not just on the way out via `writeBeanIfValid`. Click
+**Save** — nothing happens; the row in the Grid is unchanged. Restore
+the name, click **Save** — it saves.
+
+## How `writeBeanIfValid` short-circuits
+
+The save handler hasn't changed since Chapter 6:
+
+```kotlin
+private fun onSave() {
+    val product = selected ?: return
+    if (!sidePanelForm.binder.writeBeanIfValid(product)) return
+    product.save()
+    dp.refreshAll()
+    Notification.show("Saved ${product.name}")
+}
+```
+
+What changed is `writeBeanIfValid` itself. With the plain `Binder`, it
+ran the (empty) per-binding validator list and always succeeded. With
+`BeanValidationBinder`, each binding implicitly has the JSR-303
+constraints attached to it. The call:
+
+1. Walks every binding and runs its constraint checks on the **field's
+   current value**.
+2. If any constraint fails, the binding records the message on its
+   field (the red text under the input) and the method returns `false`.
+3. Only if every constraint passes does it write the values back into
+   the bean and return `true`.
+
+Our `if (!writeBeanIfValid(product)) return` was already prepared for
+this — we just didn't have anything for it to defend against until now.
+
+## The shape of the rest
+
+You now have a six-field validated form with database-backed persistence,
+reusable in a side panel and a dialog, behind a Grid with live search,
+category filtering, and selection-driven editing. From here, the
+remaining chapters are short feature additions:
+
+- **Chapter 9** adds a custom cell renderer — a red **"Low stock"** badge
+  on rows where `stock < threshold` — and a toolbar checkbox that hides
+  everything else.
+- **Chapter 10** writes browserless tests for what you've built so far
+  with Karibu-Testing. The catalog stops being "I clicked around and it
+  worked" and becomes "the test suite says it works".
+- **Chapter 11** wires `vok-rest` to expose `/api/products` so a barcode
+  scanner at the shop counter (or any other client) can read and update
+  the catalog over HTTP.
