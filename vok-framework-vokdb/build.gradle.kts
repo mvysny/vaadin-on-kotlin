@@ -1,6 +1,5 @@
 dependencies {
     api(project(":vok-framework"))
-    api(libs.vokorm)
     api(libs.ktormvaadin)
 
     testImplementation(libs.junit)
