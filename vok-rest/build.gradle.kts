@@ -20,8 +20,6 @@ dependencies {
     testImplementation(libs.h2)
     testImplementation(libs.hikaricp)
     testImplementation(libs.slf4j.simple)
-    // for testing fulltext search
-    testImplementation(libs.lucene.queryparser)
 }
 
 kotlin {
