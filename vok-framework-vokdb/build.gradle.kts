@@ -1,6 +1,7 @@
 dependencies {
     api(project(":vok-framework"))
     api(libs.vokorm)
+    api(libs.ktormvaadin)
 
     testImplementation(libs.junit)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
