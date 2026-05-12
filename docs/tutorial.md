@@ -1458,3 +1458,343 @@ the form returns to its empty state.
 So far so good — we have a working master-detail catalog. In the next
 chapter we'll factor the form fields into a reusable `KComposite` and add
 the add-product flow on top of it.
+
+# Chapter 7 — Adding new products
+
+The shopkeeper can edit and delete products, but every row in the catalog is
+seeded by Flyway — there is no way to add a new one through the UI. In this
+chapter we'll fix that. The new pieces are:
+
+- A reusable **`ProductForm`** — a `KComposite` containing the six fields
+  we built in Chapter 6, with its own `Binder<Product>`. Both the side panel
+  and the new dialog will use it; no field declarations are duplicated.
+- A **`+ Add product`** button in the toolbar that opens a Vaadin **`Dialog`**
+  containing a fresh `ProductForm`. Submitting the dialog inserts a row.
+
+## Step 1 — extract `ProductForm`
+
+Create `src/main/kotlin/com/example/vok/ProductForm.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.component.HasComponents
+import com.vaadin.flow.data.binder.Binder
+
+class ProductForm : KComposite() {
+
+    val binder: Binder<Product> = Binder(Product::class.java)
+
+    private val root = ui {
+        formLayout {
+            textField("SKU") { bind(binder).bind(Product::sku) }
+            textField("Name") { bind(binder).bind(Product::name) }
+            comboBox<Category>("Category") {
+                setItems(Category.entries)
+                bind(binder).bind(Product::category)
+            }
+            bigDecimalField("Price") { bind(binder).bind(Product::price) }
+            integerField("Stock") { bind(binder).bind(Product::stock) }
+            comboBox<UnitOfMeasure>("Unit") {
+                setItems(UnitOfMeasure.entries)
+                bind(binder).bind(Product::unit)
+            }
+        }
+    }
+}
+
+fun (@VaadinDsl HasComponents).productForm(block: (@VaadinDsl ProductForm).() -> Unit = {}): ProductForm =
+    init(ProductForm(), block)
+```
+
+The class itself is small: it wraps a `FormLayout` (Vaadin's two-column
+label-on-the-left form layout) and exposes its `Binder<Product>` as a public
+property so the parent screen can call `readBean` / `writeBeanIfValid`. The
+six binding lines are unchanged from Chapter 6 — they just moved.
+
+The `productForm(block)` function at the bottom is the **Karibu-DSL builder**.
+Following the same convention as `textField`, `button`, `grid` and friends,
+it's an extension on `HasComponents` that constructs the composite, runs the
+caller's configuration lambda against it, and adds it to the surrounding
+layout — all in one call.
+
+> **About that warning.** If you keep the `@VaadinDsl` annotation on the
+> top-level function declaration (you'll see it in some older VoK code) the
+> Kotlin compiler emits a warning: DSL marker annotations only have effect
+> on types, not on functions. The annotations *inside* the function
+> signature — `(@VaadinDsl HasComponents)` and `(@VaadinDsl ProductForm)` —
+> do real work, so keep those.
+
+## Step 2 — use the form in two places
+
+Rewrite `CatalogView.kt`:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.kaributools.setPrimary
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.component.orderedlayout.FlexComponent
+import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.Route
+import org.ktorm.dsl.and
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.or
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike
+
+@Route("")
+class CatalogView : KComposite() {
+
+    private val dp = Products.dataProvider
+    private lateinit var sidePanelForm: ProductForm
+    private var selected: Product? = null
+    private lateinit var saveButton: Button
+    private lateinit var deleteButton: Button
+
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+
+            horizontalLayout {
+                defaultVerticalComponentAlignment = FlexComponent.Alignment.END
+
+                val searchField = textField {
+                    placeholder = "Search by name or SKU"
+                    valueChangeMode = ValueChangeMode.LAZY
+                    setWidth("20em")
+                }
+                val categoryField = comboBox<Category> {
+                    placeholder = "Category"
+                    setItems(Category.entries)
+                    setWidth("12em")
+                    isClearButtonVisible = true
+                }
+                button("+ Add product") {
+                    setPrimary()
+                    onClick { openAddDialog() }
+                }
+
+                fun applyFilters() {
+                    dp.setFilter(productFilter(searchField.value, categoryField.value))
+                }
+                searchField.addValueChangeListener { applyFilters() }
+                categoryField.addValueChangeListener { applyFilters() }
+            }
+
+            horizontalLayout {
+                setSizeFull(); isSpacing = true
+
+                grid<Product>(Product::class, dp) {
+                    flexGrow = 1.0
+                    setSizeFull()
+                    columnFor(Product::sku) { setHeader("SKU") }
+                    columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                    columnFor(Product::category) { setHeader("Category") }
+                    columnFor(Product::price) { setHeader("Price") }
+                    columnFor(Product::stock) { setHeader("Stock") }
+                    columnFor(Product::unit) { setHeader("Unit") }
+
+                    asSingleSelect().addValueChangeListener { e -> showSelection(e.value) }
+                }
+
+                verticalLayout {
+                    setWidth("28em"); isPadding = true; isSpacing = true
+
+                    h3("Product details")
+
+                    sidePanelForm = productForm()
+
+                    horizontalLayout {
+                        saveButton = button("Save") {
+                            setPrimary()
+                            onClick { onSave() }
+                        }
+                        deleteButton = button("Delete") {
+                            onClick { onDelete() }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    init {
+        showSelection(null)
+    }
+
+    private fun showSelection(product: Product?) {
+        selected = product
+        sidePanelForm.binder.readBean(product)
+        saveButton.isEnabled = product != null
+        deleteButton.isEnabled = product != null
+    }
+
+    private fun onSave() {
+        val product = selected ?: return
+        if (!sidePanelForm.binder.writeBeanIfValid(product)) return
+        product.save()
+        dp.refreshAll()
+        Notification.show("Saved ${product.name}")
+    }
+
+    private fun onDelete() {
+        val product = selected ?: return
+        product.delete()
+        dp.refreshAll()
+        showSelection(null)
+        Notification.show("Deleted ${product.name}")
+    }
+
+    private fun openAddDialog() {
+        val dialog = Dialog()
+        dialog.headerTitle = "Add product"
+
+        val form = ProductForm()
+        val draft = Product()
+        form.binder.readBean(draft)
+        dialog.add(form)
+
+        val createButton = Button("Create") {
+            if (!form.binder.writeBeanIfValid(draft)) return@Button
+            draft.save()
+            dp.refreshAll()
+            Notification.show("Created ${draft.name}")
+            dialog.close()
+        }.apply { setPrimary() }
+        val cancelButton = Button("Cancel") { dialog.close() }
+        dialog.footer.add(cancelButton, createButton)
+
+        dialog.open()
+    }
+}
+
+private fun productFilter(search: String, category: Category?): ColumnDeclaring<Boolean>? {
+    val s = search.trim()
+    val parts = listOfNotNull(
+        if (s.isEmpty()) null else {
+            val pattern = "%$s%"
+            Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+        },
+        category?.let { Products.category eq it },
+    )
+    return parts.reduceOrNull { a, b -> a and b }
+}
+```
+
+Restart. The toolbar now has a prominent **+ Add product** button on the
+right. Click it: a dialog opens with an empty form. Fill in the fields,
+hit **Create**, and the new row appears in the Grid the moment the dialog
+closes. Click **Cancel** to discard.
+
+## What changed in `CatalogView`
+
+The class-level `binder` field is **gone**. The side panel now owns its
+binder through `ProductForm`, and `CatalogView` reaches it via
+`sidePanelForm.binder.readBean(...)` / `.writeBeanIfValid(...)`.
+
+The form fields themselves are gone from `CatalogView` too — they're now a
+single call:
+
+```kotlin
+sidePanelForm = productForm()
+```
+
+Six lines of binding boilerplate became one. Whenever a tutorial reader
+later needs a `Product` form somewhere new — a multi-step wizard, a
+side-by-side compare view, a bulk-edit popup — they instantiate
+`ProductForm()` and they're done.
+
+## The Dialog plumbing
+
+`openAddDialog()` is short but introduces three Vaadin APIs at once:
+
+```kotlin
+val dialog = Dialog()
+dialog.headerTitle = "Add product"
+```
+
+Vaadin's `Dialog` is a modal overlay component. The optional `headerTitle`
+puts a heading in the dialog's reserved header slot — no separate `h2`
+needed inside the content.
+
+```kotlin
+val form = ProductForm()
+val draft = Product()
+form.binder.readBean(draft)
+dialog.add(form)
+```
+
+Two things happen here that differ from the side panel. First, we
+instantiate `ProductForm` directly (not via the builder) because we don't
+have a parent `HasComponents` to add it to yet — we want to add it to the
+dialog. Second, the draft entity is created with `Product()`. This invokes
+the `Entity.Factory<Product>` `invoke()` operator that ktorm's
+`companion object : Entity.Factory<Product>()` declaration gave us in
+Chapter 3 — a tiny but important detail. The draft has no `id`; when we
+later call `save()` on it, the `ActiveEntity` save path inserts a new row
+and the database fills in the `id` via `AUTO_INCREMENT`.
+
+```kotlin
+val createButton = Button("Create") {
+    if (!form.binder.writeBeanIfValid(draft)) return@Button
+    draft.save()
+    dp.refreshAll()
+    Notification.show("Created ${draft.name}")
+    dialog.close()
+}.apply { setPrimary() }
+val cancelButton = Button("Cancel") { dialog.close() }
+dialog.footer.add(cancelButton, createButton)
+```
+
+`Dialog.footer.add(...)` puts buttons in the reserved footer slot —
+right-aligned, with the small bit of padding the design system expects for
+modal actions. Vaadin's `Button(String, ClickListener)` constructor pairs
+nicely with Kotlin SAM conversion, so `Button("Create") { ... }` reads
+naturally.
+
+`Create` is marked **primary** (the same blue style we use on Save) so the
+user has a clear default action. `Cancel` is plain — secondary by default.
+
+> **Both buttons close the dialog**, but for different reasons. **Cancel**
+> just closes — the draft entity is unreferenced afterwards and gets
+> garbage-collected. **Create** writes the form into the draft, persists
+> it, and *then* closes. If validation fails (in Chapter 8 it will, on
+> empty required fields), `writeBeanIfValid` returns false and we
+> short-circuit with `return@Button` — the dialog stays open so the user
+> can fix the input.
+
+## Why two `ProductForm` instances?
+
+Each `ProductForm` has its **own** `Binder<Product>`. The side panel binder
+is mid-edit on whichever row the user selected; the dialog binder is
+filling in a brand-new draft. Sharing a single binder between them would
+mean opening the Add dialog clears the side panel form, and saving the
+side panel would write the dialog's draft fields back too. Two instances
+isolate the two flows cleanly.
+
+This is the practical payoff of the extraction: the form is a *value*, not
+a singleton. You can have as many of them as you want, each with its own
+state.
+
+## What this chapter doesn't fix
+
+- **No validation, still.** Submitting an empty form silently creates a
+  row with `name = ""` and crashes on the database NOT NULL constraint
+  for `price`. Chapter 8 plugs in JSR-303 annotations and the form will
+  finally start defending itself.
+- **No SKU uniqueness check at the UI layer.** The `sku` column is
+  `UNIQUE` in SQL, so a duplicate raises a JDBC exception on save.
+  Chapter 8 will show the user a friendly inline message instead.
+
+Next up: validation. We're going to add `@NotNull`, `@Size`, `@Min`, and
+a regex check for SKU directly on the `Product` interface — and the side
+panel and dialog will both pick them up for free, because both share the
+same `ProductForm`.
