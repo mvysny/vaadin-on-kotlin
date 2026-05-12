@@ -17,97 +17,241 @@ nav_order: 3
 </details>
 <br/>
 
-TODO: This is Vaadin8-related and needs to be rewritten to Vaadin 23.
-
 # Navigating In Your App
 
-The Vaadin `Navigator` resolves http paths to views, in order to show different parts of the app to the user. For example,
-when the user navigates to `http://localhost:8080/invoices` the Navigator makes sure that the `InvoicesView` UI component is created
-and placed into your `UI`.
-See [Vaadin Book on Navigator](https://vaadin.com/docs/-/part/framework/advanced/advanced-navigator.html) for more details.
+Vaadin's `Router` resolves URL paths to route targets — server-side components that get shown when the
+user lands on a given URL. When the user navigates to `http://localhost:8080/invoices`, the router
+locates the `@Route("invoices")`-annotated component, instantiates it, and adds it into the UI.
 
-By default you need to manually register all of your Views into the Vaadin `Navigator` class. This is tedious and error-prone. Luckily,
-Vaadin-on-Kotlin provides additional support for View auto-discovery. To enable this:
+See the [Vaadin Routing & Navigation documentation](https://vaadin.com/docs/latest/flow/routing) for the
+full reference; this guide focuses on the patterns VoK and karibu-dsl encourage.
 
-1. You need to register the Karibu-DSL's `autoViewProvider`, in your `UI.init()` as follows:
+## Defining a route
+
+A route is any Vaadin `Component` annotated with `@Route`. There is no separate `Navigator` to register —
+Vaadin scans the classpath at startup and wires routes automatically.
+
 ```kotlin
-    fun init() {
-        navigator = Navigator(this, content as ViewDisplay)
-        navigator.addProvider(autoViewProvider)
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.PageTitle
+import com.vaadin.flow.router.Route
+
+@Route("invoices")
+@PageTitle("Invoices")
+class InvoicesView : VerticalLayout() {
+    init {
+        // build the UI here
     }
-```
-Clone the [VoK Hello World App](https://github.com/mvysny/vok-helloworld-app) example project and find
-the [MyUI.kt](https://github.com/mvysny/vok-helloworld-app/blob/master/web/src/main/kotlin/com/example/vok/MyUI.kt) class for an example on how this is done.
-
-2. Create your views. A `view` is a Kotlin class which a) extends a Vaadin UI component or a layout, and b) implements the `View`
-   interface.
-
-3. To auto-discover your views, annotate your views with the `@AutoView` annotation. `autoViewProvider` will
-   now discover your views automatically and register them to the `Navigator`.
-
-4. To navigate to given view, just call `navigateToView<YourView>()`.
-
-## URL Path to Class Name Mapping
-
-The mapping is generally done by converting the `CamelCaseView` Kotlin
-class naming convention to hyphen-separated string `camel-case-view`, dropping the trailing `-view`.
-You can always override the name in the `@AutoView` annotation, e.g. you can make one view
-'primary' by mapping it to an empty view `@AutoView("")` - this view will be shown initially when the user
-browses to your app's [http://localhost:8080](http://localhost:8080).
-
-For example, URL [http://localhost:8080/my-form](http://localhost:8080/my-form)
-will navigate towards the class named `MyFormView` (which must be of course annotated with `@AutoView`). The mapping is done by
-the `autoViewProvider` and the `@AutoView` annotation, just check out the Kotlin documentation on those two guys.
-
-## Parameters
-
-The URL paths in VoK consists of the view name, followed by optional parameters. The URL format is as follows:
-
-```
-http://localhost:8080/[view-name]/[parameter-0]/[parameter-1]/[parameter-2]?queryparam1=value1&queryparam2=value2
-```
-
-For example, `http://localhost:8080/person/20?lang=en` will navigate you to the `PersonView`. The parameters will be passed into the
-View's `enter()` function as follows:
-
-```kotlin
-override fun enter(event: ViewChangeListener.ViewChangeEvent) {
-    println(Page.getCurrent().location.queryMap)   // will print [lang=[en]]
-    println(event.parameterList)                   // will print [0=20]
-    val personId: Long = event.parameterList[0]?.toLong() ?: throw IllegalArgumentException("Expected the ID parameter")
-    val language: String = Page.getCurrent().location.queryMap["lang"]?.get(0) ?: "en"
 }
 ```
 
-The `queryMap` is a `Map<String, List<String>>` containing the parsed query string. Since a key may be present multiple times in the query,
-the map maps key to a list of values. That's why the `"lang"` key will be mapped to a list containing one item, `"en"`.
-
-The `parameterList` is a `Map<Int, String>` of unnamed parameters, mapping from 0-based parameter index to the parameter value. The first
-parameter will be stored under the key of `0`, the second under the key of `1` etc.
-
-## Navigating To Views
-
-To navigate to a view named `PersonView`, just call `navigateToView<PersonView>()`.
-The `navigateToView()` function accepts a list of String parameters which will then be passed into the function, for example:
+Use `@Route("")` for the root view. To nest a view inside a shared layout (header, side nav, etc.),
+implement `RouterLayout` and reference it from `@Route`:
 
 ```kotlin
-navigateToView<PersonView>("20")
+class MainLayout : VerticalLayout(), RouterLayout {
+    init {
+        setSizeFull()
+        // header, navigation, etc.
+    }
+}
+
+@Route(value = "", layout = MainLayout::class)
+@PageTitle("Home")
+class WelcomeView : KComposite() { /* ... */ }
+
+@Route(value = "invoices", layout = MainLayout::class)
+@PageTitle("Invoices")
+class InvoicesView : KComposite() { /* ... */ }
 ```
 
-However, it is a good practice to introduce a companion function into the `PersonView` itself which will check the parameter types and
-values:
+`vok-example-crud` follows exactly this shape — see `MainLayout.kt` and `PersonListView.kt`.
+
+## Programmatic navigation
+
+The plain Vaadin API is `UI.getCurrent().navigate(InvoicesView::class.java)`. karibu-dsl (via the
+[`karibu-tools`](https://github.com/mvysny/karibu-tools) artifact, pulled in transitively) wraps this
+in a more Kotlin-friendly helper:
 
 ```kotlin
-class PersonView : View {
-    // ...
-    companion object {
-        fun navigateTo(id: Long) {
-            // this check must be performed in the enter() method as well, to guard against user-entered URLs
-            require(id > 0) { "The ID must be 1 or greater" }
-            navigateToView<PersonView>(id.toString())
+import com.github.mvysny.kaributools.navigateTo
+
+// no parameters — reified form
+navigateTo<InvoicesView>()
+
+// no parameters — KClass form (useful when the type isn't known at compile time)
+navigateTo(InvoicesView::class)
+```
+
+Both delegate to the current `UI`. There is also a string-based form for arbitrary locations, including
+ones that mix path and query parameters:
+
+```kotlin
+navigateTo("invoices/25?lang=en")
+```
+
+### Passing a single URL parameter (`HasUrlParameter`)
+
+If your view takes a single value (an entity ID, a slug), implement `HasUrlParameter<T>`. Vaadin calls
+`setParameter()` before the view is shown; if the parameter is missing or invalid, redirect away.
+
+```kotlin
+import com.github.mvysny.kaributools.navigateTo
+import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.router.BeforeEvent
+import com.vaadin.flow.router.HasUrlParameter
+import com.vaadin.flow.router.Route
+
+@Route("person")
+class PersonView : VerticalLayout(), HasUrlParameter<Long> {
+    override fun setParameter(event: BeforeEvent, id: Long?) {
+        val person: Person = (
+            if (id == null) null
+            else db { database.sequenceOf(Persons).find { it.id eq id } }
+        ) ?: return navigateTo<PersonListView>()
+        // ...render person
+    }
+}
+```
+
+To navigate to it, pass the value alongside the route class:
+
+```kotlin
+navigateTo(PersonView::class, person.id!!)
+```
+
+The signature is `navigateTo(route: KClass<out C>, param: T?)` where `C: Component, C: HasUrlParameter<T>`,
+so the compiler infers the parameter type from the view — you don't need to spell it out.
+
+> Why no `navigateTo<PersonView>(id)` reified form? Reifying both `C` and `T` would force the caller to
+> write `navigateTo<Long, PersonView>(id)`, which is uglier than the current shape. See the comment in
+> `RouterUtils.kt` in `karibu-tools` for details.
+
+### Named route parameters
+
+For richer URL templates, use Vaadin's `@RouteAlias` / template parameters and pass a `RouteParameters`
+map. Build URLs with `getRouteUrl()`:
+
+```kotlin
+import com.github.mvysny.kaributools.QueryParameters
+import com.github.mvysny.kaributools.getRouteUrl
+import com.github.mvysny.kaributools.navigateTo
+import com.vaadin.flow.router.RouteParameters
+
+val url = getRouteUrl(
+    AdminView::class,
+    routeParameters = RouteParameters("id", "25"),
+    queryParameters = QueryParameters("lang=en"),
+)
+navigateTo(url)   // navigates to e.g. "admin/25?lang=en"
+```
+
+### Reading query parameters inside a view
+
+karibu-tools adds a `get(name)` operator on `QueryParameters`, plus a `QueryParameters("foo=bar")` parser:
+
+```kotlin
+val params: QueryParameters = event.location.queryParameters
+val lang: String? = params["lang"]                    // single value or null
+val tags: List<String> = params.getValues("tag")      // multi-valued
+```
+
+`event` here is the `BeforeEvent` you receive in `setParameter()` (or `BeforeEnterEvent` from
+`BeforeEnterObserver.beforeEnter()`).
+
+## Linking — `RouterLink`
+
+For declarative in-app links that don't trigger a full page reload, prefer `RouterLink` over `Anchor`.
+karibu-dsl provides a DSL extension with three overloads:
+
+```kotlin
+import com.github.mvysny.karibudsl.v10.routerLink
+import com.vaadin.flow.component.icon.VaadinIcon
+import com.vaadin.flow.router.HighlightConditions
+
+// no parameter
+routerLink(VaadinIcon.LIST, "Reviews", ReviewsList::class) {
+    addClassName("main-layout__nav-item")
+    highlightCondition = HighlightConditions.sameLocation()
+}
+
+// single typed URL parameter (HasUrlParameter<T>)
+routerLink(text = "Edit", viewType = PersonView::class, parameter = person.id!!)
+
+// named RouteParameters
+routerLink(text = "Open", viewType = AdminView::class, parameters = mapOf("id" to "25"))
+
+// no target — useful when the destination is set later, e.g. in HasUrlParameter.setParameter()
+routerLink(text = "Loading…") { /* set route later via setRoute(...) */ }
+```
+
+`HighlightConditions.sameLocation()` highlights the link when the user is currently on its target, which
+is what you usually want for side-nav items.
+
+### Setting / changing a link's target after construction
+
+```kotlin
+import com.github.mvysny.kaributools.setRoute
+
+val link = RouterLink()
+link.setRoute(PersonView::class, person.id!!)
+```
+
+### Opening a link in a new tab
+
+```kotlin
+import com.github.mvysny.kaributools.setOpenInNewTab
+
+routerLink(text = "Docs", viewType = DocsView::class) {
+    setOpenInNewTab()
+}
+```
+
+### Triggering navigation from a `RouterLink` programmatically
+
+```kotlin
+import com.github.mvysny.kaributools.navigateTo
+
+val link: RouterLink = /* ... */
+link.navigateTo()   // navigates to link.href
+```
+
+## Reacting to navigation events
+
+Implement one of the Vaadin observer interfaces on your view:
+
+- `BeforeEnterObserver.beforeEnter(BeforeEnterEvent)` — fires before the view is attached; can `forwardTo`
+  or `rerouteTo` a different view (e.g. login redirect).
+- `BeforeLeaveObserver.beforeLeave(BeforeLeaveEvent)` — fires before leaving the view; can show a
+  "discard unsaved changes?" dialog.
+- `AfterNavigationObserver.afterNavigation(AfterNavigationEvent)` — fires after the navigation is committed;
+  use `event.routeClass` (karibu-tools extension) to learn the new active route.
+
+```kotlin
+import com.vaadin.flow.router.BeforeEnterEvent
+import com.vaadin.flow.router.BeforeEnterObserver
+
+@Route("admin")
+class AdminView : VerticalLayout(), BeforeEnterObserver {
+    override fun beforeEnter(event: BeforeEnterEvent) {
+        if (!Session.loginManager.isLoggedIn) {
+            event.forwardTo(LoginView::class.java)
         }
     }
 }
 ```
 
-Then you can simply navigate to the person view by calling `PersonView.navigateTo(25)`.
+For app-wide guards (login, role checks), prefer a Vaadin service-level filter instead of duplicating
+the check on every view — see the [Security guide]({{ '/security/' | relative_url }}).
+
+## URL Path to Class Name Mapping
+
+VoK does **not** derive a route path from the class name. The path comes from the explicit `@Route` value
+on each component. Pick the path you want; there's no `MyFormView` → `my-form` magic to memorize.
+
+## Testing navigation
+
+Karibu-Testing's `MockVaadin.setup(Routes().autoDiscoverViews("your.package"))` discovers `@Route`-annotated
+classes the same way Vaadin does at runtime. After setup, use `UI.getCurrent().navigate(...)` (or
+`navigateTo`) in your test and then look up components with `_get<T>()` to assert what was rendered.
+See `vok-example-crud/src/test/kotlin/.../AbstractAppTest.kt` for the canonical lifecycle.
