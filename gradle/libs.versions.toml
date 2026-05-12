@@ -10,6 +10,7 @@ jetty = "12.1.8"
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
+vaadin-dev = { module = "com.vaadin:vaadin-dev", version.ref = "vaadin" }
 karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.7.0"
 karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl:2.6.0"
 junit = "org.junit.jupiter:junit-jupiter-engine:6.0.3"

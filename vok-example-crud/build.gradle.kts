@@ -5,10 +5,9 @@ plugins {
 
 dependencies {
     implementation(project(":vok-framework-vokdb"))
-    implementation(libs.vaadin.core) {
-        if (vaadin.effective.productionMode.get()) {
-            exclude(module = "vaadin-dev")
-        }
+    implementation(libs.vaadin.core)
+    if (!vaadin.effective.productionMode.get()) {
+        implementation(libs.vaadin.dev)
     }
     implementation(libs.vaadinboot)
 
