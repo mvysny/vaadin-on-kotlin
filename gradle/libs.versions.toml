@@ -17,8 +17,6 @@ junit = "org.junit.jupiter:junit-jupiter-engine:6.0.3"
 vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.7"
 jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:6.1.0"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
-jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.10"
-jdbiormvaadin = "com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:2.0"
 apache-uribuilder = "com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1"
 gson-gson = "com.google.code.gson:gson:2.13.2"   # com.google.code.gson:gson; https://repo1.maven.org/maven2/com/google/code/gson/gson/
 gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.2"
@@ -26,11 +24,9 @@ jetty-webapp = { module ="org.eclipse.jetty.ee10:jetty-ee10-webapp", version.ref
 jetty-websocket = { module ="org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server", version.ref = "jetty" }
 # Javalin 6 doesn't support Jetty 12; upgrade only after Javalin 7 is released.
 javalin = "io.javalin:javalin:5.6.3"   # io.javalin:javalin; https://repo1.maven.org/maven2/io/javalin/javalin/
-lucene-queryparser = "org.apache.lucene:lucene-queryparser:8.11.1"
 hikaricp = "com.zaxxer:HikariCP:7.0.2"  # com.zaxxer:HikariCP; https://repo1.maven.org/maven2/com/zaxxer/HikariCP/
 flyway = "org.flywaydb:flyway-core:11.18.0" # https://repo1.maven.org/maven2/org/flywaydb/flyway-core/
-vokorm = "com.github.mvysny.vokorm:vok-orm:3.2"  # https://github.com/mvysny/vok-orm/tags
-# Migration target. https://github.com/mvysny/ktorm-vaadin/tags — brings ktorm-core, ktorm-support-postgresql, hibernate-validator transitively.
+# Brings ktorm-core, ktorm-support-postgresql, and hibernate-validator transitively. https://github.com/mvysny/ktorm-vaadin/tags
 ktormvaadin = "com.github.mvysny.ktorm-vaadin:ktorm-vaadin:0.1"
 
 [plugins]
