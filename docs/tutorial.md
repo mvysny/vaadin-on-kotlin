@@ -332,3 +332,142 @@ schedules a notification toast in the response back to the browser.
 
 In the next chapter we'll throw away this greeting form and put something more
 useful in its place: a `Grid` of products.
+
+# Chapter 2 — A Grid of products
+
+Vaadin's `Grid` is a data table component: virtual scrolling, sortable columns,
+selection, and lazy loading all out of the box. It's the workhorse of nearly every
+back-office screen, including ours. In this chapter we'll define what a *product*
+is and put a list of ten of them on screen.
+
+We're not touching the database yet. The list of products is hardcoded in Kotlin.
+That's not a long-term design — it's a deliberate choice to let you see a Grid
+working on its own before we layer Flyway and ktorm on top in Chapter 3.
+
+## Define the Product type
+
+Create a new file `src/main/kotlin/com/example/vok/Product.kt`:
+
+```kotlin
+package com.example.vok
+
+import java.math.BigDecimal
+
+enum class Category { Tools, Fasteners, Plumbing, Electrical, Paint, Garden }
+
+enum class UnitOfMeasure { Each, Box, Meter, Kilogram }
+
+data class Product(
+    val sku: String,
+    val name: String,
+    val category: Category,
+    val price: BigDecimal,
+    val stock: Int,
+    val unit: UnitOfMeasure
+)
+```
+
+A few notes:
+
+- `Product` is a plain Kotlin `data class`, not a database entity. Chapter 3 will
+  promote it; for now think of it as the simplest possible record.
+- `BigDecimal` (not `Double`) for `price`. Floating-point and money do not mix —
+  `0.1 + 0.2 = 0.30000000000000004` is the kind of bug that ships to production.
+- `Category` and `UnitOfMeasure` are enums. They give us a closed set of values
+  the UI can iterate over (handy for filters in Chapter 5).
+- The enum is `UnitOfMeasure` rather than `Unit` because `kotlin.Unit` would
+  shadow it under wildcard imports. The *field* is still called `unit`.
+
+## Replace the welcome view with a catalog view
+
+Rename `WelcomeView.kt` to `CatalogView.kt` — in IntelliJ that's *Refactor →
+Rename*, on the command line `git mv` does it. Then replace its contents with:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.vaadin.flow.router.Route
+
+@Route("")
+class CatalogView : KComposite() {
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+            grid<Product>(Product::class) {
+                setSizeFull()
+                setItems(sampleProducts)
+                columnFor(Product::sku) { setHeader("SKU") }
+                columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                columnFor(Product::category) { setHeader("Category") }
+                columnFor(Product::price) { setHeader("Price") }
+                columnFor(Product::stock) { setHeader("Stock") }
+                columnFor(Product::unit) { setHeader("Unit") }
+            }
+        }
+    }
+}
+
+private val sampleProducts: List<Product> = listOf(
+    Product("HX-M6-40",      "Hex bolt M6×40mm, zinc-plated",    Category.Fasteners,  "0.35".toBigDecimal(), 120, UnitOfMeasure.Each),
+    Product("HX-M8-50",      "Hex bolt M8×50mm, stainless",      Category.Fasteners,  "0.85".toBigDecimal(),   0, UnitOfMeasure.Each),
+    Product("NT-M6-BOX100",  "Hex nut M6, zinc-plated, 100/box", Category.Fasteners,  "4.50".toBigDecimal(),  18, UnitOfMeasure.Box),
+    Product("WD40-400",      "WD-40 lubricant spray 400ml",      Category.Tools,      "7.90".toBigDecimal(),  32, UnitOfMeasure.Each),
+    Product("SD-FLAT-6",     "Screwdriver, flat blade 6mm",      Category.Tools,      "6.50".toBigDecimal(),  12, UnitOfMeasure.Each),
+    Product("PIPE-CU-22",    "Copper pipe Ø22mm",                Category.Plumbing,  "12.40".toBigDecimal(),  45, UnitOfMeasure.Meter),
+    Product("CABLE-3G15",    "Power cable 3G1.5mm²",             Category.Electrical, "1.80".toBigDecimal(), 200, UnitOfMeasure.Meter),
+    Product("PAINT-WHT-1L",  "Interior paint, white matte 1L",   Category.Paint,     "14.90".toBigDecimal(),   8, UnitOfMeasure.Each),
+    Product("PAINT-WHT-10L", "Interior paint, white matte 10L",  Category.Paint,     "89.00".toBigDecimal(),   3, UnitOfMeasure.Each),
+    Product("SAND-CONCRETE", "Concrete sand",                    Category.Garden,     "0.45".toBigDecimal(), 800, UnitOfMeasure.Kilogram),
+)
+```
+
+Restart the app (`./gradlew run`) and reload <http://localhost:8080>. You'll see a
+ten-row table with columns for SKU, Name, Category, Price, Stock and Unit. Click a
+column header to sort by it. The whole grid fills the viewport because we set
+`setSizeFull()` on both the outer layout and the Grid itself.
+
+## What just happened
+
+**`grid<Product>(Product::class) { ... }`** is the Karibu-DSL builder for
+`com.vaadin.flow.component.grid.Grid`. The type parameter and the `KClass`
+argument tell the Grid what row type it's bound to — Karibu-DSL needs the class
+itself (not just the generic type) so it can resolve the property references we
+pass to `columnFor` below.
+
+**`setItems(sampleProducts)`** hands the Grid a fixed `List<Product>` to render.
+For ten rows this is fine; Grid will happily handle this size in memory. (For a
+larger or paged source, you'd pass a `DataProvider` instead — that's Chapter 4.)
+
+**`columnFor(Product::sku) { setHeader("SKU") }`** adds a column. The first
+argument is a Kotlin property reference — `Product::sku` — so the Grid knows
+which field to render and what to sort on without any string-typed
+property-name shenanigans. Pass `Product::sku` and you get type-safe column
+definitions; rename `sku` in the data class and the compiler tells you which
+columns need to follow.
+
+**`flexGrow = 1`** on the *Name* column tells the Grid to give it any leftover
+horizontal space. The other columns size to their content; Name expands to fill.
+
+**No more `Notification`.** Compare this view to Chapter 1: there's no event
+handler anywhere. The Grid wires itself to the data on construction; clicks,
+hovers and sorts are handled by Vaadin without you writing a single listener.
+You'll add a click listener in Chapter 6 when we start editing rows — for now,
+this is a read-only catalog.
+
+## A note on the rename
+
+We renamed `WelcomeView` → `CatalogView` because the file no longer welcomes
+anyone; it shows the catalog. The `@Route("")` annotation still binds the view
+to the URL root, so the address bar doesn't change.
+
+This is the only chapter that renames a file. From here on, `CatalogView` is the
+single screen we keep enriching.
+
+In the next chapter we'll move `sampleProducts` from a Kotlin `val` into a real
+database — a Flyway migration plus a ktorm entity, accessed through a finder
+method. **Chapter 3 is the heaviest one in the tutorial; budget more time for it
+than the others.** After it, the rest of the chapters are short feature additions
+on top of a stable foundation.
