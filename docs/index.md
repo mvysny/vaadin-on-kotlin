@@ -89,7 +89,7 @@ Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a
 <div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box bg-blue-000"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
 <div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box bg-green-000"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 <div onclick="location.href='https://vaadin.com/';" class="box bg-yellow-000"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
-<div onclick="location.href='https://github.com/mvysny/dynatest';" class="box bg-red-000"><div class="caption">DynaTest</div><div class="body">Create and reuse test batteries in a sane way</div></div>
+<div onclick="location.href='https://junit.org/';" class="box bg-red-000"><div class="caption">JUnit 6</div><div class="body">The standard testing framework for the JVM</div></div>
 <div onclick="location.href='https://github.com/mvysny/vaadin-coroutines-demo';" class="box bg-grey-dk-000"><div class="caption">Async</div><div class="body">Sane async code with coroutines</div></div>
 </div>
 

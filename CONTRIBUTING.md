@@ -6,7 +6,7 @@ The library is in Kotlin, just use the default Kotlin formatter rules.
 
 ## Tests
 
-All tests are written using [DynaTest](https://github.com/mvysny/dynatest).
+All tests are written using [JUnit 6 (Jupiter)](https://junit.org/).
 
 ### Running Tests
 

@@ -29,7 +29,7 @@ access the database with.
 
 ## Initializing VoK from your tests
 
-It is very easy to initialize VoK in your JUnit's `@BeforeClass` or in your DynaTest's `beforeGroup {}` which
+It is very easy to initialize VoK in your JUnit `@BeforeAll` method, which
 makes VoK very easy to test. The easiest way is to call `Bootstrap().contextInitialized(null)` before all tests,
 and `Bootstrap().contextDestroyed(null)` after all tests.
 

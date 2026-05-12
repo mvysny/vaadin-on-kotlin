@@ -11,9 +11,9 @@ import org.junit.jupiter.api.BeforeEach
 private val routes: Routes = Routes().autoDiscoverViews("example")
 
 /**
- * When called from a dyna test, it configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.
+ * When extended, configures the test so that the app is properly bootstrapped and Vaadin is properly mocked.
  *
- * A demo of reusable test lifecycle; see https://github.com/mvysny/dynatest#patterns for details.
+ * A demo of reusable test lifecycle using JUnit 6 (Jupiter).
  */
 abstract class AbstractAppTest {
     companion object {

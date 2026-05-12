@@ -43,7 +43,7 @@ Each published module wires up Maven Central + signing via the `configureMavenCe
 
 ## Testing conventions
 
-- **JUnit Jupiter (JUnit 5)** — every module's `build.gradle.kts` uses `useJUnitPlatform()`. CONTRIBUTING.md still mentions DynaTest and `vok-rest/README.md` has DynaTest examples; those docs are stale — the actual tests in this repo are JUnit 5 with `@BeforeAll`/`@BeforeEach`. Don't add new DynaTest code.
+- **JUnit Jupiter (JUnit 6)** — every module's `build.gradle.kts` uses `useJUnitPlatform()`. Tests use `@BeforeAll`/`@BeforeEach`/`@Test` from `org.junit.jupiter.api`.
 - **Karibu-Testing v24** is the Vaadin testing layer (`MockVaadin.setup(routes)` in `@BeforeEach`, `MockVaadin.tearDown()` in `@AfterEach`). See `vok-example-crud/src/test/kotlin/.../AbstractAppTest.kt` for the canonical lifecycle pattern.
 - **DB tests** boot the app via `Bootstrap().contextInitialized(null)` and use H2 in-memory; tests are expected to clean their own rows (`Person.deleteAll()` between tests).
 - `vok-rest-client` has minimal tests of its own — it's exercised through `vok-rest`'s and `vok-example-crud`'s test suites, which spin up a real Jetty.

@@ -125,34 +125,30 @@ class PersonRestClient(val baseUrl: String) {
   }
 }
 
-@DynaTestDsl
-fun DynaNodeGroup.usingRestClient() {
-  beforeGroup { HttpClientVokPlugin().init() }
-  afterGroup { HttpClientVokPlugin().destroy() }
-}
+class PersonRestTest {
+    companion object {
+        private lateinit var server: Server
 
-@DynaTestDsl
-fun DynaNodeGroup.usingJavalin() {
-  lateinit var server: Server
-  beforeGroup {
-    val ctx = WebAppContext()
-    // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-    ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
-    ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
-    server = Server(9876)
-    server.handler = ctx
-    server.start()
-  }
-  afterGroup { server.stop() }
-}
+        @BeforeAll @JvmStatic fun startJavalin() {
+            val ctx = WebAppContext()
+            // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
+            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+            ctx.addServlet(MyJavalinServlet::class.java, "/rest/*")
+            server = Server(9876)
+            server.handler = ctx
+            server.start()
+            HttpClientVokPlugin().init()
+            Bootstrap().contextInitialized(null)  // to have access to the database
+        }
 
-class PersonRestTest : DynaTest({
+        @AfterAll @JvmStatic fun stopJavalin() {
+            Bootstrap().contextDestroyed(null)
+            HttpClientVokPlugin().destroy()
+            server.stop()
+        }
+    }
 
-    usingJavalin()
-    usingDb()  // to have access to the database.
-    usingRestClient()
-
-    test("hello world") {
+    @Test fun helloWorld() {
         val client = PersonRestClient("http://localhost:9876/rest/person/")
         expect("Hello World") { client.helloWorld() }
         expectList() { client.getAll() }
@@ -166,7 +162,7 @@ class PersonRestTest : DynaTest({
         p.save()
         expectList(p) { client.getAll() }
     }
-})
+}
 ```
 
 Please consult the [vok-example-crud-vokdb](../vok-example-crud-vokdb) example project for more info.

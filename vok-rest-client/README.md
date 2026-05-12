@@ -152,24 +152,30 @@ Otherwise the HttpClient won't get initialized and the test will fail with NPE.
 Example test:
 
 ```kotlin
-class PersonRestTest : DynaTest({
-    lateinit var javalin: Javalin
-    beforeGroup {
-        javalin = Javalin.create().disableStartupBanner()
-        javalin.configureRest().start(9876)
+class PersonRestTest {
+    companion object {
+        private lateinit var javalin: Javalin
+
+        @BeforeAll @JvmStatic fun startJavalin() {
+            javalin = Javalin.create().disableStartupBanner()
+            javalin.configureRest().start(9876)
+            Bootstrap().contextInitialized(null)  // to bootstrap the app to have access to the database
+        }
+
+        @AfterAll @JvmStatic fun stopJavalin() {
+            Bootstrap().contextDestroyed(null)
+            javalin.stop()
+        }
     }
-    afterGroup { javalin.stop() }
 
-    usingApp()  // to bootstrap the app to have access to the database.
+    private lateinit var client: PersonRestClient
+    @BeforeEach fun createClient() { client = PersonRestClient("http://localhost:9876/rest/") }
 
-    lateinit var client: PersonRestClient
-    beforeEach { client = PersonRestClient("http://localhost:9876/rest/") }
-
-    test("hello world") {
+    @Test fun helloWorld() {
         expect("Hello World") { client.helloWorld() }
     }
 
-    test("get all users") {
+    @Test fun getAllUsers() {
         expectList() { client.getAll() }
         val p = Person(name = "Duke Leto Atreides", age = 45, dateOfBirth = LocalDate.of(1980, 5, 1), maritalStatus = MaritalStatus.Single, alive = false)
         p.save()
@@ -177,7 +183,7 @@ class PersonRestTest : DynaTest({
         p.created = all[0].created
         expectList(p) { all }
     }
-})
+}
 ```
 
 In order to start Javalin with Jetty, you also need to add Jetty to your test classpath:
