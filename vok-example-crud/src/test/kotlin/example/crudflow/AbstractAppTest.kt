@@ -2,7 +2,8 @@ package example.crudflow
 
 import com.github.mvysny.kaributesting.v10.MockVaadin
 import com.github.mvysny.kaributesting.v10.Routes
-import example.crudflow.person.Person
+import com.github.mvysny.ktormvaadin.deleteAll
+import example.crudflow.person.Persons
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -23,5 +24,5 @@ abstract class AbstractAppTest {
 
     @BeforeEach fun fakeVaadin() { MockVaadin.setup(routes) }
     @AfterEach fun tearDownVaadin() { MockVaadin.tearDown() }
-    @BeforeEach @AfterEach fun cleanupDb() { Person.deleteAll() }
+    @BeforeEach @AfterEach fun cleanupDb() { Persons.deleteAll() }
 }
