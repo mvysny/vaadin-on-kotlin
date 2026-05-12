@@ -75,7 +75,7 @@ Provides a `Session` object that wraps `VaadinSession`:
 * `Session.current` — the current `VaadinSession`.
 * `Session["key"] = value` — store/retrieve values keyed by string.
 * `Session[MyService::class] = MyService()` — store a session-scoped service.
-* `Session.getOrPut { … }` — the idiomatic way to lazily attach a session-scoped service:
+* `Session.getOrPut(MyService::class) { MyService() }` — the idiomatic way to lazily attach a session-scoped service:
 
 ```kotlin
 class LoggedInUser : Serializable {
@@ -91,7 +91,7 @@ class LoggedInUser : Serializable {
 
     fun logout() { user = null; Session.current.close() }
 }
-val Session.loggedInUser: LoggedInUser get() = getOrPut { LoggedInUser() }
+val Session.loggedInUser: LoggedInUser get() = getOrPut(LoggedInUser::class) { LoggedInUser() }
 ```
 
 `Session.loggedInUser.login(...)` is now usable from anywhere — no DI needed.

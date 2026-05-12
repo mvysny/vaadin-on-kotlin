@@ -23,55 +23,45 @@ This page documents additional VoK utilities available to all VoK projects.
 
 ## Support for Session
 
-Provides a `Session` object which gives handy access to the `VaadinSession`:
+VoK provides a `Session` object that wraps the current `VaadinSession`:
 
-* `Session.current` returns the current `VaadinSession`.
-* `Session["key"] = value` allows you to retrieve and/or store values into the session
-* `Session[MySessionScopedService::class] = MySessionScopedService()` allows you
-  to store session-scoped services into the session. However, read below on how to
-  do this properly.
+* `Session.current` — the current `VaadinSession`.
+* `Session["key"] = value` — store/retrieve values keyed by string.
+* `Session[MyService::class] = MyService()` — store a session-scoped service keyed by its class.
+* `Session.getOrPut(MyService::class) { MyService() }` — the idiomatic way to lazily attach a session-scoped service.
 
-Another important role of the `Session` object is that it provides a default point
-to which you can attach your session-scoped services. For example, the user login
-module of your app can attach the `LoggedInUser` service which contains both the
-currently logged-in user, and the means to log in and log out:
+`Session` is also the recommended hook point for session-scoped services, so you don't need a DI container.
+For example, a user-login module can attach a `LoggedInUser` service that holds the currently logged-in user and the login/logout logic:
 
 ```kotlin
 class LoggedInUser : Serializable {
-  val user: User? = null
-    private set
-    
-  val isLoggedIn: Boolean
-    get() = user != null
+    var user: User? = null
+        private set
+    val isLoggedIn: Boolean get() = user != null
 
-  fun login(username: String, password: String) {
-    val user = User.findByUsername(username) ?: throw LoginException("No such user $username")
-    if (!user.validatePassword(password)) throw LoginException("$username: invalid password")
-    this.user = user
-  }
-  
-  fun logout() {
-    user = null
-    // http://stackoverflow.com/questions/26404821/how-to-restart-vaadin-session
-    Page.getCurrent().setLocation(VaadinServlet.getCurrent().servletConfig.servletContext.contextPath)
-    Session.current.close()
-  }
+    fun login(username: String, password: String) {
+        val u = User.findByUsername(username) ?: throw LoginException("No such user $username")
+        if (!u.validatePassword(password)) throw LoginException("$username: invalid password")
+        user = u
+    }
+
+    fun logout() {
+        user = null
+        Session.current.close()
+    }
 }
-val Session.loggedInUser: LoggedInUser get() = getOrPut { LoggedInUser() }
+val Session.loggedInUser: LoggedInUser get() = getOrPut(LoggedInUser::class) { LoggedInUser() }
 ```
 
-By using the above code, you will now be able to access the `LoggedInUser` from
-anywhere, simply by calling `Session.loggedInUser.login()`. No DI necessary!
+`Session.loggedInUser.login(...)` is now usable from anywhere — no DI needed.
 
-> Note: the session is accessible only from the code being run by Vaadin, with
->Vaadin UI lock properly held. It will not be accessible for example from
->background threads - you will need to store the UI reference and call
->`ui.access()` from your background thread.
+> Note: the session is accessible only from code holding the Vaadin UI lock — typically Vaadin-driven request handling.
+> Background threads must capture a `UI` reference and call `ui.access { … }` to interact with the session.
 
 ## Cookies
 
-There is a `Cookies` singleton which provides access to cookies attached to the current request:
+There is a `Cookies` singleton for cookie access on the current request/response:
 
-* Use `Cookies += Cookie("autologin", "secret")` to add a cookie;
-* Use `Cookies.delete("autologin")` to remove a cookie.
-* Use `Cookies["autologin"]` to access a cookie for the current request.
+* `Cookies += Cookie("autologin", "secret")` — add a cookie.
+* `Cookies.delete("autologin")` — remove a cookie.
+* `Cookies["autologin"]` — read a cookie from the current request (returns `null` if absent).
