@@ -21,13 +21,13 @@ Current library version lives in `build.gradle.kts` (`allprojects { version = ..
 ./gradlew clean build -Pvaadin.productionMode        # production Vaadin build (npm bundling, prod frontend)
 ```
 
-JDK 17 is the minimum (Vaadin 24 requirement); CI matrix runs JDK 17/21/24 on Linux/macOS/Windows. Both source/target Java compatibility and Kotlin's `jvmTarget` are pinned to 17.
+JDK 21 is the minimum (Vaadin 25 requirement); CI matrix runs JDK 21/24 on Linux/macOS/Windows. Both source/target Java compatibility and Kotlin's `jvmTarget` are pinned to 21.
 
 ## Module structure & boundaries
 
 Dependency direction is strict; respect it when adding code:
 
-- `vok-framework` — core. Bootstrap (`VaadinOnKotlin.init()/destroy()`), `Session`, `Cookies`, async executor, i18n bundle, generic Vaadin filter-bar machinery (`FilterBar`, `Filter*`). Depends on `karibu-dsl`, `vaadin-core`, `jdbi-orm`, `jdbi-orm-vaadin`. **Note:** despite the name, this module already pulls in Vaadin + jdbi-orm — there is no "framework-without-Vaadin" tier.
+- `vok-framework` — core. Bootstrap (`VaadinOnKotlin.init()/destroy()`), `Session`, `Cookies`, async executor, i18n bundle, generic Vaadin filter-bar machinery (`FilterBar`, `Filter*`). Depends on `karibu-dsl` (the main artifact, not the `-v23` variant — that variant pins Vaadin 23), `vaadin-core`, `jdbi-orm`, `jdbi-orm-vaadin`. **Note:** despite the name, this module already pulls in Vaadin + jdbi-orm — there is no "framework-without-Vaadin" tier.
 - `vok-framework-vokdb` — Vaadin + SQL via `vok-orm`. Adds `Dao.dataProvider`, `EntityToIdConverter`, DB-aware filter wiring. Depends on `vok-framework` + `vok-orm`.
 - `vok-rest` — REST **server** support. Javalin 5 + Gson. Exposes `vok-orm` entities as CRUD endpoints. Depends on `vok-framework-vokdb`.
 - `vok-rest-client` — REST **client** helpers built on the JDK `HttpClient`. Depends on `vok-framework` only (no DB). Uses jdbi-orm purely for its `Condition` filter API.
@@ -63,5 +63,6 @@ Session-scoped state goes on the `Session` object via `getOrPut { … }` extensi
 
 When bumping a dependency in `gradle/libs.versions.toml`, verify the latest GA on Maven Central via the `maven-tools` MCP — training data lags reality. Notable pins that intentionally lag and should NOT be auto-bumped without thought:
 
-- **Javalin is pinned to 5.6.3** (`libs.javalin`). The comment in the catalog explains: Javalin 6 doesn't support Jetty 12. Wait for Javalin 7 before upgrading.
-- **Jetty** is on the `ee10` artifacts (`jetty-ee10-webapp`, `jetty-ee10-websocket-jakarta-server`) — match the `ee10` namespace when editing.
+- **Javalin is pinned to 5.6.3** (`libs.javalin`). Javalin 7 is now out and supports Jetty 12 (vaadin-boot itself moved to 7.2.0), so this pin can be revisited — but the bump is unrelated to the Vaadin 25 work and was deferred. The catalog comment still references the old "wait for Javalin 7" rationale.
+- **Jetty** is on the `ee10` artifacts (`jetty-ee10-webapp`, `jetty-ee10-websocket-jakarta-server`) — match the `ee10` namespace when editing. Vaadin 25.1 still works on Jakarta EE 10 (Servlet 6.x), so we have not moved to `ee11`.
+- **Karibu-Testing** artifact id is `karibu-testing-v24` despite the name (a historical holdover); versions 2.6.x+ support Vaadin 25. Do not switch the artifact id to a non-existent `karibu-testing-v25` — it does not exist on Maven Central as of this writing.

@@ -5,10 +5,13 @@ import example.crudflow.person.MaritalStatus
 import example.crudflow.person.Person
 import org.eclipse.jetty.ee10.webapp.WebAppContext
 import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.util.resource.Resource
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import java.net.URI
 import java.net.http.HttpClient
+import java.nio.file.Path
 import java.time.LocalDate
 import kotlin.test.expect
 
@@ -36,8 +39,9 @@ abstract class AbstractJavalinTest : AbstractAppTest() {
         lateinit var server: Server
         @BeforeAll @JvmStatic fun startJavalin() {
             val ctx = WebAppContext()
-            // This used to be EmptyResource, but it got removed in Jetty 12. Let's use some dummy resource instead.
-            ctx.baseResource = ctx.resourceFactory.newClassPathResource("java/lang/String.class")
+            // Jetty 12 removed EmptyResource and as of 12.1.8 rejects non-directory resources
+            // as baseResource, so we provide a minimal directory-like Resource ourselves.
+            ctx.baseResource = EmptyResource()
             ctx.addServlet(JavalinRestServlet::class.java, "/rest/*")
             server = Server(9876)
             server.handler = ctx
@@ -45,6 +49,16 @@ abstract class AbstractJavalinTest : AbstractAppTest() {
         }
         @AfterAll @JvmStatic fun stopJavalin() { server.stop() }
     }
+}
+
+class EmptyResource : Resource() {
+    override fun getPath(): Path? = null
+    override fun isDirectory(): Boolean = true
+    override fun isReadable(): Boolean = true
+    override fun getURI(): URI? = null
+    override fun getName(): String = "EmptyResource"
+    override fun getFileName(): String? = null
+    override fun resolve(subUriPath: String?): Resource? = null
 }
 
 class PersonRestTest : AbstractJavalinTest() {

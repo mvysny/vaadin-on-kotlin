@@ -19,8 +19,8 @@ allprojects {
     }
 
     tasks.withType<KotlinCompile> {
-        // Vaadin 24 requires JDK 17+ anyway
-        compilerOptions.jvmTarget = JvmTarget.JVM_17
+        // Vaadin 25 requires JDK 21+ anyway
+        compilerOptions.jvmTarget = JvmTarget.JVM_21
     }
 }
 
@@ -40,8 +40,8 @@ subprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     // creates a reusable function which configures proper deployment to Maven Central

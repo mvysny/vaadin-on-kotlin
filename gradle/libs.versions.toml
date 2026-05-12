@@ -1,23 +1,23 @@
 [versions]
 # https://github.com/vaadin/platform/tags
-vaadin = "24.9.6"
+vaadin = "25.1.5"
 # https://repo1.maven.org/maven2/org/slf4j/slf4j-api/
 slf4j = "2.0.17"
 # https://eclipse.dev/jetty/download.php
-jetty = "12.1.5"
+jetty = "12.1.8"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 vaadin-core = { module = "com.vaadin:vaadin-core", version.ref = "vaadin" }
-karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.4.3"
-karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl-v23:2.4.0"
+karibu-testing = "com.github.mvysny.kaributesting:karibu-testing-v24:2.7.0"
+karibu-dsl = "com.github.mvysny.karibudsl:karibu-dsl:2.6.0"
 junit = "org.junit.jupiter:junit-jupiter-engine:6.0.3"
-vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.3"
-jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:5.0.0"
+vaadinboot = "com.github.mvysny.vaadin-boot:vaadin-boot:13.7"
+jakarta-servlet = "jakarta.servlet:jakarta.servlet-api:6.1.0"
 h2 = "com.h2database:h2:2.2.224"  # com.h2database:h2; https://repo1.maven.org/maven2/com/h2database/h2/
-jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.9"
-jdbiormvaadin = "com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:1.4"
+jdbiorm = "com.gitlab.mvysny.jdbiorm:jdbi-orm:2.10"
+jdbiormvaadin = "com.gitlab.mvysny.jdbiormvaadin:jdbi-orm-vaadin:2.0"
 apache-uribuilder = "com.gitlab.mvysny.apache-uribuilder:uribuilder:5.2.1"
 gson-gson = "com.google.code.gson:gson:2.13.2"   # com.google.code.gson:gson; https://repo1.maven.org/maven2/com/google/code/gson/gson/
 gson-javatime = "com.fatboyindustrial.gson-javatime-serialisers:gson-javatime-serialisers:1.1.2"
