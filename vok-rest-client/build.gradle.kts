@@ -1,6 +1,5 @@
 dependencies {
     api(project(":vok-framework"))
-    api(libs.jdbiorm) // only used for the Condition API
 
     api(libs.bundles.gson)
     api(libs.apache.uribuilder)
