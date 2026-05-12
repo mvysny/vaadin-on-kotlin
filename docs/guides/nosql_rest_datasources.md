@@ -6,12 +6,6 @@ parent: Guides
 nav_order: 7
 ---
 
-> **Pre-0.19 content.** As of 0.19 the REST wire format simplified to eq-only filters with `?offset` / `?limit` /
-> `?sort=col:asc,col2:desc`, and the `vok-rest-client` `CrudClient` filter type changed from a jdbi-orm `Condition`
-> tree to `Map<String, String>`. See [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) and
-> [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) READMEs for the current
-> shape. This guide will be rewritten in a follow-up.
-
 <br/>
 <details close markdown="block">
   <summary>
@@ -23,219 +17,125 @@ nav_order: 7
 </details>
 <br/>
 
-
-
 # Accessing NoSQL or REST data sources
 
-VoK currently provides no out-of-the-box support for accessing NoSQL databases.
-However, VoK offers a lot of support for showing fetched data in the Vaadin Grid,
-with support for sorting, filtering (including auto-generated filter bar) and
-paging. All you need to implement is single interface called `DataLoader`.
-For information on how to do that, please read on.
+VoK ships no out-of-the-box bindings for NoSQL stores. What it does ship is a thin, predictable contract
+for plugging any data source into a Vaadin Grid: extend Vaadin's `AbstractBackEndDataProvider<T, F>`
+and implement two methods. The Grid then gets sorting (from Vaadin), paging (from Vaadin), and filtering
+(from a filter type `F` that you define) for free.
 
-## VoK REST Support
+The same contract is what backs both:
 
-VoK provides full support for publishing and consuming entities in a CRUD
-fashion over REST, with all features like paging, sorting and filtering. VoK
-even provides an implementation of Vaadin Grid's `DataProvider` which fetches
-data over REST.
+* **SQL** — `EntityDataProvider<T>` / `QueryDataProvider<T>` from
+  [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin). Filter type is `ColumnDeclaring<Boolean>` (a
+  ktorm expression). See [Accessing SQL Databases](/databases) for the full story.
+* **REST** — `CrudClient<T>` from [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client).
+  Filter type is `Map<String, String>` (eq-only). Documented below.
 
-There are two modules on VoK providing REST support:
+## REST
 
-* [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) when you need to publish data
-from your VoK server to the world;
-* [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)
-when you need to consume REST endpoints published elsewhere, and maybe displaying the fetched
-data in a Grid.
+VoK provides server- and client-side support for CRUD endpoints over HTTP, with paging, sorting, and
+eq-only filtering:
 
-Please click the links to read the module documentation - it should contain
-all information necessary for you to get started.
+* **[vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest)** publishes ktorm tables
+  as REST resources via `Table<E>.getCrudHandler()` (or the manual `KtormCrudHandler<E>`).
+* **[vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)** consumes
+  those endpoints (or any REST API that matches the wire format) via `CrudClient<T>`, which *is* a
+  Vaadin `DataProvider` — drop it straight into a Grid.
 
-There is also an example project which exposes a list of entities over REST server,
-then self-consumes them via REST client connected to localhost:8080 and exposes
-them in a Grid: [vaadin8-restdataprovider-example](https://github.com/mvysny/vaadin8-restdataprovider-example)
-and [vaadin10-restdataprovider-example](https://gitlab.com/mvysny/vaadin10-restdataprovider-example).
+The wire format is intentionally minimal:
 
-## Data Providers
+* `GET /rest/person?col=value` — eq-only filtering, one query parameter per filter column.
+* `?offset=N&limit=M` — paging.
+* `?sort=col:asc,col2:desc` — multi-column sort.
+* `?count=true` — count of matching rows (the Grid scroller uses this to size the scrollbar).
 
-VoK data fetching revolves around a thing called a _Data Provider_. The data provider is responsible for loading
-pages of data from arbitrary data source, sorting and filtering it as necessary,
-converting rows into Java Beans. The data loader then can be plugged into Vaadin Grid,
-in order to show the data.
+Caller pre-formats filter values as Strings (`"2024-05-12"`, `"42"`, etc.). There is no nested
+condition tree, no boolean combinators, no LIKE — keep filter complexity out of the URL.
 
-For example, the REST client class `CrudClient` is a data loader since it
-implements the `DataLoader` interface. It fetches lists of JSON maps and
-converts them into Java Beans with the help of [Gson](https://github.com/google/gson). In order to connect
-`CrudClient` into Vaadin Grid,
-you need to use `DataLoaderAdapter` to convert `CrudClient` into `DataProvider`.
-It's always wise to call `.withConfigurableFilter2()`
-on the adapter which enables the filter row to set filters to the data provider.
+For everything else — the JSON shape, Gson customization, error handling, partial-update semantics —
+see the [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) and
+[vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) READMEs.
 
-Another example is the SQL database access via the `vok-orm`. vok-orm provides
-data loader which fetches instances of entities from the database.
-VoK then provides convenience extension method on vok-orm `Dao` - the `Dao.dataProvider` -
-which takes the data loader and uses `DataLoaderAdapter` to convert it into `DataProvider`.
-VoK also provides the `sqlDataProvider()` function which works on arbitrary SQL SELECTs.
+## Plugging in a custom backend (NoSQL, GraphQL, gRPC, …)
 
-Another example would be to add support for MongoDB. You only need to figure out
-how to fetch data with given paging and sorting, then define allowed filters
-and define mapping from JSON map to a Java Bean. That's all that's needed to implement
-a MongoDB-backed `DataLoader`. Then it's just a matter of using `DataLoaderAdapter` to
-turn `DataLoader` into Vaadin `DataProvider`, feed that to Vaadin Grid and
-let VoK auto-generate filter bar for you.
-
-### Why Not Use DataProvider API Directly?
-
-Why we need the data loaders? Can't we simply implement Vaadin's `DataProvider` API and pass
-it to the Grid directly? Unfortunately we can't, for the following reasons:
-
-1. The `DataLoader` API is simpler than the `DataProvider`.
-2. The `DataLoader` API library ([vok-dataloader](https://github.com/mvysny/vok-dataloader))
-   comes with filter classes provided (`EqFilter`, `LikeFilter` etc), so you don't have to
-   write your own filter classes.
-
-## Implementing Data Loader
-
-This chapter documents the general information what you need to write a custom `DataLoader`
-for your particular data source. It is important to understand the basics,
-before you start using whatever VoK provides for you.
-
-### Feeding Grid With Data
-
-In order to feed the Vaadin Grid with data, you need to have two things:
-
-* A bean (a data class) that is able to hold all data for one row of a Grid
-* A proper implementation of `DataLoader` which would then:
-  * Fetch the data from your NoSQL/REST/other source;
-  * Map the data to a bean so that it provides instances of that bean directly.
-
-> Note: If you are accessing a SQL database, there are already two data providers pre-provided for you:
-  the `EntityDataProvider` (fetching entities from their tables) and `SQLDataProvider` (fetching
-  result of any SQL SELECT query).
-  Please read [Grids](grids.md) and [Accessing SQL Databases](databases.md) for more details.
-
-To implement the `DataLoader` interface you only need to implement two methods:
-
-* `fun getCount(filter: Filter<T>?): Long` takes filters and computes number of matching rows.
-  That enables the Grid to draw a proper scroll bar.
-* `fun fetch(filter: Filter<T>?, sortBy: List<SortClause>, range: LongRange): List<T>`
-  function retrieves the actual data. You need to pay attention to the `range` parameter which
-  specifies the paging.
-
-Your initial implementation does not need to support any filters nor sorting, to keep things simple.
-Simply ignore the `filter` and `sortBy` parameters for now, and focus on implementing
-the conversion from your native data source to a Java Bean. You can use:
-
-* [Gson](https://github.com/google/gson) for conversion from JSON to Java Bean; you can use the
-  vok-provided `Gson.fromJsonArray()` to convert from an array of JSON maps, or use the following code:
-  `fromJson<List<T>>(reader, TypeToken.getParameterized(List::class.java, itemClass).type)`
-* vok-orm to convert an outcome of a JDBC result to a Java Bean
-
-Afer you have the skeletal implementation of your `DataLoader` ready,
-let's focus on converting the `DataLoader` to Vaadin's `DataProvider` so that you can
-use it with the Grid. Say that you fetch a list of `Person`:
+To back a Grid with any other data source, extend Vaadin's `AbstractBackEndDataProvider<T, F>`:
 
 ```kotlin
-val dataLoader = ... // your DataLoader here
-val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurableFilter2()
-grid.dataProvider = dp
+class MongoBookProvider(
+    private val collection: MongoCollection<Document>,
+) : AbstractBackEndDataProvider<Book, BookFilter>() {
+
+    override fun fetchFromBackEnd(query: Query<Book, BookFilter>): Stream<Book> {
+        val bson = query.filter.orElse(BookFilter()).toBson()
+        return collection.find(bson)
+            .skip(query.offset)
+            .limit(query.limit)
+            .sort(query.sortOrders.toBson())   // your conversion of QuerySortOrder -> Bson
+            .map { it.toBook() }
+            .asSequence().asStream()
+    }
+
+    override fun sizeInBackEnd(query: Query<Book, BookFilter>): Int {
+        val bson = query.filter.orElse(BookFilter()).toBson()
+        return collection.countDocuments(bson).toInt()
+    }
+}
+
+grid.dataProvider = MongoBookProvider(books)
 ```
 
-Grid will never attempt to pass in any filters on its own. If you need filtering, Grid expects
-you to create a filter bar and implement everything yourself. Luckily, VoK is able to
-do that for you. We'll go through this in a minute.
+Two design choices to make:
 
-### Adding Support For Sorting
+1. **The bean type `T`** — a plain Kotlin class (`data class Book(...)`) is fine; it doesn't have to
+   be a ktorm `Entity`.
+2. **The filter type `F`** — anything you want. `Map<String, String>` for REST-ish flat filters, a
+   sealed class for typed conditions, a Mongo `Bson`, an Elasticsearch query DSL. The Grid will pass
+   whatever you set via `dataProvider.setFilter(...)`.
 
-If you need certain columns in the Grid to be sortable, you need to support
-sorting clauses in your data provider implementation - you need to pay attention
-to the `sortBy` parameter of the `DataLoader.fetch()` method.
+Then `Query` (Vaadin's, not ktorm's) gives you `offset`, `limit`, `sortOrders: List<QuerySortOrder>`,
+and `filter: Optional<F>`. Translate these into your backend's native query language inside the two
+overrides.
 
-In your `DataLoader` implementation you need to convert the contents of the
-`sortBy` parameter into e.g. a list of query parameters (in case of REST),
-or a sorting clauses (in case of a NoSQL query).
+> *Why no `DataLoader` indirection?* Earlier VoK had a `DataLoader<T>` / `FilterFactory` / `DataLoaderAdapter`
+> layer between custom backends and Vaadin's `DataProvider`. It carried a pre-defined filter taxonomy
+> (`EqFilter`, `LikeFilter`, `AndFilter`, etc.) which had to be translated to both the filter UI and the
+> backend query language. As of 0.19 that layer is gone — Vaadin's `DataProvider` is the direct
+> extension point, you choose your own filter type, and the SQL implementation lives in ktorm-vaadin.
 
-Which columns are actually sortable will depend on your data source. For REST,
-the sorting parameters are limited to whatever is available as a query parameter in the
-REST http call. For NoSQL, the set of available indices limit available sorting parameters.
-By default it is expected that all properties of the Java Bean (e.g. the `Person` class)
-are sortable; the `SortClause.propertyName` in the `sortBy` parameter may be a name of any
-property in the `Person` class.
+### Worked example: `CrudClient`
 
-Of course that may be unwanted since sorting generally
-requires indices and indices tend to slow down insertion of new data. Therefore,
-it is best for your `DataLoader` to throw `IllegalArgumentException` in `fetch()` for
-any unsupported sort clause it encounters in the `sortBy` field. Then, document all supported sorting criteria
-in the kdoc for your `DataLoader`, so that you'll know which columns to mark as non-sortable in the Grid.
+The cleanest small-scale example of the pattern is `CrudClient<T>` in
+[vok-rest-client/CrudClient.kt](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-rest-client/src/main/kotlin/eu/vaadinonkotlin/restclient/CrudClient.kt)
+(~120 lines). It picks `Map<String, String>` as the filter type, parses `query.sortOrders` into a
+`col:asc,col2:desc` string, and uses the JDK `HttpClient` + Gson to fetch JSON. Worth reading end-to-end
+if you're building your own provider — the structure transfers directly to non-REST backends.
 
-You may also need to provide support for 'hidden' columns (not mapped to the Java Bean);
-you may therefore decide to also support native property names on `SortClause`, e.g.
-`p.id` from `SELECT p.* FROM Person p INNER JOIN ...`. Just make sure everything
-is documented in your `DataLoader` kdoc. See [vok-dataloader](https://github.com/mvysny/vok-dataloader)
-for an explanation of the difference between _native properties_ and _data loader properties_,
-and when to support which.
+## Filter bar wiring
 
-### Adding Support For Filtering
+Filter components in the Grid header work the same way regardless of backend. Each filter component
+fires value-change events; you collect their current values into your filter type `F` in one
+`updateFilter()` method and push via `dataProvider.setFilter(...)`.
 
-To add support for filters, both of your `getCount()` and `fetch()` implementations
-must take the `filter` parameter into consideration. The `DataLoader` comes with
-a predefined set of filters which you should implement:
+The pattern is documented end-to-end in [Accessing SQL Databases — Grid filters](/databases#grid-filters);
+the only thing that varies per backend is the type you produce in `updateFilter()`:
 
-* `EqFilter` for equality comparisons
-* `OpFilter` for less-than, greater-than etc comparisons
-* `LikeFilter` for case-sensitive starts-with comparison
-* `ILikeFilter` for case-insensitive starts-with comparison
-* `IsNullFilter` and `IsNotNullFilter`
-* `AndFilter` for ANDing multiple filters
-* `OrFilter` for ORing multiple filters. This one is optional: for example the REST
-  CRUD client doesn't support this one; also VoK-autogenerated filter bar never
-  produces the OR filter.
+* SQL (ktorm-vaadin): combine `ColumnDeclaring<Boolean>` conditions via the provided
+  `Collection<ColumnDeclaring<Boolean>?>.and()` extension.
+* REST (`CrudClient`): build a `Map<String, String>` from your filter components' values, formatting
+  each as a String.
+* NoSQL / custom: build whatever type your `AbstractBackEndDataProvider<T, F>` declared as `F`.
 
-You should document, for which fields the filtering is supported, in the data loader javadoc/kdoc.
-Since filtering generally also requires indices, the remark from the sorting chapter above
-also applies. You need to support exactly the same property naming scheme
-which you support for sorting.
+ktorm-vaadin's filter components (`FilterTextField`, `NumberRangePopup`, `DateRangePopup`,
+`BooleanFilterField`, `EnumFilterField`) are convenient defaults but not required — any Vaadin field
+that emits value-change events works.
 
-Now your data loader is ready to be plugged into the Grid. Go ahead, plug it
-into the Grid and play with the sorting a bit until you're happy with the result.
-However, Grid never outputs any filters. In order to test filters, we need to
-add a filter bar.
+## More resources
 
-## Filter Factory
-
-If your data loader supports all filters as required by the `FilterFactory` interface, then
-you can use the `FilterFieldFactory` class to automatically create the filtering UI components
-and auto-populate the filter bar for you.
-
-Just implement the `FilterFactory` interface, then override `DefaultFilterFieldFactory` and tailor it towards
-your needs (e.g. make `createField()` return null for columns you don't want to support).
-Then, in your code just call
-
-```kotlin
-grid.appendHeaderRow().generateFilterComponents(grid, itemClass, filterFieldFactory)
-```
-
-to create the filter row and populate it with filter components.
-
-## More Resources
-
-Please read the documentation for the [vok-util](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-util-vaadin10)
-module for more information on generating filters.
-
-Please find all technical details on how to implement the data loader in the
-[vok-dataloader](https://github.com/mvysny/vok-dataloader) page.
-
-### REST DataProviders
-
-VoK adds support for exposing data loading over a REST endpoint:
-
-```kotlin
-val crudHandler: CrudHandler<Person> = Person.getCrudHandler() // to load stuff from a SQL database via vok-orm
-val restClient: VokDataProvider<Person> = CrudClient("http://localhost:8080/rest/person/", Person::class.java) // to load stuff from a REST endpoint via vok-rest-client
-    // or you can implement your own DataProvider
-    
-grid.dataProvider = restClient
-// @todo filter bar
-```
-
-See the [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) for how to use the REST client DataLoader.
+* [Accessing SQL Databases](/databases) — the SQL/ktorm-vaadin side of the same DataProvider story.
+* [vok-rest README](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest) — REST server,
+  CRUD handler, wire format, testing.
+* [vok-rest-client README](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client) —
+  REST client, `CrudClient`, JSON customization, testing patterns.
+* [Vaadin DataProvider docs](https://vaadin.com/docs/latest/binding-data/data-provider) — the
+  underlying Vaadin contract.
