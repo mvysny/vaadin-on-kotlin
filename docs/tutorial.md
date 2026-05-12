@@ -471,3 +471,307 @@ database — a Flyway migration plus a ktorm entity, accessed through a finder
 method. **Chapter 3 is the heaviest one in the tutorial; budget more time for it
 than the others.** After it, the rest of the chapters are short feature additions
 on top of a stable foundation.
+
+# Chapter 3 — Persisting to the database
+
+> **Heads up.** This is the longest chapter in the tutorial. It introduces three
+> things at once — Flyway migrations, the ktorm `Entity` model, and the difference
+> between a Kotlin `data class` and a database-bound entity — because they only
+> really make sense together. Take it in two passes if you need to.
+
+In Chapter 2 we hardcoded a list of ten products in Kotlin. The starter project
+already has H2, Flyway, and ktorm on the classpath; we just haven't used any of
+them. In this chapter we will:
+
+1. Write a **Flyway migration** that creates a `Product` table and inserts the
+   same ten rows we had hardcoded.
+2. Promote `Product` from a Kotlin `data class` to a **ktorm entity**.
+3. Replace the hardcoded list in `CatalogView` with a call to
+   `Products.findAll()`.
+
+When you're done, the app boots, Flyway brings the database up to date, ktorm
+reads the rows, and the Grid renders exactly the same screen as before — except
+the data now lives in a database and can be modified at runtime. The rest of the
+tutorial is built on this foundation.
+
+## What's already wired
+
+Open `Bootstrap.kt`. The constructor of every web app has to do *something*
+before serving the first request, and ours does three relevant things:
+
+```kotlin
+VaadinOnKotlin.dataSource = HikariDataSource(cfg)
+VaadinOnKotlin.init()
+
+val flyway = Flyway.configure()
+    .dataSource(VaadinOnKotlin.dataSource)
+    .load()
+flyway.migrate()
+```
+
+- **`VaadinOnKotlin.dataSource = ...`** is an extension property from the
+  `vok-framework-vokdb` module. Setting it makes a Hikari-pooled JDBC data
+  source available to ktorm via the `db { ... }` helper — that's the same data
+  source ktorm queries will use.
+- **`VaadinOnKotlin.init()`** initialises the VoK framework around it.
+- **`flyway.migrate()`** scans `src/main/resources/db/migration/` for SQL files
+  named `V<n>__<description>.sql` and applies any that the database hasn't yet
+  seen.
+
+The starter contains no migration files, so today Flyway runs on an empty
+database and does nothing. Let's give it one.
+
+## Step 1 — write the migration
+
+Create `src/main/resources/db/migration/V1__create_product.sql` with:
+
+```sql
+CREATE TABLE Product(
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  sku VARCHAR(40) NOT NULL UNIQUE,
+  name VARCHAR(200) NOT NULL,
+  category VARCHAR(20) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  stock INTEGER NOT NULL,
+  unit VARCHAR(20) NOT NULL
+);
+
+INSERT INTO Product (sku, name, category, price, stock, unit) VALUES
+  ('HX-M6-40',      'Hex bolt M6×40mm, zinc-plated',    'Fasteners',   0.35, 120, 'Each'),
+  ('HX-M8-50',      'Hex bolt M8×50mm, stainless',      'Fasteners',   0.85,   0, 'Each'),
+  ('NT-M6-BOX100',  'Hex nut M6, zinc-plated, 100/box', 'Fasteners',   4.50,  18, 'Box'),
+  ('WD40-400',      'WD-40 lubricant spray 400ml',      'Tools',       7.90,  32, 'Each'),
+  ('SD-FLAT-6',     'Screwdriver, flat blade 6mm',      'Tools',       6.50,  12, 'Each'),
+  ('PIPE-CU-22',    'Copper pipe Ø22mm',                'Plumbing',   12.40,  45, 'Meter'),
+  ('CABLE-3G15',    'Power cable 3G1.5mm²',             'Electrical',  1.80, 200, 'Meter'),
+  ('PAINT-WHT-1L',  'Interior paint, white matte 1L',   'Paint',      14.90,   8, 'Each'),
+  ('PAINT-WHT-10L', 'Interior paint, white matte 10L',  'Paint',      89.00,   3, 'Each'),
+  ('SAND-CONCRETE', 'Concrete sand',                    'Garden',      0.45, 800, 'Kilogram');
+```
+
+A few notes about the schema:
+
+- The **file name `V1__create_product.sql`** matters. Flyway parses the version
+  (`1`), a separator (`__`, two underscores), and a description (`create_product`).
+  When you add the next migration, name it `V2__...sql`. Don't rename or edit a
+  migration that has already been applied — Flyway records a checksum and will
+  refuse to run the suite again if a previous file changed.
+- `DECIMAL(10, 2)` matches the `BigDecimal` type we used in Kotlin. Ten digits
+  total, two after the decimal point — enough for any retail price you'll ever
+  meet in a hardware shop.
+- The `category` and `unit` columns are `VARCHAR`s storing the enum's `name`
+  (`'Fasteners'`, `'Box'`, etc.). ktorm's `enum<E>("col")` binding reads and
+  writes them as strings.
+- `id BIGINT AUTO_INCREMENT PRIMARY KEY` gives every row a surrogate key. The
+  `sku` is a natural unique identifier as well, so it's `UNIQUE` — both will be
+  useful later (for example, the REST API in Chapter 11 will look products up
+  by SKU).
+
+For a tutorial, mixing DDL and seed data in a single migration is convenient.
+In a real project you'd typically separate the two — schema in `V1__...`,
+reference data in `V2__...` — so that schema changes can be replayed against a
+production database that already has rows.
+
+## Step 2 — promote Product to a ktorm entity
+
+Replace `Product.kt` with:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Column
+import org.ktorm.schema.Table
+import org.ktorm.schema.decimal
+import org.ktorm.schema.enum
+import org.ktorm.schema.int
+import org.ktorm.schema.long
+import org.ktorm.schema.varchar
+import java.math.BigDecimal
+
+enum class Category { Tools, Fasteners, Plumbing, Electrical, Paint, Garden }
+
+enum class UnitOfMeasure { Each, Box, Meter, Kilogram }
+
+interface Product : ActiveEntity<Product> {
+    var id: Long?
+    var sku: String?
+    var name: String?
+    var category: Category?
+    var price: BigDecimal?
+    var stock: Int?
+    var unit: UnitOfMeasure?
+
+    override val table: Table<Product> get() = Products
+
+    companion object : Entity.Factory<Product>()
+}
+
+object Products : Table<Product>("Product") {
+    val id: Column<Long> = long("id").primaryKey().bindTo { it.id }
+    val sku: Column<String> = varchar("sku").bindTo { it.sku }
+    val name: Column<String> = varchar("name").bindTo { it.name }
+    val category: Column<Category> = enum<Category>("category").bindTo { it.category }
+    val price: Column<BigDecimal> = decimal("price").bindTo { it.price }
+    val stock: Column<Int> = int("stock").bindTo { it.stock }
+    val unit: Column<UnitOfMeasure> = enum<UnitOfMeasure>("unit").bindTo { it.unit }
+}
+```
+
+The shape changed a lot. Here's why each piece looks the way it does.
+
+### `interface Product`, not `class Product`
+
+ktorm entities are **interfaces**, not classes. The runtime implementation is
+generated for you when you call `Entity.create<Product>()` (or use the
+`Entity.Factory` companion). The interface only declares the property *shape*;
+ktorm tracks loaded values and dirty fields behind the scenes.
+
+This is unfamiliar if you've used JPA or other "POJO + annotations" ORMs, but
+it's deliberate: ktorm keeps the entity definition declarative, and gives you a
+clean change-tracking model for free (the `flushChanges()` call we'll meet in
+Chapter 6 uses it).
+
+### Why every property is nullable
+
+In Chapter 2 the `data class` had non-nullable fields. The ktorm interface flips
+that: every property is `Type?`.
+
+This is a consequence of how ktorm models partial entities. When you create a
+fresh `Product()` with `Entity.create<Product>()`, none of its fields are set
+yet — you fill them in one at a time before calling `save()`. The Kotlin
+compiler can't tell which of those steps has happened, so the property type has
+to be nullable for the model to work at all.
+
+The database **still** enforces `NOT NULL` on every column. At save time, if
+you forget to set `name`, the JDBC driver throws a constraint violation —
+loudly, and at the right moment.
+
+In Chapter 8 we'll layer JSR-303 validation annotations (`@get:NotNull`,
+`@get:Size`, ...) on top of the entity, which moves these checks from the
+database round-trip to a Kotlin validator running inside `Binder` — so the user
+sees inline form errors instead of a stack trace.
+
+### `ActiveEntity<Product>` vs `Entity<Product>`
+
+ktorm gives you the bare `Entity<E>` superinterface. The `vok-db` module — via
+`ktorm-vaadin` — wraps it as `ActiveEntity<E>` and adds `save()`, `create()`,
+`delete()`, `validate()`, and a few more conveniences. Using `ActiveEntity`
+costs nothing if you don't need the extras and pays off the moment you do; the
+tutorial uses it throughout.
+
+### The `Products` Table object
+
+`Products` is the schema half of the picture. Each `varchar("...")` /
+`decimal("...")` / `enum<E>("...")` call declares a column with a SQL name, and
+`bindTo { it.sku }` (etc.) wires it to the corresponding entity property. The
+property reference is type-checked — if you rename `sku` in the interface, the
+binding stops compiling.
+
+The object is named in the **plural** (`Products`), and the SQL table name is
+passed to the `Table` constructor as `"Product"` (singular). This is a ktorm
+convention — the table is named after a single row of data; the object that
+represents the table is named after the collection.
+
+## Step 3 — use the finder in the view
+
+Update `CatalogView.kt` to read rows from the database instead of the hardcoded
+list:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.ktormvaadin.findAll
+import com.vaadin.flow.router.Route
+
+@Route("")
+class CatalogView : KComposite() {
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+            grid<Product>(Product::class) {
+                setSizeFull()
+                setItems(Products.findAll())
+                columnFor(Product::sku) { setHeader("SKU") }
+                columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                columnFor(Product::category) { setHeader("Category") }
+                columnFor(Product::price) { setHeader("Price") }
+                columnFor(Product::stock) { setHeader("Stock") }
+                columnFor(Product::unit) { setHeader("Unit") }
+            }
+        }
+    }
+}
+```
+
+The Chapter-2 `private val sampleProducts = listOf(...)` block is **deleted
+entirely**. The only line that does the work of producing rows is
+`Products.findAll()`, an extension function from `com.github.mvysny.ktormvaadin`
+that returns `List<Product>`.
+
+`findAll()` is convenient on a tutorial-scale dataset of ten rows. On a real
+table with millions of products you would not call it — instead, you'd hand the
+Grid a *streaming* `DataProvider` that fetches a page at a time. That's the
+shift we'll make in Chapter 4, where we also add a search field.
+
+## Run it
+
+Stop the server if it's still running and restart it:
+
+```bash
+$ ./gradlew run
+```
+
+Watch the startup log. You should see, in order:
+
+```
+Hikari ... Start completed.
+Vaadin On Kotlin initialized
+Running DB migrations
+Flyway ... Migrating schema "PUBLIC" to version "1 - create product"
+Flyway ... Successfully applied 1 migration to schema "PUBLIC", now at version v1
+Initialization complete
+Embedded Jetty started successfully on http://localhost:8080
+```
+
+Reload <http://localhost:8080>. The Grid looks identical to Chapter 2 — same
+ten rows, same columns — but it's now reading from H2 via ktorm. To prove it,
+open `Product.kt`, change `enum class Category { Tools, ... }` to add `Misc` at
+the end (a new value the database knows nothing about), restart, and the app
+still loads — because no row uses `Misc`. Now change one of the seed rows in
+`V1__create_product.sql`. Restart. The Grid **does not** show your change:
+Flyway has already recorded version `1` as applied and refuses to run the
+migration again.
+
+That refusal is the whole point. Production migrations are run once, in order,
+and never edited. To make a change to seeded data after V1 is in production
+you'd add a V2:
+
+```sql
+-- V2__rename_paint.sql
+UPDATE Product SET name = 'Interior paint, eggshell 1L' WHERE sku = 'PAINT-WHT-1L';
+```
+
+For now you can drop the H2 database by restarting — it's `mem:test`, so the
+schema lives only in the JVM process. Stop the server, restart, and Flyway
+re-applies V1 from scratch.
+
+## Where we are
+
+You now have:
+
+- a real schema, in a real migration file, applied by Flyway on startup;
+- a ktorm entity bound to that schema, with `save()`, `delete()`, and
+  `validate()` already available (we'll start using them in Chapter 6);
+- a Grid backed by a database query.
+
+Compared to Chapter 2, exactly one line changed in the view —
+`setItems(sampleProducts)` became `setItems(Products.findAll())`. The
+interesting work moved to `Product.kt` and `V1__create_product.sql`. That
+separation is the point: **the view doesn't know or care where its rows come
+from.** In the next chapter we'll exploit that by replacing `findAll()` with a
+reactive `DataProvider` and adding a live search field above the Grid.
