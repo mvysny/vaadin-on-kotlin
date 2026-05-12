@@ -3,9 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.3.20"
     `maven-publish`
     signing
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 defaultTasks("clean", "build")
@@ -58,15 +59,6 @@ subprojects {
         }
 
         publishing {
-            repositories {
-                maven {
-                    setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-                    credentials {
-                        username = project.properties["ossrhUsername"] as String? ?: "Unknown user"
-                        password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
-                    }
-                }
-            }
             publications {
                 create("mavenJava", MavenPublication::class.java).apply {
                     groupId = project.group.toString()
@@ -101,6 +93,16 @@ subprojects {
 
         signing {
             sign(publishing.publications["mavenJava"])
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        // see https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/#configuration
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
         }
     }
 }
