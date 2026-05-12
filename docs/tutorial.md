@@ -5,11 +5,25 @@ permalink: /tutorial/
 nav_order: 2
 ---
 
-> **Pre-0.19 content.** This tutorial predates the 0.19 release, in which the persistence layer moved from
-> `vok-orm` (jdbi-orm) to [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin),
-> and the REST wire format simplified to eq-only filters. For current idioms see the
-> [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) demo and the
-> per-module READMEs. This tutorial will be rewritten in a follow-up.
+> # ⚠️ DEPRECATED — WORK IN PROGRESS
+>
+> **This tutorial is deprecated and slated for a full rewrite from scratch.** The running example
+> (a "Blog" app) was poorly chosen and doesn't reflect how VoK apps are typically built, and the code
+> throughout this page is stuck on pre-0.19 APIs: `vok-orm` / `jdbi-orm` entities (`data class : KEntity`,
+> `Dao` companion objects), the old REST wire format with `Condition`-tree filters, and the FilterBar DSL.
+>
+> **None of the code below compiles against current VoK.** Do not use this page as a learning resource
+> until it has been rewritten.
+>
+> **What to use instead, today:**
+> * [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) — runnable
+>   demo app with current `Entity` / `Table` patterns, Grid filtering, and the REST wiring.
+> * Per-module READMEs ([vok-framework](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework),
+>   [vok-framework-vokdb](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework-vokdb),
+>   [vok-rest](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest),
+>   [vok-rest-client](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-rest-client)) —
+>   short, accurate, and kept in sync with the code.
+> * The [Accessing SQL Databases](/databases) guide — rewritten for ktorm / ktorm-vaadin.
 
 <br/>
 <details close markdown="block">

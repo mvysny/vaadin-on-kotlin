@@ -8,11 +8,11 @@ permalink: /
 nav_order: 1
 ---
 
-> **Pre-0.19 content.** This site predates the 0.19 release, in which the persistence layer moved from `vok-orm`
-> (jdbi-orm) to [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin), and the
-> REST wire format simplified to eq-only filters with `?offset` / `?limit` / `?sort=col:asc,col2:desc`. For current
-> idioms see the [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) demo
-> and the per-module READMEs. These guides will be brought up to date in a follow-up.
+> **Heads up:** the [Accessing SQL Databases](/databases) guide and the per-module READMEs are current as of
+> 0.19+. The [tutorial](/tutorial) and the [NoSQL/REST data sources](/nosql_rest_datasources) page still describe
+> pre-0.19 idioms (`vok-orm` / `jdbi-orm`, the old REST `Condition` filters) and are awaiting a rewrite — refer to
+> the [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) demo for current
+> code in the meantime.
 
 Vaadin-on-Kotlin (or VoK for short) is a web-application framework that includes
 everything necessary to create database-backed web applications in server-side Kotlin.
@@ -22,7 +22,7 @@ creates new row in your SQL database:
 
 ```kotlin
 button("Create") {
-  onClick { Person(name = "Albert Einstein").save() }
+  onClick { Person { name = "Albert Einstein" }.create() }
 }
 ```
 
@@ -84,15 +84,16 @@ Vaadin-on-Kotlin apps are typically three-tiered:
   library wraps Vaadin APIs to provide more pleasant Kotlin experience.
 - Server-side code is typically written using the Kotlin language. This is where
   your app logic resides and this is where you will add your code.
-- The database access is handled by the VoK-ORM library: a very simple and powerful
-  layer over a SQL database. You can of course decide not to use
-  VoK-ORM and use JPA; you can even decide not to use SQL at all and use a NoSQL database.
+- The database access is handled by [ktorm](https://www.ktorm.org/) — a typed-SQL DSL with entity
+  sequences — wrapped by [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) for Vaadin DataProviders,
+  filter components, and Binder helpers. You can of course swap ktorm out for JPA, or skip SQL entirely
+  and use a NoSQL store.
 
 Vaadin-on-Kotlin apps typically consist of several pieces. To learn more about a particular piece, just click the box below:
 
 <div style="display: flex; flex-wrap: wrap">
 <div onclick="location.href='https://github.com/mvysny/karibu-dsl';" class="box bg-grey-lt-200"><div class="caption">Karibu-DSL</div><div class="body">Write your UI in structured Kotlin code</div></div>
-<div onclick="location.href='https://github.com/mvysny/vok-orm';" class="box bg-blue-000"><div class="caption">VoK-ORM</div><div class="body">Unleash your database, with a sprinkle of Kotlin magic</div></div>
+<div onclick="location.href='https://www.ktorm.org/';" class="box bg-blue-000"><div class="caption">ktorm</div><div class="body">Type-safe SQL DSL and entity sequences, wrapped by <a href="https://github.com/mvysny/ktorm-vaadin">ktorm-vaadin</a></div></div>
 <div onclick="location.href='https://github.com/mvysny/karibu-testing';" class="box bg-green-000"><div class="caption">Karibu-Testing</div><div class="body">Test your UI with speed and reliability</div></div>
 <div onclick="location.href='https://vaadin.com/';" class="box bg-yellow-000"><div class="caption">Vaadin</div><div class="body">The Productive UI Framework for Java Web Apps</div></div>
 <div onclick="location.href='https://junit.org/';" class="box bg-red-000"><div class="caption">JUnit 6</div><div class="body">The standard testing framework for the JVM</div></div>

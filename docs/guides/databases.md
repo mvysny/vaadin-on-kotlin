@@ -6,14 +6,6 @@ parent: Guides
 nav_order: 6
 ---
 
-> **Pre-0.19 content.** This page describes the vok-orm / jdbi-orm era. As of 0.19 the persistence layer moved
-> to [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin):
-> entities are `Entity<E>` interfaces (proxied), each with a `Table<E>` companion; query inside `db { … }` blocks
-> against `database.sequenceOf(...)`; grids use `Table.dataProvider` and ktorm-vaadin's filter components. The
-> FilterBar DSL described below no longer ships with VoK. See the
-> [vok-example-crud `PersonListView`](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud/src/main/kotlin/example/crudflow/person/PersonListView.kt)
-> for the new filter pattern. This guide will be rewritten in a follow-up.
-
 <br/>
 <details close markdown="block">
   <summary>
@@ -29,112 +21,72 @@ nav_order: 6
 
 Vaadin-on-Kotlin provides first-class support for the following SQL databases out-of-the-box:
 
-* [H2 Database](http://h2database.com) - a 100% Java database which can be quick-started as an in-memory
+* [H2 Database](http://h2database.com) — a 100% Java database which can be quick-started as an in-memory
   database; perfect for writing tests for your app.
 * [PostgreSQL](https://www.postgresql.org/)
 * [MariaDB](https://mariadb.org/)
 * [MySQL](https://www.mysql.com/)
 
 All other SQL databases may or may not work. Care has been taken to only use the SQL92 syntax,
-but we only test and officially support the four of the above-mentioned databases.
+but only the four databases above are tested and officially supported.
 
-> *NoSQL Note*: Only SQL databases which provide appropriate JDBC drivers are currently supported.
+> *NoSQL Note*: only SQL databases which provide appropriate JDBC drivers are currently supported.
 There is no direct support for NoSQL databases, but you can easily integrate any NoSQL database with VoK.
 Please read [Accessing NoSQL or REST data sources](/nosql_rest_datasources) for more information.
 
-> *Note for experienced Java developers*: Experienced Java developers will notice that VoK is *not* using JPA nor Hibernate to access the
+> *Note for experienced Java developers*: VoK is *not* using JPA nor Hibernate to access the
 database. The reason is that there are inherent issues with the abstraction that JPA
-mandates - you can read more about the topic in the [Why Not JPA](https://mvysny.github.io/back-to-base-make-sql-great-again/) article.
+mandates — see [Why Not JPA](https://mvysny.github.io/back-to-base-make-sql-great-again/).
 
-## Basic CRUD ORM
+## Why ktorm
 
-The above scary acronym stands for inserting, querying and deleting rows from your database,
-and mapping those rows into Kotlin objects so that they are easy to work with.
+The persistence layer is [ktorm](https://www.ktorm.org/) plus
+[ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) (which adds Vaadin DataProviders, filter components,
+and Binder helpers on top of ktorm). The design follows the same simplicity-first philosophy that previous
+versions of VoK had:
 
-The "CRUD" stands for [Create, read, update and delete](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) -
-the four basic operations performed on a collection of entities mapped to the database, such as a
-collection of `Person`s.
+* Plain SQL stays first-class. ktorm's type-safe DSL emits the SQL you expect; for everything else you
+  can drop down to `database.useConnection { ... }` and write the SQL yourself.
+* Entities are interfaces, proxied at runtime over a `LinkedHashMap`. They don't track changes, don't
+  auto-flush, and don't need bytecode enhancement. You decide when to `save()`.
+* No N+1 surprises: ktorm fetches what you ask for. Joins, projections, aggregates — all explicit in the DSL.
+* You can map any SELECT (including joins, views, aggregates) to a Kotlin class — which means any SELECT
+  can back a Vaadin Grid.
 
-The ORM stands for Object-Relational Mapping and stands for mapping database rows into Kotlin objects,
-for easier use from within your application. VoK does not use JPA but instead features
-a new, vastly simplified database access layer called `vok-orm`.
+The rest of this guide focuses on the **VoK-specific bits** — wiring the data source, the `db { }` block,
+the Vaadin Grid integration, and form binding. For schema definition, the column-type catalog, and the
+full Entity Sequence DSL, **the canonical reference is [ktorm.org](https://www.ktorm.org/)** — we link to
+the relevant chapters as we go rather than re-explain them here.
 
-## About `vok-orm`
+## Defining entities and tables
 
-`vok-orm` is a very simple object-relational mapping library, built around the following ideas:
+You write two declarations per table: an `Entity<E>` interface for the row shape, and a `Table<E>` object
+for the schema mapping.
 
-* Simplicity is the most valued property; working with plain SQL commands is preferred over having a type-safe
-  query language.
-* Kotlin objects merely capture JDBC `ResultSet` rows, by the means of invoking appropriate setters (based on the column name) via
-  Java reflection.
-* The entities are just plain objects: they do not track modifications as JPA entities do,
-  they do not automatically store modified
-  values back into the database. They are never runtime-enhanced and can be final.
-* A switch from one type of database to another never happens. We understand that the programmer
-  wants to exploit the full potential of the database, by writing SQLs tailored for that particular database.
-  `vok-orm` should not attempt to generate SELECTs on behalf of the programmer (except for the very basic ones related to CRUD);
-  instead it should simply allow SELECTs to be passed as Strings, and then map the result
-  to an object of programmer's choosing.
+Add the dependency first:
 
-Because of its simple design principles, `vok-orm` supports not just mapping tables to Kotlin classes,
-but it allows mapping of any complex SELECT with joins and everything, even VIEWs, into Kotlin classes.
-Naturally this allows you to use any SELECT inside of a Vaadin Grid component which is a
-very powerful combination.
+```kotlin
+dependencies {
+    implementation("eu.vaadinonkotlin:vok-framework-vokdb:x.y.z")
+}
+```
 
-## Persisting Simple Objects Into Tables
+> See the [latest release tag](https://github.com/mvysny/vaadin-on-kotlin/tags) for `x.y.z`.
 
-Please read the [Usage examples](https://github.com/mvysny/vok-orm#usage-examples) chapter of
-the `vok-orm` documentation on how to write Kotlin classes that correspond to a particular SQL database
-table, and how to create rows in that particular database tables.
-
-In this tutorial, we will modify the [vok-helloworld-app](https://github.com/mvysny/vok-helloworld-app) project:
-it contains all moving parts but not much of an actual code which makes it ideal for experimenting. Just run
-`git clone https://github.com/mvysny/vok-helloworld-app` and open the project in your IDE and you're good to go.
-
-> Note: please read the [Tutorial](/tutorial) on information on these files.
-
-Let us have a `Person` table with the following columns:
+Consider a `Person` table:
 
 | Column | Type | Meaning
-| ------ | ---- | ---------
-| id | Long? | The primary key, automatically generated by the database, not null. The Kotlin type is nullable since we don't know the ID yet when the person is just being created.
-| name | String | The full name of the person, not null.
-| age | Int | The age, not null.
-| dateOfBirth | LocalDate? | The date of birth, nullable.
-| alive | Boolean | Whether the person is alive or deceased.
-| maritalStatus | MaritalStatus? | The Marital status. Demoes binding to enum constants.
-| modified | Instant? | When the record was last modified in the database
+| ------ | ---- | -------
+| id | Long | Primary key, auto-generated
+| name | String | Full name
+| age | Int | Age in years
+| dateOfBirth | LocalDate? | Optional date of birth
+| alive | Boolean | Whether the person is alive
+| maritalStatus | MaritalStatus? | Enum: Single / Married / Divorced / Widowed
+| created | Instant | When the row was created
 
-Let's first create a migration script which will prepare the database for us. Create a file
-named `web/src/main/resources/db/migration/V01__CreatePerson.sql`, with the following DDL script, depending on your database:
+Create a Flyway migration at `src/main/resources/db/migration/V01__CreatePerson.sql`. The H2 flavour:
 
-The PostgreSQL DDL script which creates such table is simple:
-```sql
-create table Person (
-    id bigserial primary key,
-    name varchar(400) not null,
-    age integer not null,
-    dateOfBirth date,
-    alive boolean not null,
-    maritalStatus varchar(200),
-    modified timestamp not null
-)
-```
-
-The MySQL/MariaDB DDL script:
-```sql
-create table Person (
-    id bigint primary key auto_increment,
-    name varchar(400) not null,
-    age integer not null,
-    dateOfBirth date,
-    alive boolean not null,
-    maritalStatus varchar(200),
-    modified timestamp(3) not null
-)
-```
-
-Finally, the H2 script:
 ```sql
 create table Person (
     id bigint primary key auto_increment,
@@ -143,573 +95,502 @@ create table Person (
     dateOfBirth date,
     alive boolean not null,
     maritalStatus varchar,
-    modified timestamp not null
-)
+    created timestamp not null
+);
 ```
 
-> *MaritalStatus Note*: We will store the enum name into the database, e.g. "Single", instead of
-just ordinal value of the constant (e.g. 0). The ordinal is easy to accidentally change by the programmer,
-e.g. by reordering the enum constants. The data would still load, but it would silently show incorrect
-information which is disastrous.
+The PostgreSQL flavour uses `bigserial`; MySQL/MariaDB uses `bigint primary key auto_increment` and
+`timestamp(3)` for sub-second precision.
 
-Create the `web/src/main/kotlin/com/example/vok/Person.kt` file with the Kotlin class which will map to this table is as follows:
+> *MaritalStatus Note*: we store the enum name (`"Single"`) rather than its ordinal. Ordinals are easy to
+> break by reordering constants, and the data would silently load with the wrong value.
+
+The Kotlin side — `Person.kt`:
 
 ```kotlin
 package com.example.vok
 
-import com.github.vokorm.*
-import com.gitlab.mvysny.jdbiorm.Dao
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import org.ktorm.entity.Entity
+import org.ktorm.schema.*
 import java.time.Instant
 import java.time.LocalDate
 
 enum class MaritalStatus { Single, Married, Divorced, Widowed }
 
-data class Person(
-    override var id: Long? = null,
-    var name: String = "",
-    var age: Int = 0,
-    var dateOfBirth: LocalDate? = null,
-    var alive: Boolean = true,
-    var maritalStatus: MaritalStatus? = null,
-    var modified: Instant? = null
-) : KEntity<Long> {
-    override fun save(validate: Boolean) {
-        modified = Instant.now()
-        super.save(validate)
-    }
+interface Person : ActiveEntity<Person> {
+    var id: Long?
+    var name: String?
+    var age: Int?
+    var dateOfBirth: LocalDate?
+    var alive: Boolean?
+    var maritalStatus: MaritalStatus?
+    var created: Instant?
 
-    companion object : Dao<Person, Long>(Person::class.java)
+    override val table: Table<Person> get() = Persons
+
+    companion object : Entity.Factory<Person>()
+}
+
+object Persons : Table<Person>("Person") {
+    val id           = long("id").primaryKey().bindTo { it.id }
+    val name         = varchar("name").bindTo { it.name }
+    val age          = int("age").bindTo { it.age }
+    val dateOfBirth  = date("dateOfBirth").bindTo { it.dateOfBirth }
+    val alive        = boolean("alive").bindTo { it.alive }
+    val maritalStatus = enum<MaritalStatus>("maritalStatus").bindTo { it.maritalStatus }
+    val created      = timestamp("created").bindTo { it.created }
 }
 ```
 
-By implementing the `KEntity` interface the Kotlin class gains capability to create/update itself into
-the database; by having the companion object to extend the `Dao` class the Kotlin class
-gains the lookup capabilities. You can paste the following example into the `WelcomeView.kt` file:
+A few notes on what's happening:
+
+* `Entity<Person>` is the ktorm-provided interface; ktorm creates the runtime implementation for you.
+  Don't add any backing state — every `var` is mapped to a column.
+* `ActiveEntity<Person>` is ktorm-vaadin's extension that adds instance-level `save()` / `create()` /
+  `delete()` (and `validate()`). It requires you to point back at the `Table` via the `table` property.
+* `Entity.Factory<Person>()` lets you write `Person { name = "Foo" }` to construct an unsaved entity.
+* `Table<Person>("Person")` names the underlying SQL table.
+* The column-builder methods (`long`, `varchar`, `date`, `enum`, `timestamp`, …) come from ktorm —
+  see [Schema Definition](https://www.ktorm.org/en/schema-definition.html) for the full list and how to
+  define custom column types.
+
+## Bootstrap
+
+The expected app shape (mirrored in
+[`vok-example-crud/.../Bootstrap.kt`](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud/src/main/kotlin/example/crudflow/Bootstrap.kt)):
 
 ```kotlin
-package com.example.vok
+val config = HikariConfig().apply {
+    driverClassName = Driver::class.java.name  // org.h2.Driver
+    jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
+    username = "sa"
+    password = ""
+}
+VaadinOnKotlin.dataSource = HikariDataSource(config)  // also wires ActiveKtorm.database
+VaadinOnKotlin.init()
 
-import com.github.vok.karibudsl.flow.*
-import com.github.vokorm.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.Route
+Flyway.configure().dataSource(VaadinOnKotlin.dataSource).load().migrate()
+```
 
-@Route("")
-class WelcomeView: VerticalLayout() {
-    init {
-        button("Demo") {
-            onClick {
-                val person = Person(name = "John Doe", age = 42, alive = false, maritalStatus = MaritalStatus.Single)
-                person.save()  // since ID is null, this will create the person and populate the ID
-                println(Person.findAll())  // will print [Person(id=1, name=John Doe, age=42 etc)]
-                println(Person.getById(person.id!!))  // will print Person(id=1, name=John Doe, age=42 etc)
-                person.name = "Agent Smith"
-                person.save()   // will update the person in the database, also updating the `modified` field
-                println(Person.findById(25L)) // will print null since there is no such person yet
-                Person.deleteAll()   // will delete all personnel
-                Person.deleteById(42L)   // will delete a person with ID of 42
-                println(Person.count()) // will print 0 since we deleted everything
-                println(Person.findBy { "name = :name1 or name = :name2"("name1" to "John Doe", "name2" to "Agent Smith") })   // will print []
-                Person.deleteBy { (Person::name eq "Agent Smith") }
-                Person.getBy { "name = :name"("name" to "Agent Smith") }   // will fetch exactly one matching person, failing if there is no such person or there are more than one.
-                Person.findSpecificBy { "name = :name"("name" to "Agent Smith") } // will fetch one matching person, failing if there are more than one. Returns null if there is none.
-            }
-        }
-    }
+Setting `VaadinOnKotlin.dataSource` is the canonical hook: it stores the DataSource for the rest of VoK
+and also sets ktorm-vaadin's `ActiveKtorm.database`, so ktorm queries work without an extra step.
+
+> *H2 quirk:* `DATABASE_TO_UPPER=FALSE` keeps identifiers case-sensitive so ktorm's quoted `"Person"`,
+> `"name"`, etc. match the Flyway DDL exactly. Without it, H2 folds unquoted names to upper case and your
+> queries 500 with "table not found".
+
+On shutdown, call `VaadinOnKotlin.destroy()`. There's no separate ktorm shutdown step — closing the
+HikariDataSource (or letting the JVM exit) is enough.
+
+## CRUD with `db { }`
+
+All ktorm calls must happen inside a transaction. ktorm-vaadin provides a top-level `db { }` block whose
+receiver is a `KtormContext`, which exposes `database` and `transaction`:
+
+```kotlin
+db {
+    val person = Person { name = "John Doe"; age = 42; alive = true; created = Instant.now() }
+    person.create()                                  // INSERT, populates person.id
+
+    val loaded = database.sequenceOf(Persons)
+        .find { it.id eq person.id!! }               // SELECT … WHERE id = ?
+    loaded!!.name = "Agent Smith"
+    loaded.save()                                    // UPDATE … SET name = ? WHERE id = ?
+
+    database.sequenceOf(Persons)
+        .filter { it.alive eq true }
+        .sortedBy { it.age }
+        .forEach { println(it.name) }
+
+    loaded.delete()                                  // DELETE FROM … WHERE id = ?
 }
 ```
 
-To run the app, just type `./gradlew web:appRun` in your console, or run the `web` module in Tomcat. Then,
-just browse [http://localhost:8080](http://localhost:8080) and click the "Demo" button.
-For more information please read the [vok-orm documentation](https://github.com/mvysny/vok-orm).
+You can also call the entity instance methods (`save()`, `create()`, `delete()`) **outside** a `db { }`
+block — each opens its own short-lived transaction. Same goes for ktorm-vaadin's `Table` shortcuts:
 
-> Finding Persons: If we want to load a list of persons from the database, the very important thing is to have a zero-arg constructor for the Person class.
-This can be achieved either by providing default values for all parameters, or explicitly declaring the zero-arg constructor.
-Otherwise the code will fail in runtime: vok-orm will try to construct a `Person` instance for every row returned, using
-a zero-arg constructor.
+```kotlin
+Persons.findAll()      // returns List<Person>
+Persons.count()
+Persons.deleteAll()
+Persons.single()       // exactly one or throws
+```
+
+For everything richer than these four shortcuts, **drop into a `db { }` block and use the ktorm
+sequence DSL**: `find`, `filter`, `sortedBy`, `mapColumns`, `groupingBy`, `aggregateColumns`, etc.
+See [Entity Sequence APIs](https://www.ktorm.org/en/entity-sequence.html) for the full menu.
 
 ## Forms
 
-Forms allows the user to enter the values of a newly created record, or edit the values of
-already existing ones. Validation is typically employed, to guide the user to enter
-meaningful data.
-
-We will use [Vaadin Binder](https://vaadin.com/docs/v14/flow/binding-data/tutorial-flow-components-binder.html) to bind form components to properties of the `Person` Kotlin class.
-A source code of the form is shown below; just create a file named `web/src/main/kotlin/com/example/vok/PersonEditor.kt` with the following contents:
+Forms let users enter or edit row data, ideally with validation. We use
+[Vaadin Binder](https://vaadin.com/docs/latest/binding-data/components-binder) plus JSR-303 bean validation
+(Hibernate Validator 9). Place the validation annotations on the **getter** of each interface property
+using `@get:`, since the entity is a proxied interface:
 
 ```kotlin
-package com.example.vok
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import jakarta.validation.constraints.*
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Table
 
-import com.github.vok.karibudsl.flow.*
-import com.github.vokorm.findAll
-import com.vaadin.flow.component.HasComponents
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
+interface Person : ActiveEntity<Person> {
+    var id: Long?
 
-class PersonEditor : VerticalLayout() {
-    private val binder = beanValidationBinder<Person>()
-    var person: Person? = null
-        set(value) {
-            field = value
-            if (value != null) binder.readBean(value)
-        }
+    @get:NotNull
+    @get:Size(min = 1, max = 200)
+    var name: String?
+
+    @get:NotNull
+    @get:Min(0)
+    @get:Max(150)
+    var age: Int?
+
+    var dateOfBirth: LocalDate?
+
+    @get:NotNull
+    var alive: Boolean?
+
+    var maritalStatus: MaritalStatus?
+
+    @get:NotNull
+    var created: Instant?
+
+    override val table: Table<Person> get() = Persons
+    companion object : Entity.Factory<Person>()
+}
+```
+
+A reusable editor component:
+
+```kotlin
+class PersonForm : FormLayout() {
+    val binder = beanValidationBinder<Person>()
 
     init {
-        isMargin = false
         textField("Name") {
-            bind(binder).bind(Person::name)
+            bind(binder).trimmingConverter().bind(Person::name)
         }
         textField("Age") {
             bind(binder).toInt().bind(Person::age)
         }
-        datePicker("Date Of Birth") {
+        datePicker("Date of Birth") {
             bind(binder).bind(Person::dateOfBirth)
         }
         checkBox("Alive") {
             bind(binder).bind(Person::alive)
         }
         comboBox<MaritalStatus>("Marital Status") {
-            setItems(*MaritalStatus.values())
+            setItems(*MaritalStatus.entries.toTypedArray())
             bind(binder).bind(Person::maritalStatus)
         }
-        button("Save Person") {
-            onClick {
-                val person = person!!
-                if (binder.validate().isOk && binder.writeBeanIfValid(person)) {
-                    person.save()
-                    println(Person.findAll())
+    }
+}
+
+fun HasComponents.personForm(block: PersonForm.()->Unit = {}) = init(PersonForm(), block)
+```
+
+Saving the bean is a separate concern; a typical "Save" button looks like:
+
+```kotlin
+button("Save") {
+    onClick {
+        if (binder.validate().isOk && binder.writeBeanIfValid(person)) {
+            if (person.created == null) person.created = Instant.now()
+            person.save()
+        }
+    }
+}
+```
+
+> *Why `@get:` on the interface*: bean-validation traverses getter annotations. Putting `@NotNull` on
+> the property directly attaches it to the field of a generated class, where Validator can't see it.
+
+See [CreateEditPerson.kt](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud/src/main/kotlin/example/crudflow/person/CreateEditPerson.kt)
+in the demo for the full edit-dialog pattern.
+
+## Showing entities in a Grid
+
+Vaadin Grid is the workhorse for tabular data. ktorm-vaadin's `Persons.dataProvider` extension property
+hands you an `EntityDataProvider<Person>` that:
+
+* lazy-loads pages of rows on scroll,
+* translates Grid sorting clicks into SQL `ORDER BY` against the ktorm columns,
+* accepts a `ColumnDeclaring<Boolean>` filter (a ktorm expression) via `setFilter()`.
+
+A minimal Grid:
+
+```kotlin
+@Route("")
+class PersonListView : VerticalLayout() {
+    init {
+        setSizeFull()
+        grid<Person>(Persons.dataProvider) {
+            setSizeFull()
+            columnFor(Person::id)
+            columnFor(Person::name)
+            columnFor(Person::age)
+            columnFor(Person::dateOfBirth, converter = { it?.toString() })
+            columnFor(Person::maritalStatus)
+            columnFor(Person::alive)
+            columnFor(Person::created, converter = { it?.toString() })
+            addColumn(NativeButtonRenderer<Person>("Delete") { person ->
+                person.delete()
+                this@grid.refresh()
+            })
+        }
+    }
+}
+```
+
+That's a full lazy-loading Grid with SQL-side sorting working out of the box.
+
+See [Using Grids](/grids) for column configuration patterns (renderers, hidden columns, formatting).
+
+### Grid filters
+
+The recipe for filter-bar filtering is the same as before, just with ktorm types:
+
+1. Create one filter component per column (`FilterTextField`, `NumberRangePopup`, `DateRangePopup`,
+   `BooleanFilterField`, `EnumFilterField`).
+2. Add a header row via `appendHeaderRow()` and place each filter component into its column's cell.
+3. On any filter value change, build a single `ColumnDeclaring<Boolean>` from the currently-set filters
+   and push it to the data provider via `setFilter()`.
+
+ktorm-vaadin ships with a `Collection<ColumnDeclaring<Boolean>?>.and()` extension that ANDs a list of
+nullable conditions (skipping nulls) into one, which makes step 3 a one-liner:
+
+```kotlin
+import com.github.mvysny.ktormvaadin.and
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.github.mvysny.ktormvaadin.filter.*
+import eu.vaadinonkotlin.vaadin.vokdb.enumFilterField
+import org.ktorm.dsl.*
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike   // works on H2 too
+
+class PersonListView : KComposite() {
+    private val nameFilter = FilterTextField()
+    private val ageFilter = NumberRangePopup()
+    private val aliveFilter = BooleanFilterField()
+    private val dateOfBirthFilter = DateRangePopup()
+    private val maritalStatusFilter = enumFilterField<MaritalStatus>()
+    private val dataProvider = Persons.dataProvider
+
+    private val root = ui {
+        verticalLayout {
+            setSizeFull()
+            grid<Person>(dataProvider) {
+                setSizeFull()
+                val filterBar = appendHeaderRow()
+
+                columnFor(Person::name) {
+                    nameFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = nameFilter
+                }
+                columnFor(Person::age) {
+                    ageFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = ageFilter
+                }
+                columnFor(Person::alive) {
+                    aliveFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = aliveFilter
+                }
+                columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
+                    dateOfBirthFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = dateOfBirthFilter
+                }
+                columnFor(Person::maritalStatus) {
+                    maritalStatusFilter.addValueChangeListener { updateFilter() }
+                    filterBar.getCell(this).component = maritalStatusFilter
                 }
             }
         }
     }
-}
 
-fun HasComponents.personEditor(block: PersonEditor.()->Unit = {}) = init(PersonEditor(), block)
-```
-
-This will create a form as a reusable component which we can then use in the `WelcomeView` as follows:
-
-```kotlin
-package com.example.vok
-
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.Route
-
-@Route("")
-class WelcomeView: VerticalLayout() {
-    init {
-        personEditor {
-            person = Person()
+    private fun updateFilter() {
+        val conditions = mutableListOf<ColumnDeclaring<Boolean>?>()
+        if (nameFilter.value.isNotBlank()) {
+            conditions += Persons.name.ilike("${nameFilter.value.trim()}%")
         }
+        conditions += Persons.age.between(ageFilter.value.asIntegerInterval())
+        aliveFilter.value?.let { conditions += Persons.alive eq it }
+        conditions += Persons.dateOfBirth.between(dateOfBirthFilter.value)
+        val statuses = maritalStatusFilter.value
+        if (statuses.isNotEmpty() && statuses.size < MaritalStatus.entries.size) {
+            conditions += Persons.maritalStatus.inList(statuses.toList())
+        }
+        dataProvider.setFilter(conditions.and())
     }
 }
 ```
 
-The form will allow you to create a new person, or edit an existing one. However,
-the user can now enter invalid data, such as negative numbers for age etc.
+The full working example is
+[PersonListView.kt](https://github.com/mvysny/vaadin-on-kotlin/blob/master/vok-example-crud/src/main/kotlin/example/crudflow/person/PersonListView.kt)
+in the demo app — copy from there.
 
-We will use so-called JSR303 validation annotations, which will make the `beanValidationBinder` validate the bean for us. Edit the `Person` class
-as follows:
+#### What ktorm-vaadin provides
+
+The filter components shipped in `com.github.mvysny.ktormvaadin.filter`:
+
+* **`FilterTextField`** — a Vaadin `TextField` with `ValueChangeMode.LAZY` and a clear button preconfigured.
+  Combine with `Column.ilike("$value%")` for starts-with search, or `like` for case-sensitive.
+* **`NumberRangePopup`** — value is `NumberInterval<Double>` (open at either end). Convert with
+  `.asIntegerInterval()` / `.asLongInterval()`, then `Column<T>.between(NumberInterval<T>)` produces the
+  ktorm condition.
+* **`DateRangePopup`** — value is `DateInterval` (LocalDate range, open at either end). `Column<LocalDate>.between(DateInterval)`
+  produces the condition. For `Instant`-typed columns you need to widen the day range to instants in the
+  browser's timezone — see `PersonListView.containsInstant` in the demo for the helper.
+* **`BooleanFilterField`** — three-state: `true` / `false` / `null` (no filter).
+* **`EnumFilterField<E>`** — multi-select over enum values; produces a `Set<E>`. Use with
+  `Column.inList(values)`. The convenience factory `enumFilterField<MaritalStatus>()` (from
+  `vok-framework-vokdb`) saves you a reified-type-parameter dance.
+
+#### What about plain Vaadin fields?
+
+You don't have to use the ktorm-vaadin components — any field that emits value-change events works the
+same way. A bare `TextField` for "starts with" search is fine, as long as your `updateFilter()` converts
+its value into a `ColumnDeclaring<Boolean>` you can push.
+
+## Custom SELECTs, joins, and projections
+
+When you need data that isn't a 1:1 mapping of a single table — joins, projections, aggregates — you
+have two options depending on whether the result needs to back a Grid or just a list.
+
+### Read-only lists from `db { }`
+
+For a one-shot list (a summary screen, a CSV export, etc.) just write the query inside `db { }`:
 
 ```kotlin
-package com.example.vok
+data class PersonDept(val personName: String, val deptName: String)
 
-import com.github.vokorm.*
-import com.gitlab.mvysny.jdbiorm.Dao
-import org.hibernate.validator.constraints.*
-import java.time.*
-import jakarta.validation.constraints.*
-
-enum class MaritalStatus { Single, Married, Divorced, Widowed }
-
-data class Person(
-    override var id: Long? = null,
-    @field:NotNull
-    @field:Length(min = 2)
-    var name: String = "",
-    @field:Min(1)
-    var age: Int = 0,
-    @field:Past
-    var dateOfBirth: LocalDate? = null,
-    var alive: Boolean = true,
-    var maritalStatus: MaritalStatus? = null,
-    var modified: Instant? = null
-) : KEntity<Long> {
-    override fun save(validate: Boolean) {
-        modified = Instant.now()
-        super.save(validate)
-    }
-
-    companion object : Dao<Person, Long>(Dao::class.java)
+fun findAll(): List<PersonDept> = db {
+    database
+        .from(Persons)
+        .innerJoin(Departments, on = Persons.deptId eq Departments.id)
+        .select(Persons.name, Departments.name)
+        .map { row ->
+            PersonDept(
+                personName = row[Persons.name]!!,
+                deptName = row[Departments.name]!!,
+            )
+        }
 }
 ```
 
-> *Important*: Make sure to attach those annotations to `field`! If you would just write `@Min(1)`, the annotation would be applied to the getter
-instead to the field, and `beanValidationBinder` would ignore it.
+`database.from(...).innerJoin(...).select(...)` is ktorm's Query DSL — see
+[Joining](https://www.ktorm.org/en/joining.html) and [Query](https://www.ktorm.org/en/query.html) for the
+full picture (left/right/cross joins, aggregates, grouping, etc.). Note that this `PersonDept` is *not*
+an entity; it's just a plain `data class` we map into.
 
-Now, typing in incorrect values will make the field go red and show the validation errors; the "Save" button will also not create a Person
-instance if the values are invalid.
+### Custom SELECTs that back a Grid
 
-## Using `vok-orm` With Vaadin Grid
-
-Vaadin Grid is a very powerful component which allows you to show a lazy-loaded list of rows
-on a web page. It allows the user to:
-
-* efficiently scroll the list, lazy-loading more data as they are scrolled into the viewport,
-* sorting by one or more columns (shift-click the caption to add sorting columns)
-* filtering from code
-* VoK provides means to auto-generate filter components and auto-populate them into the Grid,
-  which provides you with a simple means to allow the user to filter as well.
-
-You can find more information about how to use Vaadin Grid with Vaadin-on-Kotlin at the [Using Grids](/grids) guide page.
-
-### Showing entities in Grid
-
-We will start with the most basic Grid which will show the list of `Person`. By default the Grid shows all columns,
-therefore we need to restrict the columns a bit:
+For a Grid backed by an arbitrary SELECT, use ktorm-vaadin's `QueryDataProvider<T>`. You give it two
+functions: one that builds the ktorm `Query`, and one that maps each `QueryRowSet` row to your bean.
+Paging, sorting (via Grid's sort clicks), and filtering all work through `setFilter()` exactly as with
+`EntityDataProvider`:
 
 ```kotlin
-package com.example.vok
+val dataProvider = QueryDataProvider<PersonDept>(
+    query = { database ->
+        database
+            .from(Persons)
+            .innerJoin(Departments, on = Persons.deptId eq Departments.id)
+            .select(Persons.name, Departments.name)
+    },
+    rowMapper = { row ->
+        PersonDept(
+            personName = row[Persons.name]!!,
+            deptName = row[Departments.name]!!,
+        )
+    },
+)
 
-import eu.vaadinonkotlin.vaadin10.vokdb.*
-import com.github.mvysny.karibudsl.v10.*
-import com.github.vokorm.db
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.data.renderer.NativeButtonRenderer
-import com.vaadin.flow.router.Route
-
-@Route("")
-class WelcomeView: VerticalLayout() {
-    init {
-        db {
-            (5..30).forEach { Person(name = "p$it", age = it).save() }
-        }
-        setSizeFull()
-        grid(dataProvider = Person.dataProvider) {
-            setSizeFull()
-
-            columnFor(Person::id)
-            columnFor(Person::name)
-            columnFor(Person::age)
-            columnFor(Person::dateOfBirth)
-            columnFor(Person::maritalStatus)
-            columnFor(Person::alive)
-            // example of a custom renderer which converts value to a displayable string.
-            columnFor(Person::modified, converter = { it.toString() })
-            addColumn(NativeButtonRenderer<Person>("Delete", { item -> item.delete(); this@grid.refresh() }))
-        }
-    }
+grid<PersonDept>(dataProvider) {
+    setSizeFull()
+    columnFor(PersonDept::personName)
+    columnFor(PersonDept::deptName)
 }
 ```
 
-This is a full-blown Grid with lazy-loading and SQL-based (so not in-memory) sorting working out-of-the-box.
+Then filter wiring is the same as for `EntityDataProvider` — collect `ColumnDeclaring<Boolean>` conditions
+and call `dataProvider.setFilter(conditions.and())`.
 
-#### Grid Filters
+## Combining filter sources
 
-Adding the possibility
-for the user to filter on the contents of the Grid is really easy.
-You need to add a Grid header, dedicated for the filter components; then just create filter components
-and register them to the filter header bar. The filter components will listen
-for changes, then they will construct the final filter
-which will then be passed to the `DataProvider`:
+A common need: a Grid with column-level filter components **plus** an outer "search-everywhere"
+`TextField` above the Grid, with the two ANDed together.
+
+In ktorm-vaadin there is no separate "chained DataProvider" or "configurable filter" wrapper — there's
+only one `setFilter()` per data provider. The pattern is simpler than it used to be: keep all your filter
+inputs as fields on the view, and have **one** `updateFilter()` method that reads all of them and pushes
+a single combined `ColumnDeclaring<Boolean>`:
 
 ```kotlin
-val nameFilter = FilterTextField()
-val ageFilter = NumberRangePopup()
-val aliveFilter = BooleanFilterField()
-val dateOfBirthFilter = DateRangePopup()
-val maritalStatusFilter = enumFilterField<MaritalStatus>()
-val dataProvider = Person.dataProvider
-val createdFilter = DateRangePopup()
+private val searchEverywhere = TextField()
+private val nameFilter = FilterTextField()
+private val deptFilter = FilterTextField()
+private val dataProvider = PersonDeptQuery.dataProvider   // your QueryDataProvider
 
-grid(dataProvider = dataProvider) {
-  setSizeFull()
-  val filterBar = appendHeaderRow()
-  columnFor(Person::name) {
+init {
+    searchEverywhere.addValueChangeListener { updateFilter() }
     nameFilter.addValueChangeListener { updateFilter() }
-    filterBar.getCell(this).component = nameFilter
-  }
-  columnFor(Person::age) {
-    ageFilter.addValueChangeListener { updateFilter() }
-    filterBar.getCell(this).component = ageFilter
-  }
-  columnFor(Person::dateOfBirth) {
-    dateOfBirthFilter.addValueChangeListener { updateFilter() }
-    filterBar.getCell(this).component = dateOfBirthFilter
-  }
-  columnFor(Person::maritalStatus) {
-    maritalStatusFilter.addValueChangeListener { updateFilter() }
-    filterBar.getCell(this).component = maritalStatusFilter
-  }
-  columnFor(Person::alive) {
-    aliveFilter.addValueChangeListener { updateFilter() }
-    filterBar.getCell(this).component = aliveFilter
-  }
+    deptFilter.addValueChangeListener { updateFilter() }
 }
 
-fun updateFilter() {
-  var c: Condition = Condition.NO_CONDITION
-  if (!nameFilter.isEmpty) {
-    c = c.and(Person::name.exp.likeIgnoreCase(nameFilter.value.trim() + "%"))
-  }
-  c = c.and(ageFilter.value.asIntegerInterval().contains(Person::age.exp))
-  if (!aliveFilter.isEmpty) {
-    c = c.and(Person::alive.exp.`is`(aliveFilter.value))
-  }
-  c = c.and(dateOfBirthFilter.value.contains(Person::dateOfBirth.exp, BrowserTimeZone.get))
-  if (!maritalStatusFilter.isAllOrNothingSelected) {
-    c = c.and(Person::maritalStatus.exp.`in`(maritalStatusFilter.value))
-  }
-  c = c.and(createdFilter.value.contains(Person::created.exp, BrowserTimeZone.get))
-  dataProvider.filter = c
+private fun updateFilter() {
+    val conditions = mutableListOf<ColumnDeclaring<Boolean>?>()
+
+    val q = searchEverywhere.value.trim()
+    if (q.isNotEmpty()) {
+        conditions += (Persons.name.ilike("$q%")) or (Departments.name.ilike("$q%"))
+    }
+    if (nameFilter.value.isNotBlank()) {
+        conditions += Persons.name.ilike("${nameFilter.value.trim()}%")
+    }
+    if (deptFilter.value.isNotBlank()) {
+        conditions += Departments.name.ilike("${deptFilter.value.trim()}%")
+    }
+
+    dataProvider.setFilter(conditions.and())
 }
 ```
 
-All filter components will be monitored for a value change events, and a proper filter
-will be set to the data provider upon every change.
-To achieve this, all built-in VoK data providers
-offered for all entities by the `Dao` interface (via the `dataProvider` extension property)
-are already configurable
-(that is, instances of `ConfigurableFilterDataProvider`).
-
-You can also create an unremovable programmatic filter easily:
+To add a permanently-applied filter (say: only show rows for one company), include it unconditionally:
 
 ```kotlin
-grid(dataProvider = Person.dataProvider.withFilter { Person::age between 20..60 }) {
-    // ...
+private fun updateFilter() {
+    val conditions = mutableListOf<ColumnDeclaring<Boolean>?>(
+        Persons.companyId eq currentCompanyId          // always applied
+    )
+    // … user-driven conditions appended here as above …
+    dataProvider.setFilter(conditions.and())
 }
 ```
 
-The unremovable filter will be ANDed with any additional filters set by the filter components.
-The important distinction here is as follows:
+> *Why the change*: the old `withFilter { … }` / `withConfigurableFilter2()` wrappers existed to work
+> around an order-of-operations problem in the previous DataProvider stack. With a single `setFilter()`
+> in ktorm-vaadin's providers, you just AND your sources together in one place. Less moving parts.
 
-* `Person.dataProvider.apply { setFilter { Person::age between 20..60 } }` will set a filter to the data provider. However
-  this filter will be overwritten by a Filter computed by FilterBar when any filter component
-  changes. That is because
-  the filter bar will also call `setFilter()`, overwriting any filter you provided earlier.
-* That's why you should use `Person.dataProvider.withFilter { Person::age between 20..60 }`. The `withFilter()` function
-  takes an existing DataProvider and creates a new one, which delegates all data-fetching calls
-  to the old one but always ANDs given filter with any filters set by the `setFilter()`.
+## Exporting data from DataProviders
 
-This module provides a default set of filter components intended to be used with
-Vaadin Grid, to perform filtering of the data shown in the Grid:
+To export the rows currently visible in the Grid (i.e. honoring filters set by the bar above):
 
-* A `NumberFilterPopup` which allows the user to specify a numeric range of accepted values, which may be
-  potentially open.
-* A `DateRangePopup` which allows the user to specify a date range of accepted values.
-* A `BooleanComboBox` which is betterly suited for filtering than a `Checkbox`
-  since it has three states: `true`: filters beans having the `true`
-  value in given property; `false`: filters beans having the `false`
-  value in given property; `null` which disables the filter.
-* An `enumComboBox()` function which allows the user to filter for a particular
-  enum constant.
+* **The simple case** — re-run the same query through the data provider's underlying source. For an
+  `EntityDataProvider`, that's `db { database.sequenceOf(Persons).filter { /* same conditions */ }.toList() }`.
+  This re-derives the filter from your `updateFilter()` logic and is the easiest to reason about.
+* **The exhaustive case** — pull pages via Vaadin's standard `DataProvider.fetch(Query)` and concatenate.
+  Be careful: this can run out of memory for very large tables, so prefer a streaming CSV/Excel writer.
 
-In addition, you can use any Vaadin field component:
+For straightforward "export everything" you can call `Persons.findAll()` (no filter) or write the SELECT
+yourself with the ktorm sequence DSL.
 
-* A `TextField` for starts-with or full-text filtering.
-* A `ComboBox` with pre-populated values, to mimic `enumComboBox()` when
-  there's a limited set of values present in the column.
-* Possibly others.
+## Further reading
 
-`FilterBar.configure()` configures all filter fields by default as follows:
-
-* the width is set to 100%
-* the clear button is made visible for `TextField` and `ComboBox`.
-* `HasValueChangeMode.setValueChangeMode` is set to `ValueChangeMode.LAZY`: not to bombard the database with EAGER, but
-  also not to wait until the focus is lost from the filter - not a good UX since the user types in something and waits and waits and waits with nothing going on.
-
-You can override the `configure()` function to modify this behaviour.
-
-Note that the filter components need an implementation of the `FilterFactory` to
-properly generate filter objects for a particular database backend.
-By default the [DataLoaderFilterFactory] is used: it produces `vok-dataloader`-compatible
-`Filter` instances which are accepted by [vok-framework-v10-vokdb](../vok-framework-v10-vokdb)
-module. This detail is hidden within the `asFilterBar()` function.
-
-There is no support for JPA.
-
-### Showing an Arbitrary Output of Any SQL SELECT Command
-
-Say that we have a join which joins Persons with their departments. Something like the following:
-
-```sql92
-SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id
-```
-
-To capture the outcome of this SELECT we can simply declare the following class:
-
-```kotlin
-data class PersonDept(var personName: String? = null, var deptName: String? = null) : Serializable
-```
-
-Of course the `PersonDept` will not be an entity (since it's not represented by a single Table and cannot
-be saved nor deleted), hence it does not implement the `KEntity` interface. Since `Dao` class is only
-applicable to entities, we can't reuse the `Dao`-induced finders.
-
-To load instances of this particular class, we will need to write our own finder methods. We will directly
-use the vok-orm capabilities to map any SELECT result into an arbitrary class. In order for the automatic mapping to work,
-we must ensure that:
-
-* The SQL SELECT column names exactly match the Kotlin properties names (and beware that it's string case-sensitive matching);
-* The SQL types are compatible with Java types of matching fields.
-
-For example: (*Note:* replace `\{` by `{`):
-
-```kotlin
-data class PersonDept(var personName: String? = null, var deptName: String? = null) {
-    companion object {
-        fun findAll(): List<PersonDept> = db {
-            con.createQuery("SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id")
-                .executeAndFetch(PersonDept::class.java)
-        }
-
-        val dataProvider: VokDataProvider<PersonDept> get() =
-            sqlDataProvider(PersonDept::class.java,
-                "SELECT person.name as personName, dept.name as deptName FROM Person person, Department dept WHERE person.deptId=dept.id \{\{WHERE}} order by 1=1\{\{ORDER}} \{\{PAGING}}",
-                idMapper = { it })
-    }
-}
-```
-
-> Note: The `sqlDataProvider` function
-contains extensive documentation on this topic, please consult the kdoc for that class in your IDE.
-
-The `dataProvider` clause will allow us to use the `PersonDept` class with Vaadin Grid simply, with the full
-power of lazy-loading, sorting and filtering:
-
-```kotlin
-class MyUI : UI {
-    override fun init(request: VaadinRequest) {
-        grid(dataProvider = PersonDept.dataProvider) {
-            setSizeFull()
-            val filterBar = appendHeaderRow().asFilterBar()
-            columnFor(PersonDept::personName) {
-                filterBar.forField(TextField(), this).ilike()
-            }
-            columnFor(PersonDept::deptName) {
-                filterBar.forField(TextField(), this).ilike()
-            }
-        }
-    }
-}
-```
-
-### Sorting, Paging and SQL Filters
-
-Paging will simply work out-of-the box, since `sqlDataProvider` will simply replace `\{\{PAGING}}`
-with appropriate `LIMIT 30 OFFSET 0` stanzas.
-
-Sorting will also work out-of-the-box since `sqlDataProvider` will emit `, personName ASC` stanzas
-based on `PersonDept::personName` property names. This will naturally work properly since such columns are
-present in the SQL SELECT command.
-
-Simple auto-generated filters will also work since they will simply filter based on proper column names.
-
-We can of course create much more complex filters, say global filters that will find given text anywhere
-in the table, in all fields. Read below on how this can be done.
-
-## Chaining Data Providers
-
-Sometimes filtering the Grid using the generated filter components is not enough: sometimes it is handy to have an additional search-everywhere `TextField`
-right above the Grid, to do a very fast coarse search. The user can then fine-tune the search by further refining the search criteria in `Grid`'s generated
-filter bar. We need to compute the filters both from the search-everywhere `TextField` and the `Grid` and AND them together.
-
-A naive implementation would be to create one data provider, set it to the Grid and set its filter whenever the search-everywhere `TextField` changes.
-The problem with this approach is that when user types something into Grid's auto-generated filter component, it will set the filter
-into the data provider as well, overwriting any filter set previously by the search-everywhere `TextField`.
-
-In order to AND multiple filters, we can use the data provider chaining / delegation technique. We will take a data provider and create a new one,
-which will delegate the data-fetching tasks to the original data provider but will AND the query filter with any filter
-that's set into it:
-
-```kotlin
-val dp = PersonDept.dataProvider
-// the search-everywhere TextField will set the filters into `dp` by calling dp.setFilter()
-val chainedDP = dp.withConfigurableFilter2()
-// the withConfigurableFilter2() method creates a new data provider which delegates data-fetching calls to the original, but
-// will apply its own filters as well
-```
-
-We can now set the `chainedDP` to the `Grid` and generate the grid filter components. The filter components will set filters to the
-`chainedDP` while the search-everywhere `TextField` will set filters to the `dp`. This way the filters won't get overwritten by one another.
-
-You can chain even more data providers: for example if you wish to restrict the result to a particular company only, you can type
-
-```kotlin
-val dp = PersonDept.dataProvider.withFilter { PersonDept::companyId eq 25L }
-```
-
-> *Important:* Make sure to configure Grid with the last chained data provider (in this example, the `chainedDP`).
-If you set the data providers in reverse (say, you'll set the `dp` to the Grid and fill the search-everywhere filter into `chainedDP`),
-the Grid will always poll `dp` for data. The problem is that `dp` never delegates data fetching to `chainedDP` and hence the filter
-set to `chainedDP` is never applied. 
-
-Following is a full example code which demonstrates this technique:
-
-```kotlin
-package com.example.vok
-
-import eu.vaadinonkotlin.vaadin10.vokdb.*
-import com.github.mvysny.karibudsl.v10.*
-import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.router.Route
-
-@Route("")
-class WelcomeView: VerticalLayout() {
-  private val personDeptNameFilter: TextField
-  private val personNameFilter = FilterTextField()
-  private val deptNameFilter = FilterTextField()
-  private val dataProvider = PersonDept.dataProvider
-  init {
-    setSizeFull(); content { align(center, middle) }; isMargin = false; isSpacing = true
-
-    personDeptNameFilter = textField {
-      addValueChangeListener { updateFilter() }
-    }
-    // wrap 'dp' in configurable filter data provider. This is so that the filter set by the generated filter
-    // components would not overwrite filter set by the custom text field filter above.
-    grid(dataProvider = dataProvider) {
-      setSizeFull()
-      val filterBar = appendHeaderRow().asFilterBar()
-      columnFor(PersonDept::personName) {
-        personNameFilter.addValueChangeListener { updateFilter() }
-        filterBar.getCell(this).component = personNameFilter
-      }
-      columnFor(PersonDept::deptName) {
-        deptNameFilter.addValueChangeListener { updateFilter() }
-        filterBar.getCell(this).component = deptNameFilter
-      }
-    }
-  }
-
-  private fun updateFilter() {
-    var c: Condition = Condition.NO_CONDITION
-    val normalizedFilter = personDeptNameFilter.trim().toLowerCase()
-    if (value.isNotBlank()) {
-        c = c.and(PersonDept::personName.exp.startsWithIgnoreCase(normalizedFilter).or(PersonDept::deptName.exp.startsWithIgnoreCase(normalizedFilter)))
-    }
-    if (personNameFilter.value.isNotBlank()) {
-      c = c.and(PersonDept::personName.exp.startsWithIgnoreCase(personNameFilter.value))
-    }
-    if (deptNameFilter.value.isNotBlank()) {
-      c = c.and(PersonDept::deptName.exp.startsWithIgnoreCase(deptNameFilter.value))
-    }
-    dataProvider.filter = c
-  }
-}
-```
-
-## Exporting Data From DataProviders
-
-You can simply call `DataProvider.getAll()` which will fetch all beans from the
-data provider satisfying filters set by the `setFilter()` or `withFilter()`. You need to be
-careful though - you can easily run out of memory if the number of matching rows is huge.
-
-Since Grid's generated filter components calls `setFilter()`, the `getAll()` function will
-honor both the user-configured values in the filter components, and the search-everywhere text field
-in the example above.
-
-> Note: don't use the `ListDataProvider.getItems()` or `ListDataProvider.items` to fetch the data. This will
-return all items as they were provided to the `ListDataProvider` constructor, not applying any
-filters set by either the Grid or the search-everywhere `TextField`.
-
-You can then export the beans into, say, a CSV.
+* [ktorm.org](https://www.ktorm.org/) — schema definition, query DSL, entity sequences, joins, aggregates.
+* [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) — DataProviders, filter components, Binder helpers.
+* [vok-framework-vokdb README](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-framework-vokdb)
+  — VoK-side additions (DataSource wiring, Binder `toId` helper, `enumFilterField`).
+* [vok-example-crud](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-example-crud) — the
+  runnable demo and end-to-end integration-test harness. Best place to copy patterns from.
+* [beverage-buddy-ktorm](https://github.com/mvysny/beverage-buddy-ktorm) — a fuller example app.

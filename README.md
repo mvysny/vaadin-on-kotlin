@@ -13,8 +13,10 @@
 > for an end-to-end example.
 
 Vaadin-on-Kotlin is a web-application framework for database-backed apps in Kotlin. Documentation lives at
-[www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu) (some pages still describe pre-0.19 idioms — refer to module
-READMEs and the demo for current code).
+[www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu). The [Accessing SQL Databases](https://www.vaadinonkotlin.eu/databases/)
+guide and the per-module READMEs are current; the [tutorial](https://www.vaadinonkotlin.eu/tutorial/) and
+[NoSQL/REST data sources](https://www.vaadinonkotlin.eu/nosql_rest_datasources/) page still describe pre-0.19 idioms
+and are awaiting a rewrite — refer to [vok-example-crud](vok-example-crud) for current patterns.
 
 VoK does not enforce MVC, dependency injection, or service-oriented architecture. It uses neither Spring nor JavaEE
 by default. The view layer leverages [Vaadin](https://vaadin.com)'s component-oriented programming model. The
