@@ -17,6 +17,7 @@ import org.ktorm.entity.Entity
 import org.ktorm.schema.Table
 import org.ktorm.schema.boolean
 import org.ktorm.schema.date
+import org.ktorm.schema.enum
 import org.ktorm.schema.int
 import org.ktorm.schema.long
 import org.ktorm.schema.timestamp
@@ -31,10 +32,13 @@ public interface Person : ActiveEntity<Person> {
     public var dateOfBirth: LocalDate?
     public var created: Instant?
     public var alive: Boolean?
+    public var maritalStatus: MaritalStatus?
     override val table: org.ktorm.schema.Table<Person> get() = Persons
 
     public companion object : Entity.Factory<Person>()
 }
+
+public enum class MaritalStatus { Single, Married, Divorced, Widowed }
 
 public object Persons : Table<Person>("Test") {
     public val id: org.ktorm.schema.Column<Long> = long("id").primaryKey().bindTo { it.id }
@@ -43,6 +47,7 @@ public object Persons : Table<Person>("Test") {
     public val dateOfBirth: org.ktorm.schema.Column<LocalDate> = date("dateOfBirth").bindTo { it.dateOfBirth }
     public val created: org.ktorm.schema.Column<Instant> = timestamp("created").bindTo { it.created }
     public val alive: org.ktorm.schema.Column<Boolean> = boolean("alive").bindTo { it.alive }
+    public val maritalStatus: org.ktorm.schema.Column<MaritalStatus> = enum<MaritalStatus>("maritalStatus").bindTo { it.maritalStatus }
 }
 
 abstract class AbstractDbTest {
@@ -68,7 +73,8 @@ abstract class AbstractDbTest {
                 age integer not null,
                 dateOfBirth date,
                 created timestamp,
-                alive boolean
+                alive boolean,
+                maritalStatus varchar
                  )"""
                 )
             }
