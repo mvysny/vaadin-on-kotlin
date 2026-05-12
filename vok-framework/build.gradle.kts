@@ -1,7 +1,5 @@
 dependencies {
     implementation(libs.slf4j.api)
-    api(libs.jdbiorm)
-    api(libs.jdbiormvaadin)
 
     // Vaadin
     api(libs.karibu.dsl)
@@ -13,7 +11,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.slf4j.simple)
     testImplementation(libs.karibu.testing)
-    testImplementation(libs.vokorm)
 }
 
 kotlin {

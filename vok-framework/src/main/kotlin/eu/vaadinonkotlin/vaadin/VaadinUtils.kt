@@ -1,8 +1,6 @@
 package eu.vaadinonkotlin.vaadin
 
-import com.gitlab.mvysny.jdbiorm.Property
 import com.vaadin.flow.component.UI
-import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.data.binder.BeanPropertySet
 import com.vaadin.flow.data.binder.PropertyDefinition
 import eu.vaadinonkotlin.I18n
@@ -51,7 +49,3 @@ public fun checkUIThread(): UI = UI.getCurrent() ?: throw IllegalStateException(
 public inline val <reified T: Any, V> KProperty1<T, V>.definition: PropertyDefinition<T, V?>
     get() =
         BeanPropertySet.get(T::class.java).getProperty(name).get() as PropertyDefinition<T, V?>
-
-public fun Grid.Column<*>.setSortProperty(property: Property<*>) {
-    setSortProperty(property.toExternalString())
-}
