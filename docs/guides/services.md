@@ -20,8 +20,8 @@ nav_order: 8
 # Writing Services
 
 In a simple app it is enough for the UI to access the database directly, through
-the entity's `Dao`s. However, more complex app tends to have so-called
-*business logic code* which deals with the app's intrinsic functionality.
+the entity's `Table<E>` object and `ActiveEntity` instance methods. However, more complex
+apps tend to have so-called *business logic code* which deals with the app's intrinsic functionality.
 
 For example, in a fictional hotel booking system, a successful booking must ensure that:
 
@@ -54,8 +54,9 @@ disadvantages, and therefore VoK is not using DI and is using a much simpler app
 The fictional booking system above is just a set of steps to be performed. The process does not have any state, at most couple of
 local variables. We don't have any preparation steps which need to be followed in order
 for the function to work. We don't have to run special steps to access the database since the database
-can simply be accessed by the means of the `db{}` block or via `Dao` methods which
-can be called from anywhere (read more about this in the [Accessing SQL databases](/databases) Guide).
+can simply be accessed by the means of the `db{}` block, or via `ActiveEntity` instance methods
+(`save()` / `delete()`) and `Table<E>` extension functions, which can be called from anywhere
+(read more about this in the [Accessing SQL databases](/databases) Guide).
 
 We can therefore simply create a single standalone *function* which performs the booking; a set of such standalone functions
 can then form the *service layer*.
@@ -170,24 +171,29 @@ the current `User` entity into the session. However, that would allow other part
 let's create a stateful service:
 
 ```kotlin
-class LoginService: Serializable {
+class LoginService : Serializable {
     var user: User? = null
-    private set
+        private set
 
     val isLoggedIn: Boolean get() = user != null
 
     fun login(user: User) {
-        check(this.user == null) { "An user is already logged in" }
+        check(this.user == null) { "A user is already logged in" }
         this.user = user
-        Page.getCurrent().reload()
+        UI.getCurrent().page.reload()
     }
 
     fun logout() {
         Session.current.close()
-        Page.getCurrent().reload()
+        UI.getCurrent().page.reload()
     }
 }
 ```
+
+> **Note:** For a real app, prefer `AbstractLoginService<U>` from Vaadin Simple Security — it
+takes care of session-fixation prevention (it reinitializes the HTTP session on login), exposes
+`currentUser` / `currentUserRoles` for navigation guards, and provides `logout()`. See the
+[Security](/security) guide for the full pattern.
 
 Since we don't have any DI, this is just a simple Kotlin class, nothing more. Obviously we need to bind
 the instance of this class to the user seat, or user session. Therefore the easiest way is to store the service
@@ -213,18 +219,18 @@ This is a lot of code to write for every single service. Luckily, we can do bett
 * Finally, and most importantly, we can create the `loginService` to be an extension property on the `Session` itself.
 
 ```kotlin
-val Session.loginService: LoginService get() = getOrPut { LoginService() }
+val Session.loginService: LoginService
+    get() = getOrPut(LoginService::class) { LoginService() }
 ```
 
-Now you will simply call the login service as follows (an excerpt of the `LoginView`):
+Now you will simply call the login service as follows (an excerpt of the `LoginRoute`,
+using Vaadin's `LoginForm`):
 
 ```kotlin
-onLogin { username, password ->
-    val user = User.findByUsername(username)
-    if (user == null) {
-        usernameField.componentError = UserError("The user does not exist")
-    } else if (!user.passwordMatches(password)) {
-        passwordField.componentError = UserError("Invalid password")
+loginForm.addLoginListener { e ->
+    val user = User.findByUsername(e.username)
+    if (user == null || !user.passwordMatches(e.password)) {
+        loginForm.setErrorMessage("Login failed", "Invalid username or password")
     } else {
         Session.loginService.login(user)
     }
@@ -243,7 +249,8 @@ You could use the built-in Kotlin singleton support by using `object` approach, 
 support for JVM singletons:
 
 ```kotlin
-val Services.yourService: YourService get() = singletons.getOrCreate { YourService() }
+val Services.yourService: YourService
+    get() = singletons.getOrCreate(YourService::class) { YourService() }
 ```
 
 The reason is that sometimes you need to provide a different (fake) implementation of your
