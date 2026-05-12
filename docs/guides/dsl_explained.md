@@ -36,7 +36,7 @@ class MyView : VerticalLayout() {
     init {
         formLayout {
             textField("Name:") {
-                description = "Last name, first name"
+                placeholder = "Last name, first name"
             }
             textField("Age:") {
                 width = "5em"
@@ -54,7 +54,7 @@ class MyView : VerticalLayout() {
         val fl = FormLayout()
         add(fl)
         val nameField = TextField("Name:")
-        nameField.description = "Last name, first name"
+        nameField.placeholder = "Last name, first name"
         fl.add(nameField)
         val ageField = TextField("Age:")
         ageField.width = "5em"
@@ -97,8 +97,8 @@ fun HasComponents.formLayout() {
     val fl = FormLayout()
     this.add(fl)  // when calling this function from MyView, "this" will reference the instance of MyView
 }
-fun HasComponents.textField(caption: String = "") {
-    val tf = TextField(caption)
+fun HasComponents.textField(label: String? = null) {
+    val tf = TextField(label)
     this.add(tf)
 }
 ```
@@ -191,8 +191,8 @@ textField {
 We can achieve that by having the `textField()` function also take a closure with receiver:
 
 ```kotlin
-fun HasComponents.textField(caption: String = "", block: TextField.()->Unit) {
-    val fl = TextField(caption)
+fun HasComponents.textField(label: String? = null, block: TextField.()->Unit) {
+    val fl = TextField(label)
     this.add(fl) // this. is for brevity and can be omitted
     fl.block()
 }
@@ -238,8 +238,8 @@ fun (@VaadinDsl HasComponents).formLayout(block: (@VaadinDsl FormLayout).()->Uni
     this.add(fl)
     fl.block()
 }
-fun (@VaadinDsl HasComponents).textField(caption: String = "", block: (@VaadinDsl TextField).()->Unit) {
-    val fl = TextField(caption)
+fun (@VaadinDsl HasComponents).textField(label: String? = null, block: (@VaadinDsl TextField).()->Unit) {
+    val fl = TextField(label)
     this.add(fl)
     fl.block()
 }
@@ -275,5 +275,5 @@ val form = FormLayout().apply {
 }
 ```
 
-DSLs do not contain the functionality needed to *remove* the component from its parent. If you need this kind of functionality, you will
-have to resort to Vaadin's built-in methods, or use Karibu-DSL's `removeFromParent()` function.
+DSLs do not contain the functionality needed to *remove* the component from its parent. If you need this kind of functionality, use
+Vaadin's built-in `Component.removeFromParent()` method, or remove the child from its parent layout directly via `parent.remove(child)`.
