@@ -7,18 +7,16 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.orderedlayout.FlexComponent
+import java.time.Instant
 
 /**
- * Edits or creates a person. Use [Window.addCloseListener] to handle window close.
+ * Edits or creates a person.
  * @property person the person to edit or create.
  */
 class CreateEditPerson(val person: Person) : Dialog() {
 
     var onSaveOrCreateListener: () -> Unit = {}
 
-    /**
-     * True if we are creating a new person, false if we are editing an existing one.
-     */
     private val creating: Boolean
         get() = person.id == null
 
@@ -26,7 +24,6 @@ class CreateEditPerson(val person: Person) : Dialog() {
     private lateinit var form: PersonForm
 
     init {
-//        caption = if (creating) "New Person" else "Edit #${person.id}"
         verticalLayout {
             isMargin = true
             form = personForm()
@@ -48,22 +45,14 @@ class CreateEditPerson(val person: Person) : Dialog() {
         if (!form.binder.validate().isOk || !form.binder.writeBeanIfValid(person)) {
             return
         }
+        if (person.created == null) person.created = Instant.now()
         person.save()
         onSaveOrCreateListener()
         close()
     }
 }
 
-/**
- * The form, which edits a single [Person].
- * * To populate the fields, just call `form.binder.readBean(person)`
- * * To validate and save the data, just call `binder.validate().isOk && binder.writeBeanIfValid(person)`
- */
 class PersonForm : FormLayout() {
-    /**
-     * Populates the fields with data from a bean. Also infers validations from JSR303 annotations attached to the Person class, when
-     * the fieldGroup.bind() is called.
-     */
     val binder = beanValidationBinder<Person>()
 
     init {
@@ -78,7 +67,7 @@ class PersonForm : FormLayout() {
             bind(binder).bind(Person::dateOfBirth)
         }
         comboBox<MaritalStatus>("Marital status:") {
-            setItems(*MaritalStatus.values())
+            setItems(*MaritalStatus.entries.toTypedArray())
             bind(binder).bind(Person::maritalStatus)
         }
         checkBox("Alive") {

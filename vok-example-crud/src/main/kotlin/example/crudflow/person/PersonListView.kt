@@ -2,13 +2,15 @@ package example.crudflow.person
 
 import com.github.mvysny.karibudsl.v10.*
 import com.github.mvysny.kaributools.*
-import com.github.vokorm.db
-import com.github.vokorm.exp
-import com.gitlab.mvysny.jdbiorm.condition.Condition
-import com.gitlab.mvysny.jdbiorm.vaadin.filter.BooleanFilterField
-import com.gitlab.mvysny.jdbiorm.vaadin.filter.DateRangePopup
-import com.gitlab.mvysny.jdbiorm.vaadin.filter.FilterTextField
-import com.gitlab.mvysny.jdbiorm.vaadin.filter.NumberRangePopup
+import com.github.mvysny.ktormvaadin.and
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.github.mvysny.ktormvaadin.db
+import com.github.mvysny.ktormvaadin.e
+import com.github.mvysny.ktormvaadin.filter.BooleanFilterField
+import com.github.mvysny.ktormvaadin.filter.DateInterval
+import com.github.mvysny.ktormvaadin.filter.DateRangePopup
+import com.github.mvysny.ktormvaadin.filter.FilterTextField
+import com.github.mvysny.ktormvaadin.filter.NumberRangePopup
 import com.vaadin.flow.component.Key.KEY_G
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.button.ButtonVariant
@@ -19,12 +21,19 @@ import com.vaadin.flow.component.icon.IconFactory
 import com.vaadin.flow.component.icon.VaadinIcon
 import com.vaadin.flow.data.renderer.ComponentRenderer
 import com.vaadin.flow.router.Route
-import eu.vaadinonkotlin.toDate
-import eu.vaadinonkotlin.vaadin.*
-import eu.vaadinonkotlin.vaadin.vokdb.dataProvider
 import eu.vaadinonkotlin.vaadin.vokdb.enumFilterField
 import example.crudflow.MainLayout
+import org.ktorm.dsl.and
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.greaterEq
+import org.ktorm.dsl.inList
+import org.ktorm.dsl.less
+import org.ktorm.schema.Column
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 
 /**
  * The main view contains a button and a template element.
@@ -38,7 +47,7 @@ class PersonListView : KComposite() {
     private val aliveFilter = BooleanFilterField()
     private val dateOfBirthFilter = DateRangePopup()
     private val maritalStatusFilter = enumFilterField<MaritalStatus>()
-    private val dataProvider = Person.dataProvider
+    private val dataProvider = Persons.dataProvider
     private val createdFilter = DateRangePopup()
 
     private val root = ui {
@@ -60,39 +69,33 @@ class PersonListView : KComposite() {
                 addButtonColumn(VaadinIcon.EDIT, "edit", { person: Person -> createOrEditPerson(person) }) {}
                 addButtonColumn(VaadinIcon.TRASH, "delete", { person: Person -> person.delete(); refresh() }) {}
 
-                columnFor(Person::id, sortable = false) {
+                columnFor(Person::id, sortable = false, key = Persons.id.e.key) {
                     width = "90px"; isExpand = false
                 }
-                val nameColumn = columnFor(Person::name) {
-                    setSortProperty(Person::name.exp)
+                val nameColumn = columnFor(Person::name, key = Persons.name.e.key) {
                     nameFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = nameFilter
                 }
-                columnFor(Person::age) {
+                columnFor(Person::age, key = Persons.age.e.key) {
                     width = "120px"; isExpand = false; textAlign = ColumnTextAlign.CENTER
-                    setSortProperty(Person::age.exp)
                     ageFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = ageFilter
                 }
-                columnFor(Person::alive) {
+                columnFor(Person::alive, key = Persons.alive.e.key) {
                     width = "130px"; isExpand = false
-                    setSortProperty(Person::alive.exp)
                     aliveFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = aliveFilter
                 }
-                columnFor(Person::dateOfBirth, converter = { it?.toString() }) {
-                    setSortProperty(Person::dateOfBirth.exp)
+                columnFor(Person::dateOfBirth, converter = { it?.toString() }, key = Persons.dateOfBirth.e.key) {
                     dateOfBirthFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = dateOfBirthFilter
                 }
-                columnFor(Person::maritalStatus) {
+                columnFor(Person::maritalStatus, key = Persons.maritalStatus.e.key) {
                     width = "160px"; isExpand = false
-                    setSortProperty(Person::maritalStatus.exp)
                     maritalStatusFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = maritalStatusFilter
                 }
-                columnFor(Person::created, converter = { it!!.toInstant().toString() }) {
-                    setSortProperty(Person::created.exp)
+                columnFor(Person::created, converter = { it?.toString() }, key = Persons.created.e.key) {
                     createdFilter.addValueChangeListener { updateFilter() }
                     filterBar.getCell(this).component = createdFilter
                 }
@@ -109,20 +112,32 @@ class PersonListView : KComposite() {
     }
 
     private fun updateFilter() {
-        var c: Condition = Condition.NO_CONDITION
-        if (!nameFilter.value.isBlank()) {
-            c = c.and(Person::name.exp.startsWithIgnoreCase(nameFilter.value))
+        val conditions = mutableListOf<ColumnDeclaring<Boolean>?>()
+        if (nameFilter.value.isNotBlank()) {
+            conditions += Persons.name.ilike("${nameFilter.value.trim()}%")
         }
-        c = c.and(ageFilter.value.asIntegerInterval().contains(Person::age.exp))
-        if (!aliveFilter.isEmpty) {
-            c = c.and(Person::alive.exp.`is`(aliveFilter.value))
+        conditions += Persons.age.between(ageFilter.value.asIntegerInterval())
+        aliveFilter.value?.let { conditions += Persons.alive eq it }
+        conditions += Persons.dateOfBirth.between(dateOfBirthFilter.value)
+        val selectedStatuses = maritalStatusFilter.value
+        if (selectedStatuses.isNotEmpty() && selectedStatuses.size < MaritalStatus.entries.size) {
+            conditions += Persons.maritalStatus.inList(selectedStatuses.toList())
         }
-        c = c.and(dateOfBirthFilter.value.contains(Person::dateOfBirth.exp, BrowserTimeZone.get))
-        if (!maritalStatusFilter.isAllOrNothingSelected) {
-            c = c.and(Person::maritalStatus.exp.`in`(maritalStatusFilter.value))
+        conditions += createdFilter.value.containsInstant(Persons.created)
+        dataProvider.setFilter(conditions.and())
+    }
+
+    /** ktorm-vaadin's DateInterval works on [LocalDate]; the [Persons.created] column is [Instant], so widen the
+     * day range to an Instant range in the browser's timezone. */
+    private fun DateInterval.containsInstant(col: Column<Instant>, zone: ZoneId = BrowserTimeZone.get): ColumnDeclaring<Boolean>? {
+        val startInstant: Instant? = start?.atStartOfDay(zone)?.toInstant()
+        val endExclusive: Instant? = endInclusive?.plusDays(1)?.atStartOfDay(zone)?.toInstant()
+        return when {
+            startInstant != null && endExclusive != null -> (col greaterEq startInstant) and (col less endExclusive)
+            startInstant != null -> col greaterEq startInstant
+            endExclusive != null -> col less endExclusive
+            else -> null
         }
-        c = c.and(createdFilter.value.contains(Person::created.exp, BrowserTimeZone.get))
-        dataProvider.filter = c
     }
 
     private fun createOrEditPerson(person: Person) {
@@ -133,10 +148,15 @@ class PersonListView : KComposite() {
 
     private fun generateTestingData() {
         db {
-            (0..85).forEach {
-                Person(name = "generated$it", age = it + 15, maritalStatus = MaritalStatus.Single, alive = true,
-                        dateOfBirth = LocalDate.of(1990, 1, 1).plusDays(it.toLong()),
-                        created = LocalDate.of(2011, 1, 1).plusDays(it.toLong()).atStartOfDay(BrowserTimeZone.get).toInstant().toDate).save()
+            (0..85).forEach { i ->
+                Person {
+                    name = "generated$i"
+                    age = i + 15
+                    maritalStatus = MaritalStatus.Single
+                    alive = true
+                    dateOfBirth = LocalDate.of(1990, 1, 1).plusDays(i.toLong())
+                    created = LocalDate.of(2011, 1, 1).plusDays(i.toLong()).atStartOfDay(BrowserTimeZone.get).toInstant()
+                }.create()
             }
         }
         personGrid.dataProvider.refreshAll()
