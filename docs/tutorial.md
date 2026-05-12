@@ -2008,3 +2008,181 @@ remaining chapters are short feature additions:
 - **Chapter 11** wires `vok-rest` to expose `/api/products` so a barcode
   scanner at the shop counter (or any other client) can read and update
   the catalog over HTTP.
+
+# Chapter 9 — Custom cell rendering
+
+Right now the **Stock** column shows a number and nothing else. The
+shopkeeper has to read every row in turn to spot which products are
+running out. We'll fix that with two small features:
+
+1. A red **"Low stock"** badge next to the stock value when it dips
+   below a threshold.
+2. A **"Low stock only"** toolbar checkbox that hides every other row.
+
+The mechanism behind the badge is Vaadin's `ComponentRenderer` — a
+column renderer that produces a real Component instance per row
+instead of a plain string. The checkbox plumbs into the same
+`productFilter()` we built in Chapter 5; the new clause is
+`Products.stock lt LOW_STOCK_THRESHOLD`.
+
+## Step 1 — define the threshold
+
+Open `CatalogView.kt` and add a file-level constant near the top:
+
+```kotlin
+private const val LOW_STOCK_THRESHOLD: Int = 10
+```
+
+A "threshold" is a *presentation* concern — it controls when the UI
+draws attention to a row — not a domain rule. We keep it next to the
+renderer and filter clause that use it, file-private so nothing else
+in the project accidentally picks it up.
+
+## Step 2 — the `stockCell` renderer
+
+Add the renderer function at the bottom of `CatalogView.kt`,
+alongside `productFilter`:
+
+```kotlin
+private fun stockCell(product: Product): Component {
+    val layout = HorizontalLayout()
+    layout.isPadding = false
+    layout.isSpacing = true
+    layout.defaultVerticalComponentAlignment = FlexComponent.Alignment.CENTER
+    layout.add(Span(product.stock?.toString().orEmpty()))
+    val stock = product.stock
+    if (stock != null && stock < LOW_STOCK_THRESHOLD) {
+        val badge = Span("Low stock")
+        badge.element.setAttribute("theme", "badge error small")
+        layout.add(badge)
+    }
+    return layout
+}
+```
+
+A few things to call out:
+
+- The function takes a whole `Product` and returns a `Component`. The
+  Grid will call it once per visible row.
+- It produces a `HorizontalLayout` containing the stock number as a
+  `Span`, then conditionally appends a second `Span` with the badge
+  text. `isPadding = false` keeps the cell tight against the rest of
+  the column.
+- The badge's appearance is controlled by Vaadin's Lumo
+  `theme="badge error small"` attribute. Lumo ships a set of
+  pre-styled badge variants — `badge` (neutral), `badge success`,
+  `badge error`, `badge contrast`, `badge primary` — and an optional
+  `small` modifier. Together they render as a small red pill. No CSS
+  needed.
+
+Wire it into the Grid by upgrading the stock column from a plain
+`columnFor` to one that takes a renderer:
+
+```kotlin
+columnFor(Product::stock, ComponentRenderer(::stockCell)) { setHeader("Stock") }
+```
+
+The two-argument form of `columnFor` accepts a `Renderer<Product>` as
+its second argument; `ComponentRenderer(::stockCell)` wraps our
+function in the Vaadin renderer SAM. The first argument
+(`Product::stock`) is still there so the column knows what property
+it represents — that keeps sorting by stock value working, even
+though the cell contents are now a fully custom Component tree.
+
+Restart and reload. The Grid now shows `0 [Low stock]`,
+`8 [Low stock]`, `3 [Low stock]` on the three rows below the
+threshold, and bare numbers on the rest. Sort the Stock column —
+ascending puts the badged rows at the top.
+
+## Step 3 — the "Low stock only" checkbox
+
+Add the checkbox to the toolbar (just before the `+ Add product`
+button), expand `applyFilters` to read its value, and route it
+through `productFilter`:
+
+```kotlin
+val lowStockField = checkBox("Low stock only")
+button("+ Add product") {
+    setPrimary()
+    onClick { openAddDialog() }
+}
+
+fun applyFilters() {
+    dp.setFilter(productFilter(searchField.value, categoryField.value, lowStockField.value))
+}
+searchField.addValueChangeListener { applyFilters() }
+categoryField.addValueChangeListener { applyFilters() }
+lowStockField.addValueChangeListener { applyFilters() }
+```
+
+Then extend `productFilter` to accept and apply the new flag:
+
+```kotlin
+private fun productFilter(
+    search: String,
+    category: Category?,
+    lowStockOnly: Boolean,
+): ColumnDeclaring<Boolean>? {
+    val s = search.trim()
+    val parts = listOfNotNull(
+        if (s.isEmpty()) null else {
+            val pattern = "%$s%"
+            Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+        },
+        category?.let { Products.category eq it },
+        if (lowStockOnly) Products.stock lt LOW_STOCK_THRESHOLD else null,
+    )
+    return parts.reduceOrNull { a, b -> a and b }
+}
+```
+
+Restart. Tick the **Low stock only** box: the Grid drops to three
+rows. Untick it: ten rows return. Combine with the category filter:
+pick **Paint** with the checkbox on — two rows. Pick **Tools** with
+the checkbox on — zero rows (`WD40-400`'s stock is 32, well above
+threshold). Everything composes through the same WHERE-clause
+algebra you wrote three chapters ago.
+
+The structural payoff: adding a *third* filter took two real lines —
+a new field declaration, a new entry in the `listOfNotNull`. The
+listener wiring is mechanical. The new ktorm clause
+(`Products.stock lt LOW_STOCK_THRESHOLD`) participates in the same
+AND combinator as the existing search and category. If the
+shopkeeper later wants a "by price band" filter, or a "by supplier"
+filter, the same shape works.
+
+## Why `ComponentRenderer` instead of, say, a converter?
+
+We could have written a converter that turned the `stock` value into a
+formatted `String` like `"0 (LOW)"`. That would change the *text*
+rendered into the cell — but only the text. To get colour, shape, or
+icon involvement, you have to drop down to a real Component tree.
+`ComponentRenderer` is the door from "values" to "any UI you want per
+cell" — sparklines, progress bars, action menus, image thumbnails,
+nested grids. It's expensive (a full Component instance per visible
+row), but for a back-office app where the visible row count is small,
+that cost doesn't matter.
+
+For a tutorial-scale app, you'd reach for `ComponentRenderer` for any
+column where you need more than a single formatted string. For
+production apps with thousands of visible rows you'd consider
+`LitRenderer` instead — Vaadin's lighter-weight template-based
+renderer — but that's a different topic.
+
+## The full picture
+
+The catalog now does everything the BoltShop spec promised at the
+start of the tutorial:
+
+- A filterable Grid (search, category, low-stock toggle)
+- Selection-driven side-panel editing with `Binder` and validation
+- A Dialog-based add flow reusing the same form
+- A custom cell renderer that draws attention to inventory needing
+  attention
+- All of it backed by ktorm + Flyway + H2
+
+Two short chapters remain. **Chapter 10** writes browserless tests
+covering the filters, the edit flow, the add flow, and the
+validation. **Chapter 11** exposes the catalog as a small REST API
+that lives next to the SPA — so a barcode scanner or any other
+client can read and write products over HTTP.
