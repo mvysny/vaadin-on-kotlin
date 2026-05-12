@@ -909,3 +909,189 @@ In the next chapter we'll add a second filter — a `ComboBox<Category>` — and
 combine it with the search field. The trick we'll need is to build a
 `productFilter()` that ANDs both inputs together; the underlying mechanism is
 exactly what you just wrote.
+
+# Chapter 5 — Category filter
+
+Searching by SKU and name is useful when the user knows what they're looking
+for. Just as often, they want to *browse* — "show me everything in Plumbing".
+We'll add a `ComboBox<Category>` next to the search field and combine both
+filters so they narrow the result together.
+
+This chapter is short. The plumbing (`DataProvider`, `setFilter`,
+`productFilter`) is already in place from Chapter 4; we're adding one new
+field, expanding `productFilter` to take two arguments, and wrapping the
+toolbar in a `horizontalLayout` so the controls sit side by side.
+
+## The whole change
+
+Update `CatalogView.kt` to:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.Route
+import org.ktorm.dsl.and
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.or
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike
+
+@Route("")
+class CatalogView : KComposite() {
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+
+            val dp = Products.dataProvider
+
+            horizontalLayout {
+                val searchField = textField {
+                    placeholder = "Search by name or SKU"
+                    valueChangeMode = ValueChangeMode.LAZY
+                    setWidth("20em")
+                }
+                val categoryField = comboBox<Category> {
+                    placeholder = "Category"
+                    setItems(Category.entries)
+                    setWidth("12em")
+                    isClearButtonVisible = true
+                }
+
+                fun applyFilters() {
+                    dp.setFilter(productFilter(searchField.value, categoryField.value))
+                }
+                searchField.addValueChangeListener { applyFilters() }
+                categoryField.addValueChangeListener { applyFilters() }
+            }
+
+            grid<Product>(Product::class, dp) {
+                setSizeFull()
+                columnFor(Product::sku) { setHeader("SKU") }
+                columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                columnFor(Product::category) { setHeader("Category") }
+                columnFor(Product::price) { setHeader("Price") }
+                columnFor(Product::stock) { setHeader("Stock") }
+                columnFor(Product::unit) { setHeader("Unit") }
+            }
+        }
+    }
+}
+
+private fun productFilter(search: String, category: Category?): ColumnDeclaring<Boolean>? {
+    val s = search.trim()
+    val parts = listOfNotNull(
+        if (s.isEmpty()) null else {
+            val pattern = "%$s%"
+            Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+        },
+        category?.let { Products.category eq it },
+    )
+    return parts.reduceOrNull { a, b -> a and b }
+}
+```
+
+Restart and reload. Pick **Plumbing** from the combo box: the Grid shows only
+the copper pipe. Type `M6` into the search field on top of that: the Grid
+empties (no plumbing item has `M6` in its name or SKU). Clear the search:
+plumbing returns. Clear the combo box: all ten rows come back.
+
+## What's new
+
+**`comboBox<Category>(...)`** is the Karibu-DSL builder for Vaadin's
+`ComboBox`. The type parameter and `setItems(Category.entries)` together give
+us a dropdown whose items are exactly the six enum constants
+(`Category.entries` is the Kotlin 1.9+ replacement for `values()` — a real
+`List<Category>` rather than an array).
+
+**`isClearButtonVisible = true`** puts a small × on the right edge of the
+combo box so the user can clear the selection with one click. Without it, the
+only way to drop a category filter is to scroll back to "nothing", which most
+UI patterns don't even provide. Always set this on filters.
+
+**`horizontalLayout { ... }`** wraps the two filter fields. Both controls live
+inside a single horizontal row above the Grid. Children of `horizontalLayout`
+are spaced and laid out left-to-right by default; for the kind of toolbar we
+need here that's already the right look.
+
+**`fun applyFilters()`** is a *local* function defined inside the layout
+builder. It reads each field's current value and calls
+`dp.setFilter(productFilter(...))`. Both fields' value-change listeners point
+at the same `applyFilters()`, so whichever field the user touches, the same
+combined WHERE clause gets rebuilt and pushed to ktorm.
+
+Local functions like this are a small but real Kotlin lever — they let us
+capture both `searchField` and `categoryField` (and `dp`) by reference,
+without lifting them to class fields, and without resorting to `lateinit`.
+
+## The expanded `productFilter()`
+
+`productFilter` now takes two arguments and returns either `null` (no filter,
+show everything) or a ktorm boolean expression:
+
+```kotlin
+private fun productFilter(search: String, category: Category?): ColumnDeclaring<Boolean>? {
+    val s = search.trim()
+    val parts = listOfNotNull(
+        if (s.isEmpty()) null else {
+            val pattern = "%$s%"
+            Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+        },
+        category?.let { Products.category eq it },
+    )
+    return parts.reduceOrNull { a, b -> a and b }
+}
+```
+
+`listOfNotNull(...)` drops any `null` clauses — that's how each individual
+filter "turns itself off" when the user has nothing in its field.
+`reduceOrNull { a, b -> a and b }` ANDs the surviving clauses together, or
+returns `null` if the list is empty (i.e. no filters at all). The combination
+generates SQL like:
+
+```sql
+SELECT * FROM Product
+WHERE ((name ILIKE ?) OR (sku ILIKE ?)) AND (category = ?)
+LIMIT ? OFFSET ?
+```
+
+If we needed a third filter — say, a low-stock checkbox — adding it would be
+two lines: one new field, one new entry in the `listOfNotNull`. The closure of
+each filter is independent of the others, and `productFilter` is the single
+place that assembles them. That's the structural pattern, and we'll reuse it
+in Chapter 9 when we add the "Low stock only" toggle.
+
+## Note on `addValueChangeListener` vs the inline form
+
+Compare this chapter's listeners:
+
+```kotlin
+val searchField = textField { ... }
+val categoryField = comboBox<Category> { ... }
+searchField.addValueChangeListener { applyFilters() }
+categoryField.addValueChangeListener { applyFilters() }
+```
+
+to what we did in Chapter 4:
+
+```kotlin
+textField {
+    ...
+    addValueChangeListener { e -> dp.setFilter(productFilter(e.value)) }
+}
+```
+
+Both are valid. The Chapter-4 form attaches the listener inline inside the
+builder lambda, which is fine when the listener only reads its own field's
+value. As soon as the listener needs to read *another* field's value too — as
+ours does now — we have to first capture both fields into vals (because the
+builder lambda has no access to a sibling that hasn't been declared yet) and
+attach the listeners afterwards.
+
+In the next chapter we'll add a side panel that edits the row the user
+selects in the Grid — and for that we'll meet Vaadin's `Binder`, which is the
+component that ties form fields to the properties of an entity.
