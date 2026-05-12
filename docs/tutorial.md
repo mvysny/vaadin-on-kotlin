@@ -1095,3 +1095,366 @@ attach the listeners afterwards.
 In the next chapter we'll add a side panel that edits the row the user
 selects in the Grid — and for that we'll meet Vaadin's `Binder`, which is the
 component that ties form fields to the properties of an entity.
+
+# Chapter 6 — Editing the selected product
+
+So far the catalog is read-only. In this chapter we'll turn it into a
+master-detail editor: clicking a row in the Grid pulls that product into a
+form on the right; the user changes a field, hits **Save**, and the row
+updates. **Delete** removes the row. The form is built once and reused for
+every row the user picks.
+
+Two new ideas show up here:
+
+- **Vaadin's `Binder`** — the bridge between an entity and a form. It reads
+  values out of a bean into matching fields, validates input on its way back,
+  and writes changes back to the bean.
+- **Master-detail layout** — Grid on the left, form on the right, both
+  inside a `horizontalLayout` that spans the available width.
+
+## The whole new `CatalogView.kt`
+
+Replace `CatalogView.kt` with:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.kaributools.setPrimary
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.notification.Notification
+import com.vaadin.flow.data.binder.Binder
+import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.Route
+import org.ktorm.dsl.and
+import org.ktorm.dsl.eq
+import org.ktorm.dsl.or
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike
+
+@Route("")
+class CatalogView : KComposite() {
+
+    private val dp = Products.dataProvider
+    private val binder = Binder<Product>(Product::class.java)
+    private var selected: Product? = null
+    private lateinit var saveButton: Button
+    private lateinit var deleteButton: Button
+
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+
+            horizontalLayout {
+                val searchField = textField {
+                    placeholder = "Search by name or SKU"
+                    valueChangeMode = ValueChangeMode.LAZY
+                    setWidth("20em")
+                }
+                val categoryField = comboBox<Category> {
+                    placeholder = "Category"
+                    setItems(Category.entries)
+                    setWidth("12em")
+                    isClearButtonVisible = true
+                }
+
+                fun applyFilters() {
+                    dp.setFilter(productFilter(searchField.value, categoryField.value))
+                }
+                searchField.addValueChangeListener { applyFilters() }
+                categoryField.addValueChangeListener { applyFilters() }
+            }
+
+            horizontalLayout {
+                setSizeFull(); isSpacing = true
+
+                grid<Product>(Product::class, dp) {
+                    flexGrow = 1.0
+                    setSizeFull()
+                    columnFor(Product::sku) { setHeader("SKU") }
+                    columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                    columnFor(Product::category) { setHeader("Category") }
+                    columnFor(Product::price) { setHeader("Price") }
+                    columnFor(Product::stock) { setHeader("Stock") }
+                    columnFor(Product::unit) { setHeader("Unit") }
+
+                    asSingleSelect().addValueChangeListener { e -> showSelection(e.value) }
+                }
+
+                verticalLayout {
+                    setWidth("28em"); isPadding = true; isSpacing = true
+
+                    h3("Product details")
+
+                    textField("SKU") { bind(binder).bind(Product::sku) }
+                    textField("Name") { bind(binder).bind(Product::name) }
+                    comboBox<Category>("Category") {
+                        setItems(Category.entries)
+                        bind(binder).bind(Product::category)
+                    }
+                    bigDecimalField("Price") { bind(binder).bind(Product::price) }
+                    integerField("Stock") { bind(binder).bind(Product::stock) }
+                    comboBox<UnitOfMeasure>("Unit") {
+                        setItems(UnitOfMeasure.entries)
+                        bind(binder).bind(Product::unit)
+                    }
+
+                    horizontalLayout {
+                        saveButton = button("Save") {
+                            setPrimary()
+                            onClick { onSave() }
+                        }
+                        deleteButton = button("Delete") {
+                            onClick { onDelete() }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    init {
+        showSelection(null)
+    }
+
+    private fun showSelection(product: Product?) {
+        selected = product
+        binder.readBean(product)
+        saveButton.isEnabled = product != null
+        deleteButton.isEnabled = product != null
+    }
+
+    private fun onSave() {
+        val product = selected ?: return
+        if (!binder.writeBeanIfValid(product)) return
+        product.save()
+        dp.refreshAll()
+        Notification.show("Saved ${product.name}")
+    }
+
+    private fun onDelete() {
+        val product = selected ?: return
+        product.delete()
+        dp.refreshAll()
+        showSelection(null)
+        Notification.show("Deleted ${product.name}")
+    }
+}
+
+private fun productFilter(search: String, category: Category?): ColumnDeclaring<Boolean>? {
+    val s = search.trim()
+    val parts = listOfNotNull(
+        if (s.isEmpty()) null else {
+            val pattern = "%$s%"
+            Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+        },
+        category?.let { Products.category eq it },
+    )
+    return parts.reduceOrNull { a, b -> a and b }
+}
+```
+
+Restart the app. The view now has the Grid on the left and an empty form on
+the right with **Save** and **Delete** disabled. Click any row; the form
+populates with that product's values, the buttons enable. Change the price,
+click **Save** — the Grid cell updates and a "Saved …" toast appears. Click
+**Delete** — the row vanishes, the form clears, the buttons disable again.
+
+## What changed structurally
+
+This chapter is the first to introduce **class-level fields** on `CatalogView`.
+Up to now everything lived inside the `ui { ... }` builder; now we have:
+
+```kotlin
+private val dp = Products.dataProvider
+private val binder = Binder<Product>(Product::class.java)
+private var selected: Product? = null
+private lateinit var saveButton: Button
+private lateinit var deleteButton: Button
+```
+
+These exist because the save/delete handlers and the `showSelection` helper
+need to reach across the view from outside the builder lambda. Pulling them
+out as fields makes the dependencies obvious: the binder owns form ↔ entity
+translation, `selected` remembers which row is being edited, the buttons need
+to be toggled, and `dp` needs to be refreshed after each persistence call.
+
+`lateinit` is used only for the two `Button` references because they are
+assigned **during** the `root = ui { ... }` initialiser — the buttons don't
+exist until the builder runs. Everything else can be initialised at field
+declaration time.
+
+The `init { showSelection(null) }` block runs after the builder finishes
+constructing the UI, with `saveButton` and `deleteButton` already assigned —
+so the very first thing the user sees is a properly cleared form with the
+buttons disabled.
+
+## The split layout
+
+The body is wrapped in a second `horizontalLayout`:
+
+```kotlin
+horizontalLayout {
+    setSizeFull(); isSpacing = true
+
+    grid<Product>(Product::class, dp) {
+        flexGrow = 1.0
+        ...
+    }
+
+    verticalLayout {
+        setWidth("28em"); ...
+    }
+}
+```
+
+- **`setSizeFull()`** makes the body fill the remaining vertical space
+  inside `CatalogView`.
+- **`grid { flexGrow = 1.0 }`** tells the flexbox layout to give the Grid all
+  the spare horizontal space.
+- **`verticalLayout { setWidth("28em") }`** fixes the side panel's width to
+  28 em — wide enough for the labels and inputs, narrow enough not to crowd
+  the Grid.
+
+## Selecting a row
+
+```kotlin
+asSingleSelect().addValueChangeListener { e -> showSelection(e.value) }
+```
+
+A Grid can be configured for single-row, multi-row or no selection. The
+`asSingleSelect()` view exposes a `HasValue<..., T?>` whose value is the
+currently-selected row (`null` if none). Subscribing to its value-change event
+gives us a single hook for "the selection changed". Inside the listener we
+call `showSelection`, which both **remembers** the row (so we can save or
+delete it later) and **populates the form** via the binder.
+
+## Meet `Binder`
+
+`Binder<Product>` is the centrepiece of Vaadin's form story. It does three
+things:
+
+1. **Reads** values out of a bean into form fields.
+2. **Writes** values back into a bean from form fields.
+3. **Validates** the input on its way back.
+
+We create one instance for the whole side panel:
+
+```kotlin
+private val binder = Binder<Product>(Product::class.java)
+```
+
+…and bind each form field to a property:
+
+```kotlin
+textField("SKU") { bind(binder).bind(Product::sku) }
+textField("Name") { bind(binder).bind(Product::name) }
+comboBox<Category>("Category") {
+    setItems(Category.entries)
+    bind(binder).bind(Product::category)
+}
+bigDecimalField("Price") { bind(binder).bind(Product::price) }
+integerField("Stock") { bind(binder).bind(Product::stock) }
+comboBox<UnitOfMeasure>("Unit") {
+    setItems(UnitOfMeasure.entries)
+    bind(binder).bind(Product::unit)
+}
+```
+
+A few details worth unpacking:
+
+- **`bind(binder)`** is a Karibu-DSL extension on any field (`HasValue`). It
+  starts a fluent binding: *"this field will be bound to a property of the
+  bean type, via this binder"*. Calling `.bind(Product::sku)` finalises the
+  binding by naming the property — and because it takes a `KMutableProperty1`
+  rather than a string, the compiler enforces that the field's type
+  (`String?` for `TextField`) matches the property's type. Rename `sku` in
+  the `Product` interface and this line stops compiling.
+
+- **Typed numeric fields.** `bigDecimalField` and `integerField` are Vaadin's
+  strongly-typed numeric inputs. `bigDecimalField` reads/writes `BigDecimal?`
+  directly — no `String → BigDecimal` converter needed. Likewise
+  `integerField` returns `Int?`. We could have used a plain `textField` with
+  `.withConverter(...)` but the typed variants are clearer and tighter to
+  read.
+
+## Read, then write back
+
+```kotlin
+private fun showSelection(product: Product?) {
+    selected = product
+    binder.readBean(product)
+    saveButton.isEnabled = product != null
+    deleteButton.isEnabled = product != null
+}
+```
+
+`binder.readBean(product)` **copies** each bound property from the bean into
+its form field. Passing `null` clears all fields. After this call, the user
+can edit fields freely — those edits **do not** propagate back to `product`
+yet.
+
+```kotlin
+private fun onSave() {
+    val product = selected ?: return
+    if (!binder.writeBeanIfValid(product)) return
+    product.save()
+    dp.refreshAll()
+    Notification.show("Saved ${product.name}")
+}
+```
+
+`binder.writeBeanIfValid(product)` validates every binding, and only if all
+of them pass does it write the field values back into the bean. We're using
+no validators yet (Chapter 8 adds JSR-303 annotations), so this is currently
+"always-true" — but it's still the right call to wire up now.
+
+`product.save()` comes from `ActiveEntity` (Chapter 3): it asks ktorm to
+flush the entity's dirty properties to the database. `dp.refreshAll()` makes
+the Grid re-read its data so the visible row reflects the change.
+
+> **Why `readBean` + `writeBean` and not `setBean`?**
+> `Binder` has a third mode — `setBean(bean)` — that wires the bean to the
+> form bidirectionally: edits go straight into the bean as the user types.
+> It's convenient when you have no Save button (auto-save). For an
+> explicit-save form like ours, `readBean` + `writeBean` is better: it lets
+> the user change rows without confirming, and discards in-flight edits.
+
+## Delete
+
+```kotlin
+private fun onDelete() {
+    val product = selected ?: return
+    product.delete()
+    dp.refreshAll()
+    showSelection(null)
+    Notification.show("Deleted ${product.name}")
+}
+```
+
+`Entity.delete()` is built into ktorm — it issues `DELETE FROM Product WHERE
+id = ?`. After deleting we refresh the provider and clear the selection so
+the form returns to its empty state.
+
+> **A small UX caveat.** There is no confirmation dialog yet, so a misclick
+> on **Delete** loses the row. A polished app would pop a "Delete *Hex bolt
+> M6×40mm*? This cannot be undone." confirmation. Chapter 7 introduces
+> `Dialog`; you'll have everything you need to add a confirm after that.
+
+## What we haven't done (yet)
+
+- **No validation.** The form happily accepts a blank `name`, a negative
+  `stock`, a `price` of `0`. Chapter 8 fixes this with JSR-303 annotations.
+- **No add flow.** The Save button only updates existing rows. Chapter 7
+  adds a **+ Add product** button that opens the same form inside a
+  `Dialog`, reusing the binder we just built.
+- **No low-stock cue.** The Grid shows the raw stock number even when it
+  reaches zero. Chapter 9 introduces a custom `ComponentRenderer` and adds a
+  red **"Low stock"** badge.
+
+So far so good — we have a working master-detail catalog. In the next
+chapter we'll factor the form fields into a reusable `KComposite` and add
+the add-product flow on top of it.
