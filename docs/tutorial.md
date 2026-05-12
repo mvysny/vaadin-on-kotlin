@@ -775,3 +775,137 @@ interesting work moved to `Product.kt` and `V1__create_product.sql`. That
 separation is the point: **the view doesn't know or care where its rows come
 from.** In the next chapter we'll exploit that by replacing `findAll()` with a
 reactive `DataProvider` and adding a live search field above the Grid.
+
+# Chapter 4 — Live filtering
+
+`Products.findAll()` loaded every row into memory and handed the list to the
+Grid. That's fine for ten products and bad for ten thousand: the entire table
+gets shipped to the browser regardless of what the user is actually looking at.
+Vaadin's `DataProvider` abstraction fixes that. The Grid asks the provider for
+the rows it needs *right now* (which page, what filter, what sort), and the
+provider issues a matching SQL query.
+
+In this chapter we'll switch the Grid to ktorm-vaadin's `EntityDataProvider`
+and put a search field above it. Each keystroke (after a short debounce) sends
+a new filter to the provider, which re-runs the query and the Grid repopulates.
+
+## Step 1 — swap `findAll()` for a `DataProvider`
+
+Edit `CatalogView.kt` so it reads:
+
+```kotlin
+package com.example.vok
+
+import com.github.mvysny.karibudsl.v10.*
+import com.github.mvysny.ktormvaadin.dataProvider
+import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.Route
+import org.ktorm.dsl.or
+import org.ktorm.schema.ColumnDeclaring
+import org.ktorm.support.postgresql.ilike
+
+@Route("")
+class CatalogView : KComposite() {
+    private val root = ui {
+        verticalLayout {
+            setSizeFull(); isPadding = true; isSpacing = true
+
+            h2("BoltShop catalog")
+
+            val dp = Products.dataProvider
+
+            textField {
+                placeholder = "Search by name or SKU"
+                valueChangeMode = ValueChangeMode.LAZY
+                setWidth("20em")
+                addValueChangeListener { e ->
+                    dp.setFilter(productFilter(e.value))
+                }
+            }
+
+            grid<Product>(Product::class, dp) {
+                setSizeFull()
+                columnFor(Product::sku) { setHeader("SKU") }
+                columnFor(Product::name) { setHeader("Name"); flexGrow = 1 }
+                columnFor(Product::category) { setHeader("Category") }
+                columnFor(Product::price) { setHeader("Price") }
+                columnFor(Product::stock) { setHeader("Stock") }
+                columnFor(Product::unit) { setHeader("Unit") }
+            }
+        }
+    }
+}
+
+private fun productFilter(query: String): ColumnDeclaring<Boolean>? {
+    val q = query.trim()
+    if (q.isEmpty()) return null
+    val pattern = "%$q%"
+    return Products.name.ilike(pattern) or Products.sku.ilike(pattern)
+}
+```
+
+Restart the app and reload <http://localhost:8080>. The Grid still shows ten
+rows. Type `paint` into the search field; after a heartbeat, the Grid drops to
+the two paint products. Clear the field; ten rows reappear. Try `HX` — two hex
+bolts. Try `Garden` — that's a category, not a name or SKU, so you get zero
+results (Chapter 5 adds a category filter).
+
+## What changed, piece by piece
+
+**`Products.dataProvider`** is an extension property from
+`com.github.mvysny.ktormvaadin` that returns an `EntityDataProvider<Product>`.
+That class implements Vaadin's `DataProvider` interface using ktorm under the
+hood: when the Grid asks for rows, it runs `SELECT * FROM Product WHERE ...
+LIMIT ? OFFSET ?` and converts each row to a `Product` entity. There is no
+in-memory cache — each user interaction that needs fresh data triggers a query.
+
+**`grid<Product>(Product::class, dp) { ... }`** is a different Karibu-DSL
+overload than the one we've used so far. The second argument is the data
+provider; the Grid wires itself to it on construction. We no longer call
+`setItems(...)` inside the builder — the rows arrive lazily from the provider.
+
+**`ValueChangeMode.LAZY`** controls when the `TextField` fires its value-change
+event. The default fires on blur, which would make a search field feel
+sluggish — you'd have to tab out before anything happens. `LAZY` debounces
+keystrokes (default 400 ms) and fires once the user pauses typing. That's the
+right feel for live search: responsive but not frantic.
+
+**`dp.setFilter(productFilter(e.value))`** is what makes the search reactive.
+`EntityDataProvider.setFilter` takes a ktorm boolean expression (or `null` to
+clear the filter) and calls `refreshAll()` internally, which makes the Grid
+re-query through the provider with the new filter applied. So:
+
+1. User types a keystroke.
+2. `LAZY` debounce expires, `TextField` fires `ValueChangeEvent`.
+3. Our listener calls `dp.setFilter(...)` with a fresh ktorm WHERE expression.
+4. `EntityDataProvider` calls `refreshAll()` → Grid asks for rows again.
+5. ktorm builds and runs `SELECT * FROM Product WHERE (name ILIKE ?) OR (sku
+   ILIKE ?) ORDER BY ... LIMIT ? OFFSET ?` against H2.
+
+**`productFilter(query)`** is the only domain logic. Trim, exit early on empty,
+build a `LIKE` pattern with leading and trailing `%` so the match is
+substring-anywhere, then return `Products.name.ilike(pattern) or
+Products.sku.ilike(pattern)`. That return type is `ColumnDeclaring<Boolean>?` —
+ktorm's algebra of WHERE-clause expressions, type-checked at compile time.
+
+> **Why `ilike` and not `like`?** ILIKE is the case-insensitive variant; we want
+> searching for `paint` to match `Paint`. It's a PostgreSQL extension, but
+> ktorm-vaadin configures the PostgreSQL dialect over H2 by default and H2's
+> SQL grammar accepts `ILIKE` natively, so the same code runs against either
+> database. The import path is
+> `org.ktorm.support.postgresql.ilike` — a small reminder of where it came
+> from.
+
+## Why this approach scales
+
+The view does no in-memory filtering. There is no `list.filter { ... }` call,
+no client-side data slicing, no `List<Product>` held in the session. Every
+visible row is the result of a fresh query whose `WHERE` is built from the
+current state of the search field. Scaling from ten products to ten thousand
+to ten million changes nothing in this file — the SQL just runs against more
+rows, with a `LIMIT 50` keeping each page's payload small.
+
+In the next chapter we'll add a second filter — a `ComboBox<Category>` — and
+combine it with the search field. The trick we'll need is to build a
+`productFilter()` that ANDs both inputs together; the underlying mechanism is
+exactly what you just wrote.
