@@ -30,136 +30,180 @@ a set of roles - a set of duties it is expected to perform in the app. Every Vaa
 then declares roles allowed to see that particular view; only users which are assigned at least one
 of the roles declared on the view are then allowed to visit that view.
 
-vok apps use the [Vaadin Simple Security](https://github.com/mvysny/vaadin-simple-security)
-library. To use the library, simply add the following to your `build.gradle` file:
+VoK apps use the [Vaadin Simple Security](https://github.com/mvysny/vaadin-simple-security)
+library. To use the library, add it to your `gradle/libs.versions.toml`:
 
-```groovy
+```toml
+[libraries]
+vaadin-security-simple = "com.github.mvysny.vaadin-simple-security:vaadin-simple-security:1.1"
+```
+
+and depend on it from your module's `build.gradle.kts`:
+
+```kotlin
 dependencies {
-  implementation("com.github.mvysny.vaadin-simple-security:vaadin-simple-security:1.0")
+    implementation(libs.vaadin.security.simple)
 }
 ```
 
 > Note: you don't have to use the Vaadin Simple Security library at all if it doesn't suit your need -
 you are free to use your favourite framework or implement your own authorization from scratch.
 
-## The 'Fictional Book Shop' Example
+A complete runnable demo lives at [vok-security-demo](https://github.com/mvysny/vok-security-demo);
+the code samples below are taken from there. There is also a larger
+[Bookstore Demo](https://github.com/mvysny/bookstore-vok).
 
-Let's create a fictional book shop, with the following set of access rules:
+## Example app at a glance
 
-1. Only the users which are assigned to the `administrator` role are allowed to create/delete other users
-2. Only users with the `bookkeeper` and `administrator` role may edit the book information;
-3. Only `sales` users may view/edit any orders
-4. Every user should be able to see its own orders.
+The demo uses username + password authentication; users are persisted in an H2 database via
+[ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) and
+seeded by `Bootstrap.kt`. There are two pre-created users:
 
-We can use the role-based authorization scheme, to implement the rules.
-We can solve the task by having three roles, `administrator`, `bookkeeper` and `sales`. We will pre-create
-the admin user which will then create other users and assign the roles. We will then annotate Vaadin routes
-so that `OrdersView` can only be viewed by the `sales` users:
+* `user` / `user` with the role `ROLE_USER`
+* `admin` / `admin` with the roles `ROLE_ADMIN`, `ROLE_USER`
+
+…and four routes:
+
+* `LoginRoute` — public, shown to anyone not yet logged in (`@AnonymousAllowed`).
+* `WelcomeRoute` — shown to every logged-in user (`@PermitAll`).
+* `UserRoute` — restricted to users with `ROLE_USER` or `ROLE_ADMIN` (`@RolesAllowed("ROLE_USER", "ROLE_ADMIN")`).
+* `AdminRoute` — restricted to `ROLE_ADMIN` only.
+
+## Annotating routes with roles
+
+Use the standard Jakarta security annotations on each `@Route`:
 
 ```kotlin
 import jakarta.annotation.security.RolesAllowed
 
-@Route("orders", layout = MainLayout::class)
-@RolesAllowed("sales")
-class OrdersView : VerticalLayout() { ... }
+@Route("admin", layout = MainLayout::class)
+@RolesAllowed("ROLE_ADMIN")
+class AdminRoute : KComposite() { /* … */ }
 
-@Route("users", layout = MainLayout::class)
-@RolesAllowed("administrator")
-class UsersView : VerticalLayout() { ... }
-
-@Route("booklist", layout = MainLayout::class)
-@RolesAllowed("bookkeeper", "administrator")
-class BookListView : VerticalLayout() { ... }
+@Route("user", layout = MainLayout::class)
+@RolesAllowed("ROLE_USER", "ROLE_ADMIN")
+class UserRoute : KComposite() { /* … */ }
 ```
 
-The last rule is somewhat special: we will have an `OrderView` which shows a complete details of a particular order
-(specified in the URL as an order ID). Since the view will contain sensitive data (say a delivery address),
-the view may not be viewed by anybody else than the user which created the order, and the members of the `sales`
-group. We therefore need to check whether the current is user is `sales` user, or the
-order in question belongs to the
-currently logged-in user. We can't express this complex rule with annotations alone, hence we'll simply use Kotlin code to do that:
+Three annotations are recognized; every route must carry exactly one of them, otherwise it is
+inaccessible:
+
+* `jakarta.annotation.security.RolesAllowed` — user must be logged in and must hold at least one
+  of the listed roles.
+* `jakarta.annotation.security.PermitAll` — any logged-in user.
+* `com.vaadin.flow.server.auth.AnonymousAllowed` — anyone, even anonymous visitors. This is what
+  you put on the `LoginRoute`.
+
+> **Vaadin 25 note:** parent layouts (`RouterLayout` implementations such as `MainLayout`) must
+> declare their own access rules. A child route's annotation no longer grants access through the
+> layout chain, so `MainLayout` itself is annotated with `@PermitAll`.
+
+### Per-instance authorization
+
+Some rules cannot be expressed with annotations alone — e.g. "a user may view *their own* order,
+and `sales` may view any order". Annotate the route with `@PermitAll` and check the rule inside a
+`BeforeEnterObserver`:
 
 ```kotlin
 import jakarta.annotation.security.PermitAll
+import com.github.mvysny.vaadinsimplesecurity.AccessRejectedException
 
-@PermitAll // since the currently logged-in user may not be from the "sales" group but may still see his order.
-class OrderView : VerticalLayout(), BeforeEnterObserver {
-  override fun beforeEnter(event: BeforeEnterEvent) {
-    val user: User = Session.loginManager.loggedInUser!!  // there is a user since that's mandated by @PermitAll
-    val order: Order = Order.getById(event.parameterList[0].toLong())
-    val authorized: Boolean = user.hasRole("sales") || order.userId == user.id
-    if (!authorized) {
-      throw AccessRejectedException("Access rejected to order ${order.id}", OrderView::class.java, setOf("sales"))
+@Route("order", layout = MainLayout::class)
+@PermitAll
+class OrderRoute : KComposite(), BeforeEnterObserver {
+    override fun beforeEnter(event: BeforeEnterEvent) {
+        val user = Session.loginService.currentUser!! // guaranteed by @PermitAll
+        val order = Order.getById(event.parameterList[0].toLong())
+        val authorized = "sales" in Session.loginService.currentUserRoles || order.userId == user.id
+        if (!authorized) {
+            throw AccessRejectedException("Access rejected to order ${order.id}",
+                OrderRoute::class.java, setOf("sales"))
+        }
+        // … render the order …
     }
-    // .. rest of the code, init the view, show the details about the order
-  }
 }
 ```
 
-### Making The Annotations Work
+`AccessRejectedException` is caught by Vaadin's error handler and rendered as the standard
+HTTP 403 page.
 
-In order to enforce the rules set by the annotations, we need to hook into the navigation cycle.
-Before a view is rendered, we will check whether it can be navigated to.
+## Wiring the access checker
 
-First step is to register the `loggedInUserResolver`. It doesn't do anything on its own, but will serve current user
-to a function which we will setup next:
-
-```kotlin
-VaadinOnKotlin.loggedInUserResolver = object : LoggedInUserResolver {
-    override fun getCurrentUser(): Principal? = Session.userService.currentUserPrincipal
-    override fun getCurrentUserRoles(): Set<String> = Session.userService.currentUserRoles
-}
-```
-
-(Note: We will create the `UserService` later on)
-
-Now, to the hook itself. The best way is to provide your own init listener, which will handle all
-layouts, even future ones that haven't been created yet:
+To enforce the route annotations, install a `SimpleNavigationAccessControl` as a Vaadin
+`BeforeEnterListener`. This is done from a `VaadinServiceInitListener`:
 
 ```kotlin
-class BookstoreInitListener : VaadinServiceInitListener {
-    override fun serviceInit(initEvent: ServiceInitEvent) {
-        initEvent.source.addUIInitListener { uiInitEvent ->
-            val checker = VokViewAccessChecker()
-            checker.setLoginView(LoginView::class.java)
-            uiInitEvent.ui.addBeforeEnterListener(checker)
+class AppServiceInitListener : VaadinServiceInitListener {
+    private val accessControl = SimpleNavigationAccessControl.usingService { Session.loginService }
+    init {
+        accessControl.setLoginView(LoginRoute::class.java)
+    }
+
+    override fun serviceInit(e: ServiceInitEvent) {
+        e.source.addUIInitListener { uiInitEvent ->
+            uiInitEvent.ui.addBeforeEnterListener(accessControl)
         }
     }
 }
 ```
 
-Don't forget to register the init listener: create a file in your `src/main/resources/META-INF/services` named `com.vaadin.flow.server.VaadinServiceInitListener`
-containing the full class name of your `BookstoreInitListener` class.
+Register the listener by creating
+`src/main/resources/META-INF/services/com.vaadin.flow.server.VaadinServiceInitListener` containing
+the fully-qualified class name (`com.example.AppServiceInitListener`).
 
-The `VokViewAccessChecker` builds on Vaadin's built-in ViewAccessChecker which
-checks whether current user has access to the route being navigated to.
-The current user is obtained via `VaadinOnKotlin.loggedInUserResolver`.
+`SimpleNavigationAccessControl.usingService { … }` obtains the current user/roles from your
+`LoginService` (next section). When a not-yet-logged-in user navigates somewhere that requires
+authentication, they're redirected to the configured login view.
 
-**Important:** `VokAccessAnnotationChecker` will not navigate away from the `LoginView`. It is
-the application's responsibility to navigate to appropriate welcome view after successful login,
-otherwise the user will be endlessly presented `LoginView`.
+> **Important:** the access checker will not redirect away from the login view. It is the
+> application's responsibility to navigate to a welcome view after a successful login, otherwise
+> the user will stay stuck on the login page.
 
-### Login View
+## The LoginService
 
-An example of a very simple `LoginView`:
+`AbstractLoginService<U>` from Vaadin Simple Security gives you a session-scoped object that
+holds the currently logged-in user, exposes their roles, and handles logout. Subclass it and add a
+`login(username, password)` method:
 
 ```kotlin
-/**
- * The login view which simply shows the login form full-screen. Allows the user to log in.
- * After the user has been logged in,
- * the page is refreshed which forces the MainLayout to reinitialize.
- * However, now that the user is present in the session,
- * the reroute to login view no longer happens and the MainLayout is displayed on screen properly.
- */
+class LoginService : AbstractLoginService<User>() {
+    fun login(username: String, password: String) {
+        val user = User.findByUsername(username)
+            ?: throw FailedLoginException("Invalid username or password")
+        if (!user.passwordMatches(password)) {
+            throw FailedLoginException("Invalid username or password")
+        }
+        login(user) // inherited; reinitializes the HTTP session and stores the user
+    }
+
+    override fun toUserWithRoles(user: User): SimpleUserWithRoles =
+        SimpleUserWithRoles(user.username, user.roleSet)
+}
+
+/** Tie the LoginService to the Vaadin session — always get it through this property. */
+val Session.loginService: LoginService
+    get() = getOrPut(LoginService::class) { LoginService() }
+```
+
+The inherited `login(user)` method takes care of session-fixation prevention by reinitializing
+the session, and stores the user so `currentUser` / `currentUserRoles` work for the rest of the
+session. `logout()` is also inherited.
+
+## The LoginRoute
+
+```kotlin
 @Route("login")
-class LoginView : KComposite() {
+@PageTitle("Login")
+@AnonymousAllowed
+class LoginRoute : KComposite() {
     private lateinit var loginForm: LoginForm
     private val root = ui {
         verticalLayout {
             setSizeFull(); isPadding = false; content { center() }
 
-            val loginI18n: LoginI18n = loginI18n {
-                header.title = "My App"
+            val loginI18n = loginI18n {
+                form.title = "VoK Security Demo"
+                additionalInformation = "Log in as user/user or admin/admin"
             }
             loginForm = loginForm(loginI18n)
         }
@@ -168,7 +212,7 @@ class LoginView : KComposite() {
     init {
         loginForm.addLoginListener { e ->
             try {
-                Session.userService.login(e.username, e.password)
+                Session.loginService.login(e.username, e.password)
             } catch (e: LoginException) {
                 log.warn("Login failed", e)
                 loginForm.setErrorMessage("Login failed", e.message)
@@ -180,209 +224,90 @@ class LoginView : KComposite() {
     }
 
     companion object {
-        @JvmStatic
-        private val log = LoggerFactory.getLogger(LoginView::class.java)
+        @JvmStatic private val log = LoggerFactory.getLogger(LoginRoute::class.java)
     }
 }
 ```
 
-The `Session.userService` doesn't exist yet. We'll create it later on in this tutorial.
+A logout button somewhere in the main layout simply calls `Session.loginService.logout()`.
 
-## VoK Authentication
+## Storing users in the database
 
-Authentication identifies the user and tries to prove that it's indeed the user who's
-accessing the app, and not an impersonator. Usually the user provides a secret that only he
-knows, say, a password. The authentication process then verifies the password, and if the
-verification is successful, stores the user along with his roles into the session so that it is
-handily available throughout the app.
-
-There are many different ways to authenticate
-that it is impossible to craft a unified API
-which would be simple and understandable at the same time. That's why VoK doesn't
-provide its own authentication API (since it would either be incomplete or complex).
-
-VoK provides direct support for the most common case: the username+password authentication schema.
-For other types of authentication schemata, VoK relies on a set of guides for
-particular authentication scheme.
-We rely on the programmer to read the tutorials, the documentation and copy-paste
-from code examples to create authentication mechanism that's best tailored for his project.
-
-> Note: We apologize, but currently there are no other tutorials beside the most simple username+password authentication,
-with role-based authorization and users stored in a SQL database.
-
-VoK also provide basic login forms and the documentation on how to integrate them
-with your app. There is also a set of example projects:
-
-* [Security Demo](https://github.com/mvysny/vok-security-demo)
-* [Bookstore Demo](https://github.com/mvysny/bookstore-vok).
-
-### UserService example
-
-An example of a very simple user service which performs logins and logouts, and stores
-itself into the session. That way, the user itself is also stored in the session.
+The demo's `User` entity uses ktorm for persistence and mixes in `HasPassword` to handle salted
+password hashing automatically:
 
 ```kotlin
-val Session.userService: UserService get() = getOrPut { UserService() }
+interface User : ActiveEntity<User>, HasPassword, Serializable {
+    var id: Long?
+    var username: String
+    var passwordHash: String?
+    var roles: String
 
-// guarded-by: Vaadin Session
-class UserService : Serializable {
-    var loggedInUser: String? = null
-    private set
+    override fun getHashedPassword(): String? = passwordHash
+    override fun setHashedPassword(hashedPassword: String?) { passwordHash = hashedPassword }
 
-    val loggedInUserPrincipal: Principal?
-        get() = loggedInUser?.let { BasicUserPrincipal(it) }
+    override val table: Table<User> get() = Users
 
-    var currentUserRoles: Set<String> = setOf()
-    private set
+    val roleSet: Set<String> get() = roles.split(",").toSet()
 
-    /**
-     * Logs out the user, clears the session and reloads the page.
-     */
-    fun logout() {
-        Session.current.close()
-        // The UI is recreated by the page reload, and since there is no user in the session (since it has been cleared),
-        // the UI will show the LoginView.
-        UI.getCurrent().page.reload()
-    }
-
-    /**
-     * Logs in user with given [username] and [password]. Fails with [javax.security.auth.login.LoginException]
-     * on failure.
-     */
-    fun login(username: String, password: String) {
-        // the users should come from the database; here we'll just fake some users
-        val knownUser = when(username) {
-            "user" -> password == "user"
-            "admin" -> password == "admin"
-            else -> false
-        }
-        if (!knownUser) {
-            throw FailedLoginException("Invalid username or password")
-        }
-        login(username)
-    }
-
-    /**
-     * Logs in given [user].
-     */
-    private fun login(user: String) {
-        this.loggedInUser = user
-        // the roles should come from the database; here we'll just fake the roles
-        currentUserRoles = when (user) {
-            "user" -> setOf("user")
-            "admin" -> setOf("user", "admin")
-            else -> setOf()
-        }
-
-        // creates a new session after login, to prevent session fixation attack
-        VaadinService.reinitializeSession(VaadinRequest.getCurrent())
-        // reload the page. Since the user is now logged in, VokViewAccessChecker
-        // will now let the navigation to MainView succeed.
-        navigateTo<MainView>()
-    }
-
-    val isLoggedIn: Boolean get() = loggedInUser != null
-  
-    fun ensureLoggedIn(): String = checkNotNull(loggedInUser) { "Not logged in" }
-
-    val isAdmin: Boolean get() = isLoggedIn && currentUserRoles.contains("admin")
-
-    fun checkAdmin() {
-        ensureLoggedIn()
-        if (!currentUserRoles.contains("admin")) {
-//            throw AccessRejectedException("Not admin", null, setOf("admin"))
-            throw IllegalStateException("Not admin")
+    companion object : Entity.Factory<User>() {
+        fun findByUsername(username: String): User? = db {
+            database.sequenceOf(Users).filter { Users.username eq username }.firstOrNull()
         }
     }
 }
+
+object Users : Table<User>("users") {
+    val id = long("id").primaryKey().bindTo { it.id }
+    val username = varchar("username").bindTo { it.username }
+    val passwordHash = varchar("hashedPassword").bindTo { it.passwordHash }
+    val roles = varchar("roles").bindTo { it.roles }
+}
 ```
 
-## VoK Authorization
+The `passwordHash` Kotlin property is intentionally named differently from the inherited
+`get/setHashedPassword` methods to avoid a JVM signature clash (a Kotlin `var hashedPassword`
+would generate methods with the same JVM signature as the ones inherited from `HasPassword`).
 
-The Vaadin Simple Security library enforces role-based authorization on Vaadin views. There are
-three annotations available,
-and your view must list at least one of them otherwise it will be inaccessible:
+Seed users via `setPassword("…")`, which delegates to the hashing implementation in `HasPassword`:
 
-* `jakarta.annotation.security.RolesAllowed` lists roles that are allowed to visit that view;
-   the user must be logged in and must be assigned at least one of the roles listed in the annotation
-* `com.vaadin.flow.server.auth.AnonymousAllowed` allows anybody to see this view, even if there is no user logged in.
-* `jakarta.annotation.security.PermitAll` allows any logged-in user to see this view.
+```kotlin
+User {
+    username = "admin"
+    roles = "ROLE_ADMIN,ROLE_USER"
+    setPassword("admin")
+}.save()
+```
 
-These rules are quite simple and cover only the basic authorization needs. You can simply
-define more complex rules as a Kotlin code in the `BeforeEnterObserver.beforeEnter()` function
-of a particular route.
+## Roles vs. permissions
 
-For example, the View may check e.g. whether given user has the right
-to see particular record or a document. If not, the `AccessRejectedException` must be simply thrown.
-The exception is then caught by the Vaadin exception handler and
-the user will be presented by the "access rejected" page with HTTP 403.
+In bigger apps with lots of functionality and lots of views the number of roles tends to grow.
+For example, you may need multiple administrator types which have access to a particular part of
+the app but not to others — manager-admin, admin, super-admin, etc. The difference between roles
+starts to blur and it becomes hard to keep them straight.
 
-The API is intended to be very simple so that it can be backed easily by any kind
-of auth scheme you need: VoK-Security built-in Simple scheme, the [OACC](http://oaccframework.org/oacc-features.html)
-library, [Apache Shiro](https://shiro.apache.org/) or others.
+In that case we recommend thinking in *permissions* rather than *roles*. Instead of giving a user
+the role "administrator", give them permissions like `can-view-users` or `can-create-order`. The
+infrastructure stays exactly the same — `@RolesAllowed("can-view-users")` works just as well —
+only the strings change meaning.
 
-### Replace 'roles' with 'permissions'
+## Why there's no Authentication API in VoK
 
-In bigger apps with lots of functionality and lots of views the number of roles may grow big. For example,
-you may need multiple administrator types which have access to a particular part of an app but not to the other -
-say, manager-admin, admin, super-admin etc etc. In such app, the difference between roles starts
-to blur and it becomes hard to differentiate between roles.
+There are many security frameworks in Java, but in trying to support every authentication scheme
+they end up highly abstract and hard to use. Authentication schemes vary wildly:
 
-In such case we recommend to start thinking of 'permissions' rather than 'roles'. For example, instead of a
-user having an administrator role, the user would have a permission to view and edit the list of all users.
+* Username + password against a local SQL database, or against LDAP/AD.
+* Client-side x509 certificates.
+* Kerberos / SPNEGO / Windows login via a servlet filter (Waffle).
+* SAML, OAuth2.
+* Smart cards, fingerprints, hardware tokens.
+* Servlet container-provided auth (`ServletContext.login()`).
 
-To convert your app to this new security paradigm:
+It's impossible to design one API that covers all of these without descending into abstraction
+hell. That's why VoK doesn't ship an all-encompassing auth API in the style of Apache Shiro or
+Spring Security. Instead it points you at small, focused building blocks (Vaadin Simple Security
+for the common username/password case) and example apps you can copy-paste and adapt.
 
-1. Introduce a permission for every action, say, `can-view-users`, `can-create-order`.
-2. Instead of assigning users roles, you assign them permissions.
-3. A view listing users will then be annotated with `@RolesAllowed("can-view-users")`
-
-## Vaadin Simple Security
-
-Vaadin Simple Security provides a simple password-based auth with all of the best practices:
-
-* A login dialog is provided, to ask the user for the user name/password
-* The username/password is checked against a SQL database. The passwords are stored
-  hashed and salted to the database.
-* The SQL database also stores the user roles, simply as a comma-separated list of strings.
-* Upon successful login, the user object is stored into the session.
-* Every view is then annotated with `@HasRoles`; a special `Navigator` hook
-  then checks that a navigation is allowed.
-* If the navigation is rejected, the `AccessRejectedException` is thrown.
-* A customized Vaadin Error Handler must be set, which properly handles such exceptions.
-
-It is highly recommended to serve the app over https. While it could be theoretically
-possible to transmit the password encrypted to the server over plain http,
-the app would still be susceptible to man-in-the-middle attack, session hijacking,
-eavesdropping and html tampering.
-
-If https is used, then there is no need to transmit the password encrypted since
-all communication from the client to the server is automatically encrypted.
-
-## Why there is no Authentication API in VoK
-
-There are many security frameworks already present in Java. However, while attempting
-to support all authentication/authorization schemes those frameworks have became highly
-abstract and hard to understand. And rightly so: the authentication schemes are wildly
-variant:
-
-* Authentication using username + password:
-  * Against a local SQL database of users
-  * Against a LDAP/AD server
-* Client-side x509 certificates
-* Kerberos-provided security token (client-to-server tickets):
-  * Authentication via NTLM/SPNEGO/Windows login via a NTLM servlet filter (the Waffle library)
-* SAML-based solutions which are anything but simple
-* Oauth2
-* Other means: smart cards, fingerprints, ...
-* All that while supporting SSO, or using the Servlet container-provided authentication mechanism
-  (the `ServletContext.login()` method).
-
-It is impossible to create an API convering all those cases without going abstraction-crazy.
-That's why we deliberately avoid to use an all-encompassing library like [Apache Shiro](https://shiro.apache.org/)
-or [Spring Security](https://projects.spring.io/spring-security/)
-with insanely complex APIs. We also don't provide our own authentication API (since it would
-either be incomplete or complex). In this case, the best abstraction is no abstraction at all.
-
-However, if need be, we may add support for most used combinations (e.g. username+password via LDAP).
-A standalone library will then be created.
+Always serve the app over HTTPS. Without TLS the app is exposed to man-in-the-middle attacks,
+session hijacking, eavesdropping and HTML tampering — encrypting just the password in transit
+solves none of that.
