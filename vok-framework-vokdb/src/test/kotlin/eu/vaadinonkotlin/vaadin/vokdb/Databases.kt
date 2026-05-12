@@ -1,85 +1,87 @@
 package eu.vaadinonkotlin.vaadin.vokdb
 
 import com.github.mvysny.kaributesting.v10.MockVaadin
-import com.github.vokorm.*
-import com.gitlab.mvysny.jdbiorm.Dao
-import com.gitlab.mvysny.jdbiorm.JdbiOrm
-import com.gitlab.mvysny.jdbiorm.Table
+import com.github.mvysny.ktormvaadin.ActiveEntity
+import com.github.mvysny.ktormvaadin.ActiveKtorm
+import com.github.mvysny.ktormvaadin.db
+import com.github.mvysny.ktormvaadin.deleteAll
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.h2.Driver
-import org.jdbi.v3.core.annotation.JdbiProperty
-import org.jdbi.v3.core.mapper.reflect.ColumnName
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.ktorm.database.Database
+import org.ktorm.entity.Entity
+import org.ktorm.schema.Table
+import org.ktorm.schema.boolean
+import org.ktorm.schema.date
+import org.ktorm.schema.int
+import org.ktorm.schema.long
+import org.ktorm.schema.timestamp
+import org.ktorm.schema.varchar
+import java.time.Instant
 import java.time.LocalDate
-import java.util.*
 
-@Table("Test")
-data class Person(override var id: Long? = null,
-                  @field:ColumnName("name") var personName: String = "",
-                  var age: Int = -1,
-                  @field:JdbiProperty(map = false) var ignored: String? = null,
-                  @Transient var ignored2: Any? = null,
-                  var dateOfBirth: LocalDate? = null,
-                  var created: Date? = null,
-                  var alive: Boolean? = null,
-                  var maritalStatus: MaritalStatus? = null
-) : KEntity<Long> {
-    override fun save(validate: Boolean) {
-        if (id == null) {
-            created = java.sql.Timestamp(System.currentTimeMillis())
-        }
-        super.save(validate)
-    }
+public interface Person : ActiveEntity<Person> {
+    public var id: Long?
+    public var personName: String
+    public var age: Int
+    public var dateOfBirth: LocalDate?
+    public var created: Instant?
+    public var alive: Boolean?
+    override val table: org.ktorm.schema.Table<Person> get() = Persons
 
-    companion object : Dao<Person, Long>(Person::class.java)
+    public companion object : Entity.Factory<Person>()
 }
 
-enum class MaritalStatus {
-    Single,
-    Married,
-    Divorced,
-    Widowed
+public object Persons : Table<Person>("Test") {
+    public val id: org.ktorm.schema.Column<Long> = long("id").primaryKey().bindTo { it.id }
+    public val name: org.ktorm.schema.Column<String> = varchar("name").bindTo { it.personName }
+    public val age: org.ktorm.schema.Column<Int> = int("age").bindTo { it.age }
+    public val dateOfBirth: org.ktorm.schema.Column<LocalDate> = date("dateOfBirth").bindTo { it.dateOfBirth }
+    public val created: org.ktorm.schema.Column<Instant> = timestamp("created").bindTo { it.created }
+    public val alive: org.ktorm.schema.Column<Boolean> = boolean("alive").bindTo { it.alive }
 }
 
 abstract class AbstractDbTest {
     companion object {
+        private lateinit var ds: HikariDataSource
+
         @BeforeAll
         @JvmStatic
         fun setupDb() {
             val config = HikariConfig().apply {
-                driverClassName = Driver::class.java.name  // the org.h2.Driver class
+                driverClassName = Driver::class.java.name
                 jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
                 username = "sa"
                 password = ""
             }
-            JdbiOrm.setDataSource(HikariDataSource(config))
+            ds = HikariDataSource(config)
+            ActiveKtorm.database = Database.connect(ds)
             db {
-                handle.createUpdate(
+                transaction.connection.createStatement().execute(
                     """create table if not exists Test (
                 id bigint primary key auto_increment,
                 name varchar not null,
                 age integer not null,
                 dateOfBirth date,
                 created timestamp,
-                alive boolean,
-                maritalStatus varchar
+                alive boolean
                  )"""
-                ).execute()
+                )
             }
         }
 
         @AfterAll
         @JvmStatic
         fun tearDownDb() {
-            JdbiOrm.destroy()
+            ds.close()
         }
     }
     @BeforeEach @AfterEach
-    fun clearDb() = Person.deleteAll()
+    fun clearDb() { Persons.deleteAll() }
 }
 
 abstract class AbstractVaadinDbTest : AbstractDbTest() {
