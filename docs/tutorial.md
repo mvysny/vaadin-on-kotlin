@@ -566,6 +566,13 @@ A few notes about the schema:
   `sku` is a natural unique identifier as well, so it's `UNIQUE` — both will be
   useful later (for example, the REST API in Chapter 11 will look products up
   by SKU).
+- The migration writes the table name as unquoted `Product`. H2 would normally
+  uppercase unquoted identifiers at parse time, so the actual table would land
+  as `PRODUCT` — meanwhile ktorm-vaadin uses the PostgreSQL dialect and quotes
+  identifiers in every query (`SELECT … FROM "Product"`), and quoting is
+  case-sensitive. The `;DATABASE_TO_UPPER=FALSE` already on the H2 URL in
+  `Bootstrap.kt` is what keeps the two sides aligned; on a real PostgreSQL or
+  MySQL backend the concern doesn't arise.
 
 For a tutorial, mixing DDL and seed data in a single migration is convenient.
 In a real project you'd typically separate the two — schema in `V1__...`,
@@ -2200,33 +2207,6 @@ servlet container, scans your classpath for `@Route` views, and
 gives you a small DSL for locating components, setting values,
 clicking buttons, and asserting Grid contents. No Jetty, no browser,
 no Selenium — the entire test runs server-side in the same JVM.
-
-## Step 0 — one latent bug to fix first
-
-Before any test passes, there's a configuration line in
-`Bootstrap.kt` that we've been getting away with through nine
-chapters. Open it and change the jdbc URL:
-
-```kotlin
-jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE"
-```
-
-The new bit is `;DATABASE_TO_UPPER=FALSE`. Without it, H2 silently
-uppercases every unquoted identifier when it parses
-`CREATE TABLE Product`, so the actual table in the database is named
-`PRODUCT`. ktorm-vaadin meanwhile is configured with the PostgreSQL
-dialect, which quotes identifiers in every query — `SELECT … FROM
-"Product"` — and PostgreSQL-style quoting is case-sensitive. The
-mismatch raises `Table "Product" not found (candidates are:
-"PRODUCT")` at the first real query.
-
-**Why has it worked so far?** It hasn't, fully. The smoke tests
-we've been running (`curl http://localhost:8080/`) only fetch the
-Vaadin bootstrap HTML; the DataProvider's `sizeInBackEnd` /
-`fetchFromBackEnd` only run during a real UIDL roundtrip — a
-browser, or, starting now, Karibu-Testing's `_get<Grid<Product>>()`.
-This is exactly the kind of bug a test suite catches and a manual
-smoke session misses.
 
 ## Step 1 — dependencies
 
