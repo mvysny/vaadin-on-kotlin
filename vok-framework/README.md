@@ -1,5 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.vaadinonkotlin/vok-framework)](https://central.sonatype.com/artifact/eu.vaadinonkotlin/vok-framework)
 
 # VoK Framework Core
 
@@ -48,7 +48,7 @@ The following bundles are searched:
 * `VokMessages*.properties` in the root package — create one to override VoK's defaults for your app.
 * The default `eu.vaadinonkotlin.VokMessages*.properties` if nothing app-specific matches.
 
-See the [Translating Your App](https://www.vaadinonkotlin.eu/i18n.html) guide for more.
+See the [Translating Your App](https://www.vaadinonkotlin.eu/i18n/) guide for more.
 
 ## Filter UI for Grids
 

@@ -1,5 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.vaadinonkotlin/vok-rest)](https://central.sonatype.com/artifact/eu.vaadinonkotlin/vok-rest)
 
 # VoK REST Server Support
 

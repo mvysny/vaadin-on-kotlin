@@ -1,5 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-vokdb/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework-vokdb)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.vaadinonkotlin/vok-framework-vokdb)](https://central.sonatype.com/artifact/eu.vaadinonkotlin/vok-framework-vokdb)
 
 # VoK Vaadin and SQL database support
 

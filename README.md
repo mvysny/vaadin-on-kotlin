@@ -1,7 +1,6 @@
 [![Powered By Vaadin on Kotlin](https://www.vaadinonkotlin.eu/iconography/vok_badge.svg)](https://www.vaadinonkotlin.eu)
-[![Join the chat at https://gitter.im/vaadin/vaadin-on-kotlin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vaadin/vaadin-on-kotlin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-framework)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.vaadinonkotlin/vok-framework)](https://central.sonatype.com/artifact/eu.vaadinonkotlin/vok-framework)
 [![Build Status](https://github.com/mvysny/vaadin-on-kotlin/actions/workflows/gradle.yml/badge.svg)](https://github.com/mvysny/vaadin-on-kotlin/actions/workflows/gradle.yml)
 
 # Welcome to Vaadin-on-Kotlin

@@ -83,7 +83,7 @@ to make sure the add-on is compatible with current Flow.
 
 You can also integrate a standalone web component. Pick a Lit-based component (or any framework-less
 custom element), declare it as an npm dependency on your view, and follow Vaadin's
-[Integrating a web component](https://vaadin.com/docs/latest/flow/create-ui/web-components/integrating-a-web-component)
+[Integrating a web component](https://vaadin.com/docs/latest/flow/component-internals/web-components/integrating-a-web-component)
 guide.
 
 ## Creating views
@@ -96,7 +96,7 @@ the class extends `VerticalLayout`, which makes the root layout of the view vert
 > Vaadin doesn't ship its own layout manager — it delegates to the browser's CSS engine (flexbox
 > and grid). VoK still exposes `VerticalLayout` and `HorizontalLayout` as flexbox wrappers for
 > familiarity. Their behavior is closer to flexbox than to Vaadin 8's old layouts; for a deep dive
-> see [VerticalLayout and HorizontalLayout](https://mavi.logdown.com/posts/6855605).
+> see [VerticalLayout and HorizontalLayout](https://mvysny.github.io/Vaadin-10-server-side-layouting-for-Vaadin-8-and-Android-developers/).
 
 Let's replace `WelcomeView`'s contents with a single button:
 
@@ -138,7 +138,7 @@ function creates a button, adds it to the parent, and lets you configure it furt
 
 > *Info*: VoK builds UI as a hierarchy using a DSL (domain-specific language). Since a UI is a tree
 > of components nested inside layouts, this maps naturally. See
-> [Using DSL to write structured UI code](https://mavi.logdown.com/posts/7073786) for the rationale.
+> [Using DSL to write structured UI code](https://mvysny.github.io/Using-DSL-to-write-structured-UI-code/) for the rationale.
 
 Now let's add a small form with two text fields:
 
@@ -208,7 +208,7 @@ familiar terminology. They still render flexbox under the hood — they just tra
 properties into vertical/horizontal alignment vocabulary.
 
 For background, read the
-[VerticalLayout and HorizontalLayout blog post](https://mavi.logdown.com/posts/6855605).
+[VerticalLayout and HorizontalLayout blog post](https://mvysny.github.io/Vaadin-10-server-side-layouting-for-Vaadin-8-and-Android-developers/).
 
 To position children inside a `VerticalLayout`, use `content { align(...) }`:
 

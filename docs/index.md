@@ -43,7 +43,7 @@ to style up your application or write your own custom rich component.
 
 Note that VoK is not just another REST library, or HTTP route mapping library.
 On the contrary: it is built on [Vaadin](https://vaadin.com) which provides you with a
-[wide palette of built-in powerful components](https://karibu-uitest.herokuapp.com/):
+[wide palette of built-in powerful components](https://vaadin.com/docs/latest/components):
 lazy paged tables, color pickers, menu components, sliders.
 All components have two parts:
 

@@ -1,5 +1,5 @@
 [![GitHub tag](https://img.shields.io/github/tag/mvysny/vaadin-on-kotlin.svg)](https://github.com/mvysny/vaadin-on-kotlin/tags)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest-client/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.vaadinonkotlin/vok-rest-client)
+[![Maven Central](https://img.shields.io/maven-central/v/eu.vaadinonkotlin/vok-rest-client)](https://central.sonatype.com/artifact/eu.vaadinonkotlin/vok-rest-client)
 
 # VoK REST Client Support
 
@@ -90,9 +90,7 @@ val dp = DataLoaderAdapter(Person::class.java, crud, { it.id!! }).withConfigurab
 grid.dataProvider = dp
 ```
 
-Just add dependency on either [vok-util-vaadin8](../vok-util-vaadin8) or
-[vok-util-vaadin10](../vok-util-vaadin10) to get access to the `DataLoaderAdapter` class.
-Please read more about this in the [Accessing NoSQL or REST data sources](http://www.vaadinonkotlin.eu/nosql_rest_datasources/).
+Please read more about this in the [Accessing NoSQL or REST data sources](https://www.vaadinonkotlin.eu/nosql_rest_datasources/) guide.
 
 The CRUD Client expects the CRUD endpoint to expose data in the following fashion:
 
