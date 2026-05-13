@@ -2865,9 +2865,9 @@ DTO, one exception bridge. A few directions to explore from here:
   vok-rest's `KtormCrudHandler` does this generically — drop into
   that helper if you want a full CRUD surface without hand-writing
   each route.
-- **Authentication** — `vok-security-demo` in the
-  [vaadin-on-kotlin repo](https://github.com/mvysny/vaadin-on-kotlin/tree/master/vok-security-demo)
-  has the pattern for protecting both Vaadin views and REST
+- **Authentication** — the
+  [vok-security-demo](https://github.com/mvysny/vok-security-demo)
+  repo has the pattern for protecting both Vaadin views and REST
   endpoints with the same credentials store. Worth a read once you
   outgrow "the LAN is the auth boundary".
 
