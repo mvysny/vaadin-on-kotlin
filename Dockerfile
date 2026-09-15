@@ -10,7 +10,9 @@
 FROM eclipse-temurin:21 AS builder
 COPY . /app/
 WORKDIR /app/
-RUN --mount=type=cache,target=/root/.gradle,sharing=locked --mount=type=cache,target=/root/.vaadin,sharing=locked ./gradlew clean build -Pvaadin.productionMode --no-daemon
+# `assemble`, not `build`: the image only needs the distribution, and verification runs in CI.
+# That also sits out the design tripwires, which need git — this image has none.
+RUN --mount=type=cache,target=/root/.gradle,sharing=locked --mount=type=cache,target=/root/.vaadin,sharing=locked ./gradlew clean assemble -Pvaadin.productionMode --no-daemon
 WORKDIR /app/vok-example-crud/build/distributions/
 RUN tar xvf vok-example-crud-*.tar && rm vok-example-crud-*.tar && rm vok-example-crud-*.zip
 # At this point, we have the app (executable bash scrip plus a bunch of jars) in the
