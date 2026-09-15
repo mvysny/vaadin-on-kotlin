@@ -11,18 +11,17 @@
 > upgrading from 0.18.x, check the per-module READMEs for the new shapes and see [vok-example-crud](vok-example-crud)
 > for an end-to-end example.
 
-Vaadin-on-Kotlin is a web-application framework for database-backed apps in Kotlin. Documentation lives at
-[www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu). The [Accessing SQL Databases](https://www.vaadinonkotlin.eu/databases/)
-guide and the per-module READMEs are current; the [tutorial](https://www.vaadinonkotlin.eu/tutorial/) and
+Vaadin-on-Kotlin is a web-application framework for database-backed apps in Kotlin. It enforces neither MVC,
+dependency injection nor service-oriented architecture, and uses neither Spring nor JavaEE. The view layer is
+[Vaadin](https://vaadin.com)'s component-oriented model; persistence is [ktorm](https://www.ktorm.org/) — typed-SQL
+DSL, entity sequences, no XML — wrapped by [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin). VoK owns the glue
+between the two plus REST server and client support; depend on `vok-framework` alone and bring your own persistence.
+
+Documentation lives at [www.vaadinonkotlin.eu](https://www.vaadinonkotlin.eu). The
+[Accessing SQL Databases](https://www.vaadinonkotlin.eu/databases/) guide and the per-module READMEs are current;
+the [tutorial](https://www.vaadinonkotlin.eu/tutorial/) and
 [NoSQL/REST data sources](https://www.vaadinonkotlin.eu/nosql_rest_datasources/) page still describe pre-0.19 idioms
 and are awaiting a rewrite — refer to [vok-example-crud](vok-example-crud) for current patterns.
-
-VoK does not enforce MVC, dependency injection, or service-oriented architecture. It uses neither Spring nor JavaEE
-by default. The view layer leverages [Vaadin](https://vaadin.com)'s component-oriented programming model. The
-persistence layer uses [ktorm](https://www.ktorm.org/) — typed-SQL DSL, entity sequences, no XML — wrapped by
-[ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin) for `EntityDataProvider`, filter components, and the
-`ActiveEntity` runtime. Of course you can swap in JPA/Hibernate or a NoSQL store instead by depending only on
-`vok-framework`.
 
 ## Getting started
 
@@ -50,8 +49,7 @@ persistence layer uses [ktorm](https://www.ktorm.org/) — typed-SQL DSL, entity
   `VaadinOnKotlin.dataSource` (which also wires `ActiveKtorm.database`), the `toId(idColumn)` Binder helper, and a
   reified-generic `enumFilterField<E>()` factory.
 * [vok-rest](vok-rest) — REST **server** support. Javalin 5 + Gson. Exposes ktorm tables via
-  `Table<E>.getCrudHandler()`. Read endpoints fully implemented; create/update/delete return 501 pending a
-  Gson↔ktorm-Entity adapter.
+  `Table<E>.getCrudHandler()` — GET list/one plus POST/PATCH/DELETE, the latter three behind `allowModification`.
 * [vok-rest-client](vok-rest-client) — REST **client** helpers built on the JDK `HttpClient`. ORM-agnostic.
 * [vok-example-crud](vok-example-crud) — runnable demo and integration-test harness.
 

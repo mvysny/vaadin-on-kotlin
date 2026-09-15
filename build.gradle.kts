@@ -97,6 +97,16 @@ subprojects {
     }
 }
 
+// The doc-layer tripwires; see design/verify_design_tripwires.sh and AGENTS.md, "Design docs".
+// Needs bash and git, so it sits out the Windows leg of the CI matrix.
+val verifyDesignTripwires by tasks.registering(Exec::class) {
+    description = "Checks the design docs: caps, cites, symlinks, the verbatim pitch."
+    group = "verification"
+    commandLine("./design/verify_design_tripwires.sh")
+    onlyIf { !System.getProperty("os.name").startsWith("Windows") }
+}
+tasks.named("check") { dependsOn(verifyDesignTripwires) }
+
 nexusPublishing {
     repositories {
         // see https://central.sonatype.org/publish/publish-portal-ossrh-staging-api/#configuration

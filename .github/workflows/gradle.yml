@@ -13,13 +13,21 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         # intentionally no `cache:` — setup-gradle handles Gradle caching
-    - uses: gradle/actions/setup-gradle@v4
+    - uses: gradle/actions/setup-gradle@v6
     - name: Build with Gradle
       run: ./gradlew build
+
+  design-docs:
+    # The doc-layer tripwires, in a job of their own: bash + git, no JDK.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Verify design docs
+      run: ./design/verify_design_tripwires.sh

@@ -48,9 +48,9 @@ backed by your ktorm `Table`. Mounted at `/rest/users` it exposes:
 
 * `GET /rest/users` — list (with query parameters below)
 * `GET /rest/users/22` — single by id
-* `POST /rest/users` / `PATCH /rest/users/22` / `DELETE /rest/users/22` — create / update / delete
-  (gated by `allowModification`; the body-deserialization path currently returns 501, pending a Gson↔ktorm Entity
-  adapter)
+* `POST /rest/users` / `PATCH /rest/users/22` / `DELETE /rest/users/22` — create / update / delete; all three
+  return 401 unless the handler was built with `allowModification = true`. `PATCH` is partial: only properties
+  present in the JSON body are written.
 
 ### Query parameters on `GET /list`
 
