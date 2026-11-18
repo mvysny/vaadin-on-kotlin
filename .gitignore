@@ -21,3 +21,4 @@ bin
 .classpath
 .project
 vok-example-crud/src/main/bundles/prod.bundle
+.kotlin
