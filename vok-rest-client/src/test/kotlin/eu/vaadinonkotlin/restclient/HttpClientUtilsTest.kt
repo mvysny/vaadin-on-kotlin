@@ -24,10 +24,11 @@ data class Person(var name: String? = null,
                   var age: Int? = null)
 
 class MyJavalinServlet : HttpServlet() {
-    private val javalin = Javalin.createStandalone()
-        .get("foo") { ctx -> ctx.result(content) }
-        .get("fail") { throw RuntimeException() }
-        .javalinServlet()
+    private val javalin = Javalin.create {
+        it.startup.startupWatcherEnabled = false
+        it.routes.get("foo") { ctx -> ctx.result(content) }
+        it.routes.get("fail") { throw RuntimeException() }
+    }.javalinServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
         javalin.service(req, resp)
@@ -77,7 +78,7 @@ class HttpClientUtilsTest : AbstractJavalinTest() {
         val ex = assertThrows<FileNotFoundException> {
             client().exec("http://localhost:9876/bar".get()) {}
         }
-        expect("404: Not Found (GET http://localhost:9876/bar)") { ex.message }
+        expect("404: Endpoint GET /bar not found (GET http://localhost:9876/bar)") { ex.message }
     }
 
     @Test fun test500() {

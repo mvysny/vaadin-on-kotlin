@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.4.21"
     `maven-publish`
     signing
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
@@ -99,7 +99,7 @@ subprojects {
 
 // The doc-layer tripwires; see design/verify_design_tripwires.sh and AGENTS.md, "Design docs".
 // Needs bash and git, so it sits out the Windows leg of the CI matrix.
-val verifyDesignTripwires by tasks.registering(Exec::class) {
+val verifyDesignTripwires = tasks.register<Exec>("verifyDesignTripwires") {
     description = "Checks the design docs: caps, cites, symlinks, the verbatim pitch."
     group = "verification"
     commandLine("./design/verify_design_tripwires.sh")

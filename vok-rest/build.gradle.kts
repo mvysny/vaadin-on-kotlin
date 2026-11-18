@@ -2,9 +2,10 @@ dependencies {
     api(project(":vok-framework-vokdb"))
 
     api(libs.javalin) {
+        // The app brings its own servlet container.
         exclude(group = "org.eclipse.jetty")
-        exclude(group = "org.eclipse.jetty.websocket")
-        exclude(group = "com.fasterxml.jackson.core")
+        exclude(group = "org.eclipse.jetty.ee10")
+        exclude(group = "org.eclipse.jetty.ee10.websocket")
     }
     api(libs.gson.gson)
     // workaround for https://github.com/google/gson/issues/1059

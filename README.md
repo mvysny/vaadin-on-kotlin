@@ -5,6 +5,10 @@
 
 # Welcome to Vaadin-on-Kotlin
 
+> **`vok-rest` moved from Javalin 5 to Javalin 7.** Javalin 7 registers routes only inside `Javalin.create { }`, so
+> `Javalin.crud2(...)` became `config.routes.crud2(...)`, and `Javalin.createStandalone()` is gone. See
+> [vok-rest](vok-rest) for the new servlet shape.
+
 > **0.19 is a breaking release.** The persistence layer moved from `vok-orm` (jdbi-orm) to
 > [ktorm](https://www.ktorm.org/) + [ktorm-vaadin](https://github.com/mvysny/ktorm-vaadin). The published REST
 > wire format also simplified to eq-only filters with `?offset` / `?limit` / `?sort=col:asc,col2:desc`. If you're
@@ -48,7 +52,7 @@ and are awaiting a rewrite — refer to [vok-example-crud](vok-example-crud) for
 * [vok-framework-vokdb](vok-framework-vokdb) — Vaadin + SQL via ktorm + ktorm-vaadin. Provides
   `VaadinOnKotlin.dataSource` (which also wires `ActiveKtorm.database`), the `toId(idColumn)` Binder helper, and a
   reified-generic `enumFilterField<E>()` factory.
-* [vok-rest](vok-rest) — REST **server** support. Javalin 5 + Gson. Exposes ktorm tables via
+* [vok-rest](vok-rest) — REST **server** support. Javalin 7 + Gson. Exposes ktorm tables via
   `Table<E>.getCrudHandler()` — GET list/one plus POST/PATCH/DELETE, the latter three behind `allowModification`.
 * [vok-rest-client](vok-rest-client) — REST **client** helpers built on the JDK `HttpClient`. ORM-agnostic.
 * [vok-example-crud](vok-example-crud) — runnable demo and integration-test harness.
@@ -149,8 +153,10 @@ verticalLayout {
 ```kotlin
 @WebServlet(urlPatterns = ["/rest/*"])
 class JavalinRestServlet : HttpServlet() {
-    private val javalin = Javalin.createStandalone { it.gsonMapper(VokRest.gson) }.apply {
-        crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
+    private val javalin = Javalin.create {
+        it.startup.startupWatcherEnabled = false
+        it.gsonMapper(VokRest.gson)
+        it.routes.crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
     }.javalinServlet()
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) { javalin.service(req, resp) }
 }

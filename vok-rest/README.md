@@ -22,9 +22,11 @@ Define a servlet that delegates everything under `/rest/*` to Javalin, and regis
 ```kotlin
 @WebServlet(urlPatterns = ["/rest/*"], name = "JavalinRestServlet", asyncSupported = false)
 class JavalinRestServlet : HttpServlet() {
-    private val javalin = Javalin.createStandalone { it.gsonMapper(VokRest.gson) } .apply {
-        get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-        crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
+    private val javalin = Javalin.create {
+        it.startup.startupWatcherEnabled = false
+        it.gsonMapper(VokRest.gson)
+        it.routes.get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+        it.routes.crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
     }.javalinServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
@@ -32,6 +34,10 @@ class JavalinRestServlet : HttpServlet() {
     }
 }
 ```
+
+Javalin never starts its own Jetty here; it only serves through this servlet. `startupWatcherEnabled = false`
+silences the warning Javalin otherwise logs five seconds after an instance is created but never started.
+`vok-rest` excludes Javalin's Jetty dependencies, so the app runs in whatever servlet container it brings.
 
 Quick check from the command line:
 

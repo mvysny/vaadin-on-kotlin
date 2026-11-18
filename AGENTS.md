@@ -41,7 +41,7 @@ Every fact lives in exactly one of these; the others link to it.
 
 - `vok-framework` — the core: bootstrap, `Session`, `Cookies`, async executor, i18n, Vaadin helpers. No DB.
 - `vok-framework-vokdb` — Vaadin + SQL: `VaadinOnKotlin.dataSource`, `toId()`, `enumFilterField()`; re-exports ktorm-vaadin.
-- `vok-rest` — REST server: Javalin + Gson, `Table<E>.getCrudHandler()`, `Javalin.crud2()`.
+- `vok-rest` — REST server: Javalin + Gson, `Table<E>.getCrudHandler()`, `RoutesConfig.crud2()`.
 - `vok-rest-client` — REST client over the JDK `HttpClient`: `CrudClient<T>`, Gson converters. No ORM.
 - `vok-example-crud` — the runnable demo, and the framework's integration-test harness.
 

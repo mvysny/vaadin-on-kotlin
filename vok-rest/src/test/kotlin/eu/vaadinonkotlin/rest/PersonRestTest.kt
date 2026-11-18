@@ -31,10 +31,12 @@ import java.time.temporal.ChronoField
 import kotlin.test.expect
 
 class MyJavalinServlet : HttpServlet() {
-    private val javalin = Javalin.createStandalone { it.gsonMapper(VokRest.gson) } .apply {
-        get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
-        crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
-    } .javalinServlet()
+    private val javalin = Javalin.create {
+        it.startup.startupWatcherEnabled = false
+        it.gsonMapper(VokRest.gson)
+        it.routes.get("/rest/person/helloworld") { ctx -> ctx.result("Hello World") }
+        it.routes.crud2("/rest/person", Persons.getCrudHandler(allowModification = true))
+    }.javalinServlet()
 
     override fun service(req: HttpServletRequest, resp: HttpServletResponse) {
         javalin.service(req, resp)
