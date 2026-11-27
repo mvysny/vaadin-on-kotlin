@@ -6,9 +6,11 @@ jobs:
   build:
 
     strategy:
+      # one runner's transient failure (e.g. a DNS blip fetching the JDK) must not cancel the rest
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        java: [21, 24]
+        java: [21, 25]
 
     runs-on: ${{ matrix.os }}
 

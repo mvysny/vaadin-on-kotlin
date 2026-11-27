@@ -58,7 +58,7 @@ Every fact lives in exactly one of these; the others link to it.
 
 ## Commands
 
-- `./gradlew build` — full build + tests; also the default task (`clean build`), and what CI runs (`.github/workflows/gradle.yml`, JDK 21/24 × Linux/macOS/Windows).
+- `./gradlew build` — full build + tests; also the default task (`clean build`), and what CI runs (`.github/workflows/gradle.yml`, JDK 21/25 × Linux/macOS/Windows).
 - `./gradlew test` / `./gradlew :vok-framework:test` / `./gradlew :vok-rest:test --tests '*PersonRestTest*'` — every test, one module, one class.
 - `./gradlew vok-example-crud:run` — the demo app on http://localhost:8080.
 - `./gradlew clean build -Pvaadin.productionMode` — production Vaadin build (npm bundling, prod frontend).
